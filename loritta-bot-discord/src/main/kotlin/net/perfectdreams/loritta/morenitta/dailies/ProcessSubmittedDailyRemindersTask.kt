@@ -4,7 +4,11 @@ import dev.minn.jda.ktx.interactions.components.Container
 import dev.minn.jda.ktx.interactions.components.MediaGallery
 import dev.minn.jda.ktx.interactions.components.TextDisplay
 import dev.minn.jda.ktx.messages.MessageCreate
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.button.Button
 import net.dv8tion.jda.api.components.button.ButtonStyle
@@ -60,119 +64,126 @@ class ProcessSubmittedDailyRemindersTask(val m: LorittaBot) {
                     continue
                 }
 
+                // Parallelize *everything*
+                val jobs = mutableListOf<Job>()
+
                 // We don't make everything in a single transaction to avoid things like "whoops Loritta shutdown before she was able to process everything! Every state was lost nooooo"
                 for ((index, pendingNotification) in pendingNotifications.withIndex()) {
-                    logger.info { "Trying to notify user ${pendingNotification[DailyReminderNotifications.userId]} about the daily reward... ($index/${pendingNotifications.size} - total pending: $totalPending)" }
+                    jobs += GlobalScope.launch {
+                        logger.info { "Trying to notify user ${pendingNotification[DailyReminderNotifications.userId]} about the daily reward... ($index/${pendingNotifications.size} - total pending: $totalPending)" }
 
-                    val userId = pendingNotification[DailyReminderNotifications.userId]
-                    val todayAtMidnight = pendingNotification[DailyReminderNotifications.triggeredForDaily].atZone(Constants.LORITTA_TIMEZONE)
+                        val userId = pendingNotification[DailyReminderNotifications.userId]
+                        val todayAtMidnight = pendingNotification[DailyReminderNotifications.triggeredForDaily].atZone(Constants.LORITTA_TIMEZONE)
 
-                    // Technically couldn't this be just "pendingNotification[DailyReminderNotifications.triggeredForDaily].toInstant()"?
-                    val todayAtMidnightAsEpochMillis = todayAtMidnight.toInstant().toEpochMilli()
+                        // Technically couldn't this be just "pendingNotification[DailyReminderNotifications.triggeredForDaily].toInstant()"?
+                        val todayAtMidnightAsEpochMillis = todayAtMidnight.toInstant().toEpochMilli()
 
-                    var success = false
+                        var success = false
 
-                    try {
-                        val privateChannel = m.getOrRetrievePrivateChannelForUserOrNullIfUserDoesNotExist(userId) ?: continue
+                        try {
+                            val privateChannel = m.getOrRetrievePrivateChannelForUserOrNullIfUserDoesNotExist(userId) ?: return@launch
 
-                        // We'll calculate the current user streak
-                        // Honestly there are better ways to do this, however they get way too complex way too quickly
-                        // So we'll do this the old fashioned way:tm:
-                        val allReceivedDailiesBeforeMidnight = m.transaction {
-                            Dailies.select(Dailies.receivedAt)
-                                .where {
-                                    Dailies.receivedById eq userId and (Dailies.receivedAt less todayAtMidnightAsEpochMillis)
-                                }
-                                .orderBy(Dailies.receivedAt, SortOrder.DESC)
-                                .map { it[Dailies.receivedAt] }
-                        }
-
-                        // Today's date is the "last"
-                        var lastDate = todayAtMidnight.toLocalDate()
-                        var streak = 0
-
-                        for (dailyTime in allReceivedDailiesBeforeMidnight) {
-                            val dailyDate = Instant.ofEpochMilli(dailyTime).atZone(Constants.LORITTA_TIMEZONE).toLocalDate()
-
-                            // Fail-safe for when we get two dailies on the same day (mostly useful when debugging things)
-                            // Instead of not counting, we'll just ignore it on our streak
-                            if (dailyDate == lastDate) {
-                                lastDate = dailyDate
-                                continue
-                            }
-
-                            if (dailyDate == lastDate.minusDays(1)) {
-                                // Yippee, we are on a streak!
-                                lastDate = dailyDate
-                                streak++
-                            } else {
-                                // Sadness, we are not on a streak anymore...
-                                break
-                            }
-                        }
-
-                        privateChannel.sendMessage(
-                            MessageCreate {
-                                this.useComponentsV2 = true
-
-                                this.components += Container {
-                                    this.accentColor = LorittaColors.LorittaAqua.rgb
-
-                                    +TextDisplay(
-                                        buildString {
-                                            appendLine(
-                                                buildString {
-                                                    append("### ${Emotes.LoriRich} ${i18nContext.get(I18nKeysData.DailyRewardReminder.Title)}")
-                                                    if (streak >= 2)
-                                                        append(" **_[${i18nContext.get(I18nKeysData.DailyRewardReminder.Streak(streak))} \uD83D\uDD25]_**")
-                                                }
-                                            )
-
-                                            for (line in i18nContext.get(
-                                                I18nKeysData.DailyRewardReminder.Description(
-                                                    "<t:1490842800:t>",
-                                                )
-                                            )) {
-                                                appendLine(line)
-                                            }
-                                        }
-                                    )
-
-                                    +ActionRow.of(
-                                        Button.of(
-                                            ButtonStyle.LINK,
-                                            GACampaigns.dailyWebRewardDiscordCampaignUrl(
-                                                m.config.loritta.website.url,
-                                                "daily-reminder",
-                                                "dm-reminder"
-                                            ),
-                                            i18nContext.get(I18nKeysData.DailyRewardReminder.ClaimDailyReward)
-                                        ).withEmoji(Emotes.Sonhos3.toJDA())
-                                    )
-
-                                    +MediaGallery {
-                                        this.item("https://stuff.loritta.website/loritta-daily-yafyr.png")
+                            // We'll calculate the current user streak
+                            // Honestly there are better ways to do this, however they get way too complex way too quickly
+                            // So we'll do this the old fashioned way:tm:
+                            val allReceivedDailiesBeforeMidnight = m.transaction {
+                                Dailies.select(Dailies.receivedAt)
+                                    .where {
+                                        Dailies.receivedById eq userId and (Dailies.receivedAt less todayAtMidnightAsEpochMillis)
                                     }
+                                    .orderBy(Dailies.receivedAt, SortOrder.DESC)
+                                    .map { it[Dailies.receivedAt] }
+                            }
 
-                                    +TextDisplay("-# ${i18nContext.get(I18nKeysData.DailyRewardReminder.YouReceivedThisMessageBecauseYouGotDailyRewardYesterday)} ${Emotes.LoriFlushed}")
+                            // Today's date is the "last"
+                            var lastDate = todayAtMidnight.toLocalDate()
+                            var streak = 0
+
+                            for (dailyTime in allReceivedDailiesBeforeMidnight) {
+                                val dailyDate = Instant.ofEpochMilli(dailyTime).atZone(Constants.LORITTA_TIMEZONE).toLocalDate()
+
+                                // Fail-safe for when we get two dailies on the same day (mostly useful when debugging things)
+                                // Instead of not counting, we'll just ignore it on our streak
+                                if (dailyDate == lastDate) {
+                                    lastDate = dailyDate
+                                    continue
+                                }
+
+                                if (dailyDate == lastDate.minusDays(1)) {
+                                    // Yippee, we are on a streak!
+                                    lastDate = dailyDate
+                                    streak++
+                                } else {
+                                    // Sadness, we are not on a streak anymore...
+                                    break
                                 }
                             }
-                        ).await()
 
-                        logger.info { "Successfully notified user $userId about their daily reward!" }
-                        success = true
-                    } catch (e: Exception) {
-                        logger.warn(e) { "Something went wrong while trying to remind the user $userId about the daily reward!" }
-                    } finally {
-                        // And now we mark it as processed!
-                        m.transaction {
-                            DailyReminderNotifications.update({ DailyReminderNotifications.id eq pendingNotification[DailyReminderNotifications.id] }) {
-                                it[DailyReminderNotifications.processedAt] = Instant.now()
-                                it[DailyReminderNotifications.successfullySent] = success
+                            privateChannel.sendMessage(
+                                MessageCreate {
+                                    this.useComponentsV2 = true
+
+                                    this.components += Container {
+                                        this.accentColor = LorittaColors.LorittaAqua.rgb
+
+                                        +TextDisplay(
+                                            buildString {
+                                                appendLine(
+                                                    buildString {
+                                                        append("### ${Emotes.LoriRich} ${i18nContext.get(I18nKeysData.DailyRewardReminder.Title)}")
+                                                        if (streak >= 2)
+                                                            append(" **_[${i18nContext.get(I18nKeysData.DailyRewardReminder.Streak(streak))} \uD83D\uDD25]_**")
+                                                    }
+                                                )
+
+                                                for (line in i18nContext.get(
+                                                    I18nKeysData.DailyRewardReminder.Description(
+                                                        "<t:1490842800:t>",
+                                                    )
+                                                )) {
+                                                    appendLine(line)
+                                                }
+                                            }
+                                        )
+
+                                        +ActionRow.of(
+                                            Button.of(
+                                                ButtonStyle.LINK,
+                                                GACampaigns.dailyWebRewardDiscordCampaignUrl(
+                                                    m.config.loritta.website.url,
+                                                    "daily-reminder",
+                                                    "dm-reminder"
+                                                ),
+                                                i18nContext.get(I18nKeysData.DailyRewardReminder.ClaimDailyReward)
+                                            ).withEmoji(Emotes.Sonhos3.toJDA())
+                                        )
+
+                                        +MediaGallery {
+                                            this.item("https://stuff.loritta.website/loritta-daily-yafyr.png")
+                                        }
+
+                                        +TextDisplay("-# ${i18nContext.get(I18nKeysData.DailyRewardReminder.YouReceivedThisMessageBecauseYouGotDailyRewardYesterday)} ${Emotes.LoriFlushed}")
+                                    }
+                                }
+                            ).await()
+
+                            logger.info { "Successfully notified user $userId about their daily reward!" }
+                            success = true
+                        } catch (e: Exception) {
+                            logger.warn(e) { "Something went wrong while trying to remind the user $userId about the daily reward!" }
+                        } finally {
+                            // And now we mark it as processed!
+                            m.transaction {
+                                DailyReminderNotifications.update({ DailyReminderNotifications.id eq pendingNotification[DailyReminderNotifications.id] }) {
+                                    it[DailyReminderNotifications.processedAt] = Instant.now()
+                                    it[DailyReminderNotifications.successfullySent] = success
+                                }
                             }
                         }
                     }
                 }
+
+                jobs.joinAll()
             } catch (e: Throwable) {
                 // This should NEVER EVER HAPPEN because if it happens, then it means that something went TERRIBLY wrong
                 // This is only here to avoid the task getting stopped altogether due to some random errors
