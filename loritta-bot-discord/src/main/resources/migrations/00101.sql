@@ -1,0 +1,1 @@
+ALTER TABLE dailyremindernotifications RENAME COLUMN query_before TO triggered_for_daily;

@@ -56,6 +56,8 @@ class DailyReminderTask(val m: LorittaBot) : NamedRunnableCoroutine {
                 this[DailyReminderNotifications.userId] = it
                 this[DailyReminderNotifications.submittedAt] = now
                 this[DailyReminderNotifications.triggeredForDaily] = todayAtMidnight.toInstant() // However this DOES matter!
+                this[DailyReminderNotifications.processedAt] = null
+                this[DailyReminderNotifications.successfullySent] = false
             }
 
             updateStoredTimer(m)
