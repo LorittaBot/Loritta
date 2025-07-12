@@ -32,6 +32,7 @@ import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
 import org.jsoup.Jsoup
 import org.jsoup.parser.Parser
+import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
@@ -115,7 +116,7 @@ class PostPubSubHubbubCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v
 			val published = lastVideo.getElementsByTag("published").first()!!.html()
 			val channelId = lastVideo.getElementsByTag("yt:channelId").first()!!.html()
 
-			val publishedEpoch = Constants.YOUTUBE_DATE_FORMAT.parse(published).time
+			val publishedEpoch = ZonedDateTime.parse(published).toInstant().toEpochMilli()
 
 			if (loritta.isMainInstance) {
 				// Insert to track the event data

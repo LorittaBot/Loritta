@@ -10,7 +10,6 @@ import java.awt.Color
 import java.awt.Font
 import java.io.File
 import java.io.FileInputStream
-import java.text.SimpleDateFormat
 import java.time.ZoneId
 import java.util.regex.Pattern
 import javax.imageio.ImageIO
@@ -101,7 +100,6 @@ object Constants {
 	val DISCORD_EMOTE_PATTERN = Pattern.compile("<a?:([A-z0-9_]+):([0-9]+)>")
 	val DISCORD_INVITE_PATTERN = Pattern.compile(".*(discord\\.gg|(?:discordapp.com|discord.com)(?:/invite))/([A-z0-9]+).*", Pattern.CASE_INSENSITIVE)
 
-	val YOUTUBE_DATE_FORMAT = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
 	val ASSETS_FOLDER by lazy { File(LorittaBot.ASSETS) }
 
 	// TODO: Don't hardcode this
