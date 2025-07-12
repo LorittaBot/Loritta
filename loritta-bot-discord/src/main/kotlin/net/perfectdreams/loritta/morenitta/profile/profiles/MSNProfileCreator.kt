@@ -36,7 +36,7 @@ class MSNProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta, "ms
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
 		val graphics = base.graphics.enableFontAntiAliasing()
 
-		val avatar = LorittaUtils.downloadImage(loritta, user.avatarUrl)!!.getScaledInstance(141, 141, BufferedImage.SCALE_SMOOTH)
+		val avatar = (LorittaUtils.downloadImage(loritta, user.avatarUrl) ?: Constants.DEFAULT_DISCORD_BLUE_AVATAR).getScaledInstance(141, 141, BufferedImage.SCALE_SMOOTH)
 		val imageToBeDownload = sender.avatarUrl
 		// TODO: If the user is not provided, use Loritta's avatar
 		val senderAvatar = (LorittaUtils.downloadImage(loritta, imageToBeDownload) ?: Constants.DEFAULT_DISCORD_BLUE_AVATAR).getScaledInstance(141, 141, BufferedImage.SCALE_SMOOTH)

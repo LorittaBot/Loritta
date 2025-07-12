@@ -46,7 +46,7 @@ class Halloween2019ProfileCreator(loritta: LorittaBot) : AnimatedProfileCreator(
 		val oswaldRegular42 = Constants.OSWALD_REGULAR
 			.deriveFont(42F)
 
-		val avatar = LorittaUtils.downloadImage(loritta, user.avatarUrl)!!.getScaledInstance(152, 152, BufferedImage.SCALE_SMOOTH)
+		val avatar = (LorittaUtils.downloadImage(loritta, user.avatarUrl) ?: Constants.DEFAULT_DISCORD_BLUE_AVATAR).getScaledInstance(152, 152, BufferedImage.SCALE_SMOOTH)
 		val marrySection = readImageFromResources("/profile/halloween_2019/marry.png")
 
 		val marriage = ProfileUtils.getMarriageInfo(loritta, userProfile)

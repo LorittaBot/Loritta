@@ -44,7 +44,7 @@ class Christmas2019ProfileCreator(loritta: LorittaBot) : StaticProfileCreator(lo
 		val oswaldRegular42 = Constants.OSWALD_REGULAR
 			.deriveFont(42F)
 
-		val avatar = LorittaUtils.downloadImage(loritta, user.avatarUrl)!!.getScaledInstance(150, 150, BufferedImage.SCALE_SMOOTH)
+		val avatar = (LorittaUtils.downloadImage(loritta, user.avatarUrl) ?: Constants.DEFAULT_DISCORD_BLUE_AVATAR).getScaledInstance(150, 150, BufferedImage.SCALE_SMOOTH)
 		val marrySection = readImageFromResources("/profile/christmas_2019/marry.png")
 
 		val marriage = ProfileUtils.getMarriageInfo(loritta, userProfile)

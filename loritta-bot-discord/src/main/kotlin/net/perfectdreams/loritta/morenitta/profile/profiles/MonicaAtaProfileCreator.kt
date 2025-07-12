@@ -70,7 +70,7 @@ class MonicaAtaProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritt
 		graphics.font = loritta.graphicsFonts.komikaHand.deriveFont(13f)
 		val biggestStrWidth = graphics.fontMetrics.stringWidth(userInfo.maxByOrNull { graphics.fontMetrics.stringWidth(it) }!!)
 
-		val avatar = LorittaUtils.downloadImage(loritta, user.avatarUrl)!!.getScaledInstance(148, 148, BufferedImage.SCALE_SMOOTH)
+		val avatar = (LorittaUtils.downloadImage(loritta, user.avatarUrl) ?: Constants.DEFAULT_DISCORD_BLUE_AVATAR).getScaledInstance(148, 148, BufferedImage.SCALE_SMOOTH)
 
 		val image = LorittaImage(background.getScaledInstance(800, 600, BufferedImage.SCALE_SMOOTH).toBufferedImage())
 

@@ -9,6 +9,7 @@ import net.perfectdreams.loritta.morenitta.profile.Badge
 import net.perfectdreams.loritta.morenitta.profile.ProfileGuildInfoData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUtils
+import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
 import net.perfectdreams.loritta.morenitta.utils.drawText
 import net.perfectdreams.loritta.morenitta.utils.enableFontAntiAliasing
@@ -36,7 +37,7 @@ class OrkutProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta, "
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
 		val graphics = base.graphics.enableFontAntiAliasing()
 
-		val avatar = LorittaUtils.downloadImage(loritta, user.avatarUrl)!!.getScaledInstance(200, 200, BufferedImage.SCALE_SMOOTH)
+		val avatar = (LorittaUtils.downloadImage(loritta, user.avatarUrl) ?: Constants.DEFAULT_DISCORD_BLUE_AVATAR).getScaledInstance(200, 200, BufferedImage.SCALE_SMOOTH)
 
 		val latoRegular = 	loritta.graphicsFonts.latoRegular
 		val latoBold = 	loritta.graphicsFonts.latoBold

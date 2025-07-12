@@ -40,7 +40,7 @@ class UndertaleProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritt
 		graphics.font = determinationMono.deriveFont(Font.PLAIN, 22f)
 		graphics.color = Color.WHITE
 
-		val avatar = LorittaUtils.downloadImage(loritta, user.avatarUrl)!!.getScaledInstance(159, 159, BufferedImage.SCALE_SMOOTH)
+		val avatar = (LorittaUtils.downloadImage(loritta, user.avatarUrl) ?: Constants.DEFAULT_DISCORD_BLUE_AVATAR).getScaledInstance(159, 159, BufferedImage.SCALE_SMOOTH)
 
 		graphics.drawImage(profileWrapper, 0, 0, null)
 
