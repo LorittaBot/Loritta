@@ -34,8 +34,8 @@ object ContextStringToUserInfoConverter {
 
         // If the snowflake is not null, then it *may* be a user ID!
         if (snowflake != null) {
-            HarmonyLoggerFactory.logger {}.value.info { "ContextStringToUserInfoConverter#retrieveUserInfoById - UserId: $snowflake" }
-            val cachedUserInfo = context.loritta.lorittaShards.retrieveUserInfoById(snowflake)
+            HarmonyLoggerFactory.logger {}.value.info { "ContextStringToUserInfoConverter#retrieveUserInfoByIdNullIfUserDoesNotExist - UserId: $snowflake" }
+            val cachedUserInfo = context.loritta.lorittaShards.retrieveUserInfoByIdNullIfUserDoesNotExist(snowflake)
             if (cachedUserInfo != null)
                 return cachedUserInfo
         }

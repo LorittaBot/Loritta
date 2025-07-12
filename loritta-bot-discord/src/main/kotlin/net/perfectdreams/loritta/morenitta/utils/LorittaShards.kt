@@ -19,6 +19,8 @@ import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji
+import net.dv8tion.jda.api.exceptions.ErrorResponseException
+import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.api.sharding.ShardManager
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedDiscordUsers
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -131,6 +133,56 @@ class LorittaShards(val loritta: LorittaBot, val shardManager: ShardManager) {
 
 		// E se *ainda* não tiver, iremos dar retrieve
 		val discordUser = retrieveUserById(id)
+
+		return if (discordUser != null) {
+			transformUserToCachedUserInfo(discordUser)
+		} else null
+	}
+
+	suspend fun retrieveUserInfoByIdNullIfUserDoesNotExist(id: Long?): CachedUserInfo? {
+		if (id == null)
+			return null
+
+		try {
+			throw RuntimeException()
+		} catch (e: Exception) {
+			logger.info(e) { "LorittaShards#retrieveUserInfoById - UserId: $id" }
+		}
+
+		// Ao dar retrieve na info do user, primeiro iremos tentar verificar se a gente tem ele no user cache do JDA
+		val userInJdaCache = loritta.lorittaShards.getUserById(id)
+		if (userInJdaCache != null)
+			return transformUserToCachedUserInfo(userInJdaCache)
+
+		// Se não tiver, vamos verificar no cache local de retrieved users
+		val cachedRetrievedUser = cachedRetrievedUsers.getIfPresent(id)
+		if (cachedRetrievedUser != null)
+			return transformUserToCachedUserInfo(cachedRetrievedUser.get())
+
+		// Se não tiver, iremos verificar na database externa
+		val cachedUser = loritta.newSuspendedTransaction {
+			CachedDiscordUsers.selectAll().where { CachedDiscordUsers.id eq id }
+				.firstOrNull()
+		}
+
+		if (cachedUser != null)
+			return CachedUserInfo(
+				cachedUser[CachedDiscordUsers.id].value,
+				cachedUser[CachedDiscordUsers.name],
+				cachedUser[CachedDiscordUsers.discriminator],
+				cachedUser[CachedDiscordUsers.globalName],
+				cachedUser[CachedDiscordUsers.avatarId]
+			)
+
+		// E se *ainda* não tiver, iremos dar retrieve
+		val discordUser = try {
+			this.retrieveUserById(id)
+		} catch (e: ErrorResponseException) {
+			if (e.errorResponse == ErrorResponse.UNKNOWN_MEMBER || e.errorResponse == ErrorResponse.UNKNOWN_USER)
+				null
+			else
+				throw e
+		}
 
 		return if (discordUser != null) {
 			transformUserToCachedUserInfo(discordUser)
