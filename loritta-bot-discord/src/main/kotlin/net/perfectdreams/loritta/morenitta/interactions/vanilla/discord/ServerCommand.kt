@@ -350,10 +350,12 @@ class ServerCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     }
                 }
 
-                if (role.icon != null) {
+                val roleIconUrl = role.icon?.iconUrl
+
+                if (roleIconUrl != null) {
                     actionRow(
                         Button.link(
-                            role.icon!!.iconUrl + "?size=2048",
+                            "$roleIconUrl?size=2048",
                             context.i18nContext.get(I18N_PREFIX.Role.Info.OpenRoleIconInBrowser)
                         )
                     )
