@@ -14,6 +14,14 @@ import org.apache.commons.codec.digest.DigestUtils
 
 class GetLanguageInfoRoute(private val m: LorittaBot) : BaseRoute("/api/v1/languages/{languageId}") {
     override suspend fun onRequest(call: ApplicationCall) {
+        val languageId = call.parameters.getOrFail("languageId")
+
+        // To avoid malicious users bypassing the cache by using random locale keys, we will validate if the locale exists or not
+        if (!m.languageManager.languages.containsKey(languageId)) {
+            call.respondText("", ContentType.Application.Json, status = HttpStatusCode.NotFound)
+            return
+        }
+
         val language = m.languageManager.getLanguageById(call.parameters.getOrFail("languageId"))
 
         val dataAsJson = Json.encodeToString(language)
