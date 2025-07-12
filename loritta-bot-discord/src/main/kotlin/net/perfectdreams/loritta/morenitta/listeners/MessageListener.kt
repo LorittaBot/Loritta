@@ -320,8 +320,7 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 
 					start = System.nanoTime()
 					if (event.channel.canTalk() && serverConfig.warnOnUnknownCommand) {
-						val startsWithCommandPattern =
-							Regex("^" + Pattern.quote(serverConfig.commandPrefix) + "[A-z0-9]+.*")
+						val startsWithCommandPattern = Regex("^" + Pattern.quote(serverConfig.commandPrefix) + "[A-ZA-z].*")
 
 						if (event.message.contentRaw.matches(startsWithCommandPattern)) {
 							val command = event.message.contentDisplay.split(" ")[0].stripCodeMarks()
