@@ -48,6 +48,7 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 		private val logger by HarmonyLoggerFactory.logger {}
 		// Our blacklist of messages (messages that we'll ignore on command execution)
 		private val unavailableMessages = Collections.newSetFromMap(Caffeine.newBuilder().expireAfterWrite(15L, TimeUnit.MINUTES).build<Long, Boolean>().asMap())
+		private val SPACE_PLUS_REGEX = Regex(" +")
 	}
 
 	private val inviteLinkModule = InviteLinkModule(loritta)
@@ -482,7 +483,7 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 		val rawMessage = lorittaMessageEvent.message.contentRaw
 
 		val rawArguments = rawMessage
-			.split(" ")
+			.split(SPACE_PLUS_REGEX)
 			.toMutableList()
 
 		val firstLabel = rawArguments.first()
