@@ -108,10 +108,8 @@ class LoriCoolCardsGiveStickersExecutor(val loritta: LorittaBot, private val lor
 
                 // If it contains a comma, then it is a list
                 if (focusedOptionValue.contains(",")) {
-                    return@autocomplete mapOf(
-                        it.i18nContext.get(I18N_PREFIX.StickerList(focusedOptionValue))
-                            .shortenWithEllipsis(DiscordResourceLimits.Command.Options.Description.Length) to focusedOptionValue
-                    )
+                    // While it would be nice to provide a default value, in my experience it doesn't work because Discord limits choice values to 100 characters
+                    return@autocomplete emptyMap()
                 }
 
                 // We also let searchingByCardId = true if empty to make the autocomplete results be sorted from 0001 -> ... by default
