@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.interactions.InteractionContextType
 import net.dv8tion.jda.api.components.button.Button
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
+import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.TodoFixThisData
@@ -340,14 +341,46 @@ class ServerCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                         inline = true
                     }
 
-                    val rolePermissionsLocalized = role.permissions.joinToString(", ") {
-                        "`${it.getLocalizedName(context.i18nContext)}`"
+                    var isFirst = true
+
+                    val rolePermissionsLocalized = buildString {
+                        appendLine("**${Emotes.Lock} " + context.i18nContext.get(I18N_PREFIX.Role.Info.Permissions) + "**")
+
+                        var count = 0
+
+                        // This SUCKS but somehow we need to have a template to know if it is going to fit or not
+                        val temporaryIfDoesNotFitMaxPossibleValue = buildString {
+                            append(", ")
+                            append("`")
+                            append(context.i18nContext.get(I18N_PREFIX.Role.Info.AndXMorePermissions(role.permissions.size)))
+                            append("`")
+                        }
+
+                        val maxLength = DiscordResourceLimits.Embed.Description - temporaryIfDoesNotFitMaxPossibleValue.length
+                        for (permission in role.permissions) {
+                            val temporary = buildString {
+                                if (!isFirst)
+                                    append(", ")
+
+                                append("`")
+                                append(permission.getLocalizedName(context.i18nContext))
+                                append("`")
+                            }
+
+                            if (this.length + temporary.length > maxLength) {
+                                append(temporary)
+                                count++
+                            } else {
+                                append(temporaryIfDoesNotFitMaxPossibleValue)
+                                break
+                            }
+
+                            isFirst = false
+                        }
                     }
 
-                    if (role.permissions.isNotEmpty()) field {
-                        name = "${Emotes.Lock} " + context.i18nContext.get(I18N_PREFIX.Role.Info.Permissions)
-                        value = rolePermissionsLocalized
-                    }
+                    if (role.permissions.isNotEmpty())
+                        this.description = rolePermissionsLocalized
                 }
 
                 val roleIconUrl = role.icon?.iconUrl

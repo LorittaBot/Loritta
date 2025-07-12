@@ -61,5 +61,6 @@ role:
     permissions: "Permissões"
     openRoleIconInBrowser: "Abrir ícone do cargo no navegador"
     noPermissions: "Nenhuma permissão"
+    andXMorePermissions: "e mais {permissionCount,number} permissões"
     options:
       role: "Um cargo que você deseja ver informações"
