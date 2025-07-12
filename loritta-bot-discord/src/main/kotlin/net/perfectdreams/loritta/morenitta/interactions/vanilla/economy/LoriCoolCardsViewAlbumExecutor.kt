@@ -383,11 +383,6 @@ class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCo
         context: LegacyMessageCommandContext,
         args: List<String>
     ): Map<OptionReference<*>, Any?>? {
-        if (args.isEmpty()) {
-            context.explain()
-            return null
-        }
-
         val eventId = loritta.transaction {
             LoriCoolCardsEvents
                 .selectAll()
@@ -398,7 +393,7 @@ class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCo
 
         return mapOf(
             options.album to eventId.toString(),
-            options.page to args[0].toLongOrNull()
+            options.page to args.getOrNull(0)?.toLongOrNull()
         )
     }
 }
