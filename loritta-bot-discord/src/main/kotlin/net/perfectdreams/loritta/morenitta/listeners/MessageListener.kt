@@ -18,6 +18,7 @@ import net.dv8tion.jda.api.events.message.MessageUpdateEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildCommandConfigs
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.LorittaPermission
@@ -31,6 +32,7 @@ import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.modules.*
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.jda.JDAUser
 import net.perfectdreams.loritta.morenitta.reactionevents.DropPointsStuffModule
+import net.perfectdreams.loritta.morenitta.utils.GuildCommandConfigData
 import net.perfectdreams.loritta.morenitta.utils.GuildLorittaUser
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
 import net.perfectdreams.loritta.morenitta.utils.chance
@@ -39,6 +41,8 @@ import net.perfectdreams.loritta.morenitta.utils.eventlog.EventLog
 import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import org.apache.commons.text.similarity.LevenshteinDistance
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.selectAll
 import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
@@ -334,6 +338,24 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 							)
 
 							val allCommandLabels = mutableListOf<String>()
+
+							val interaKTionsUnleashedDisabledCommands = loritta.transaction {
+								GuildCommandConfigs.selectAll()
+									.where {
+										GuildCommandConfigs.guildId eq event.guild.idLong
+									}
+									.associate { it[GuildCommandConfigs.commandId] to GuildCommandConfigData.fromResultRowOrDefault(it) }
+							}
+
+							loritta.interactionsListener
+								.manager
+								.legacyCommandPathToDeclarations
+								.forEach {
+									val isEnabled = interaKTionsUnleashedDisabledCommands[it.value.slashDeclaration.uniqueId]?.enabled ?: true
+
+									if (isEnabled)
+										allCommandLabels.add(it.key)
+								}
 
 							loritta.commandMap.commands.forEach {
 								if (!it.onlyOwner && !serverConfig.disabledCommands.contains(it.javaClass.simpleName) && !it.hideInHelp)

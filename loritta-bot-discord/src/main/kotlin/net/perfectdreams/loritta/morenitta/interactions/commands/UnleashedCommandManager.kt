@@ -86,7 +86,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
     private var slashCommandPathToDeclarations = mutableMapOf<String, CommandDeclarationPair>()
     private var userCommandPathToDeclarations = mutableMapOf<String, UserCommandDeclaration>()
     private var messageCommandPathToDeclarations = mutableMapOf<String, MessageCommandDeclaration>()
-    private var legacyCommandPathToDeclarations = mutableMapOf<String, CommandDeclarationPair>()
+    var legacyCommandPathToDeclarations = mutableMapOf<String, CommandDeclarationPair>()
 
     fun register(declaration: SlashCommandDeclarationWrapper) {
         val builtDeclaration = declaration.command().build()
