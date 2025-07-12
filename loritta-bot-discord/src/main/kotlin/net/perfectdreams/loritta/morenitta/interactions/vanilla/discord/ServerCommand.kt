@@ -351,9 +351,7 @@ class ServerCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                         // This SUCKS but somehow we need to have a template to know if it is going to fit or not
                         val temporaryIfDoesNotFitMaxPossibleValue = buildString {
                             append(", ")
-                            append("`")
                             append(context.i18nContext.get(I18N_PREFIX.Role.Info.AndXMorePermissions(role.permissions.size)))
-                            append("`")
                         }
 
                         val maxLength = DiscordResourceLimits.Embed.Description - temporaryIfDoesNotFitMaxPossibleValue.length
@@ -367,11 +365,13 @@ class ServerCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                                 append("`")
                             }
 
-                            if (this.length + temporary.length > maxLength) {
+                            if (maxLength > this.length + temporary.length) {
                                 append(temporary)
                                 count++
                             } else {
-                                append(temporaryIfDoesNotFitMaxPossibleValue)
+                                if (!isFirst)
+                                    append(", ")
+                                append(context.i18nContext.get(I18N_PREFIX.Role.Info.AndXMorePermissions(role.permissions.size - count)))
                                 break
                             }
 
