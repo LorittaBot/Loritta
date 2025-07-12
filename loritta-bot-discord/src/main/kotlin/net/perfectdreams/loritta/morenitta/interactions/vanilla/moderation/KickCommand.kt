@@ -96,6 +96,11 @@ class KickCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             context: LegacyMessageCommandContext,
             args: List<String>
         ): Map<OptionReference<*>, Any?>? {
+            if (args.isEmpty()) {
+                context.explain()
+                return null
+            }
+
             val (users, rawReason) = AdminUtils.checkAndRetrieveAllValidUsersFromMessages(context) ?: return null
 
             val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context, rawReason) ?: return null
