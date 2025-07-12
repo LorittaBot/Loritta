@@ -161,6 +161,22 @@ class LoriCoolCardsRankExecutor(val loritta: LorittaBot, private val loriCoolCar
         context: LegacyMessageCommandContext,
         args: List<String>
     ): Map<OptionReference<*>, Any?>? {
-        return mapOf()
+        if (args.isEmpty()) {
+            context.explain()
+            return null
+        }
+
+        val eventId = loritta.transaction {
+            LoriCoolCardsEvents
+                .selectAll()
+                .orderBy(LoriCoolCardsEvents.startsAt to SortOrder.DESC)
+                .firstOrNull()
+                ?.get(LoriCoolCardsEvents.id) ?: -1
+        }
+
+        return mapOf(
+            options.album to eventId.toString(),
+            options.page to args[0].toLongOrNull()
+        )
     }
 }
