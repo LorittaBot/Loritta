@@ -260,7 +260,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         register(WebhookCommand(loritta))
         register(UserCommand(loritta))
         register(MessageStickerCommand())
-        register(ExpressionsCommand())
+        register(GuildCommand()) // TODO: Merge with ServerCommand
         register(ServerCommand(loritta))
         register(EmojiCommand())
         register(InviteCommand())
