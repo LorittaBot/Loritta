@@ -110,9 +110,9 @@ class LoriCoolCardsDuplicateStickersInventoryExecutor(val loritta: LorittaBot, p
                 context.reply(false) {
                     embed {
                         if (userThatWillBeLookedUp == context.user) {
-                            title = "${Emotes.LoriLurk} ${context.i18nContext.get(I18N_PREFIX.YourDuplicateStickers)}"
+                            title = "${Emotes.LoriLurk} ${context.i18nContext.get(I18N_PREFIX.YourDuplicateStickers(result.duplicateStickers.size))}"
                         } else {
-                            title = "${Emotes.LoriLurk} ${context.i18nContext.get(I18N_PREFIX.UserDuplicateStickers(userThatWillBeLookedUp.name))}"
+                            title = "${Emotes.LoriLurk} ${context.i18nContext.get(I18N_PREFIX.UserDuplicateStickers(userThatWillBeLookedUp.name, result.duplicateStickers.size))}"
                         }
 
                         var isFirst = true

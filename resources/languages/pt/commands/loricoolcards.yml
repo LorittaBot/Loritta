@@ -163,8 +163,8 @@ compare:
 duplicates:
   label: "repetidas"
   description: "Mostra quais figurinhas repetidas você tem no seu inventário"
-  yourDuplicateStickers: "Suas Figurinhas Repetidas"
-  userDuplicateStickers: "Figurinhas Repetidas de {user}"
+  yourDuplicateStickers: "Suas Figurinhas Repetidas ({stickerCount,number})"
+  userDuplicateStickers: "Figurinhas Repetidas de {user} ({stickerCount,number})"
   getListOfStickers: "Pegar a lista de figurinhas repetidas"
   youHaveSoManyStickersThatItDoesntFitAllInHere: "Você tem tantas figurinhas repetidas que elas não cabem todas aqui nesta mensagem!"
   options:
@@ -174,8 +174,8 @@ duplicates:
 missing:
   label: "faltando"
   description: "Mostra quais figurinhas estão faltando no seu álbum"
-  yourMissingStickers: "Figurinhas faltando no seu álbum"
-  userMissingStickers: "Figurinhas faltando no álbum de {user}"
+  yourMissingStickers: "Figurinhas faltando no seu álbum ({stickerCount,number})"
+  userMissingStickers: "Figurinhas faltando no álbum de {user} ({stickerCount,number})"
   getListOfStickers: "Pegar a lista de figurinhas faltando"
   options:
     user:

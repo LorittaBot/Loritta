@@ -91,9 +91,9 @@ class LoriCoolCardsMissingStickersInventoryExecutor(val loritta: LorittaBot, pri
                 context.reply(false) {
                     embed {
                         if (userThatWillBeLookedUp == context.user) {
-                            title = "${Emotes.LoriLurk} ${context.i18nContext.get(I18N_PREFIX.YourMissingStickers)}"
+                            title = "${Emotes.LoriLurk} ${context.i18nContext.get(I18N_PREFIX.YourMissingStickers(yourStickersMissing.size))}"
                         } else {
-                            title = "${Emotes.LoriLurk} ${context.i18nContext.get(I18N_PREFIX.UserMissingStickers(userThatWillBeLookedUp.name))}"
+                            title = "${Emotes.LoriLurk} ${context.i18nContext.get(I18N_PREFIX.UserMissingStickers(userThatWillBeLookedUp.name, yourStickersMissing.size))}"
                         }
 
                         description = buildString {
