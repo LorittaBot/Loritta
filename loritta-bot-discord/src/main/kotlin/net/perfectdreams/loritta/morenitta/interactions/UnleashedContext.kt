@@ -22,6 +22,7 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.interactions.commands.CommandException
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.discord.utils.ExpressionsManager
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
 
 abstract class UnleashedContext(
@@ -56,6 +57,9 @@ abstract class UnleashedContext(
 
     val discordInteraction: Interaction
         get() = discordInteractionOrNull ?: error("This is not executed by an interaction!")
+
+    val emojiFactory = ExpressionsManager.EmojiFactory(this)
+    val stickerFactory = ExpressionsManager.StickerFactory(this)
 
     var wasInitiallyDeferredEphemerally: Boolean? = null
 
