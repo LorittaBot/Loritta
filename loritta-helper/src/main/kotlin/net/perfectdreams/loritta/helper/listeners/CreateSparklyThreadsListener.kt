@@ -17,7 +17,7 @@ class CreateSparklyThreadsListener : ListenerAdapter() {
         if (event.componentId == "create_sparkly_thread") {
             GlobalScope.launch {
                 val txtChannel = event.guildChannel.asTextChannel()
-                val thread = txtChannel.createThreadChannel("Denúncia criada por ${event.user.name}")
+                val thread = txtChannel.createThreadChannel("Denúncia de ${event.user.name} (${event.user.id})")
                     .await()
                 // Delete parent message
                 thread.retrieveParentMessage()
