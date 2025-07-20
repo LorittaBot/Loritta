@@ -4,18 +4,15 @@ import dev.minn.jda.ktx.messages.Embed
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.sticker.Sticker
-import net.dv8tion.jda.api.exceptions.ErrorResponseException
-import net.dv8tion.jda.api.exceptions.RateLimitedException
 import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.components.button.Button
 import net.dv8tion.jda.api.components.button.ButtonStyle
-import net.dv8tion.jda.api.requests.ErrorResponse
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
-import net.perfectdreams.loritta.morenitta.interactions.newSticker
+import net.perfectdreams.loritta.morenitta.interactions.linkButton
 import java.util.*
 
 class MessageStickerCommand : MessageCommandDeclarationWrapper {
@@ -64,7 +61,7 @@ class MessageStickerCommand : MessageCommandDeclarationWrapper {
 
                 if (context.guildOrNull == null) {
                     actionRow(
-                        Button.link(
+                        linkButton(
                             sticker.fixedIconUrl(2048),
                             context.i18nContext.get(
                                 I18N_PREFIX.OpenInWeb
@@ -86,110 +83,39 @@ class MessageStickerCommand : MessageCommandDeclarationWrapper {
                                 ButtonStyle.PRIMARY,
                                 context.i18nContext.get(I18N_PREFIX.AddStickerToTheServer)
                             ) {
-                                try {
-                                    it.guild.newSticker(
-                                        context,
-                                        sticker.name,
-                                        "None",
-                                        sticker.fixedIconUrl(2048),
-                                        listOf("None")
-                                    )
-                                } catch (e: Exception) {
+                                val success = context.stickerFactory.addSticker(sticker.name, "None", sticker.fixedIconUrl(2048), listOf("None"), true) ?: false
+
+                                if (!success) {
                                     it.deferAndEditOriginal {
                                         actionRow(
-                                            Button.link(
+                                            linkButton(
                                                 sticker.fixedIconUrl(2048),
                                                 context.i18nContext.get(
                                                     I18N_PREFIX.OpenInWeb
                                                 )
                                             ),
-                                            Button.danger("-", it.i18nContext.get(GuildCommand.I18N_PREFIX.Sticker.Add.ErrorWhileAdding)).asDisabled()
+                                            Button.danger("-", it.i18nContext.get(ExpressionsCommand.I18N_PREFIX.Sticker.Add.ErrorWhileAdding)).asDisabled()
+                                        )
+                                    }
+                                } else {
+                                    it.deferAndEditOriginal {
+                                        actionRow(
+                                            linkButton(
+                                                sticker.fixedIconUrl(2048),
+                                                context.i18nContext.get(
+                                                    I18N_PREFIX.OpenInWeb
+                                                )
+                                            ),
+                                            Button.success("-", it.i18nContext.get(I18N_PREFIX.StickerAddedSuccessfully)).asDisabled()
                                         )
                                     }
 
-                                    when (e) {
-                                        is CommandException -> throw e
-                                        is RateLimitedException -> {
-                                            context.reply(true) {
-                                                styled(
-                                                    context.i18nContext.get(I18nKeysData.Commands.Command.Guild.Sticker.Add.RateLimitExceeded),
-                                                    Emotes.LoriHmpf
-                                                )
-                                            }
-                                            return@buttonForUser
-                                        }
-                                        is ErrorResponseException -> {
-                                            when (e.errorResponse) {
-                                                ErrorResponse.FILE_UPLOAD_MAX_SIZE_EXCEEDED -> {
-                                                    it.reply(true) {
-                                                        styled(
-                                                            context.i18nContext.get(
-                                                                GuildCommand.I18N_PREFIX.Sticker.Add.FileUploadMaxSizeExceeded
-                                                            ),
-                                                            Emotes.Error
-                                                        )
-                                                    }
-                                                    return@buttonForUser
-                                                }
-
-                                                ErrorResponse.MAX_STICKERS -> {
-                                                    it.reply(true) {
-                                                        styled(
-                                                            context.i18nContext.get(
-                                                                GuildCommand.I18N_PREFIX.Sticker.Add.MaxStickersReached
-                                                            ),
-                                                            Emotes.Error
-                                                        )
-                                                    }
-                                                    return@buttonForUser
-                                                }
-
-                                                ErrorResponse.INVALID_FILE_UPLOADED, ErrorResponse.INVALID_FORM_BODY -> {
-                                                    it.reply(true) {
-                                                        styled(
-                                                            context.i18nContext.get(
-                                                                GuildCommand.I18N_PREFIX.Sticker.Add.InvalidUrl
-                                                            ),
-                                                            Emotes.Error
-                                                        )
-                                                    }
-                                                    return@buttonForUser
-                                                }
-
-                                                else -> it.reply(true) {
-                                                    styled(
-                                                        context.i18nContext.get(
-                                                            I18nKeysData.Commands.ErrorWhileExecutingCommand(
-                                                                Emotes.LoriRage,
-                                                                Emotes.LoriSob,
-                                                                e
-                                                            )
-                                                        ),
-                                                        Emotes.Error
-                                                    )
-                                                }
-                                            }
-                                        }
+                                    it.reply(true) {
+                                        styled(
+                                            it.i18nContext.get(I18N_PREFIX.StickerAddedSuccessfully),
+                                            Emotes.LoriHappy
+                                        )
                                     }
-                                }
-
-                                it.deferAndEditOriginal {
-                                    actionRow(
-                                        Button.link(
-                                            sticker.fixedIconUrl(2048),
-                                            context.i18nContext.get(
-                                                I18N_PREFIX.OpenInWeb
-                                            )
-                                        ),
-                                        Button.success("-", it.i18nContext.get(I18N_PREFIX.StickerAddedSuccessfully)).asDisabled()
-                                    )
-                                }
-
-                                it.reply(true) {
-                                    styled(
-                                        it.i18nContext.get(I18N_PREFIX.StickerAddedSuccessfully),
-                                        Emotes.LoriHappy
-                                    )
                                 }
                             }
                         )
