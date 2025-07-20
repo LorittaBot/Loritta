@@ -5,16 +5,44 @@ player:
   description: "Mostra informações sobre jogadores de Minecraft: Java Edition"
   skin:
     label: "skin"
+    examples:
+      - "Loritta |-| Usa a skin da pessoa mais bela que existe!"
+      - "MrPowerGamerBR |-| Usa a skin da conta \"MrPowerGamerBR\""
+      - "yNilzinha_ |-| Usa a skin da conta \"yNilzinha_\""
+      - "Monerk |-| Usa a skin da conta \"Monerk\", a skin do Monark. Ponte ponte!"
+      - "JackSucksAtLife |-| Usa a skin da conta \"JackSucksAtLife\""
+      - "hechfx |-| Usa a skin da conta \"hechfx\""
     description: "Mostra a skin de um jogador do Minecraft: Java Edition"
     playerDoesNotHaveASkin: "`{playerName}` não tem uma skin no Minecraft: Java Edition! Talvez eles gostam de usar a skin de {skinType} em vez de uma skin personalizada!"
   avatar:
     label: "avatar"
+    examples:
+      - "Loritta |-| Usa a skin da pessoa mais bela que existe!"
+      - "MrPowerGamerBR |-| Usa a skin da conta \"MrPowerGamerBR\""
+      - "yNilzinha_ |-| Usa a skin da conta \"yNilzinha_\""
+      - "Monerk |-| Usa a skin da conta \"Monerk\", a skin do Monark. Ponte ponte!"
+      - "JackSucksAtLife |-| Usa a skin da conta \"JackSucksAtLife\""
+      - "hechfx |-| Usa a skin da conta \"hechfx\""
     description: "Mostra o avatar de um jogador do Minecraft: Java Edition"
   head:
     label: "cabeça"
+    examples:
+      - "Loritta |-| Usa a skin da pessoa mais bela que existe!"
+      - "MrPowerGamerBR |-| Usa a skin da conta \"MrPowerGamerBR\""
+      - "yNilzinha_ |-| Usa a skin da conta \"yNilzinha_\""
+      - "Monerk |-| Usa a skin da conta \"Monerk\", a skin do Monark. Ponte ponte!"
+      - "JackSucksAtLife |-| Usa a skin da conta \"JackSucksAtLife\""
+      - "hechfx |-| Usa a skin da conta \"hechfx\""
     description: "Mostra a cabeça de um jogador do Minecraft: Java Edition"
   body:
     label: "corpo"
+    examples:
+      - "Loritta |-| Usa a skin da pessoa mais bela que existe!"
+      - "MrPowerGamerBR |-| Usa a skin da conta \"MrPowerGamerBR\""
+      - "yNilzinha_ |-| Usa a skin da conta \"yNilzinha_\""
+      - "Monerk |-| Usa a skin da conta \"Monerk\", a skin do Monark. Ponte ponte!"
+      - "JackSucksAtLife |-| Usa a skin da conta \"JackSucksAtLife\""
+      - "hechfx |-| Usa a skin da conta \"hechfx\""
     description: "Mostra o corpo de um jogador do Minecraft: Java Edition"
   onlineuuid:
     label: "onlineuuid"
@@ -29,6 +57,13 @@ sweatshirt:
   description: "Quer ficar aconchegante? Então por que não colocar o meu moletom fofo e aconchegante na sua skin do Minecraft?"
   result: "A magia mágica de moletom está pronta e agora você vai ficar 200% mais confortável... perder um mundo hardcore para um bebê zumbi nunca foi tão aconchegante! Baixe sua nova skin, coloque na sua conta do Minecraft e espalhe a alegria do meu moletom super fofinho e caloroso!"
   invalidMinecraftSkin: "Desculpe, mas isso não parece uma skin de Minecraft válida! Só consigo fazer a minha mágica de moletom com o arquivo da skin em si, e não com uma render fabulosa da sua skin posando magnificamente! Tenha em mente que as dimensões das skins do Minecraft são 32x64 ou 64x64!"
+  examples:
+    - "MrPowerGamerBR claro |-| Coloca o moletom claro na skin"
+    - "MrPowerGamerBR escuro |-| Coloca o moletom escuro na skin"
+    - "MrPowerGamerBR misto diagonal |-| Coloca o moletom misto (onda) na skin"
+    - "MrPowerGamerBR misto diagonal pontuado |-| Coloca o moletom misto (onda com pontos) na skin"
+    - "MrPowerGamerBR misto vertical |-| Coloca o moletom misto (vertical) na skin"
+    - "MrPowerGamerBR misto vertical pontuado |-| Coloca o moletom misto (vertical com pontos) na skin"
   options:
     skin:
       text: "O nome da conta de um jogador no Minecraft: Java Edition ou a URL de uma skin do Minecraft"
@@ -46,3 +81,17 @@ sparklypower:
   description: "Informações sobre o SparklyPower, o servidor de Minecraft da Loritta"
   response1: "SparklyPower é um servidor de Minecraft Survival que oferece uma experiência única com recursos inovadores que irão te surpreender! Desde 2014 trazendo funcionalidades revolucionárias que jamais foram vistas em outros servidores e, é claro, com o mesmo nível de qualidade da Loritta."
   response2: "Entre em nosso servidor no Discord para saber mais: {inviteLink}"
+achievement:
+  label: "conquista"
+  description: "Crie uma conquista do Minecraft!"
+  achievementMade: "Progresso Feito"
+  examples:
+    - "@Loritta Ser uma visionária! |-| Edição com o avatar mais fofo que você já viu, e obrigada pelo elogio!"
+    - "287894637165936640 Adicionei um bot! |-| Edição com o avatar de um usuário pelo ID"
+    - "https://i.imgur.com/jxiRrNN.png Usei uma imagem no comando! |-| Edição com o link de uma imagem (Observação: Apenas irei baixar imagens de websites confiáveis!)"
+    - "\U0001f35e Comi um pão hoje! |-| Edição com a imagem do emoji, demonstrando como você ama pão"
+  options:
+    icon:
+      description: "Imagem da conquista"
+    text:
+      description: "Texto da conquista"

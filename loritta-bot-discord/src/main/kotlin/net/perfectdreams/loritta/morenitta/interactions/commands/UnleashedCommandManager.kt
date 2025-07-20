@@ -47,7 +47,7 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.*
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`.*
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`.text.TextTransformCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.*
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.minecraft.MinecraftCommand
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.minecraft.declaration.MinecraftCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.misc.DiscordBotListCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.misc.LanguageCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.*

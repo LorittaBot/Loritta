@@ -25,7 +25,6 @@ import net.perfectdreams.loritta.morenitta.commands.vanilla.discord.ServerInfoCo
 import net.perfectdreams.loritta.morenitta.commands.vanilla.`fun`.*
 import net.perfectdreams.loritta.morenitta.commands.vanilla.images.*
 import net.perfectdreams.loritta.morenitta.commands.vanilla.magic.*
-import net.perfectdreams.loritta.morenitta.commands.vanilla.minecraft.*
 import net.perfectdreams.loritta.morenitta.commands.vanilla.misc.PatreonCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.music.LyricsCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.social.*
@@ -121,15 +120,15 @@ class CommandManager(val loritta: LorittaBot) {
 		// commandMap.add(EmojiInfoCommand(loritta))
 
 		// =======[ MINECRAFT ]========
-		commandMap.add(OfflineUUIDCommand(loritta))
-		commandMap.add(McAvatarCommand(loritta))
-		commandMap.add(McUUIDCommand(loritta))
-		commandMap.add(McHeadCommand(loritta))
-		commandMap.add(McBodyCommand(loritta))
-		commandMap.add(SpigotMcCommand(loritta))
-		commandMap.add(McConquistaCommand(loritta))
-		commandMap.add(McSkinCommand(loritta))
-		commandMap.add(McMoletomCommand(loritta))
+		// commandMap.add(OfflineUUIDCommand(loritta))
+		// commandMap.add(McAvatarCommand(loritta))
+		// commandMap.add(McUUIDCommand(loritta))
+		// commandMap.add(McHeadCommand(loritta))
+		// commandMap.add(McBodyCommand(loritta))
+		// commandMap.add(SpigotMcCommand(loritta))
+		// commandMap.add(McConquistaCommand(loritta))
+		// commandMap.add(McSkinCommand(loritta))
+		// commandMap.add(McMoletomCommand(loritta))
 
 		// =======[ UNDERTALE ]========
 		commandMap.add(UndertaleBoxCommand(loritta))
