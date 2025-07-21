@@ -28,7 +28,6 @@ class SlashCommandDeclarationBuilder(
     var executor: LorittaSlashCommandExecutor? = null
     var botPermissions: Set<Permission>? = null
     var defaultMemberPermissions: DefaultMemberPermissions? = null
-    var isGuildOnly = false
     var enableLegacyMessageSupport = false
     var alternativeLegacyLabels = mutableListOf<String>()
     var alternativeLegacyAbsoluteCommandPaths = mutableListOf<String>()
@@ -72,7 +71,6 @@ class SlashCommandDeclarationBuilder(
             examples,
             botPermissions ?: emptySet(),
             defaultMemberPermissions,
-            isGuildOnly,
             enableLegacyMessageSupport,
             alternativeLegacyLabels,
             alternativeLegacyAbsoluteCommandPaths,
@@ -132,7 +130,6 @@ class UserCommandDeclarationBuilder(
     val executor: LorittaUserCommandExecutor,
 ) {
     var defaultMemberPermissions: DefaultMemberPermissions? = null
-    var isGuildOnly = false
     var integrationTypes = listOf(IntegrationType.GUILD_INSTALL)
     var interactionContexts = listOf(InteractionContextType.GUILD, InteractionContextType.BOT_DM, InteractionContextType.PRIVATE_CHANNEL)
 
@@ -142,7 +139,6 @@ class UserCommandDeclarationBuilder(
             category,
             uniqueId,
             defaultMemberPermissions,
-            isGuildOnly,
             integrationTypes,
             interactionContexts,
             executor
@@ -162,7 +158,6 @@ class MessageCommandDeclarationBuilder(
     val executor: LorittaMessageCommandExecutor
 ) {
     var defaultMemberPermissions: DefaultMemberPermissions? = null
-    var isGuildOnly = false
     var integrationTypes = listOf(IntegrationType.GUILD_INSTALL)
     var interactionContexts = listOf(InteractionContextType.GUILD, InteractionContextType.BOT_DM, InteractionContextType.PRIVATE_CHANNEL)
 
@@ -172,7 +167,6 @@ class MessageCommandDeclarationBuilder(
             category,
             uniqueId,
             defaultMemberPermissions,
-            isGuildOnly,
             integrationTypes,
             interactionContexts,
             executor

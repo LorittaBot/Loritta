@@ -8,13 +8,13 @@ import kotlinx.serialization.json.*
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.JDA
-import net.dv8tion.jda.api.components.button.Button
-import net.dv8tion.jda.api.components.button.ButtonStyle
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
-import net.dv8tion.jda.api.interactions.components.ItemComponent
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction
 import net.dv8tion.jda.api.utils.FileUpload
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
@@ -183,7 +183,7 @@ class GenerateServerReport(val m: LorittaHelper) {
                     is ReportWithUserInfoMessage -> listOf(embed, reportMessage.userInfoEmbed)
                 }
 
-                val components = mutableListOf<ItemComponent>()
+                val components = mutableListOf<Button>()
 
                 if (images?.isNotEmpty() == true) {
                     components.add(
@@ -214,7 +214,7 @@ class GenerateServerReport(val m: LorittaHelper) {
                         .setEmbeds(*embeds.map { it.build() }.toTypedArray())
                         .also {
                             if (components.isNotEmpty())
-                                it.addActionRow(components)
+                                it.addComponents(ActionRow.of(components))
                         }
                         .build()
                 )

@@ -6,8 +6,9 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.serialization.json.Json
 import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.components.button.Button
-import net.dv8tion.jda.api.components.button.ButtonStyle
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.dv8tion.jda.api.entities.emoji.Emoji
@@ -173,25 +174,29 @@ class GiveawayManager(val loritta: LorittaBot) {
         }
 
         if (giveawayDatabaseId != null) {
-            builder.setActionRow(
-                Button.of(
-                    ButtonStyle.PRIMARY,
-                    "$GIVEAWAY_JOIN_COMPONENT_PREFIX:$giveawayDatabaseId",
-                    i18nContext.get(I18N_PREFIX.Participate(participants)),
-                    Emoji.fromFormatted(formattedReaction)
-                ),
-                Button.of(ButtonStyle.SECONDARY, "$GIVEAWAY_PARTICIPANTS_COMPONENT_PREFIX:$giveawayDatabaseId", "Participantes", Emoji.fromCustom(CinnamonEmotes.LoriHi.name, CinnamonEmotes.LoriHi.id, CinnamonEmotes.LoriHi.animated))
+            builder.setComponents(
+                ActionRow.of(
+                    Button.of(
+                        ButtonStyle.PRIMARY,
+                        "$GIVEAWAY_JOIN_COMPONENT_PREFIX:$giveawayDatabaseId",
+                        i18nContext.get(I18N_PREFIX.Participate(participants)),
+                        Emoji.fromFormatted(formattedReaction)
+                    ),
+                    Button.of(ButtonStyle.SECONDARY, "$GIVEAWAY_PARTICIPANTS_COMPONENT_PREFIX:$giveawayDatabaseId", "Participantes", Emoji.fromCustom(CinnamonEmotes.LoriHi.name, CinnamonEmotes.LoriHi.id, CinnamonEmotes.LoriHi.animated))
+                )
             )
         } else {
-            builder.setActionRow(
-                Button.of(
-                    ButtonStyle.PRIMARY,
-                    "$GIVEAWAY_JOIN_COMPONENT_PREFIX:dummy",
-                    i18nContext.get(I18N_PREFIX.Participate(participants)),
-                    Emoji.fromFormatted(formattedReaction)
-                ).asDisabled(),
-                Button.of(ButtonStyle.SECONDARY, "$GIVEAWAY_PARTICIPANTS_COMPONENT_PREFIX:dummy", "Participantes", Emoji.fromCustom(CinnamonEmotes.LoriHi.name, CinnamonEmotes.LoriHi.id, CinnamonEmotes.LoriHi.animated))
-                    .asDisabled()
+            builder.setComponents(
+                ActionRow.of(
+                    Button.of(
+                        ButtonStyle.PRIMARY,
+                        "$GIVEAWAY_JOIN_COMPONENT_PREFIX:dummy",
+                        i18nContext.get(I18N_PREFIX.Participate(participants)),
+                        Emoji.fromFormatted(formattedReaction)
+                    ).asDisabled(),
+                    Button.of(ButtonStyle.SECONDARY, "$GIVEAWAY_PARTICIPANTS_COMPONENT_PREFIX:dummy", "Participantes", Emoji.fromCustom(CinnamonEmotes.LoriHi.name, CinnamonEmotes.LoriHi.id, CinnamonEmotes.LoriHi.animated))
+                        .asDisabled()
+                )
             )
         }
 

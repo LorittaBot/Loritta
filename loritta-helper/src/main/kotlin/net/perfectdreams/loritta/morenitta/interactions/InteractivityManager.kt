@@ -6,9 +6,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.emoji.Emoji
-import net.dv8tion.jda.api.components.button.Button
-import net.dv8tion.jda.api.components.button.ButtonStyle
-import net.dv8tion.jda.api.components.selects.StringSelectMenu
+import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import net.perfectdreams.loritta.helper.utils.Emotes
 import net.perfectdreams.loritta.morenitta.interactions.components.ComponentContext
 import net.perfectdreams.loritta.morenitta.interactions.modals.ModalArguments

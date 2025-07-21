@@ -1,9 +1,5 @@
 package net.perfectdreams.loritta.morenitta.interactions.modals
 
-import dev.minn.jda.ktx.interactions.components.replyModal
-import net.dv8tion.jda.api.interactions.InteractionHook
-import net.dv8tion.jda.api.interactions.components.ComponentInteraction
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.modals.ModalInteraction
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale

@@ -3,6 +3,8 @@ package net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`
 import kotlinx.coroutines.sync.Mutex
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel
+import net.dv8tion.jda.api.interactions.IntegrationType
+import net.dv8tion.jda.api.interactions.InteractionContextType
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
@@ -23,7 +25,8 @@ class MusicalChairsCommand(val loritta: LorittaBot) : SlashCommandDeclarationWra
         enableLegacyMessageSupport = true
 
         defaultMemberPermissions = DefaultMemberPermissions.enabledFor(Permission.VOICE_MOVE_OTHERS)
-        isGuildOnly = true
+        this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL)
+        this.interactionContexts = listOf(InteractionContextType.GUILD)
 
         executor = MusicalChairsExecutor()
     }

@@ -6,7 +6,7 @@ import dev.minn.jda.ktx.interactions.components.TextDisplay
 import dev.minn.jda.ktx.interactions.components.Thumbnail
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.components.actionrow.ActionRow
-import net.dv8tion.jda.api.components.button.ButtonStyle
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled

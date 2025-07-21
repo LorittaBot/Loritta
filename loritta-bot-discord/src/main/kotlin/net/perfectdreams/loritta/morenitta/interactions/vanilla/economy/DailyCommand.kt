@@ -5,7 +5,7 @@ import dev.minn.jda.ktx.interactions.components.TextDisplay
 import kotlinx.datetime.*
 import kotlinx.datetime.TimeZone
 import net.dv8tion.jda.api.interactions.IntegrationType
-import net.dv8tion.jda.api.components.button.Button
+import net.dv8tion.jda.api.components.buttons.Button
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendActiveReactionEventUpsellInformationIfNotNull
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendCouponSonhosBundleUpsellInformationIfNotNull

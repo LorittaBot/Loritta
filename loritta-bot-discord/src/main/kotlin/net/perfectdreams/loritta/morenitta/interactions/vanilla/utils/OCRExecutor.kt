@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.morenitta.interactions.vanilla.utils
 
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import net.dv8tion.jda.api.components.button.ButtonStyle
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.google.GoogleAPIUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.google.GoogleVisionLanguage

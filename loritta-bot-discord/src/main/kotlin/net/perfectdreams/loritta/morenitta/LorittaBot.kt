@@ -417,7 +417,7 @@ class LorittaBot(
 			config.loritta.discord.token,
 			GatewayIntent.MESSAGE_CONTENT,
 			GatewayIntent.GUILD_MEMBERS,
-			GatewayIntent.GUILD_EMOJIS_AND_STICKERS,
+			GatewayIntent.GUILD_EXPRESSIONS,
 			GatewayIntent.GUILD_MODERATION,
 			GatewayIntent.GUILD_INVITES,
 			GatewayIntent.GUILD_MESSAGES,

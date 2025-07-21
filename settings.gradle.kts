@@ -20,7 +20,7 @@ dependencyResolutionManagement {
             val kotlinxCoroutines = version("kotlinx-coroutines", "1.10.2")
             val jib = version("jib", "3.4.3")
 
-            library("deviousjda", "com.github.LorittaBot", "DeviousJDA").version("21af945035")
+            library("deviousjda", "com.github.LorittaBot", "DeviousJDA").version("ab69faa133")
 
             library("kotlinx-coroutines-core", "org.jetbrains.kotlinx", "kotlinx-coroutines-core").version(kotlinxCoroutines)
             library("kotlinx-coroutines-debug", "org.jetbrains.kotlinx", "kotlinx-coroutines-debug").version(kotlinxCoroutines)
@@ -87,6 +87,10 @@ include(":loritta-website:loritta-website-frontend")
 // include(":web:dashboard:dashboard-common")
 // include(":web:dashboard:backend")
 // include(":web:dashboard:spicy-frontend")
+
+// ===[ LOTRUNFO ]===
+include(":lotrunfo:lotrunfo-backend")
+include(":lotrunfo:lotrunfo-frontend")
 
 // ===[ MISC ]===
 include(":loritta-helper")

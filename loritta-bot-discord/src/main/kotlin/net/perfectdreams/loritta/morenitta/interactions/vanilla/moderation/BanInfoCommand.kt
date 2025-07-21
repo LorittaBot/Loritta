@@ -6,7 +6,9 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
-import net.dv8tion.jda.api.components.button.ButtonStyle
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.interactions.IntegrationType
+import net.dv8tion.jda.api.interactions.InteractionContextType
 import net.dv8tion.jda.api.requests.ErrorResponse
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.common.commands.CommandCategory
@@ -30,7 +32,8 @@ class BanInfoCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.MODERATION, UUID.fromString("58e7d211-a33b-489f-b4e1-3a332dd264aa")) {
         enableLegacyMessageSupport = true
-        isGuildOnly = true
+        this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL)
+        this.interactionContexts = listOf(InteractionContextType.GUILD)
 
         alternativeLegacyAbsoluteCommandPaths.apply {
             add("checkban")

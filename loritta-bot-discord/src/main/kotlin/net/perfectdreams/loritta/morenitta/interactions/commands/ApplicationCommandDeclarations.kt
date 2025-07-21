@@ -25,7 +25,6 @@ data class SlashCommandDeclaration(
     val examples: ListI18nData?,
     val botPermissions: Set<Permission>,
     val defaultMemberPermissions: DefaultMemberPermissions?,
-    var isGuildOnly: Boolean,
     var enableLegacyMessageSupport: Boolean,
     var alternativeLegacyLabels: List<String>,
     var alternativeLegacyAbsoluteCommandPaths: List<String>,
@@ -49,7 +48,6 @@ data class UserCommandDeclaration(
     override val category: CommandCategory,
     override val uniqueId: UUID,
     val defaultMemberPermissions: DefaultMemberPermissions?,
-    var isGuildOnly: Boolean,
     override val integrationTypes: List<IntegrationType>,
     override val interactionContexts: List<InteractionContextType>,
     val executor: LorittaUserCommandExecutor?
@@ -60,7 +58,6 @@ data class MessageCommandDeclaration(
     override val category: CommandCategory,
     override val uniqueId: UUID,
     val defaultMemberPermissions: DefaultMemberPermissions?,
-    var isGuildOnly: Boolean,
     override val integrationTypes: List<IntegrationType>,
     override val interactionContexts: List<InteractionContextType>,
     val executor: LorittaMessageCommandExecutor?

@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.helper.interactions.commands.vanilla
 import dev.minn.jda.ktx.interactions.components.SelectOption
 import dev.minn.jda.ktx.interactions.components.StringSelectMenu
 import dev.minn.jda.ktx.messages.MessageCreate
-import net.dv8tion.jda.api.components.button.Button
+import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.perfectdreams.loritta.api.messages.LorittaReply
@@ -143,7 +143,7 @@ Antes de perguntar, verifique se a resposta dela não está no <#${systemInfo.fa
 
                             actionRow(
                                 Button.of(
-                                    net.dv8tion.jda.api.components.button.ButtonStyle.PRIMARY,
+                                    net.dv8tion.jda.api.components.buttons.ButtonStyle.PRIMARY,
                                     "create_ticket:${
                                         ComponentDataUtils.encode(
                                             TicketSystemTypeData(systemInfo.systemType)
@@ -387,7 +387,7 @@ Antes de perguntar, verifique se a resposta dela não está no <#${systemInfo.fa
 
                             actionRow(
                                 Button.of(
-                                    net.dv8tion.jda.api.components.button.ButtonStyle.PRIMARY,
+                                    net.dv8tion.jda.api.components.buttons.ButtonStyle.PRIMARY,
                                     "create_ticket:${
                                         ComponentDataUtils.encode(
                                             TicketSystemTypeData(systemInfo.systemType)
@@ -421,7 +421,7 @@ Antes de perguntar, verifique se a resposta dela não está no <#${systemInfo.fa
 
                         actionRow(
                             Button.of(
-                                net.dv8tion.jda.api.components.button.ButtonStyle.PRIMARY,
+                                net.dv8tion.jda.api.components.buttons.ButtonStyle.PRIMARY,
                                 "create_ticket:${
                                     ComponentDataUtils.encode(
                                         TicketSystemTypeData(systemInfo.systemType)

@@ -35,7 +35,7 @@ data class LorittaVoiceConnection(
     suspend fun switchChannel(channelId: Long) {
         if (this.channelId != channelId) {
             this.channelId = channelId
-            audioManager.openAudioConnection(guild.getVoiceChannelById(channelId))
+            audioManager.openAudioConnection(guild.getVoiceChannelById(channelId)!!)
         }
     }
 

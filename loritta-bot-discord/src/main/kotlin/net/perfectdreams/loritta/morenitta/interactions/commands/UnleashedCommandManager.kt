@@ -550,7 +550,9 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                 return true
             }
 
-            if (rootDeclaration.isGuildOnly && guild == null) {
+            // Single returns null if it is empty OR has more than one element
+            val isGuildOnly = rootDeclaration.interactionContexts.singleOrNull() == net.dv8tion.jda.api.interactions.InteractionContextType.GUILD
+            if (isGuildOnly && guild == null) {
                 // Matched, but it is guild only
                 context.reply(true) {
                     styled(
@@ -749,7 +751,6 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         return Commands.slash(slashCommandDefaultI18nContext.get(declaration.name), buildDescription(slashCommandDefaultI18nContext, declaration.description, declaration.category)).apply {
             if (declaration.defaultMemberPermissions != null)
                 this.defaultPermissions = declaration.defaultMemberPermissions
-            this.isGuildOnly = declaration.isGuildOnly
             this.setContexts(declaration.interactionContexts[0], *declaration.interactionContexts.toTypedArray())
             this.setIntegrationTypes(declaration.integrationTypes[0], *declaration.integrationTypes.toTypedArray())
 
@@ -832,7 +833,6 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         return Commands.user(slashCommandDefaultI18nContext.get(declaration.name)).apply {
             if (declaration.defaultMemberPermissions != null)
                 this.defaultPermissions = declaration.defaultMemberPermissions
-            this.isGuildOnly = declaration.isGuildOnly
             this.setContexts(declaration.interactionContexts[0], *declaration.interactionContexts.toTypedArray())
             this.setIntegrationTypes(declaration.integrationTypes[0], *declaration.integrationTypes.toTypedArray())
 
@@ -849,7 +849,6 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         return Commands.message(slashCommandDefaultI18nContext.get(declaration.name)).apply {
             if (declaration.defaultMemberPermissions != null)
                 this.defaultPermissions = declaration.defaultMemberPermissions
-            this.isGuildOnly = declaration.isGuildOnly
             this.setContexts(declaration.interactionContexts[0], *declaration.interactionContexts.toTypedArray())
             this.setIntegrationTypes(declaration.integrationTypes[0], *declaration.integrationTypes.toTypedArray())
 

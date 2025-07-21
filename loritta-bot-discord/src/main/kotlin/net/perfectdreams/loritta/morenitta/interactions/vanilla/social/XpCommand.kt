@@ -6,8 +6,10 @@ import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.emoji.Emoji
-import net.dv8tion.jda.api.components.button.Button
-import net.dv8tion.jda.api.components.button.ButtonStyle
+import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.interactions.IntegrationType
+import net.dv8tion.jda.api.interactions.InteractionContextType
 import net.dv8tion.jda.api.utils.AttachedFile
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
@@ -49,7 +51,8 @@ class XpCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     }
 
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.SOCIAL, UUID.fromString("1d3edb96-4485-4249-a365-4a772bb02f0c")) {
-        isGuildOnly = true
+        this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL)
+        this.interactionContexts = listOf(InteractionContextType.GUILD)
         enableLegacyMessageSupport = true
 
         val viewXpExecutor = ViewXpExecutor()

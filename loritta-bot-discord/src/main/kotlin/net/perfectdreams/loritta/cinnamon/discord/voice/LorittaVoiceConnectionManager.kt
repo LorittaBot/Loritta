@@ -46,7 +46,7 @@ class LorittaVoiceConnectionManager(val loritta: LorittaBot) {
 
             val audioManager = guild.audioManager
             audioManager.sendingHandler = audioProvider
-            guild.audioManager.openAudioConnection(guild.getVoiceChannelById(channelId))
+            guild.audioManager.openAudioConnection(guild.getVoiceChannelById(channelId)!!)
 
             val loriVC = LorittaVoiceConnection(guild, channelId, audioManager, audioProvider, notificationChannel)
             voiceConnections[guildId] = loriVC

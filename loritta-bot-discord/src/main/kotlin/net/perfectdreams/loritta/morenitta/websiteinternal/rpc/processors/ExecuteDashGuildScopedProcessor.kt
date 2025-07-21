@@ -7,8 +7,9 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.entities.channel.concrete.*
-import net.dv8tion.jda.api.components.button.ButtonStyle
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
@@ -290,27 +291,29 @@ class ExecuteDashGuildScopedProcessor(private val internalWebServer: InternalWeb
                 // This is a bit crappy, but we need to create a builder from the already generated message
                 val patchedMessage = MessageCreateBuilder.from(message)
                 if (5 > patchedMessage.components.size) { // Below the component limit
-                    patchedMessage.addActionRow(
-                        m.interactivityManager.button(
-                            false,
-                            ButtonStyle.SECONDARY,
-                            i18nContext.get(I18nKeysData.Common.TestMessageWarning.ButtonLabel),
-                            {
-                                this.loriEmoji = Emotes.LoriCoffee
-                            }
-                        ) {
-                            it.reply(true) {
-                                styled(
-                                    i18nContext.get(I18nKeysData.Common.TestMessageWarning.MessageWasTestedByUser("${user.asMention} [${user.asUserNameCodeBlockPreviewTag(true)}]")),
-                                    Emotes.LoriCoffee
-                                )
+                    patchedMessage.addComponents(
+                        ActionRow.of(
+                            m.interactivityManager.button(
+                                false,
+                                ButtonStyle.SECONDARY,
+                                i18nContext.get(I18nKeysData.Common.TestMessageWarning.ButtonLabel),
+                                {
+                                    this.loriEmoji = Emotes.LoriCoffee
+                                }
+                            ) {
+                                it.reply(true) {
+                                    styled(
+                                        i18nContext.get(I18nKeysData.Common.TestMessageWarning.MessageWasTestedByUser("${user.asMention} [${user.asUserNameCodeBlockPreviewTag(true)}]")),
+                                        Emotes.LoriCoffee
+                                    )
 
-                                styled(
-                                    i18nContext.get(I18nKeysData.Common.TestMessageWarning.DontWorryTheMessageWillOnlyShowUpWhileTesting),
-                                    Emotes.LoriLurk
-                                )
+                                    styled(
+                                        i18nContext.get(I18nKeysData.Common.TestMessageWarning.DontWorryTheMessageWillOnlyShowUpWhileTesting),
+                                        Emotes.LoriLurk
+                                    )
+                                }
                             }
-                        }
+                        )
                     )
                 }
 
@@ -655,7 +658,7 @@ class ExecuteDashGuildScopedProcessor(private val internalWebServer: InternalWeb
                                 val plan = ServerPremiumPlans.getPlanFromValue(valueOfTheDonationKeysEnabledOnThisGuild)
 
                                 val premiumTracksOfTheGuildCount =
-                                    PremiumTrackTwitchAccounts.select(PremiumTrackTwitchAccounts.twitchUserId).where { 
+                                    PremiumTrackTwitchAccounts.select(PremiumTrackTwitchAccounts.twitchUserId).where {
                                         PremiumTrackTwitchAccounts.guildId eq guild.idLong
                                     }.orderBy(
                                         PremiumTrackTwitchAccounts.addedAt,
@@ -726,7 +729,7 @@ class ExecuteDashGuildScopedProcessor(private val internalWebServer: InternalWeb
 
                     val plan = ServerPremiumPlans.getPlanFromValue(valueOfTheDonationKeysEnabledOnThisGuild)
 
-                    val premiumTracksOfTheGuildCount = PremiumTrackTwitchAccounts.select(PremiumTrackTwitchAccounts.twitchUserId).where { 
+                    val premiumTracksOfTheGuildCount = PremiumTrackTwitchAccounts.select(PremiumTrackTwitchAccounts.twitchUserId).where {
                         PremiumTrackTwitchAccounts.guildId eq guild.idLong
                     }.orderBy(PremiumTrackTwitchAccounts.addedAt, SortOrder.ASC) // Ordered by the added at date...
                         .count()
@@ -774,7 +777,7 @@ class ExecuteDashGuildScopedProcessor(private val internalWebServer: InternalWeb
             return TwitchAccountTrackState.ALWAYS_TRACK_USER
 
         // Get if the premium track is enabled for this account, we need to check if any of the servers has a premium key enabled too
-        val guildIds = PremiumTrackTwitchAccounts.select(PremiumTrackTwitchAccounts.guildId).where { 
+        val guildIds = PremiumTrackTwitchAccounts.select(PremiumTrackTwitchAccounts.guildId).where {
             PremiumTrackTwitchAccounts.twitchUserId eq twitchUserId
         }.toList().map { it[PremiumTrackTwitchAccounts.guildId] }
 
@@ -789,7 +792,7 @@ class ExecuteDashGuildScopedProcessor(private val internalWebServer: InternalWeb
 
             if (plan.maxUnauthorizedTwitchChannels != 0) {
                 // If the plan has a maxUnauthorizedTwitchChannels != 0, now we need to get ALL premium tracks of the guild...
-                val allPremiumTracksOfTheGuild = PremiumTrackTwitchAccounts.select(PremiumTrackTwitchAccounts.twitchUserId).where { 
+                val allPremiumTracksOfTheGuild = PremiumTrackTwitchAccounts.select(PremiumTrackTwitchAccounts.twitchUserId).where {
                     PremiumTrackTwitchAccounts.guildId eq guildId
                 }.orderBy(PremiumTrackTwitchAccounts.addedAt, SortOrder.ASC) // Ordered by the added at date...
                     .limit(plan.maxUnauthorizedTwitchChannels) // Limited by the max unauthorized count...

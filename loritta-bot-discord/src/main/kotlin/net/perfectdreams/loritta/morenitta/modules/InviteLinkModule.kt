@@ -5,7 +5,7 @@ import dev.minn.jda.ktx.messages.MessageCreate
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.components.actionrow.ActionRow
-import net.dv8tion.jda.api.components.button.ButtonStyle
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.common.locale.BaseLocale
@@ -16,6 +16,7 @@ import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.InviteBlockerConfig
 import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
+import net.perfectdreams.loritta.morenitta.interactions.UnleashedButton
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.sendMessageAsync
@@ -125,14 +126,16 @@ class InviteLinkModule(val loritta: LorittaBot) : MessageReceivedModule {
 						val topRole = event.member.roles.sortedByDescending { it.position }.firstOrNull { !it.isPublicRole }
 
 						if (topRole != null) {
+							val allowSendingInvitesButton = UnleashedButton.of(
+								ButtonStyle.PRIMARY,
+								i18nContext.get(I18nKeysData.Modules.InviteBlocker.AllowSendingInvites),
+								net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriPat
+							)
+
 							val button = loritta.interactivityManager.buttonForUser(
 								message.author,
 								false,
-								ButtonStyle.PRIMARY,
-								i18nContext.get(I18nKeysData.Modules.InviteBlocker.AllowSendingInvites),
-								{
-									loriEmoji = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriPat
-								}
+								allowSendingInvitesButton
 							) { context ->
 								val deferredEdit = context.deferEdit()
 
@@ -156,7 +159,11 @@ class InviteLinkModule(val loritta: LorittaBot) : MessageReceivedModule {
 								}
 
 								// Update message updates the original interaction message, in this case, where the button is
-								deferredEdit.editOriginalComponents(ActionRow.of(context.event.component.asDisabled())).await()
+								deferredEdit.editOriginalComponents(
+									ActionRow.of(
+										allowSendingInvitesButton.asDisabled()
+									)
+								).await()
 
 								context.reply(true) {
 									if (success) {

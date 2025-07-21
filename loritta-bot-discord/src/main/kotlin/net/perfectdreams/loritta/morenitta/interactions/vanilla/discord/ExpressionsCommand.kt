@@ -21,11 +21,7 @@ class ExpressionsCommand : SlashCommandDeclarationWrapper {
 
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.DISCORD, UUID.fromString("6392c773-3c42-4b18-92cf-145b3cbaa9b8")) {
         enableLegacyMessageSupport = true
-        isGuildOnly = true
-
-        integrationTypes = listOf(
-            IntegrationType.GUILD_INSTALL
-        )
+        integrationTypes = listOf(IntegrationType.GUILD_INSTALL)
 
         subcommandGroup(I18N_PREFIX.Sticker.Label, I18N_PREFIX.Sticker.Description) {
             subcommand(I18N_PREFIX.Sticker.Add.Label, I18N_PREFIX.Sticker.Add.Description, UUID.fromString("a3d3bcbf-17ba-4b35-a46e-288127972d07")) {

@@ -8,7 +8,7 @@ import dev.minn.jda.ktx.messages.InlineMessage
 import dev.minn.jda.ktx.messages.MessageCreate
 import kotlinx.datetime.toJavaInstant
 import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.components.button.ButtonStyle
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.IntegrationType
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled

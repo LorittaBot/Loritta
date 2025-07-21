@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.undertale.textbox.characters
 
-import net.dv8tion.jda.api.components.selects.StringSelectMenu
+import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.undertale.UndertaleCommand
 

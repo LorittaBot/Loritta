@@ -6,9 +6,8 @@ import dev.minn.jda.ktx.messages.InlineMessage
 import kotlinx.datetime.Clock
 import kotlinx.datetime.toKotlinInstant
 import net.dv8tion.jda.api.entities.User
-import net.dv8tion.jda.api.interactions.components.ItemComponent
-import net.dv8tion.jda.api.components.button.Button
-import net.dv8tion.jda.api.components.button.ButtonStyle
+import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.utils.LorittaColors
@@ -290,7 +289,7 @@ object UserInfoExecutor {
 
             // ===[ VIEW AVATAR BUTTONS ]===
             run {
-                val components = mutableListOf<ItemComponent>()
+                val components = mutableListOf<Button>()
 
                 components.add(
                     context.loritta.interactivityManager
@@ -380,7 +379,7 @@ object UserInfoExecutor {
                 val privacyPolicyUrl = applicationInfo?.privacyPolicyUrl
 
                 if (applicationInfo?.botPublic == true && (inviteUrl != null || termsOfServiceUrl != null || privacyPolicyUrl != null)) {
-                    val components = mutableListOf<ItemComponent>()
+                    val components = mutableListOf<Button>()
 
                     if (inviteUrl != null) {
                         components.add(

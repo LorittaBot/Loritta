@@ -2,8 +2,8 @@ package net.perfectdreams.loritta.morenitta.interactions.vanilla.discord
 
 import dev.minn.jda.ktx.messages.InlineMessage
 import dev.minn.jda.ktx.messages.MessageEdit
-import net.dv8tion.jda.api.components.button.Button
-import net.dv8tion.jda.api.components.button.ButtonStyle
+import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.perfectdreams.loritta.cinnamon.discord.utils.NotableUserIds
 import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext

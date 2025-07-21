@@ -16,7 +16,6 @@ class SlashCommandDeclarationBuilder(
 ) {
     var executor: LorittaSlashCommandExecutor? = null
     var defaultMemberPermissions: DefaultMemberPermissions? = null
-    var isGuildOnly = false
     val subcommands = mutableListOf<SlashCommandDeclarationBuilder>()
     val subcommandGroups = mutableListOf<SlashCommandGroupDeclarationBuilder>()
 
@@ -43,7 +42,6 @@ class SlashCommandDeclarationBuilder(
             name,
             description,
             defaultMemberPermissions,
-            isGuildOnly,
             executor,
             subcommands.map { it.build() },
             subcommandGroups.map { it.build() }
@@ -84,13 +82,11 @@ class UserCommandDeclarationBuilder(
     val executor: LorittaUserCommandExecutor
 ) {
     var defaultMemberPermissions: DefaultMemberPermissions? = null
-    var isGuildOnly = false
 
     fun build(): UserCommandDeclaration {
         return UserCommandDeclaration(
             name,
             defaultMemberPermissions,
-            isGuildOnly,
             executor
         )
     }
@@ -105,13 +101,11 @@ class MessageCommandDeclarationBuilder(
     val executor: LorittaMessageCommandExecutor
 ) {
     var defaultMemberPermissions: DefaultMemberPermissions? = null
-    var isGuildOnly = false
 
     fun build(): MessageCommandDeclaration {
         return MessageCommandDeclaration(
             name,
             defaultMemberPermissions,
-            isGuildOnly,
             executor
         )
     }

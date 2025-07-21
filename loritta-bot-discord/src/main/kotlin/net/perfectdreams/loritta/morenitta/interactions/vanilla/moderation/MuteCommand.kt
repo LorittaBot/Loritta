@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation
 
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.components.button.ButtonStyle
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled

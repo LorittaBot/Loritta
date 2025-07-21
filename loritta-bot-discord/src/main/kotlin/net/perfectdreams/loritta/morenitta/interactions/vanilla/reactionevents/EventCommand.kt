@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.morenitta.interactions.vanilla.reactionevents
 import dev.minn.jda.ktx.messages.InlineMessage
 import dev.minn.jda.ktx.messages.MessageEdit
 import net.dv8tion.jda.api.interactions.IntegrationType
-import net.dv8tion.jda.api.components.button.ButtonStyle
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.utils.FileUpload
 import net.dv8tion.jda.api.utils.TimeFormat
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled

@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy
 
 import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.interactions.IntegrationType
-import net.dv8tion.jda.api.components.button.ButtonStyle
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsEventCards

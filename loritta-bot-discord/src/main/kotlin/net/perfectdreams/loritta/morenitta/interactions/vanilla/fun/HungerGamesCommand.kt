@@ -3,6 +3,8 @@ package net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
+import net.dv8tion.jda.api.interactions.IntegrationType
+import net.dv8tion.jda.api.interactions.InteractionContextType
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.commands.CommandCategory
@@ -27,7 +29,8 @@ class HungerGamesCommand(private val loritta: LorittaBot) : SlashCommandDeclarat
 
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.FUN, UUID.fromString("bcf0366d-97ca-457d-a790-ebd90143d387")) {
         enableLegacyMessageSupport = true
-        isGuildOnly = true
+        this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL)
+        this.interactionContexts = listOf(InteractionContextType.GUILD)
 
         this.alternativeLegacyLabels.apply {
             add("jogosvorazes")

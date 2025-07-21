@@ -2,8 +2,8 @@ package net.perfectdreams.loritta.morenitta.utils
 
 import dev.minn.jda.ktx.messages.InlineMessage
 import net.dv8tion.jda.api.entities.UserSnowflake
-import net.dv8tion.jda.api.components.button.Button
-import net.dv8tion.jda.api.components.button.ButtonStyle
+import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.utils.TimeFormat
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import net.perfectdreams.i18nhelper.core.I18nContext

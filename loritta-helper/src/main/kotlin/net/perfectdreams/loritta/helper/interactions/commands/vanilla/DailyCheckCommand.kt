@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.helper.interactions.commands.vanilla
 
 import dev.minn.jda.ktx.coroutines.await
 import net.dv8tion.jda.api.entities.User
-import net.dv8tion.jda.api.components.button.ButtonStyle
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.utils.FileUpload
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BrowserFingerprints

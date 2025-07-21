@@ -2,8 +2,8 @@ package net.perfectdreams.loritta.morenitta.interactions
 
 import dev.minn.jda.ktx.interactions.components.ButtonDefaults
 import net.dv8tion.jda.api.entities.emoji.Emoji
-import net.dv8tion.jda.api.components.button.Button
-import net.dv8tion.jda.api.components.button.ButtonStyle
+import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.perfectdreams.loritta.common.emotes.DiscordEmote
 import net.perfectdreams.loritta.common.emotes.Emote
 import net.perfectdreams.loritta.common.emotes.UnicodeEmote

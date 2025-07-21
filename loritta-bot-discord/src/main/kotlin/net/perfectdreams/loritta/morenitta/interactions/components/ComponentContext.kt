@@ -7,7 +7,7 @@ import dev.minn.jda.ktx.messages.MessageEdit
 import dev.minn.jda.ktx.messages.MessageEditBuilder
 import net.dv8tion.jda.api.components.Component
 import net.dv8tion.jda.api.components.actionrow.ActionRow
-import net.dv8tion.jda.api.components.button.Button
+import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction

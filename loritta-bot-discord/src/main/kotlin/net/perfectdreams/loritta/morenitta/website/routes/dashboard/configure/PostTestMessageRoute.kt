@@ -5,8 +5,9 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import kotlinx.serialization.json.Json
+import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.components.button.ButtonStyle
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
@@ -116,27 +117,29 @@ class PostTestMessageRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedDash
 		// This is a bit crappy, but we need to create a builder from the already generated message
 		val patchedMessage = MessageCreateBuilder.from(message)
 		if (5 > patchedMessage.components.size) { // Below the component limit
-			patchedMessage.addActionRow(
-				loritta.interactivityManager.button(
-					false,
-					ButtonStyle.SECONDARY,
-					i18nContext.get(I18nKeysData.Common.TestMessageWarning.ButtonLabel),
-					{
-						this.loriEmoji = Emotes.LoriCoffee
-					}
-				) {
-					it.reply(true) {
-						styled(
-							i18nContext.get(I18nKeysData.Common.TestMessageWarning.MessageWasTestedByUser("${user.asMention} [${user.asUserNameCodeBlockPreviewTag(true)}]")),
-							Emotes.LoriCoffee
-						)
+			patchedMessage.addComponents(
+				ActionRow.of(
+					loritta.interactivityManager.button(
+						false,
+						ButtonStyle.SECONDARY,
+						i18nContext.get(I18nKeysData.Common.TestMessageWarning.ButtonLabel),
+						{
+							this.loriEmoji = Emotes.LoriCoffee
+						}
+					) {
+						it.reply(true) {
+							styled(
+								i18nContext.get(I18nKeysData.Common.TestMessageWarning.MessageWasTestedByUser("${user.asMention} [${user.asUserNameCodeBlockPreviewTag(true)}]")),
+								Emotes.LoriCoffee
+							)
 
-						styled(
-							i18nContext.get(I18nKeysData.Common.TestMessageWarning.DontWorryTheMessageWillOnlyShowUpWhileTesting),
-							Emotes.LoriLurk
-						)
+							styled(
+								i18nContext.get(I18nKeysData.Common.TestMessageWarning.DontWorryTheMessageWillOnlyShowUpWhileTesting),
+								Emotes.LoriLurk
+							)
+						}
 					}
-				}
+				)
 			)
 		}
 

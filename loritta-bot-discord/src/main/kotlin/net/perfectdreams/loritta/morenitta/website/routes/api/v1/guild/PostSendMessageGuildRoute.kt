@@ -7,8 +7,9 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.components.button.ButtonStyle
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
@@ -37,12 +38,12 @@ class PostSendMessageGuildRoute(loritta: LorittaBot) : RequiresAPIGuildAuthRoute
 		val diff = System.currentTimeMillis() - last
 		if (4000 >= diff)
 			throw WebsiteAPIException(
-					HttpStatusCode.TooManyRequests,
-					net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils.createErrorPayload(
-							loritta,
-							LoriWebCode.RATE_LIMIT,
-							"Rate limit!"
-					)
+				HttpStatusCode.TooManyRequests,
+				net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils.createErrorPayload(
+					loritta,
+					LoriWebCode.RATE_LIMIT,
+					"Rate limit!"
+				)
 			)
 
 		loritta.apiCooldown[call.request.trueIp] = System.currentTimeMillis()
@@ -83,33 +84,33 @@ class PostSendMessageGuildRoute(loritta: LorittaBot) : RequiresAPIGuildAuthRoute
 			e.printStackTrace()
 			null
 		} ?: throw WebsiteAPIException(
-						HttpStatusCode.BadRequest,
-						WebsiteUtils.createErrorPayload(
-								loritta,
-								LoriWebCode.INVALID_MESSAGE,
-								"Invalid message"
-						)
-				)
+			HttpStatusCode.BadRequest,
+			WebsiteUtils.createErrorPayload(
+				loritta,
+				LoriWebCode.INVALID_MESSAGE,
+				"Invalid message"
+			)
+		)
 
 		if (channelId != null) {
 			val channel = guild.getGuildMessageChannelById(channelId)
-					?: throw WebsiteAPIException(
-							HttpStatusCode.BadRequest,
-							WebsiteUtils.createErrorPayload(
-									loritta,
-									LoriWebCode.CHANNEL_DOESNT_EXIST,
-									"Channel ${channelId} doesn't exist"
-							)
+				?: throw WebsiteAPIException(
+					HttpStatusCode.BadRequest,
+					WebsiteUtils.createErrorPayload(
+						loritta,
+						LoriWebCode.CHANNEL_DOESNT_EXIST,
+						"Channel ${channelId} doesn't exist"
 					)
+				)
 
 			if (!channel.canTalk())
 				throw WebsiteAPIException(
-						HttpStatusCode.BadRequest,
-						WebsiteUtils.createErrorPayload(
-								loritta,
-								LoriWebCode.CANT_TALK_IN_CHANNEL,
-								"Channel ${channelId} doesn't exist"
-						)
+					HttpStatusCode.BadRequest,
+					WebsiteUtils.createErrorPayload(
+						loritta,
+						LoriWebCode.CANT_TALK_IN_CHANNEL,
+						"Channel ${channelId} doesn't exist"
+					)
 				)
 
 			// This is a bit crappy, but we need to create a builder from the already generated message
@@ -118,52 +119,8 @@ class PostSendMessageGuildRoute(loritta: LorittaBot) : RequiresAPIGuildAuthRoute
 				val member = guild.retrieveMemberOrNullById(userIdentification.id)
 				val user = member?.user
 				val i18nContext = loritta.languageManager.getI18nContextById(serverConfig.localeId)
-				patchedMessage.addActionRow(
-					loritta.interactivityManager.button(
-						false,
-						ButtonStyle.SECONDARY,
-						i18nContext.get(I18nKeysData.Common.TestMessageWarning.ButtonLabel),
-						{
-							this.loriEmoji = Emotes.LoriCoffee
-						}
-					) {
-						it.reply(true) {
-							styled(
-								i18nContext.get(I18nKeysData.Common.TestMessageWarning.MessageWasTestedByUser("${user?.asMention} [${user?.asUserNameCodeBlockPreviewTag(true)}]")),
-								Emotes.LoriCoffee
-							)
-
-							styled(
-								i18nContext.get(I18nKeysData.Common.TestMessageWarning.DontWorryTheMessageWillOnlyShowUpWhileTesting),
-								Emotes.LoriLurk
-							)
-						}
-					}
-				)
-			}
-
-			val message = channel.sendMessage(patchedMessage.build()).await()
-
-			call.respondJson(jsonObject("messageId" to message.id), HttpStatusCode.Created)
-			return
-		} else {
-			val privateUser = loritta.lorittaShards.getUserById(userIdentification.id) ?: throw WebsiteAPIException(
-					HttpStatusCode.BadRequest,
-					WebsiteUtils.createErrorPayload(
-							loritta,
-							LoriWebCode.MEMBER_DISABLED_DIRECT_MESSAGES,
-							"Member ${userIdentification.id} disabled direct messages"
-					)
-			)
-
-			try {
-				// This is a bit crappy, but we need to create a builder from the already generated message
-				val patchedMessage = MessageCreateBuilder.from(message)
-				if (5 > patchedMessage.components.size) { // Below the component limit
-					val member = guild.retrieveMemberOrNullById(userIdentification.id)
-					val user = member?.user
-					val i18nContext = loritta.languageManager.getI18nContextById(serverConfig.localeId)
-					patchedMessage.addActionRow(
+				patchedMessage.addComponents(
+					ActionRow.of(
 						loritta.interactivityManager.button(
 							false,
 							ButtonStyle.SECONDARY,
@@ -185,6 +142,54 @@ class PostSendMessageGuildRoute(loritta: LorittaBot) : RequiresAPIGuildAuthRoute
 							}
 						}
 					)
+				)
+			}
+
+			val message = channel.sendMessage(patchedMessage.build()).await()
+
+			call.respondJson(jsonObject("messageId" to message.id), HttpStatusCode.Created)
+			return
+		} else {
+			val privateUser = loritta.lorittaShards.getUserById(userIdentification.id) ?: throw WebsiteAPIException(
+				HttpStatusCode.BadRequest,
+				WebsiteUtils.createErrorPayload(
+					loritta,
+					LoriWebCode.MEMBER_DISABLED_DIRECT_MESSAGES,
+					"Member ${userIdentification.id} disabled direct messages"
+				)
+			)
+
+			try {
+				// This is a bit crappy, but we need to create a builder from the already generated message
+				val patchedMessage = MessageCreateBuilder.from(message)
+				if (5 > patchedMessage.components.size) { // Below the component limit
+					val member = guild.retrieveMemberOrNullById(userIdentification.id)
+					val user = member?.user
+					val i18nContext = loritta.languageManager.getI18nContextById(serverConfig.localeId)
+					patchedMessage.addComponents(
+						ActionRow.of(
+							loritta.interactivityManager.button(
+								false,
+								ButtonStyle.SECONDARY,
+								i18nContext.get(I18nKeysData.Common.TestMessageWarning.ButtonLabel),
+								{
+									this.loriEmoji = Emotes.LoriCoffee
+								}
+							) {
+								it.reply(true) {
+									styled(
+										i18nContext.get(I18nKeysData.Common.TestMessageWarning.MessageWasTestedByUser("${user?.asMention} [${user?.asUserNameCodeBlockPreviewTag(true)}]")),
+										Emotes.LoriCoffee
+									)
+
+									styled(
+										i18nContext.get(I18nKeysData.Common.TestMessageWarning.DontWorryTheMessageWillOnlyShowUpWhileTesting),
+										Emotes.LoriLurk
+									)
+								}
+							}
+						)
+					)
 				}
 
 				val message = loritta.getOrRetrievePrivateChannelForUser(privateUser).sendMessage(patchedMessage.build()).await()
@@ -193,12 +198,12 @@ class PostSendMessageGuildRoute(loritta: LorittaBot) : RequiresAPIGuildAuthRoute
 				return
 			} catch (e: Exception) {
 				throw WebsiteAPIException(
-						HttpStatusCode.BadRequest,
-						WebsiteUtils.createErrorPayload(
-								loritta,
-								LoriWebCode.MEMBER_DISABLED_DIRECT_MESSAGES,
-								"Member ${userIdentification.id} disabled direct messages"
-						)
+					HttpStatusCode.BadRequest,
+					WebsiteUtils.createErrorPayload(
+						loritta,
+						LoriWebCode.MEMBER_DISABLED_DIRECT_MESSAGES,
+						"Member ${userIdentification.id} disabled direct messages"
+					)
 				)
 			}
 		}

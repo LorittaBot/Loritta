@@ -1,6 +1,8 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation
 
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.interactions.IntegrationType
+import net.dv8tion.jda.api.interactions.InteractionContextType
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
@@ -31,7 +33,8 @@ class PredefinedReasonsCommand: SlashCommandDeclarationWrapper {
             uniqueId = UUID.fromString("e126bb95-1bbd-4117-bd42-db467276ece4")
         ) {
             enableLegacyMessageSupport = true
-            isGuildOnly = true
+            this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL)
+            this.interactionContexts = listOf(InteractionContextType.GUILD)
             defaultMemberPermissions = DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS)
             executor = PredefinedReasonsExecutor()
         }

@@ -41,7 +41,6 @@ class UnleashedCommandManager(val loritta: LorittaHelper) {
         return Commands.slash(declaration.name, declaration.description).apply {
             if (declaration.defaultMemberPermissions != null)
                 this.defaultPermissions = declaration.defaultMemberPermissions
-            this.isGuildOnly = declaration.isGuildOnly
 
             if (declaration.subcommands.isNotEmpty() || declaration.subcommandGroups.isNotEmpty()) {
                 if (declaration.executor != null)
@@ -89,7 +88,6 @@ class UnleashedCommandManager(val loritta: LorittaHelper) {
         return Commands.user(declaration.name).apply {
             if (declaration.defaultMemberPermissions != null)
                 this.defaultPermissions = declaration.defaultMemberPermissions
-            this.isGuildOnly = declaration.isGuildOnly
         }
     }
 
@@ -100,7 +98,6 @@ class UnleashedCommandManager(val loritta: LorittaHelper) {
         return Commands.message(declaration.name).apply {
             if (declaration.defaultMemberPermissions != null)
                 this.defaultPermissions = declaration.defaultMemberPermissions
-            this.isGuildOnly = declaration.isGuildOnly
         }
     }
 
