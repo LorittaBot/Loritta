@@ -269,7 +269,7 @@ object SonhosUtils {
 
         if (guild?.idLong == 1204104683380285520L) {
             val today = LocalDate.now(Constants.LORITTA_TIMEZONE)
-            return if (today.dayOfWeek == DayOfWeek.FRIDAY || today.dayOfWeek == DayOfWeek.SATURDAY || today.dayOfWeek == DayOfWeek.SUNDAY) {
+            return if (today.dayOfWeek == DayOfWeek.FRIDAY || today.dayOfWeek == DayOfWeek.SATURDAY) {
                 // No tax during weekends poggies!!!
                 SpecialTotalCoinFlipReward.PremiumCommunity(1.0, true)
             } else {
