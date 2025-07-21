@@ -20,6 +20,6 @@ enum class RaffleType(
     val raffleDuration: Duration
 ) {
     ORIGINAL(false, I18nKeysData.Commands.Command.Raffle.RaffleTypes.Original, I18nKeysData.Commands.Command.Raffle.RaffleTypes.OriginalShortName, 250, 100_000, 1.hours),
+    DAILY(true, I18nKeysData.Commands.Command.Raffle.RaffleTypes.Daily, I18nKeysData.Commands.Command.Raffle.RaffleTypes.DailyShortName, 250, 50_000, 1.days),
     LIGHTNING(true, I18nKeysData.Commands.Command.Raffle.RaffleTypes.Lightning, I18nKeysData.Commands.Command.Raffle.RaffleTypes.LightningShortName, 250, 1_000_000, 15.minutes),
-    DAILY(true, I18nKeysData.Commands.Command.Raffle.RaffleTypes.Daily, I18nKeysData.Commands.Command.Raffle.RaffleTypes.DailyShortName, 250, 50_000, 1.days)
 }
