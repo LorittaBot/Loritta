@@ -221,37 +221,38 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
                         }
 
                         // Now that the previous raffle has ended, let's create a new raffle of this type!
-                        Raffles.insert {
-                            it[Raffles.raffleType] = currentRaffle[Raffles.raffleType]
-                            it[Raffles.startedAt] = now
-                            if (currentRaffle[Raffles.raffleType] == RaffleType.DAILY) {
-                                // The end date of the daily raffle is a raffle is a bit different on how it is handled
-                                // It should ALWAYS start at 00:00 GMT-3... why? because it is fun!
-                                // First we get when the current raffle ended...
-                                val storedDateOfWhenTheCurrentRaffleEnded = currentRaffle[Raffles.endsAt]
-                                // Then we +1 and set it to midnight
-                                val storedDateTomorrowAtMidnight =
-                                    storedDateOfWhenTheCurrentRaffleEnded.atZone(Constants.LORITTA_TIMEZONE)
+                        // But we only want to create a new raffle if the raffle is enabled!
+                        if (currentRaffle[Raffles.raffleType].enabled) {
+                            Raffles.insert {
+                                it[Raffles.raffleType] = currentRaffle[Raffles.raffleType]
+                                it[Raffles.startedAt] = now
+                                if (currentRaffle[Raffles.raffleType] == RaffleType.DAILY) {
+                                    // The end date of the daily raffle is a raffle is a bit different on how it is handled
+                                    // It should ALWAYS start at 00:00 GMT-3... why? because it is fun!
+                                    // First we get when the current raffle ended...
+                                    val storedDateOfWhenTheCurrentRaffleEnded = currentRaffle[Raffles.endsAt]
+                                    // Then we +1 and set it to midnight
+                                    val storedDateTomorrowAtMidnight = storedDateOfWhenTheCurrentRaffleEnded.atZone(Constants.LORITTA_TIMEZONE)
                                         .plusDays(1)
                                         .withHour(0)
                                         .withMinute(0)
                                         .withSecond(0)
                                         .toInstant()
-                                it[Raffles.endsAt] = storedDateTomorrowAtMidnight
-                            } else {
-                                it[Raffles.endsAt] =
-                                    (now + currentRaffle[Raffles.raffleType].raffleDuration.toJavaDuration())
+                                    it[Raffles.endsAt] = storedDateTomorrowAtMidnight
+                                } else {
+                                    it[Raffles.endsAt] = (now + currentRaffle[Raffles.raffleType].raffleDuration.toJavaDuration())
+                                }
+                                it[Raffles.endedAt] = null
+                                it[Raffles.winnerTicket] = null
+                                it[Raffles.paidOutPrize] = null
+                                it[Raffles.tax] = null
+                                it[Raffles.taxPercentage] = null
                             }
-                            it[Raffles.endedAt] = null
-                            it[Raffles.winnerTicket] = null
-                            it[Raffles.paidOutPrize] = null
-                            it[Raffles.tax] = null
-                            it[Raffles.taxPercentage] = null
                         }
                     }
                 }
 
-                for (type in RaffleType.values()) {
+                for (type in RaffleType.entries.filter { it.enabled }) {
                     val hasRaffleTypeCreated = currentRaffles.any { it[Raffles.raffleType] == type }
 
                     if (!hasRaffleTypeCreated) {

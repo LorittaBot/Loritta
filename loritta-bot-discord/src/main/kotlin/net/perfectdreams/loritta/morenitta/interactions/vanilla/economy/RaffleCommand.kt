@@ -77,7 +77,7 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
             val raffleTypeAsString = args.getOrNull(0)
             val raffleType = raffleTypeAsString?.let {
-                RaffleType.entries.firstOrNull { context.i18nContext.get(it.shortName).normalize() == raffleTypeAsString.normalize() }
+                RaffleType.entries.filter { it.enabled }.firstOrNull { context.i18nContext.get(it.shortName).normalize() == raffleTypeAsString.normalize() }
             }
 
             if (raffleType == null) {
@@ -87,7 +87,7 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                         net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSleeping
                     )
 
-                    for (availableRaffleType in RaffleType.entries) {
+                    for (availableRaffleType in RaffleType.entries.filter { it.enabled }) {
                         styled("**${context.i18nContext.get(availableRaffleType.title)}:** `${context.config.commandPrefix}$fullLabel ${context.i18nContext.get(availableRaffleType.shortName)}`")
                     }
                 }
@@ -138,7 +138,7 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 "raffle_type",
                 I18N_PREFIX.Status.Options.RaffleType.Text
             ) {
-                for (raffleType in RaffleType.entries) {
+                for (raffleType in RaffleType.entries.filter { it.enabled }) {
                     choice(raffleType.title, raffleType.name)
                 }
             }
@@ -148,6 +148,8 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
         override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             val raffleType = RaffleType.valueOf(args[options.raffleType])
+            if (!raffleType.enabled)
+                error("Raffle type ${raffleType} is not enabled!")
 
             val loritta = context.loritta
 
@@ -377,7 +379,7 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 "raffle_type",
                 I18N_PREFIX.Buy.Options.RaffleType.Text
             ) {
-                for (raffleType in RaffleType.entries) {
+                for (raffleType in RaffleType.entries.filter { it.enabled }) {
                     choice(raffleType.title, raffleType.name)
                 }
             }
@@ -392,6 +394,8 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
         override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             val raffleType = RaffleType.valueOf(args[options.raffleType])
+            if (!raffleType.enabled)
+                error("Raffle type ${raffleType} is not enabled!")
 
             if (SonhosUtils.checkIfEconomyIsDisabled(context))
                 return
@@ -551,7 +555,7 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 "raffle_type",
                 I18N_PREFIX.History.Options.RaffleType.Text
             ) {
-                for (raffleType in RaffleType.entries) {
+                for (raffleType in RaffleType.entries.filter { it.enabled }) {
                     choice(raffleType.title, raffleType.name)
                 }
             }
@@ -566,6 +570,7 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
         override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             val raffleType = RaffleType.valueOf(args[options.raffleType])
+            // We don't check if the raffle is enabled or not here because we don't need to
             val page = ((args[options.page] ?: 1L) - 1).coerceAtLeast(0)
 
             context.deferChannelMessage(false)
