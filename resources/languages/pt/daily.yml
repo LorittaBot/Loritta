@@ -91,8 +91,8 @@ daily:
       incorrectExplanation: "Não existem maneiras de aumentar as suas chances de vitória em comandos da Loritta."
     banEvasionReport:
       title: "Devo denunciar para a Equipe caso eu saiba de alguém que foi banido de usar a Loritta e está em outra conta?"
-      'yes': "Sim, preciso contar"
-      'no': "Não, preciso contar"
+      'yes': "Eu devo contar para a equipe"
+      'no': "Não devo contar para a equipe"
       incorrectExplanation: "Você deve denunciar pois, além de ajudar a Equipe da Loritta a localizar meliantes, você evita ser banido por acobertar a evasão de ban do usuário, pois sabia e não denunciou."
     willIGetBannedIfICreateANewAccount:
       title: "Se eu for banido e criar outra conta no Discord eu posso usar a Loritta normalmente?"
