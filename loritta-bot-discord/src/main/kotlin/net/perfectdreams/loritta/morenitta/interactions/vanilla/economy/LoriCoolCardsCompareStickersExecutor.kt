@@ -238,7 +238,7 @@ class LoriCoolCardsCompareStickersExecutor(val loritta: LorittaBot, private val 
                             val userToTradeWith = if (context.user == selfUser)
                                 userToBeComparedTo
                             else
-                                context.user
+                                selfUser
 
                             loriCoolCardsCommand.tradeStickers.startTrade(
                                 context,
