@@ -109,7 +109,7 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
                         val memberRoleIds = member.roles.map { it.idLong }.toSet()
 
                         if (deniedRoles.isAndCondition) {
-                            val hasAllRoles = deniedRoles.roleIds.all { it in deniedRoles.roleIds }
+                            val hasAllRoles = deniedRoles.roleIds.all { it in memberRoleIds }
 
                             if (hasAllRoles)
                                 return@transaction GiveawayState.BlockedRoles(deniedRoles)
