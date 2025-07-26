@@ -536,6 +536,7 @@ object AdminUtils {
 						loriEmoji = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriBanHammer
 					}
 				) {
+					it.invalidateComponentCallback() // Invalidate to avoid users spamming
 					it.deferChannelMessage(false)
 					onBanClick.invoke(it, false)
 				},
@@ -557,8 +558,9 @@ object AdminUtils {
 						loriEmoji = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriLurk
 					}
 				) {
+					it.invalidateComponentCallback() // Invalidate to avoid users spamming
 					it.deferChannelMessage(false)
-					onBanClick.invoke(it, false)
+					onBanClick.invoke(it, true)
 				}
 			)
 		}
