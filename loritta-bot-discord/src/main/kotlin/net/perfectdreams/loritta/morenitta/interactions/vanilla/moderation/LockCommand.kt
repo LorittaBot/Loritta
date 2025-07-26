@@ -100,11 +100,21 @@ class LockCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                         .deny(Permission.MESSAGE_SEND)
                         .await()
 
+                    val rolesThatWillStillBeAbleToTalkOnChannel = channelToBeLocked.rolePermissionOverrides
+                        .filter { it.allowed.contains(Permission.MESSAGE_SEND) }
+
                     context.reply(false) {
                         styled(
                             context.locale["commands.command.lock.denied", context.config.commandPrefix],
                             "\uD83C\uDF89"
                         )
+
+                        if (rolesThatWillStillBeAbleToTalkOnChannel.isNotEmpty()) {
+                            styled(
+                                // The role should NEVER be null here!
+                                context.i18nContext.get(I18N_PREFIX.FollowingRolesCanStillTalkDueToPermissions(rolesThatWillStillBeAbleToTalkOnChannel.joinToString(", ") { it.role!!.asMention }))
+                            )
+                        }
                     }
                 } else {
                     context.reply(false) {
