@@ -1,6 +1,7 @@
 label: "lock"
 description: "Tranca um canal para que outras pessoas não possam falar nele"
 channelCannotBeLocked: "O canal que você deseja trancar não pode ser trancado!"
+followingRoleCanStillTalkDueToPermissions: "O cargo {role} ainda pode falar no canal devido as permissões configuradas no canal!"
 followingRolesCanStillTalkDueToPermissions: "Os cargos {roles} ainda poderão falar no canal devido as permissões configuradas no canal!"
 
 options:

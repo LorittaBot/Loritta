@@ -110,10 +110,18 @@ class LockCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                         )
 
                         if (rolesThatWillStillBeAbleToTalkOnChannel.isNotEmpty()) {
-                            styled(
-                                // The role should NEVER be null here!
-                                context.i18nContext.get(I18N_PREFIX.FollowingRolesCanStillTalkDueToPermissions(rolesThatWillStillBeAbleToTalkOnChannel.joinToString(", ") { it.role!!.asMention }))
-                            )
+                            // The role will NEVER be null in the "it" for the joinToString!
+                            val roleList = rolesThatWillStillBeAbleToTalkOnChannel.joinToString(", ") { it.role!!.asMention }
+
+                            if (rolesThatWillStillBeAbleToTalkOnChannel.size == 1) {
+                                styled(
+                                    context.i18nContext.get(I18N_PREFIX.FollowingRoleCanStillTalkDueToPermissions(roleList))
+                                )
+                            } else {
+                                styled(
+                                    context.i18nContext.get(I18N_PREFIX.FollowingRolesCanStillTalkDueToPermissions(roleList))
+                                )
+                            }
                         }
                     }
                 } else {
