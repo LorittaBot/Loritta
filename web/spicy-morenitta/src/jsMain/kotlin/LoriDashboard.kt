@@ -105,7 +105,7 @@ object LoriDashboard {
 		for (it in textChannels) {
 			val option = object{}.asDynamic()
 			option.id = it.id
-			val text = "<span style=\"font-weight: 600;\">#${it.name}</span>"
+			val text = "<span style=\"font-weight: 600;\">#${stripHtmlTagsUsingDom(it.name)}</span>"
 			option.text = text
 
 			if (!it.canTalk)

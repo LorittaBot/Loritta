@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.embededitor
 
+import kotlinx.browser.document
 import kotlinx.html.*
 import kotlinx.html.stream.createHTML
 import kotlinx.serialization.json.Json
@@ -77,8 +78,9 @@ class EmbedRenderer(val message: DiscordMessage, val placeholders: List<Placehol
     }
 
     fun parseDiscordText(text: String, parseMarkdown: Boolean = true, convertDiscordEmotes: Boolean = true, parsePlaceholders: Boolean = true): String {
-        var output = text
+        var output = stripHtmlTagsUsingDom(text)
 
+        // Strip all
         if (parseMarkdown)
             output = markdownConverter.makeHtml(output)
 
@@ -128,5 +130,11 @@ class EmbedRenderer(val message: DiscordMessage, val placeholders: List<Placehol
         content.unsafe {
             raw(parseDiscordText(text, parseMarkdown, convertDiscordEmotes))
         }
+    }
+
+    fun stripHtmlTagsUsingDom(html: String): String {
+        val div = document.createElement("div")
+        div.innerHTML = html
+        return div.textContent ?: ""
     }
 }

@@ -40,3 +40,9 @@ fun loadEmbeddedLocale() {
 		println("Couldn't find embedded data in body!")
 	}
 }
+
+fun stripHtmlTagsUsingDom(html: String): String {
+    val div = document.createElement("div")
+    div.innerHTML = html
+    return div.textContent ?: ""
+}

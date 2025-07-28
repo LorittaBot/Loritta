@@ -27,6 +27,7 @@ import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
 import net.perfectdreams.spicymorenitta.views.dashboard.Stuff
 import net.perfectdreams.spicymorenitta.views.dashboard.getPlan
 import org.w3c.dom.*
+import stripHtmlTagsUsingDom
 import kotlin.js.Json
 import kotlin.js.json
 
@@ -367,12 +368,12 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 			fun generateOptionForRole(role: ServerConfig.Role): dynamic {
 				val option = object {}.asDynamic()
 				option.id = role.id
-				var text = "<span style=\"font-weight: 600;\">${role.name}</span>"
+				var text = "<span style=\"font-weight: 600;\">${stripHtmlTagsUsingDom(role.name)}</span>"
 
 				val color = role.getColor()
 
 				if (color != null) {
-					text = "<span style=\"font-weight: 600; color: rgb(${color.red}, ${color.green}, ${color.blue})\">${role.name}</span>"
+					text = "<span style=\"font-weight: 600; color: rgb(${color.red}, ${color.green}, ${color.blue})\">${stripHtmlTagsUsingDom(role.name)}</span>"
 				}
 
 				option.text = text

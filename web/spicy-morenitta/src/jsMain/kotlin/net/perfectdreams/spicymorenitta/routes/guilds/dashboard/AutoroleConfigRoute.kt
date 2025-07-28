@@ -18,6 +18,7 @@ import net.perfectdreams.spicymorenitta.utils.DashboardUtils.switchContentAndFix
 import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
 import org.w3c.dom.HTMLButtonElement
 import org.w3c.dom.HTMLInputElement
+import stripHtmlTagsUsingDom
 
 class AutoroleConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{guildid}/configure/autorole") {
 	override val keepLoadingScreen: Boolean
@@ -39,11 +40,11 @@ class AutoroleConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/
 			for (it in guild.roles.filter { !it.isPublicRole }) {
 				val option = object {}.asDynamic()
 				option.id = it.id.toString()
-				var text = "<span style=\"font-weight: 600;\">${it.name}</span>"
+				var text = "<span style=\"font-weight: 600;\">${stripHtmlTagsUsingDom(it.name)}</span>"
 
 				val color = it.getColor()
 				if (color != null) {
-					text = "<span style=\"font-weight: 600; color: rgb(${color.red}, ${color.green}, ${color.blue})\">${it.name}</span>"
+					text = "<span style=\"font-weight: 600; color: rgb(${color.red}, ${color.green}, ${color.blue})\">${stripHtmlTagsUsingDom(it.name)}</span>"
 				}
 
 				option.text = text
