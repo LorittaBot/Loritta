@@ -170,6 +170,8 @@ class DailyShopRefreshedProcessor(val loritta: LorittaBot) : LorittaInternalRpcP
                     shopItems: List<ShopItemWrapper>,
                     medium: String,
                 ) {
+                    logger.info { "Sending daily shop trinkets notification to ${guild.idLong}..." }
+
                     channel.sendMessage(
                         MessageUtils.generateMessageOrFallbackIfInvalid(
                             i18nContext,
