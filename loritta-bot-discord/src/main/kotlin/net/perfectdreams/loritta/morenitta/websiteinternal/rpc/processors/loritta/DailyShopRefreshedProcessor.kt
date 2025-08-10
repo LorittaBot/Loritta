@@ -3,12 +3,14 @@ package net.perfectdreams.loritta.morenitta.websiteinternal.rpc.processors.lorit
 import dev.minn.jda.ktx.messages.MessageCreate
 import io.ktor.server.application.*
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.utils.FileUpload
 import net.dv8tion.jda.api.utils.TimeFormat
 import net.perfectdreams.galleryofdreams.common.data.DiscordSocialConnection
@@ -203,102 +205,120 @@ class DailyShopRefreshedProcessor(val loritta: LorittaBot) : LorittaInternalRpcP
                     for ((index, itemChunk) in chunkedItems.withIndex()) {
                         val isLast = index == chunkedItems.size - 1
 
-                        channel.sendMessage(
-                            MessageCreate {
-                                for (item in itemChunk) {
-                                    embed {
-                                        val tag = item.tag
-                                        title = buildString {
-                                            when (item) {
-                                                is BackgroundItemWrapper -> append("\uD83D\uDDBC\uFE0F ")
-                                                is ProfileDesignItemWrapper -> append("${Emotes.LoriIdentificationCard} ")
-                                            }
+                        // Discord sometimes crashes and burns when sending these daily messages, failing with error 500
+                        // It isn't the content, because resending it works fine (?)
+                        // To workaround this, we'll retry sending the message!
 
-                                            if (tag != null) {
-                                                append("[${legacyBaseLocale[tag].uppercase()}] ")
-                                            }
-
-                                            append(legacyBaseLocale[item.nameKey])
-                                        }
-                                        description = legacyBaseLocale[item.descriptionKey]
-                                        field(
-                                            i18nContext.get(I18nKeysData.DailyShopTrinketsRelayer.Rarity),
-                                            when (item.rarity) {
-                                                Rarity.COMMON -> i18nContext.get(I18nKeysData.DailyShopTrinketsRelayer.RaritiesWithSonhos.Common(item.price))
-                                                Rarity.UNCOMMON -> i18nContext.get(I18nKeysData.DailyShopTrinketsRelayer.RaritiesWithSonhos.Uncommon(item.price))
-                                                Rarity.RARE -> i18nContext.get(I18nKeysData.DailyShopTrinketsRelayer.RaritiesWithSonhos.Rare(item.price))
-                                                Rarity.EPIC -> i18nContext.get(I18nKeysData.DailyShopTrinketsRelayer.RaritiesWithSonhos.Epic(item.price))
-                                                Rarity.LEGENDARY -> i18nContext.get(I18nKeysData.DailyShopTrinketsRelayer.RaritiesWithSonhos.Legendary(item.price))
-                                            }
-                                        )
-                                        if (item.set != null) {
-                                            field(
-                                                i18nContext.get(I18nKeysData.DailyShopTrinketsRelayer.Set),
-                                                legacyBaseLocale["sets.${item.set}"]
-                                            )
-                                        }
-
-                                        val createdBy = item.createdBy
-                                        if (createdBy.isNotEmpty()) {
-                                            val artists = loritta.cachedGalleryOfDreamsDataResponse!!.artists
-                                                .filter { it.slug in createdBy }
-
-                                            if (artists.isNotEmpty()) {
-                                                field(
-                                                    i18nContext.get(I18nKeysData.DailyShopTrinketsRelayer.Creator),
-                                                    buildString {
-                                                        var isFirst = true
-                                                        for (artist in artists) {
-                                                            if (!isFirst)
-                                                                append(", ")
-                                                            append(artist.name)
-                                                            val discord =
-                                                                artist.socialConnections.filterIsInstance<DiscordSocialConnection>()
-                                                                    .firstOrNull()
-                                                            if (discord != null) {
-                                                                append(" (`${discord.id}`)")
-                                                            }
-                                                            isFirst = false
-                                                        }
+                        var tries = 0
+                        while (true) {
+                            try {
+                                channel.sendMessage(
+                                    MessageCreate {
+                                        for (item in itemChunk) {
+                                            embed {
+                                                val tag = item.tag
+                                                title = buildString {
+                                                    when (item) {
+                                                        is BackgroundItemWrapper -> append("\uD83D\uDDBC\uFE0F ")
+                                                        is ProfileDesignItemWrapper -> append("${Emotes.LoriIdentificationCard} ")
                                                     }
+
+                                                    if (tag != null) {
+                                                        append("[${legacyBaseLocale[tag].uppercase()}] ")
+                                                    }
+
+                                                    append(legacyBaseLocale[item.nameKey])
+                                                }
+                                                description = legacyBaseLocale[item.descriptionKey]
+                                                field(
+                                                    i18nContext.get(I18nKeysData.DailyShopTrinketsRelayer.Rarity),
+                                                    when (item.rarity) {
+                                                        Rarity.COMMON -> i18nContext.get(I18nKeysData.DailyShopTrinketsRelayer.RaritiesWithSonhos.Common(item.price))
+                                                        Rarity.UNCOMMON -> i18nContext.get(I18nKeysData.DailyShopTrinketsRelayer.RaritiesWithSonhos.Uncommon(item.price))
+                                                        Rarity.RARE -> i18nContext.get(I18nKeysData.DailyShopTrinketsRelayer.RaritiesWithSonhos.Rare(item.price))
+                                                        Rarity.EPIC -> i18nContext.get(I18nKeysData.DailyShopTrinketsRelayer.RaritiesWithSonhos.Epic(item.price))
+                                                        Rarity.LEGENDARY -> i18nContext.get(I18nKeysData.DailyShopTrinketsRelayer.RaritiesWithSonhos.Legendary(item.price))
+                                                    }
+                                                )
+                                                if (item.set != null) {
+                                                    field(
+                                                        i18nContext.get(I18nKeysData.DailyShopTrinketsRelayer.Set),
+                                                        legacyBaseLocale["sets.${item.set}"]
+                                                    )
+                                                }
+
+                                                val createdBy = item.createdBy
+                                                if (createdBy.isNotEmpty()) {
+                                                    val artists = loritta.cachedGalleryOfDreamsDataResponse!!.artists
+                                                        .filter { it.slug in createdBy }
+
+                                                    if (artists.isNotEmpty()) {
+                                                        field(
+                                                            i18nContext.get(I18nKeysData.DailyShopTrinketsRelayer.Creator),
+                                                            buildString {
+                                                                var isFirst = true
+                                                                for (artist in artists) {
+                                                                    if (!isFirst)
+                                                                        append(", ")
+                                                                    append(artist.name)
+                                                                    val discord =
+                                                                        artist.socialConnections.filterIsInstance<DiscordSocialConnection>()
+                                                                            .firstOrNull()
+                                                                    if (discord != null) {
+                                                                        append(" (`${discord.id}`)")
+                                                                    }
+                                                                    isFirst = false
+                                                                }
+                                                            }
+                                                        )
+                                                    }
+                                                }
+
+                                                color = when (item.rarity) {
+                                                    Rarity.COMMON -> Color.fromHex("#e7e7e7").rgb
+                                                    Rarity.UNCOMMON -> Color.fromHex("#2cff00").rgb
+                                                    Rarity.RARE -> Color.fromHex("#009fff").rgb
+                                                    Rarity.EPIC -> Color.fromHex("#b03cff").rgb
+                                                    Rarity.LEGENDARY -> Color.fromHex("#fadf4b").rgb
+                                                }
+
+                                                image = when (item) {
+                                                    is BackgroundItemWrapper -> item.backgroundUrl
+                                                    is ProfileDesignItemWrapper -> "attachment://profile-${item.internalName}.${item.profileResult.imageFormat.extension}"
+                                                }
+                                            }
+
+                                            if (item is ProfileDesignItemWrapper) {
+                                                files += FileUpload.fromData(
+                                                    item.profileResult.image,
+                                                    "profile-${item.internalName}.${item.profileResult.imageFormat.extension}"
                                                 )
                                             }
                                         }
 
-                                        color = when (item.rarity) {
-                                            Rarity.COMMON -> Color.fromHex("#e7e7e7").rgb
-                                            Rarity.UNCOMMON -> Color.fromHex("#2cff00").rgb
-                                            Rarity.RARE -> Color.fromHex("#009fff").rgb
-                                            Rarity.EPIC -> Color.fromHex("#b03cff").rgb
-                                            Rarity.LEGENDARY -> Color.fromHex("#fadf4b").rgb
-                                        }
-
-                                        image = when (item) {
-                                            is BackgroundItemWrapper -> item.backgroundUrl
-                                            is ProfileDesignItemWrapper -> "attachment://profile-${item.internalName}.${item.profileResult.imageFormat.extension}"
+                                        if (isLast) {
+                                            actionRow(
+                                                Button.of(
+                                                    ButtonStyle.LINK,
+                                                    "${loritta.config.loritta.website.url}dashboard/daily-shop?utm_source=discord&utm_medium=$medium&utm_campaign=daily-item-shop&utm_content=guild-${guild.idLong}",
+                                                    i18nContext.get(I18nKeysData.Commands.Command.Profileview.LorittaDailyItemShop),
+                                                    Emotes.ShoppingBags.toJDA()
+                                                )
+                                            )
                                         }
                                     }
-
-                                    if (item is ProfileDesignItemWrapper) {
-                                        files += FileUpload.fromData(
-                                            item.profileResult.image,
-                                            "profile-${item.internalName}.${item.profileResult.imageFormat.extension}"
-                                        )
-                                    }
+                                ).await()
+                                break
+                            } catch (e: ErrorResponseException) {
+                                if (tries == 5 && e.isServerError) {
+                                    tries++
+                                    logger.warn(e) { "Failed to send daily shop message! Retrying in 2s... Tries: $tries" }
+                                    delay(2_000)
+                                    continue
                                 }
-
-                                if (isLast) {
-                                    actionRow(
-                                        Button.of(
-                                            ButtonStyle.LINK,
-                                            "${loritta.config.loritta.website.url}dashboard/daily-shop?utm_source=discord&utm_medium=$medium&utm_campaign=daily-item-shop&utm_content=guild-${guild.idLong}",
-                                            i18nContext.get(I18nKeysData.Commands.Command.Profileview.LorittaDailyItemShop),
-                                            Emotes.ShoppingBags.toJDA()
-                                        )
-                                    )
-                                }
+                                throw e
                             }
-                        ).await()
+                        }
                     }
                 }
 
