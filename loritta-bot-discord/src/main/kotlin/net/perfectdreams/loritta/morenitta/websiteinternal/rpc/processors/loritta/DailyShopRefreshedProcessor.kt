@@ -310,7 +310,7 @@ class DailyShopRefreshedProcessor(val loritta: LorittaBot) : LorittaInternalRpcP
                                 ).await()
                                 break
                             } catch (e: ErrorResponseException) {
-                                if (tries == 5 && e.isServerError) {
+                                if (tries != 5 && e.isServerError) {
                                     tries++
                                     logger.warn(e) { "Failed to send daily shop message! Retrying in 2s... Tries: $tries" }
                                     delay(2_000)
