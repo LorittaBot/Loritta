@@ -261,7 +261,7 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
             }
 
             val mutex = Mutex()
-            
+
             // oh my gahhhh
             val usersThatAcceptedTheBet = mutableSetOf<User>()
             var isFinished = false
