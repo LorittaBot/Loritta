@@ -160,11 +160,10 @@ abstract class NavbarView(
                             +" ${locale["website.navbar.sponsors"]}"
                         }
 
-                        div(classes = "entry") {
-                            a(classes = "merch", href = "$base/dashboard/sonhos-shop") {
-                                i(classes = "fas fa-shopping-cart") {}
-                                +" Lojinha de Sonhos"
-                            }
+                        a(classes = "merch", href = "$base/dashboard/sonhos-shop") {
+                            iconManager.cartShopping.apply(this)
+
+                            +" Lojinha de Sonhos"
                         }
                     }
 

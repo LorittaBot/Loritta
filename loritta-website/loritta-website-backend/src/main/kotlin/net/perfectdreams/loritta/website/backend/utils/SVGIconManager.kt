@@ -16,6 +16,7 @@ class SVGIconManager(val showtime: LorittaWebsiteBackend) {
     val star = register("star", "fontawesome5/solid/star.svg")
     val newspaper = register("newspaper", "fontawesome5/solid/newspaper.svg")
     val heart = register("heart", "fontawesome5/solid/heart.svg")
+    val cartShopping = register("cart-shopping", "fontawesome5/solid/cart-shopping.svg")
     val sparkles = register("sparkles", "twemoji-master/2728.svg", SVGOptions.REMOVE_FILLS)
     val gavel = register("gavel", "fontawesome5/solid/gavel.svg")
     val pencil = register("pencil", "fontawesome5/solid/pencil-alt.svg")
