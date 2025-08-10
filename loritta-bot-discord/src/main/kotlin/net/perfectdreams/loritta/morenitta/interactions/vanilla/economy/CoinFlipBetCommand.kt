@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy
 
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.dv8tion.jda.api.entities.User
@@ -602,7 +603,7 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                     val user1Emote = SonhosUtils.HANGLOOSE_EMOTES.random()
                                     val user2Emote = SonhosUtils.HANGLOOSE_EMOTES.filter { it != user1Emote }.random()
 
-                                    context.reply(false) {
+                                    componentContext.reply(false) {
                                         styled(
                                             "**$message!**",
                                             prefix
