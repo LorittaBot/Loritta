@@ -449,6 +449,18 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                     isFinished = true
                                     componentContext.invalidateComponentCallback()
 
+                                    // This should be AT THE VERY TOP to avoid ANY issues with people flooding commands causing
+                                    // Loritta to process the bet but failing to acknowledge in a message, causing people to be confused
+                                    componentContext.editMessage {
+                                        actionRow(
+                                            Button.of(
+                                                ButtonStyle.PRIMARY,
+                                                componentContext.event.componentId, // Reuse the same component
+                                                context.i18nContext.get(I18nKeysData.Commands.Command.Coinflipbet.Participate(usersThatAcceptedTheBet.size)),
+                                            ).withEmoji(Emoji.fromUnicode("✅")).withDisabled(true)
+                                        )
+                                    }
+
                                     listOf(
                                         selfUserProfile.refreshInDeferredTransaction(loritta),
                                         invitedUserProfile.refreshInDeferredTransaction(loritta)
@@ -587,16 +599,6 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                         val loserUserProfile = selfUserProfile
 
                                         processCoinFlipResult(winner, winnerUserProfile, loser, loserUserProfile)
-                                    }
-
-                                    componentContext.deferAndEditOriginal {
-                                        actionRow(
-                                            Button.of(
-                                                ButtonStyle.PRIMARY,
-                                                componentContext.event.componentId, // Reuse the same component
-                                                context.i18nContext.get(I18nKeysData.Commands.Command.Coinflipbet.Participate(usersThatAcceptedTheBet.size)),
-                                            ).withEmoji(Emoji.fromUnicode("✅")).withDisabled(true)
-                                        )
                                     }
 
                                     // Let's add a random emoji just to look cute
