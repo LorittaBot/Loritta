@@ -72,8 +72,6 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
 
         override val options = Options()
 
-        val mutex = Mutex()
-
         override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             context.deferChannelMessage(false)
 
@@ -262,6 +260,8 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                 return
             }
 
+            val mutex = Mutex()
+            
             // oh my gahhhh
             val usersThatAcceptedTheBet = mutableSetOf<User>()
             var isFinished = false
