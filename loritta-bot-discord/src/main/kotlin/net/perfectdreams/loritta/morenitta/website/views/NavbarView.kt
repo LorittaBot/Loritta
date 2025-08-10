@@ -116,25 +116,17 @@ abstract class NavbarView(
                         }
 
                         div(classes = "entry") {
-                            a(classes = "merch", href = "https://perfectdreams.store/") {
-                                i(classes = "fas fa-tshirt") {}
-                                +" Merch"
-                            }
-                        }
-
-                        div(classes = "entry") {
-                            a(classes = "blog", href = "$base/blog") {
-                                i(classes = "fas fa-bullhorn") {}
-
-                                +" Blog"
-                            }
-                        }
-
-                        div(classes = "entry") {
                             a(classes = "fan-arts", href = "https://fanarts.perfectdreams.net/") {
                                 i(classes = "fas fa-paint-brush") {}
 
                                 +" Fan Arts"
+                            }
+                        }
+
+                        div(classes = "entry") {
+                            a(classes = "merch", href = "$base/dashboard/sonhos-shop") {
+                                i(classes = "fas fa-shopping-cart") {}
+                                +" Lojinha de Sonhos"
                             }
                         }
                     }
