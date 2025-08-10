@@ -461,17 +461,6 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                         )
                                     }
 
-                                    listOf(
-                                        selfUserProfile.refreshInDeferredTransaction(loritta),
-                                        invitedUserProfile.refreshInDeferredTransaction(loritta)
-                                    ).awaitAll()
-
-                                    if (number > selfUserProfile.money)
-                                        return@withLock
-
-                                    if (number > invitedUserProfile.money)
-                                        return@withLock
-
                                     val isTails = LorittaBot.RANDOM.nextBoolean()
                                     val prefix: String
                                     val message: String
@@ -489,6 +478,15 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
 
                                     suspend fun processCoinFlipResult(winner: User, winnerUserProfile: Profile, loser: User, loserUserProfile: Profile): Result {
                                         return loritta.newSuspendedTransaction {
+                                            selfUserProfile.refresh(flush = false)
+                                            invitedUserProfile.refresh(flush = false)
+
+                                            if (number > selfUserProfile.money)
+                                                return@newSuspendedTransaction Result.UserDoesNotHaveEnoughSonhos(selfUserProfile.id.value)
+
+                                            if (number > invitedUserProfile.money)
+                                                return@newSuspendedTransaction Result.UserDoesNotHaveEnoughSonhos(invitedUserProfile.id.value)
+
                                             winnerUserProfile.addSonhosNested(money)
                                             loserUserProfile.takeSonhosNested(number)
 
@@ -573,7 +571,7 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                                 updatedLoserProfile.money
                                             ) else null
 
-                                            return@newSuspendedTransaction Result(
+                                            return@newSuspendedTransaction Result.Success(
                                                 winner,
                                                 loser,
                                                 activeCoupon,
@@ -584,7 +582,7 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                             )
                                         }
                                     }
-                                    
+
                                     val result = if (isTails) {
                                         val winner = context.user
                                         val winnerUserProfile = selfUserProfile
@@ -601,70 +599,82 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                         processCoinFlipResult(winner, winnerUserProfile, loser, loserUserProfile)
                                     }
 
-                                    // Let's add a random emoji just to look cute
-                                    val user1Emote = SonhosUtils.HANGLOOSE_EMOTES.random()
-                                    val user2Emote = SonhosUtils.HANGLOOSE_EMOTES.filter { it != user1Emote }.random()
+                                    when (result) {
+                                        is Result.Success -> {
+                                            // Let's add a random emoji just to look cute
+                                            val user1Emote = SonhosUtils.HANGLOOSE_EMOTES.random()
+                                            val user2Emote = SonhosUtils.HANGLOOSE_EMOTES.filter { it != user1Emote }.random()
 
-                                    componentContext.reply(false) {
-                                        styled(
-                                            "**$message!**",
-                                            prefix
-                                        )
+                                            componentContext.reply(false) {
+                                                styled(
+                                                    "**$message!**",
+                                                    prefix
+                                                )
 
-                                        styled(
-                                            context.i18nContext.get(I18nKeysData.Commands.Command.Coinflipbet.Congratulations(result.winner.asMention, SonhosUtils.getSonhosEmojiOfQuantity(money), money, result.loser.asMention)),
-                                            Emotes.LORI_RICH
-                                        )
+                                                styled(
+                                                    context.i18nContext.get(I18nKeysData.Commands.Command.Coinflipbet.Congratulations(result.winner.asMention, SonhosUtils.getSonhosEmojiOfQuantity(money), money, result.loser.asMention)),
+                                                    Emotes.LORI_RICH
+                                                )
 
-                                        if (result.winnerSonhosRanking != null) {
-                                            styled(
-                                                context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.TransferredSonhosWithRanking(result.winner.asMention, SonhosUtils.getSonhosEmojiOfQuantity(result.winnerSonhos), result.winnerSonhos, result.winnerSonhosRanking)),
-                                                user1Emote
-                                            )
-                                        } else {
-                                            styled(
-                                                context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.TransferredSonhos(result.winner.asMention, SonhosUtils.getSonhosEmojiOfQuantity(result.winnerSonhos), result.winnerSonhos)),
-                                                user1Emote
-                                            )
-                                        }
-                                        if (result.loserSonhosRanking != null) {
-                                            styled(
-                                                context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.TransferredSonhosWithRanking(result.loser.asMention, SonhosUtils.getSonhosEmojiOfQuantity(result.loserSonhos), result.loserSonhos, result.loserSonhosRanking)),
-                                                user2Emote
-                                            )
-                                        } else {
-                                            styled(
-                                                context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.TransferredSonhos(result.loser.asMention, SonhosUtils.getSonhosEmojiOfQuantity(result.loserSonhos), result.loserSonhos)),
-                                                user2Emote
-                                            )
-                                        }
-
-                                        val buttons = mutableListOf<Button>()
-
-                                        appendCouponSonhosBundleUpsellInformationIfNotNull(
-                                            loritta,
-                                            context.i18nContext,
-                                            result.activeCoupon,
-                                            "bet-coinflip"
-                                        )?.let { buttons += it }
-
-                                        appendActiveReactionEventUpsellInformationIfNotNull(
-                                            loritta,
-                                            context,
-                                            context.i18nContext,
-                                            ReactionEventsAttributes.getActiveEvent(now)
-                                        )?.let { buttons += it }
-
-                                        if (buttons.isNotEmpty()) {
-                                            buttons.chunked(5)
-                                                .forEach {
-                                                    actionRow(it)
+                                                if (result.winnerSonhosRanking != null) {
+                                                    styled(
+                                                        context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.TransferredSonhosWithRanking(result.winner.asMention, SonhosUtils.getSonhosEmojiOfQuantity(result.winnerSonhos), result.winnerSonhos, result.winnerSonhosRanking)),
+                                                        user1Emote
+                                                    )
+                                                } else {
+                                                    styled(
+                                                        context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.TransferredSonhos(result.winner.asMention, SonhosUtils.getSonhosEmojiOfQuantity(result.winnerSonhos), result.winnerSonhos)),
+                                                        user1Emote
+                                                    )
                                                 }
+                                                if (result.loserSonhosRanking != null) {
+                                                    styled(
+                                                        context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.TransferredSonhosWithRanking(result.loser.asMention, SonhosUtils.getSonhosEmojiOfQuantity(result.loserSonhos), result.loserSonhos, result.loserSonhosRanking)),
+                                                        user2Emote
+                                                    )
+                                                } else {
+                                                    styled(
+                                                        context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.TransferredSonhos(result.loser.asMention, SonhosUtils.getSonhosEmojiOfQuantity(result.loserSonhos), result.loserSonhos)),
+                                                        user2Emote
+                                                    )
+                                                }
+
+                                                val buttons = mutableListOf<Button>()
+
+                                                appendCouponSonhosBundleUpsellInformationIfNotNull(
+                                                    loritta,
+                                                    context.i18nContext,
+                                                    result.activeCoupon,
+                                                    "bet-coinflip"
+                                                )?.let { buttons += it }
+
+                                                appendActiveReactionEventUpsellInformationIfNotNull(
+                                                    loritta,
+                                                    context,
+                                                    context.i18nContext,
+                                                    ReactionEventsAttributes.getActiveEvent(now)
+                                                )?.let { buttons += it }
+
+                                                if (buttons.isNotEmpty()) {
+                                                    buttons.chunked(5)
+                                                        .forEach {
+                                                            actionRow(it)
+                                                        }
+                                                }
+                                            }
+
+                                            context.giveAchievementAndNotify(result.winner, AchievementType.COIN_FLIP_BET_WIN, false)
+                                            context.giveAchievementAndNotify(result.loser, AchievementType.COIN_FLIP_BET_LOSE, false)
+                                        }
+                                        is Result.UserDoesNotHaveEnoughSonhos -> {
+                                            context.reply(false) {
+                                                styled(
+                                                    context.locale["commands.command.flipcoinbet.notEnoughMoneyInvited", "<@${result.userId}>"],
+                                                    Constants.ERROR
+                                                )
+                                            }
                                         }
                                     }
-
-                                    context.giveAchievementAndNotify(result.winner, AchievementType.COIN_FLIP_BET_WIN, false)
-                                    context.giveAchievementAndNotify(result.loser, AchievementType.COIN_FLIP_BET_LOSE, false)
                                 } else {
                                     componentContext.deferAndEditOriginal {
                                         actionRow(
@@ -712,15 +722,21 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
         }
     }
 
-    data class Result(
-        val winner: User,
-        val loser: User,
-        val activeCoupon: ClaimedWebsiteCoupon?,
-        val winnerSonhos: Long,
-        val winnerSonhosRanking: Long?,
-        val loserSonhos: Long,
-        val loserSonhosRanking: Long?,
-    )
+    sealed class Result {
+        class Success(
+            val winner: User,
+            val loser: User,
+            val activeCoupon: ClaimedWebsiteCoupon?,
+            val winnerSonhos: Long,
+            val winnerSonhosRanking: Long?,
+            val loserSonhos: Long,
+            val loserSonhosRanking: Long?,
+        ) : Result()
+
+        class UserDoesNotHaveEnoughSonhos(
+            val userId: Long
+        ) : Result()
+    }
 
     sealed class CoinFlipTaxResult(val totalRewardPercentage: Double) {
         class LorittaCommunity(val isWeekend: Boolean, totalRewardPercentage: Double) : CoinFlipTaxResult(totalRewardPercentage)
