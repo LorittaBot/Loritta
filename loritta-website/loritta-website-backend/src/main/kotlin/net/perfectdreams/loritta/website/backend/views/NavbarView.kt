@@ -160,7 +160,7 @@ abstract class NavbarView(
                             +" ${locale["website.navbar.sponsors"]}"
                         }
 
-                        a(classes = "merch", href = "$base/dashboard/sonhos-shop") {
+                        a(classes = "entry sonhos-shop", href = "$base/dashboard/sonhos-shop") {
                             iconManager.cartShopping.apply(this)
 
                             +" Lojinha de Sonhos"
