@@ -74,8 +74,8 @@ types:
   sparklyPowerLsx:
     title: "Câmbio de Sonhos no SparklyPower"
     description: "Transações relacionadas ao SparklyPower, o Servidor de Minecraft da Loritta"
-    exchangedToSparklyPower: "Transferiu {sonhosQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} da Loritta para a conta `{playerName}` no SparklyPower [{sparklyPowerIp}], recebendo {sparklyPowerSonhosQuantity, plural, one {# sonho} other {# sonhos}} lá"
-    exchangedFromSparklyPower: "Transferiu {sparklyPowerSonhosQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} da conta `{playerName}` no SparklyPower [{sparklyPowerIp}] para a Loritta, recebendo {sonhosQuantity, plural, one {# sonho} other {# sonhos}} aqui"
+    exchangedToSparklyPower: "Transferiu {sonhosQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} da Loritta para a conta `{playerName}` no SparklyPower [{sparklyPowerIp}], recebendo {sparklyPowerSonhosQuantity, plural, one {# sonho} other {# sonecas}} lá"
+    exchangedFromSparklyPower: "Transferiu {sparklyPowerSonhosQuantity,plural, =0 {# sonecas} one {# sonho} other {# sonecas}} da conta `{playerName}` no SparklyPower [{sparklyPowerIp}] para a Loritta, recebendo {sonhosQuantity, plural, one {# sonho} other {# sonhos}} aqui"
   sonhosBundlePurchase:
     title: "Compra de Pacotes de Sonhos"
     description: "Transações relacionadas a compras de pacotes de sonhos"
