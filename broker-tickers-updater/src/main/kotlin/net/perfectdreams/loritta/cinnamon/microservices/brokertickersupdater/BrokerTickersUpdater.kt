@@ -90,7 +90,7 @@ class BrokerTickersUpdater(val config: RootConfig, val services: Pudding, val ht
                             logger.info { "Updating $tickerId values to $newCachedValue" }
                             val priceInSonhos = (cachedCurrentPrice * 100).toLong()
 
-                            services.transaction {
+                            /* services.transaction {
                                 TickerPrices.upsert(TickerPrices.ticker) {
                                     it[TickerPrices.ticker] = tickerId
                                     it[TickerPrices.value] = priceInSonhos
@@ -99,7 +99,7 @@ class BrokerTickersUpdater(val config: RootConfig, val services: Pudding, val ht
 
                                     it[TickerPrices.lastUpdatedAt] = Instant.now()
                                 }
-                            }
+                            } */
                         } else {
                             logger.info { "Not updating $tickerId values because not all required parameters are present... yet! $newCachedValue" }
                         }
