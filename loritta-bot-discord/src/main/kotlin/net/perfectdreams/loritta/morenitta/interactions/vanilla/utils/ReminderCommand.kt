@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.IntegrationType
+import net.dv8tion.jda.api.interactions.InteractionContextType
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Reminders
@@ -52,6 +53,7 @@ class ReminderCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.UTILS, UUID.fromString("8fdffec4-23f9-4663-83d6-263eabae1de8")) {
         enableLegacyMessageSupport = true
 
+        this.interactionContexts = listOf(InteractionContextType.GUILD)
         this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL)
 
         examples = I18N_PREFIX.Examples
