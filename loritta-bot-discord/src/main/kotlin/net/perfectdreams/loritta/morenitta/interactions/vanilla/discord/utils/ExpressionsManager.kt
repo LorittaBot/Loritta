@@ -14,7 +14,6 @@ import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.CommandException
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.discord.ExpressionsCommand
 import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
 import net.perfectdreams.loritta.morenitta.utils.SimpleImageInfo
 import kotlin.reflect.jvm.jvmName
@@ -43,138 +42,125 @@ sealed class ExpressionsManager(val context: UnleashedContext) {
         }
     }
 
-    suspend inline fun <reified T> avoidCommonExceptions(block: suspend () -> T): T? {
-        return try {
-            block()
-        } catch (e: Exception) {
-            when (e) {
-                is ErrorResponseException -> {
-                    when (e.errorResponse) {
-                        ErrorResponse.FILE_UPLOAD_MAX_SIZE_EXCEEDED, ErrorResponse.CANNOT_RESIZE_BELOW_MAXIMUM -> {
-                            context.reply(true) {
-                                when (type) {
-                                    ExpressionType.STICKER -> {
-                                        styled(
-                                            context.i18nContext.get(I18N_PREFIX.Sticker.Add.FileUploadMaxSizeExceeded)
-                                        )
-                                    }
+    sealed class OperationResult<T> {
+        data class Success<T>(val data: T) : OperationResult<T>()
+        data class Failure<T>(val handled: Boolean, val message: String? = null) : OperationResult<T>()
+    }
 
-                                    ExpressionType.EMOJI -> {
-                                        styled(
-                                            context.i18nContext.get(I18N_PREFIX.Emoji.Add.FileUploadMaxSizeExceeded)
-                                        )
-                                    }
-
-                                    else -> {} // there's no support to add soundboard effects with Loritta yet
-                                }
-                            }
-
-                            return null
-                        }
-
-                        ErrorResponse.INVALID_FILE_UPLOADED, ErrorResponse.INVALID_FORM_BODY -> {
-                            context.reply(true) {
-                                when (type) {
-                                    ExpressionType.STICKER -> {
-                                        styled(
-                                            context.i18nContext.get(I18N_PREFIX.Sticker.Add.InvalidUrl),
-                                            Emotes.Error
-                                        )
-                                    }
-
-                                    ExpressionType.EMOJI -> {
-                                        styled(
-                                            context.i18nContext.get(I18N_PREFIX.Emoji.Add.InvalidUrl),
-                                            Emotes.Error
-                                        )
-                                    }
-
-                                    else -> {} // nothing yet.
-                                }
-                            }
-
-                            return null
-                        }
-
-                        ErrorResponse.MAX_EMOJIS -> {
-                            context.reply(true) {
-                                styled(
-                                    context.i18nContext.get(
-                                        I18N_PREFIX.Emoji.Add.MaxStaticEmojisLimitReached,
-                                    ),
-                                    Emotes.Error
-                                )
-                            }
-
-                            return null
-                        }
-
-                        ErrorResponse.MAX_ANIMATED_EMOJIS -> {
-                            context.reply(true) {
-                                styled(
-                                    context.i18nContext.get(
-                                        ExpressionsCommand.Companion.I18N_PREFIX.Emoji.Add.MaxAnimatedEmojisLimitReached
-                                    ),
-                                    Emotes.Error
-                                )
-                            }
-
-                            return null
-                        }
-
-                        ErrorResponse.MAX_STICKERS -> {
-                            context.reply(true) {
-                                styled(
-                                    context.i18nContext.get(I18N_PREFIX.Sticker.Add.MaxStickersReached),
-                                    Emotes.Error
-                                )
-                            }
-
-                            return null
-                        }
-
-                        else -> {
-                            e.printStackTrace()
-
-                            context.reply(true) {
-                                styled(
-                                    context.i18nContext.get(
-                                        I18nKeysData.Commands.ErrorWhileExecutingCommand(
-                                            Emotes.LoriRage,
-                                            Emotes.LoriSob,
-                                            e.message ?: "Exception name: ${e::class.jvmName}"
-                                        )
-                                    ),
-                                    Emotes.Error
-                                )
-                            }
-
-                            return null
-                        }
+    protected suspend fun handleDiscordAPIErrors(e: ErrorResponseException): Boolean {
+        when (e.errorResponse) {
+            ErrorResponse.FILE_UPLOAD_MAX_SIZE_EXCEEDED, ErrorResponse.CANNOT_RESIZE_BELOW_MAXIMUM -> {
+                context.reply(true) {
+                    val messageKey = when (type) {
+                        ExpressionType.STICKER -> I18N_PREFIX.Sticker.Add.FileUploadMaxSizeExceeded
+                        ExpressionType.EMOJI -> I18N_PREFIX.Emoji.Add.FileUploadMaxSizeExceeded
+                        else -> return@reply // no support for soundboard effects in loritta yet
                     }
+                    styled(context.i18nContext.get(messageKey))
                 }
 
-                is CommandException -> throw e
-
-                else -> {
-                    e.printStackTrace()
-
-                    context.reply(true) {
-                        styled(
-                            context.i18nContext.get(
-                                I18nKeysData.Commands.ErrorWhileExecutingCommand(
-                                    Emotes.LoriRage,
-                                    Emotes.LoriSob,
-                                    e.message ?: "Exception name: ${e::class.jvmName}"
-                                )
-                            ),
-                            Emotes.Error
-                        )
-                    }
-
-                    return null
-                }
+                return true
             }
+
+            ErrorResponse.INVALID_FILE_UPLOADED, ErrorResponse.INVALID_FORM_BODY -> {
+                context.reply(true) {
+                    val messageKey = when (type) {
+                        ExpressionType.STICKER -> I18N_PREFIX.Sticker.Add.InvalidUrl
+                        ExpressionType.EMOJI -> I18N_PREFIX.Emoji.Add.InvalidUrl
+                        else -> return@reply
+                    }
+                    styled(context.i18nContext.get(messageKey), Emotes.Error)
+                }
+
+                return true
+            }
+
+            ErrorResponse.MAX_EMOJIS -> {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.Emoji.Add.MaxStaticEmojisLimitReached),
+                        Emotes.Error
+                    )
+                }
+                return true
+            }
+
+            ErrorResponse.MAX_ANIMATED_EMOJIS -> {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.Emoji.Add.MaxAnimatedEmojisLimitReached),
+                        Emotes.Error
+                    )
+                }
+                return true
+            }
+
+            ErrorResponse.MAX_STICKERS -> {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.Sticker.Add.MaxStickersReached),
+                        Emotes.Error
+                    )
+                }
+                return true
+            }
+
+            else -> return false
+        }
+    }
+
+    protected suspend fun handleGenericError(e: Exception) {
+        e.printStackTrace()
+
+        context.reply(true) {
+            styled(
+                context.i18nContext.get(
+                    I18nKeysData.Commands.ErrorWhileExecutingCommand(
+                        Emotes.LoriRage,
+                        Emotes.LoriSob,
+                        e.message ?: "Exception name: ${e::class.jvmName}"
+                    )
+                ),
+                Emotes.Error
+            )
+        }
+    }
+
+    protected suspend inline fun <reified T> asSafe(block: suspend () -> T): OperationResult<T> {
+        return try {
+            OperationResult.Success(block())
+        } catch (e: CommandException) {
+            throw e // re-throw
+        } catch (e: ErrorResponseException) {
+            val handled = handleDiscordAPIErrors(e)
+
+            if (!handled) {
+                handleGenericError(e)
+            }
+
+            OperationResult.Failure(true, e.message)
+        } catch (e: Exception) {
+            handleGenericError(e)
+            OperationResult.Failure(true, e.message)
+        }
+    }
+
+    protected fun processImageFile(file: String): Pair<ByteArray, String>? {
+        val image = LorittaUtils.downloadFile(context.loritta, file) ?: return null
+
+        val imageInfo = SimpleImageInfo(image)
+        val originalType = imageInfo.mimeType?.substringAfter("/") ?: return null
+
+        if (originalType !in allowedImageTypes) return null
+
+        return when (originalType) {
+            "jpeg", "jpg" -> {
+                val i = LorittaUtils.convertImage(image, "png", true) ?: return null
+
+                i to "png"
+            }
+
+            else -> image to originalType
         }
     }
 
@@ -204,87 +190,59 @@ sealed class ExpressionsManager(val context: UnleashedContext) {
             file: String,
             tags: List<String>,
             alreadyAck: Boolean = false
-        ): Boolean? = avoidCommonExceptions {
-            requireGuild()
+        ): Boolean? {
+            return when (val result = asSafe {
+                requireGuild()
 
-            if (name.length < 2 || name.length > 30) {
-                context.reply(true) {
-                    styled(
-                        context.i18nContext.get(I18N_PREFIX.Add.OutOfBoundsName),
-                        Emotes.Error
-                    )
+                if (name.length !in 2..30) {
+                    context.reply(true) {
+                        styled(
+                            context.i18nContext.get(I18N_PREFIX.Add.OutOfBoundsName),
+                            Emotes.Error
+                        )
+                    }
+
+                    return@asSafe false
                 }
 
-                return@avoidCommonExceptions false
-            }
+                if (description.length !in 2..100) {
+                    context.reply(true) {
+                        styled(
+                            context.i18nContext.get(I18N_PREFIX.Add.OutOfBoundsDescription),
+                            Emotes.Error
+                        )
+                    }
 
-            if (description.length < 2 || description.length > 100) {
-                context.reply(true) {
-                    styled(
-                        context.i18nContext.get(I18N_PREFIX.Add.OutOfBoundsDescription),
-                        Emotes.Error
-                    )
+                    return@asSafe false
                 }
 
-                return@avoidCommonExceptions false
-            }
+                if (!alreadyAck)
+                    context.deferChannelMessage(false)
 
-            if (!alreadyAck)
-                context.deferChannelMessage(false)
+                val imageData = processImageFile(file) ?: return@asSafe false
 
-            val image = LorittaUtils.downloadFile(context.loritta, file) ?: run {
-                context.reply(true) {
-                    styled(
-                        context.i18nContext.get(I18N_PREFIX.Add.InvalidUrl),
-                        Emotes.Error
-                    )
+                try {
+                    context.guild.createSticker(
+                        name,
+                        description,
+                        FileUpload.fromData(imageData.first, "sticker.${imageData.second}"),
+                        tags
+                    ).submit().await()
+
+                    true
+                } catch (_: RateLimitedException) {
+                    context.reply(true) {
+                        styled(
+                            context.i18nContext.get(I18N_PREFIX.Add.RateLimitExceeded),
+                            Emotes.Error
+                        )
+                    }
+
+                    false
                 }
-
-                return@avoidCommonExceptions false
-            }
-
-            var imageInfo = SimpleImageInfo(image)
-            var imageType = imageInfo.mimeType!!.split("/")[1]
-
-            val imageData = if (imageType in allowedImageTypes) {
-                when (imageType) {
-                    "jpeg", "jpg" -> LorittaUtils.convertImage(image, "png", true)
-                    else -> image
-                }
-            } else {
-                null
-            } ?: run {
-                context.reply(true) {
-                    styled(
-                        "Something went wrong while converting image from $imageType to png... oopsie!",
-                        Emotes.Error
-                    )
-                }
-
-                return@avoidCommonExceptions false
-            }
-
-            imageInfo = SimpleImageInfo(imageData)
-            imageType = imageInfo.mimeType!!.split("/")[1]
-
-            return@avoidCommonExceptions try {
-                context.guild.createSticker(
-                    name,
-                    description,
-                    FileUpload.fromData(imageData, "sticker.$imageType"),
-                    tags
-                ).submit().await()
-
-                true
-            } catch (_: RateLimitedException) {
-                context.reply(true) {
-                    styled(
-                        context.i18nContext.get(I18N_PREFIX.Add.RateLimitExceeded),
-                        Emotes.Error
-                    )
-                }
-
-                false
+            }) {
+                is OperationResult.Success -> result.data
+                is OperationResult.Failure -> null
             }
         }
 
@@ -292,19 +250,17 @@ sealed class ExpressionsManager(val context: UnleashedContext) {
          * Removes a sticker from the guild.
          * @param id The sticker id
          */
-        suspend fun removeSticker(id: Long) {
+        suspend fun removeSticker(id: Long): Boolean? = when (val result = asSafe<Boolean> {
             requireGuild()
 
             val parsedId = StickerSnowflake.fromId(id)
 
             context.guild.deleteSticker(parsedId).submit(false).await()
 
-            context.reply(false) {
-                styled(
-                    context.i18nContext.get(ExpressionsCommand.Companion.I18N_PREFIX.Sticker.Remove.SuccessfullyRemovedStickerMessage),
-                    Emotes.LoriHappyJumping
-                )
-            }
+            return true
+        }) {
+            is OperationResult.Success -> result.data
+            is OperationResult.Failure -> null
         }
     }
 
@@ -321,38 +277,19 @@ sealed class ExpressionsManager(val context: UnleashedContext) {
             return context.guild.getEmojisByName(name, true).firstOrNull()
         }
 
-        suspend fun addEmojiFromExistingEmoji(resolvable: String) = avoidCommonExceptions {
+        suspend fun addEmojiFromExistingEmoji(resolvable: String) = when (val result = asSafe<MutableList<RichCustomEmoji>> {
             requireGuild()
 
             val emojisToBeAdded = LorittaUtils.retrieveEmojis(resolvable)
 
-            if (emojisToBeAdded.isEmpty()) {
-                context.reply(true) {
-                    styled(
-                        context.i18nContext.get(I18N_PREFIX.Add.CouldntFindAnyEmojis),
-                        Emotes.Error
-                    )
-                }
-
-                return@avoidCommonExceptions
-            }
-
-            context.deferChannelMessage(false)
+            if (emojisToBeAdded.isEmpty())
+                error("Couldn't find any emojis to add!")
 
             val added = mutableListOf<RichCustomEmoji>()
 
             for (emojiToBeAdded in emojisToBeAdded) {
                 val img = LorittaUtils.downloadFile(context.loritta, emojiToBeAdded.url, connectTimeout = 5000)
-                    ?: run {
-                        context.reply(true) {
-                            styled(
-                                context.i18nContext.get(I18N_PREFIX.Add.InvalidUrl),
-                                Emotes.Error
-                            )
-                        }
-
-                        return@avoidCommonExceptions
-                    }
+                    ?: error("Couldn't download emoji image file!")
 
                 val addedEmoji = try {
                     context.guild.createEmoji(
@@ -360,63 +297,29 @@ sealed class ExpressionsManager(val context: UnleashedContext) {
                         Icon.from(img)
                     ).submit(false).await()
                 } catch (e: RateLimitedException) {
-                    context.reply(true) {
-                        styled(
-                            context.i18nContext.get(I18N_PREFIX.Add.RateLimitExceeded),
-                            Emotes.Error
-                        )
-                    }
-
-                    null
+                    throw e // propagate
                 }
 
                 if (addedEmoji != null) added.add(addedEmoji)
             }
 
-            context.reply(false) {
-                if (added.size > 1) {
-                    styled(
-                        context.i18nContext.get(I18N_PREFIX.Add.SuccessfullyBulkAdded(added.joinToString(", ") { it.asMention })),
-                        Emotes.LoriHappyJumping
-                    )
-                } else {
-                    styled(
-                        context.i18nContext.get(I18N_PREFIX.Add.SuccessfullyAdded("(${added.joinToString(" ") { it.asMention }})")),
-                        Emotes.LoriHappyJumping
-                    )
-                }
-            }
+            return@asSafe added
+        }) {
+            is OperationResult.Success -> result.data
+            is OperationResult.Failure -> null
         }
 
-        suspend fun addNewEmoji(name: String, data: String?) = avoidCommonExceptions {
-            context.deferChannelMessage(false)
-
+        suspend fun addNewEmoji(name: String, data: String?) = when (val result = asSafe<RichCustomEmoji?> {
             val parsedEmoji = LorittaUtils.retrieveEmoji(name)
 
-            lateinit var img: ByteArray
+            if (data == null) error("Invalid URL for emote $name")
 
-            if (data == null) context.fail(true) {
-                styled(
-                    context.i18nContext.get(I18N_PREFIX.Add.InvalidUrl),
-                    Emotes.Error
-                )
-            }
-
-            if (parsedEmoji == null) {
-                img = LorittaUtils.downloadFile(context.loritta, data, connectTimeout = 5000)
-                    ?: context.fail(true) {
-                        styled(
-                            context.i18nContext.get(I18N_PREFIX.Add.InvalidUrl),
-                            Emotes.Error
-                        )
-                    }
+            val img: ByteArray = if (parsedEmoji == null) {
+                LorittaUtils.downloadFile(context.loritta, data, connectTimeout = 5000)
+                    ?: error("Invalid URL for emote $name")
             } else {
-                LorittaUtils.downloadFile(context.loritta, parsedEmoji.url, connectTimeout = 5000) ?: context.fail(true) {
-                    styled(
-                        context.i18nContext.get(I18N_PREFIX.Add.InvalidUrl),
-                        Emotes.Error
-                    )
-                }
+                LorittaUtils.downloadFile(context.loritta, parsedEmoji.url, connectTimeout = 5000)
+                    ?: error("Invalid URL for emote $name")
             }
 
             val addedEmoji = try {
@@ -425,36 +328,23 @@ sealed class ExpressionsManager(val context: UnleashedContext) {
                     Icon.from(img)
                 ).submit(false).await()
             } catch (e: RateLimitedException) {
-                context.fail(true) {
-                    styled(
-                        context.i18nContext.get(I18N_PREFIX.Add.RateLimitExceeded),
-                        Emotes.Error
-                    )
-                }
+                throw e // propagate
             }
 
-            context.reply(false) {
-                styled(
-                    context.i18nContext.get(I18N_PREFIX.Add.SuccessfullyAdded(addedEmoji.asMention)),
-                    Emotes.LoriHappyJumping
-                )
-            }
+            return addedEmoji
+        }) {
+            is OperationResult.Success -> result.data
+            is OperationResult.Failure -> null
         }
 
-        suspend fun removeEmojis(resolvable: String) = avoidCommonExceptions {
-            context.deferChannelMessage(false)
-
+        suspend fun removeEmojis(resolvable: String): Int? = when (val result = asSafe<Int> {
             val emojis = context.guild.emojis
             val selectedEmojis = resolvable.removeSurrounding(":").split(" ")
             val fetchedEmojis = emojis.filter { it.asMention in selectedEmojis }
             val removedEmojisSize = fetchedEmojis.size
 
-            if (fetchedEmojis.isEmpty()) context.fail(true) {
-                styled(
-                    context.i18nContext.get(I18N_PREFIX.Remove.NoEmojisFound),
-                    Emotes.Error
-                )
-            }
+            if (fetchedEmojis.isEmpty())
+                error("Couldn't find any emojis to remove!")
 
             fetchedEmojis.forEach {
                 if (it.guild == context.guild) {
@@ -462,12 +352,10 @@ sealed class ExpressionsManager(val context: UnleashedContext) {
                 }
             }
 
-            context.reply(false) {
-                styled(
-                    context.i18nContext.get(I18N_PREFIX.Remove.SuccessfullyRemovedEmoji(removedEmojisSize)),
-                    Emotes.LoriHappyJumping
-                )
-            }
+            return@asSafe removedEmojisSize
+        }) {
+            is OperationResult.Success -> result.data
+            is OperationResult.Failure -> null
         }
     }
 }
