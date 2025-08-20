@@ -1304,9 +1304,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                             generationErrorMessageI18nKey = I18nKeysData.InvalidMessages.CommandDenylist
                         )
 
-                        context.reply(true) {
-
-                        }
+                        context.reply(true, generatedMessage)
                         return true
                     } else {
                         // So, it is actually enabled on a user install context!
