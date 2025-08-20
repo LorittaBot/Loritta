@@ -71,4 +71,19 @@ abstract class InteractionContext(
             InteractionMessage.InitialInteractionMessage(hook)
         }
     }
+
+    override suspend fun reply(ephemeral: Boolean, builder: MessageCreateData): InteractionMessage {
+        val realEphemeralState = if (alwaysEphemeral) true else ephemeral
+
+        // We could actually disable the components when their state expires, however this is hard to track due to "@original" or ephemeral messages not having an ID associated with it
+        // So, if the message is edited, we don't know if we *can* disable the components when their state expires!
+        return if (replyCallback.isAcknowledged) {
+            val message = replyCallback.hook.sendMessage(builder).setEphemeral(realEphemeralState).await()
+            InteractionMessage.FollowUpInteractionMessage(message)
+        } else {
+            val hook = replyCallback.reply(builder).setEphemeral(realEphemeralState).await()
+            wasInitiallyDeferredEphemerally = realEphemeralState
+            InteractionMessage.InitialInteractionMessage(hook)
+        }
+    }
 }

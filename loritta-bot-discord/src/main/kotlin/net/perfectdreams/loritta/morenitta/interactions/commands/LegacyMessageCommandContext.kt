@@ -108,6 +108,16 @@ class LegacyMessageCommandContext(
         )
     }
 
+    override suspend fun reply(ephemeral: Boolean, builder: MessageCreateData): InteractionMessage {
+        // This isn't a real follow-up interaction message, but we do have the message data, so that's why we are using it
+        return InteractionMessage.FollowUpInteractionMessage(
+            event.channel.sendMessage(builder)
+                .referenceIfPossible(event.message)
+                .failOnInvalidReply(false)
+                .await()
+        )
+    }
+
     /**
      * Based on AbstractCommand's context that tries a bunch of different things to get the first image.
      */

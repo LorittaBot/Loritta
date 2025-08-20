@@ -71,6 +71,8 @@ abstract class UnleashedContext(
 
     abstract suspend fun reply(ephemeral: Boolean, builder: suspend InlineMessage<MessageCreateData>.() -> Unit = {}): InteractionMessage
 
+    abstract suspend fun reply(ephemeral: Boolean, builder: MessageCreateData): InteractionMessage
+
     suspend fun chunkedReply(ephemeral: Boolean, builder: suspend ChunkedMessageBuilder.() -> Unit = {}) {
         // Chunked replies are replies that are chunked into multiple messages, depending on the length of the content
         val createdMessage = ChunkedMessageBuilder().apply {

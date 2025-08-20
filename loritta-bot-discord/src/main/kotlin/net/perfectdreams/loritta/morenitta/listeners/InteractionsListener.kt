@@ -55,6 +55,7 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.LigarCom
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getLocalizedName
+import net.perfectdreams.loritta.morenitta.utils.extensions.referenceIfPossible
 import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import net.perfectdreams.loritta.morenitta.utils.extensions.toLoritta
 import org.jetbrains.exposed.sql.and
@@ -65,6 +66,7 @@ import org.postgresql.util.PGobject
 import java.time.Duration
 import java.time.Instant
 import java.util.*
+import kotlin.collections.emptyMap
 
 class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() {
     companion object {
@@ -217,7 +219,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 val enableBomDiaECia = miscellaneousConfig?.enableBomDiaECia ?: false
                 val isBomDiaECia = enableBomDiaECia && executor is LigarCommand.LigarExecutor
 
-                if (checkIfCommandIsDisabledOnGuild(event, slashDeclaration, context, i18nContext, guildId))
+                if (checkIfCommandIsDisabledOnGuild(event, slashDeclaration, context, i18nContext, guildId, serverConfig, lorittaUser))
                     return@launchMessageJob
 
                 loritta.transaction {
@@ -437,7 +439,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
 
                 // Check if the command is disabled
                 val guildId = context.guildId
-                if (checkIfCommandIsDisabledOnGuild(event, slashDeclaration, context, i18nContext, guildId))
+                if (checkIfCommandIsDisabledOnGuild(event, slashDeclaration, context, i18nContext, guildId, serverConfig, lorittaUser))
                     return@launchMessageJob
 
                 executor.execute(
@@ -540,7 +542,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
 
                 // Check if the command is disabled
                 val guildId = context.guildId
-                if (checkIfCommandIsDisabledOnGuild(event, slashDeclaration, context, i18nContext, guildId))
+                if (checkIfCommandIsDisabledOnGuild(event, slashDeclaration, context, i18nContext, guildId, serverConfig, lorittaUser))
                     return@launchMessageJob
 
                 executor.execute(
@@ -1225,6 +1227,8 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
         context: ApplicationCommandContext,
         i18nContext: I18nContext,
         guildId: Long?,
+        serverConfig: ServerConfig,
+        lorittaUser: LorittaUser
     ): Boolean {
         if (guildId == null)
             return false
@@ -1275,6 +1279,43 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
             // So, for this case, we set the alwaysEphemeral flag if the user does NOT have permission to use application commands on the current channel
             // The command IS ENABLED on the current server, so we don't mind if they don't have permission to use external applications
             context.alwaysEphemeral = !context.member.hasPermission(context.channel as GuildChannel, Permission.USE_APPLICATION_COMMANDS)
+        }
+
+        // And then we check ONCE AGAIN, but now if it is a blacklisted command
+        if (serverConfig.blacklistedChannels.contains(context.channel.idLong) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
+            if (serverConfig.warnIfBlacklisted) {
+                if (serverConfig.blacklistedWarning?.isNotEmpty() == true && event.guild != null && event.member != null && event.channel != null) {
+                    // Channel has commands BLOCKED here!
+                    // So, how can we check that the user can use it if it is a USER_INSTALL command?
+                    // 1. Does the "USER_INSTALL" integration type is set?
+                    // 2. Is the user an integration owner?
+                    // If both are true, the message will be ephemeral if the user does NOT have the "external apps" permission set
+                    val authorizingUserId = if (event.interaction.integrationOwners.isUserIntegration) event.interaction.integrationOwners.authorizingUserIdLong else null
+
+                    val canBeUsedAnyway = slashDeclaration.integrationTypes.contains(IntegrationType.USER_INSTALL) && authorizingUserId == context.user.idLong
+                    if (!canBeUsedAnyway) {
+                        // NO, then bail out NOW
+                        val generatedMessage = MessageUtils.generateMessageOrFallbackIfInvalid(
+                            i18nContext = i18nContext,
+                            message = serverConfig.blacklistedWarning ?: "???",
+                            sources = listOf(event.member, event.channel, event.guild) as List<Any>, // The cast should not be needed BUT I can't figure out why it works
+                            guild = event.guild,
+                            customTokens = emptyMap<String, String>(),
+                            generationErrorMessageI18nKey = I18nKeysData.InvalidMessages.CommandDenylist
+                        )
+
+                        context.reply(true) {
+
+                        }
+                        return true
+                    } else {
+                        // So, it is actually enabled on a user install context!
+                        // What we'll do instead is force the interaction to ALWAYS be ephemeral
+                        // If the user has permission, then the message should be PUBLIC, if not, it should be EPHEMERAL
+                        context.alwaysEphemeral = !context.member.hasPermission(context.channel as GuildChannel, Permission.USE_EXTERNAL_APPLICATIONS)
+                    }
+                }
+            }
         }
 
         return false
