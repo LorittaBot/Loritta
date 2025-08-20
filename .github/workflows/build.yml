@@ -29,15 +29,15 @@ jobs:
           sudo apt-get update
           sudo apt-get install pngquant gifsicle
 
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      
       - name: Setup Java JDK
         uses: actions/setup-java@v4
         with:
           distribution: "temurin"
           java-version: "21"
           cache: "gradle"
-
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
 
       # Because waiting for the Docker image to be built is kinda boring not gonna lie
       - name: Cache Docker image
@@ -62,7 +62,7 @@ jobs:
           GRADLE_OPTS: -Xmx4096m -Xms4096m
           ORG_GRADLE_PROJECT_PerfectDreamsUsername: ${{ secrets.PERFECTDREAMS_REPO_USERNAME }}
           ORG_GRADLE_PROJECT_PerfectDreamsPassword: ${{ secrets.PERFECTDREAMS_REPO_PASSWORD }}
-        run: ./gradlew build publish -Dcommit.hash=${{ github.sha }} -Dbuild.id=${{ github.run_number }} :loritta-bot-discord:jibDockerBuild :discord-chat-message-renderer-server:jibDockerBuild :lori-api-proxy:jibDockerBuild :loritta-website:loritta-website-backend:jibDockerBuild :broker-tickers-updater:jibDockerBuild :loritta-helper:jibDockerBuild --scan
+        run: ./gradlew build publish -Dcommit.hash=${{ github.sha }} -Dbuild.id=${{ github.run_number }} :loritta-bot-discord:jibDockerBuild :discord-chat-message-renderer-server:jibDockerBuild :lori-api-proxy:jibDockerBuild :loritta-website:loritta-website-backend:jibDockerBuild :broker-tickers-updater:jibDockerBuild :loritta-helper:jibDockerBuild --scan --no-daemon
 
       - name: Login and publish Docker images
         run: |
