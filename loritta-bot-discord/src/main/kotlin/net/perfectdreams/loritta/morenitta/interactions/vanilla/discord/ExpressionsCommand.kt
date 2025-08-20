@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.discord
 
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji
 import net.dv8tion.jda.api.interactions.IntegrationType
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
@@ -65,8 +66,8 @@ class ExpressionsCommand : SlashCommandDeclarationWrapper {
         }
     }
 
-    inner class StickerAddExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
-        inner class Options : ApplicationCommandOptions() {
+    class StickerAddExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        class Options : ApplicationCommandOptions() {
             val stickerName = string("sticker_name", I18N_PREFIX.Sticker.Add.Options.Name)
             val stickerTags = optionalString("sticker_tags", I18N_PREFIX.Sticker.Add.Options.Tags)
             val stickerDescription = optionalString("sticker_description", I18N_PREFIX.Sticker.Add.Options.Description)
@@ -93,7 +94,7 @@ class ExpressionsCommand : SlashCommandDeclarationWrapper {
 
             val sticker = try {
                 args[options.sticker].get(context, false)
-            } catch(e: Exception) {
+            } catch(_: Exception) {
                 null
             }
 
@@ -104,13 +105,13 @@ class ExpressionsCommand : SlashCommandDeclarationWrapper {
                 )
             }
 
-            context.stickerFactory.addSticker(name, description, sticker, tags)
-
-            context.reply(false) {
-                styled(
-                    context.i18nContext.get(I18N_PREFIX.Sticker.Add.SuccessfullyAdded),
-                    Emotes.LoriHappyJumping
-                )
+            if (context.stickerFactory.addSticker(name, description, sticker, tags) == true) {
+                context.reply(false) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.Sticker.Add.SuccessfullyAdded),
+                        Emotes.LoriHappyJumping
+                    )
+                }
             }
         }
 
@@ -139,8 +140,8 @@ class ExpressionsCommand : SlashCommandDeclarationWrapper {
         }
     }
 
-    inner class StickerRemoveExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
-        inner class Options : ApplicationCommandOptions() {
+    class StickerRemoveExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        class Options : ApplicationCommandOptions() {
             val stickerName = string("sticker_name", I18N_PREFIX.Sticker.Remove.Options.Name) {
                 autocomplete { context ->
                     val stickerName = context.event.focusedOption.value
@@ -189,7 +190,14 @@ class ExpressionsCommand : SlashCommandDeclarationWrapper {
 
             val stickerId = args[options.stickerName].toLong()
 
-            context.stickerFactory.removeSticker(stickerId)
+            if (context.stickerFactory.removeSticker(stickerId) == true) {
+                context.reply(false) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.Sticker.Remove.SuccessfullyRemovedStickerMessage),
+                        Emotes.LoriHappyJumping
+                    )
+                }
+            }
         }
 
         override suspend fun convertToInteractionsArguments(
@@ -212,8 +220,8 @@ class ExpressionsCommand : SlashCommandDeclarationWrapper {
         }
     }
 
-    inner class EmojiAddExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
-        inner class Options : ApplicationCommandOptions() {
+    class EmojiAddExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        class Options : ApplicationCommandOptions() {
             val emojiName = string("emoji_name", I18N_PREFIX.Emoji.Add.Options.Name)
             val emojiData = imageReferenceOrAttachment("emoji", I18N_PREFIX.Emoji.Add.Options.ImageData)
         }
@@ -234,9 +242,15 @@ class ExpressionsCommand : SlashCommandDeclarationWrapper {
             val name = args[options.emojiName]
             val emojiData = args[options.emojiData]
 
+            val added = mutableListOf<RichCustomEmoji>()
+
             if (emojiData.dataValue == null && emojiData.attachment == null) {
                 // Here we will deal with existent emojis and a bunch of them.
-                context.emojiFactory.addEmojiFromExistingEmoji(name)
+                val emojis = context.emojiFactory.addEmojiFromExistingEmoji(name)
+
+                emojis?.forEach {
+                    added.add(it)
+                }
             } else {
                 // Here we will handle the name and the link for the emoji
                 // Or make a copy of an existent emoji and change its name... huh
@@ -247,7 +261,28 @@ class ExpressionsCommand : SlashCommandDeclarationWrapper {
                     null
                 }
 
-                context.emojiFactory.addNewEmoji(name, data)
+                val addedEmoji = context.emojiFactory.addNewEmoji(name, data)
+
+                if (addedEmoji != null) {
+                    added.add(addedEmoji)
+                }
+            }
+
+
+            if (added.isNotEmpty()) {
+                context.reply(false) {
+                    if (added.size > 1) {
+                        styled(
+                            context.i18nContext.get(I18N_PREFIX.Emoji.Add.SuccessfullyBulkAdded(added.joinToString(", ") { it.asMention })),
+                            Emotes.LoriHappyJumping
+                        )
+                    } else {
+                        styled(
+                            context.i18nContext.get(I18N_PREFIX.Emoji.Add.SuccessfullyAdded("(${added.joinToString(" ") { it.asMention }})")),
+                            Emotes.LoriHappyJumping
+                        )
+                    }
+                }
             }
         }
 
@@ -295,8 +330,8 @@ class ExpressionsCommand : SlashCommandDeclarationWrapper {
         }
     }
 
-    inner class EmojiRemoveExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
-        inner class Options : ApplicationCommandOptions() {
+    class EmojiRemoveExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        class Options : ApplicationCommandOptions() {
             val emojiName = string("emoji_name", I18N_PREFIX.Emoji.Remove.Options.Name)
         }
 
@@ -312,7 +347,16 @@ class ExpressionsCommand : SlashCommandDeclarationWrapper {
                 )
             }
 
-            context.emojiFactory.removeEmojis(args[options.emojiName])
+            val quantity = context.emojiFactory.removeEmojis(args[options.emojiName])
+
+            if (quantity != null) {
+                context.reply(false) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.Emoji.Remove.SuccessfullyRemovedEmoji(quantity)),
+                        Emotes.LoriHappyJumping
+                    )
+                }
+            }
         }
 
         override suspend fun convertToInteractionsArguments(
