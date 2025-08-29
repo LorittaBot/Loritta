@@ -128,8 +128,6 @@ class VacationCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
                     styled(context.i18nContext.get(I18N_PREFIX.Enable.GetTheDailyReward))
                     styled(context.i18nContext.get(I18N_PREFIX.Enable.BuyTrinkets))
                     styled(context.i18nContext.get(I18N_PREFIX.Enable.BuyBundles))
-                    styled(context.i18nContext.get(I18N_PREFIX.Enable.UseCommand(loritta.commandMentions.brokerBuy)))
-                    styled(context.i18nContext.get(I18N_PREFIX.Enable.UseCommand(loritta.commandMentions.brokerSell)))
                     styled(context.i18nContext.get(I18N_PREFIX.Enable.EnjoyYourVacations))
 
                     styled("")

@@ -137,12 +137,6 @@ class SonhosAtmExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor()
                     false
                 )
 
-                field(
-                    "${Emotes.LoriStonks} ${context.i18nContext.get(SONHOS_I18N_PREFIX.BoughtStocks(loritta.commandMentions.brokerPortfolio))}",
-                    context.i18nContext.get(SONHOS_I18N_PREFIX.SonhosField(extendedSonhosInfo.boughtStocks)),
-                    false
-                )
-
                 when (val result = extendedSonhosInfo.sparklySonecas) {
                     ExtendedSonhosInfo.SparklySonecasFailure -> {
                         field(
