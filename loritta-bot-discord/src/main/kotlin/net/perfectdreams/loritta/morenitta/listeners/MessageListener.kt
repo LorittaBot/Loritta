@@ -1,16 +1,25 @@
 package net.perfectdreams.loritta.morenitta.listeners
 
 import com.github.benmanes.caffeine.cache.Caffeine
+import dev.minn.jda.ktx.interactions.components.Container
+import dev.minn.jda.ktx.interactions.components.Section
+import dev.minn.jda.ktx.interactions.components.TextDisplay
+import dev.minn.jda.ktx.interactions.components.Thumbnail
+import dev.minn.jda.ktx.messages.MessageCreate
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageType
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -18,10 +27,13 @@ import net.dv8tion.jda.api.events.message.MessageUpdateEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.pudding.tables.NotifyMessagesRequests
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildCommandConfigs
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.common.utils.LorittaPermission
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.christmas2022event.modules.DropChristmasStuffModule
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
@@ -39,10 +51,17 @@ import net.perfectdreams.loritta.morenitta.utils.chance
 import net.perfectdreams.loritta.morenitta.utils.debug.DebugLog
 import net.perfectdreams.loritta.morenitta.utils.eventlog.EventLog
 import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
+import net.perfectdreams.loritta.morenitta.utils.extensions.asUserNameCodeBlockPreviewTag
+import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import org.apache.commons.text.similarity.LevenshteinDistance
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.isNotNull
 import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.update
+import java.time.Instant
 import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
@@ -294,7 +313,75 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 						logIfEnabled(enableProfiling) { "Executing ${module::class.simpleName} took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 					}
 
-					start = System.nanoTime()
+                    val channel = event.channel
+                    if (channel is GuildChannel) {
+                        val now = Instant.now()
+
+                        val requests = loritta.transaction {
+                            val requestsAny = NotifyMessagesRequests.selectAll()
+                                .where {
+                                    NotifyMessagesRequests.notifyUserId eq null and (NotifyMessagesRequests.channelId eq event.channel.idLong) and (NotifyMessagesRequests.userId neq event.author.idLong) and (NotifyMessagesRequests.processedAt.isNull())
+                                }
+                                .toList()
+
+                            val requestsSpecific = NotifyMessagesRequests.selectAll()
+                                .where {
+                                    NotifyMessagesRequests.notifyUserId eq event.author.idLong and (NotifyMessagesRequests.channelId eq event.channel.idLong) and (NotifyMessagesRequests.processedAt.isNull())
+                                }
+                                .toList()
+
+                            val requests = requestsAny + requestsSpecific
+
+                            NotifyMessagesRequests.update({ NotifyMessagesRequests.id inList requests.map { it[NotifyMessagesRequests.id] } }) {
+                                it[NotifyMessagesRequests.processedAt] = now
+                            }
+
+                            requests
+                        }
+
+                        GlobalScope.launch {
+                            for (request in requests) {
+                                try {
+                                    val member = event.guild.retrieveMemberById(request[NotifyMessagesRequests.userId]).await()
+
+                                    if (member.hasPermission(channel, Permission.VIEW_CHANNEL, Permission.MESSAGE_HISTORY)) {
+                                        val userDM = loritta.getOrRetrievePrivateChannelForUser(member.user)
+
+                                        // TODO: Proper i18n!
+                                        val i18nContext = loritta.languageManager.defaultI18nContext
+
+                                        userDM.sendMessage(
+                                            MessageCreate {
+                                                this.useComponentsV2 = true
+
+                                                this.components += Container {
+                                                    this.accentColor = LorittaColors.LorittaAqua.rgb
+
+                                                    +Section(Thumbnail(event.author.effectiveAvatarUrl)) {
+                                                        +TextDisplay(
+                                                            buildString {
+                                                                appendLine(i18nContext.get(I18nKeysData.Commands.Command.Notifymessage.UserSentMessage(event.author.asUserNameCodeBlockPreviewTag(), event.channel.asMention)))
+                                                                appendLine()
+                                                                appendLine(i18nContext.get(I18nKeysData.Commands.Command.Notifymessage.NowThatItHasBeenNotified))
+                                                            }
+                                                        )
+                                                    }
+                                                }
+
+                                                this.components += ActionRow.of(
+                                                    Button.of(ButtonStyle.LINK, event.message.jumpUrl, i18nContext.get(I18nKeysData.Commands.Command.Notifymessage.JumpToMessage))
+                                                )
+                                            }
+                                        ).await()
+                                    }
+                                } catch (e: Exception) {
+                                    logger.warn(e) { "Something went wrong while trying to send message notify request for ${request[NotifyMessagesRequests.userId]}" }
+                                }
+                            }
+                        }
+                    }
+
+                    start = System.nanoTime()
 					if (lorittaUser.hasPermission(LorittaPermission.IGNORE_COMMANDS))
 						return@launchMessageJob
 					logIfEnabled(enableProfiling) { "Checking for ignore permission took ${System.nanoTime() - start}ns for ${event.author.idLong}" }

@@ -269,6 +269,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         register(SaveMessageCommand.SaveMessagePublicCommand(loritta))
         register(SaveMessageCommand.SaveMessagePrivateCommand(loritta))
         register(VerifyMessageCommand(loritta))
+        register(NotifyMessageCommand(loritta))
 
         // ===[ MODERATION ]===
         register(BanInfoCommand(loritta))
