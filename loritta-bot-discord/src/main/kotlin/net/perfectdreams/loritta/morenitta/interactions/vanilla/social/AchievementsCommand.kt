@@ -76,7 +76,7 @@ class AchievementsCommand(private val loritta: LorittaBot) : SlashCommandDeclara
                 achievementsOfTheCurrentCategory = achievements
             } else {
                 userAchievementsInCurrentCategoryCount = achievements.count { it.type.category == category }
-                totalAchievementsInCurrentCategoryCount = AchievementType.values().count { it.category == category }
+                totalAchievementsInCurrentCategoryCount = AchievementType.entries.filter { it.available }.count { it.category == category }
                 achievementsOfTheCurrentCategory = achievements.filter { it.type.category == category }
             }
 
@@ -153,6 +153,7 @@ class AchievementsCommand(private val loritta: LorittaBot) : SlashCommandDeclara
                                 val userAchievementsInCategoryCount =
                                     achievements.count { it.type.category == optionCategory }
                                 val totalAchievementsInCategoryCount = AchievementType.entries
+                                    .filter { it.available }
                                     .count { it.category == optionCategory }
 
                                 this.option(

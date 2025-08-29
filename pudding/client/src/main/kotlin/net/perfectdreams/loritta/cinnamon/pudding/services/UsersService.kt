@@ -152,7 +152,7 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
     suspend fun getUserAchievements(id: UserId): List<PuddingAchievement> {
         return pudding.transaction {
             UserAchievements.selectAll().where {
-                UserAchievements.user eq id.value.toLong()
+                UserAchievements.user eq id.value.toLong() and (UserAchievements.type inList AchievementType.entries.filter { it.available })
             }.map { PuddingAchievement.fromRow(it) }
         }
     }
