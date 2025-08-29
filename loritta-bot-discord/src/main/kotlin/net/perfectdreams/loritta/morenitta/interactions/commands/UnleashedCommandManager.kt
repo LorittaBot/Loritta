@@ -348,7 +348,6 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         register(CoinFlipBetCommand(loritta))
         register(EmojiFightCommand(loritta))
         register(RaffleCommand(loritta))
-        register(BrokerCommand(loritta))
         register(CoinFlipBetGlobalCommand())
         // April Fools
         // register(CoinFlipBetBugCommand(loritta))
