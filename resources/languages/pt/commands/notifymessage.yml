@@ -1,0 +1,15 @@
+label: "notificarmensagem"
+description: "Faça que eu te avise no privado quando uma mensagem for enviada em um canal específico"
+notificationCreatedAnyone: "Prontinho! Eu irei te avisar no privado quando alguém enviar uma mensagem em {channelMention}."
+notificationCreatedUser: "Prontinho! Eu irei te avisar no privado quando {userMention} enviar uma mensagem em {channelMention}."
+youAlreadyHaveANotificationCreated: "Você já tem um pedido de aviso neste canal!"
+youNeedToSelectATextChannel: "Você precisa escolher um canal de texto para poder registrar avisos nele!"
+youDontHavePermissionToReadThatChannel: "Você não tem permissão para ler o canal!"
+userSentMessage: "{userMention} enviou uma mensagem em {channelMention}!"
+nowThatItHasBeenNotified: "Para notificar novas mensagens, você precisará configurar novamente o aviso."
+jumpToMessage: "Ir para a mensagem"
+options:
+  user:
+    text: "Qual usuário eu irei"
+  channel:
+    text: "O canal que será usado para notificações"

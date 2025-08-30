@@ -9,6 +9,8 @@ import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.MarriageParticipants
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserMarriages
+import net.perfectdreams.loritta.cinnamon.pudding.tables.UserNotificationSettings
+import net.perfectdreams.loritta.common.utils.NotificationType
 import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.MarriageCommand
@@ -95,6 +97,17 @@ class MarriageAffinityDecayTask(val m: LorittaBot) : NamedRunnableCoroutine {
                                     it[UserMarriages.affinity] = MarriageCommand.DEFAULT_AFFINITY
                                 }
 
+                                val participantIds = participants.map { it[MarriageParticipants.user] }
+                                    .toSet()
+
+                                // Get all users that have the notification disabled
+                                val disabledDMsUsers = UserNotificationSettings.selectAll()
+                                    .where {
+                                        UserNotificationSettings.type eq NotificationType.MARRIAGE_RENEWED and (UserNotificationSettings.enabled eq false) and (UserNotificationSettings.userId inList participantIds)
+                                    }
+                                    .map { it[UserNotificationSettings.userId] }
+                                    .toSet()
+
                                 success = true
 
                                 restoredMarriageIds.add(marriageId)
@@ -103,7 +116,8 @@ class MarriageAffinityDecayTask(val m: LorittaBot) : NamedRunnableCoroutine {
                                     ExpiredMarriagesResult.RestoredMarriage(
                                         marriageId,
                                         profile[Profiles.id].value,
-                                        participants.map { it[MarriageParticipants.user] }
+                                        participantIds,
+                                        (participantIds - disabledDMsUsers)
                                     )
                                 )
                             }
@@ -123,26 +137,43 @@ class MarriageAffinityDecayTask(val m: LorittaBot) : NamedRunnableCoroutine {
                 it[UserMarriages.expiredAt] = now
             }
 
+            val expiredMarriages = mutableListOf<ExpiredMarriagesResult.ExpiredMarriage>()
+            for (it in negativeAffinityMarriagesIds) {
+                val participantIds = affectedParticipants.filter { participantRow ->
+                    participantRow[MarriageParticipants.marriage].value == it
+                }.map { it[MarriageParticipants.user] }
+                    .toSet()
+
+                // Get all users that have the notification disabled
+                val disabledDMsUsers = UserNotificationSettings.selectAll()
+                    .where {
+                        UserNotificationSettings.type eq NotificationType.MARRIAGE_EXPIRED and (UserNotificationSettings.enabled eq false) and (UserNotificationSettings.userId inList participantIds)
+                    }
+                    .map { it[UserNotificationSettings.userId] }
+                    .toSet()
+
+                expiredMarriages.add(
+                    ExpiredMarriagesResult.ExpiredMarriage(
+                        it,
+                        participantIds,
+                        (participantIds - disabledDMsUsers)
+                    )
+                )
+            }
+
             // And update the task timer
             updateStoredTimer(m)
 
             return@transaction ExpiredMarriagesResult(
                 restoredMarriages,
-                negativeAffinityMarriagesIds.map {
-                    ExpiredMarriagesResult.ExpiredMarriage(
-                        it,
-                        affectedParticipants.filter { participantRow ->
-                            participantRow[MarriageParticipants.marriage].value == it
-                        }.map { it[MarriageParticipants.user] }
-                    )
-                }
+                expiredMarriages
             )
         }
 
         val expiresAfter = Instant.now().plusMillis(MarriageCommand.MARRIAGE_RESTORE_MAX_TIME)
 
         for (marriage in expiredMarriages.marriages) {
-            for (participantId in marriage.participantIds) {
+            for (participantId in marriage.sendDMsToIds) {
                 try {
                     val privateChannel = m.getOrRetrievePrivateChannelForUserOrNullIfUserDoesNotExist(participantId) ?: continue
 
@@ -170,7 +201,7 @@ class MarriageAffinityDecayTask(val m: LorittaBot) : NamedRunnableCoroutine {
             }
         }
         for (marriage in expiredMarriages.expiredMarriages) {
-            for (participantId in marriage.participantIds) {
+            for (participantId in marriage.sendDMsToIds) {
                 try {
                     val privateChannel = m.getOrRetrievePrivateChannelForUserOrNullIfUserDoesNotExist(participantId) ?: continue
 
@@ -206,12 +237,14 @@ class MarriageAffinityDecayTask(val m: LorittaBot) : NamedRunnableCoroutine {
         data class RestoredMarriage(
             val marriageId: Long,
             val restoredBy: Long,
-            val participantIds: List<Long>
+            val participantIds: Set<Long>,
+            val sendDMsToIds: Set<Long>
         )
 
         data class ExpiredMarriage(
             val marriageId: Long,
-            val participantIds: List<Long>
+            val participantIds: Set<Long>,
+            val sendDMsToIds: Set<Long>
         )
     }
 }

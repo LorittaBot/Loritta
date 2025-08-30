@@ -374,7 +374,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         register(DictionaryCommand(loritta))
         register(MoneyCommand(loritta, loritta.ecbManager))
         register(MorseCommand())
-        register(NotificationsCommand())
+        register(NotificationsCommand(loritta))
         register(ChooseCommand())
         register(TranslateCommand(loritta))
         register(PremiumCommand(loritta))

@@ -1,17 +1,32 @@
 label: "notificações"
-description: "Ver notificações"
-dailyTaxTaxedUserNotification: "Imposto de Inatividade no Prêmio Diário (Taxado)"
-dailyTaxWarnUserNotification: "Imposto de Inatividade no Prêmio Diário (Aviso)"
-correiosPackageUpdate: "Atualização sobre um pacote dos Correios"
-unknownNotification: "Notificação Desconhecida"
-list:
-  label: "lista"
-  description: "Ver todas as notificações"
-  title: "Notificações"
-view:
-  label: "ver"
-  description: "Ver uma notificação"
-  couldntFindTheNotification: "Não consegui encontrar essa notificação! Você tem certeza que ela existe?"
-  options:
-    id:
-      text: "O ID da notificação que você deseja ver as informações"
+description: "Notificações da Loritta"
+
+configure:
+  label: "configurar"
+  description: "Configura as Notificações que eu te envio no seu privado!"
+
+  enabled: "Ativado"
+  disabled: "Desativado"
+
+  types:
+    dailyReminder:
+      title: "Notificação de Lembre do Daily"
+      description: "Notificações que a Loritta envia falando que você já pode pegar o daily novamente"
+    marriageExpirationReminder:
+      title: "Notificação de Expiração do Casamento"
+      description: "Notificações que a Loritta envia falando que o seu casamento irá expirar em breve por falta de afinidade"
+    marriageExpired:
+      title: "Notificação que o Casamento Acabou por Falta de Afinidade"
+      description: "Notificações sobre o seu casamento acabou por falta de afinidade."
+    marriageRenewed:
+      title: "Notificação que o Casamento Foi Renovado"
+      description: "Notificações sobre o seu casamento foi renovado automaticamente ao ter ficado sem afinidade."
+    marriageLoveLetter:
+      title: "Notificação de Cartinha de Amor"
+      description: "Notificações sobre as cartinhas de amores enviadas pelo seu parceiro."
+    experienceLevelUp:
+      title: "Notificação ao Subir de Nível"
+      description: "Notificações ao subir de nível. Esta configuração apenas afeta as mensagens que eu envio no privado, caso o servidor que você esteja tenha as notificações de nível no privado ativadas."
+
+
+

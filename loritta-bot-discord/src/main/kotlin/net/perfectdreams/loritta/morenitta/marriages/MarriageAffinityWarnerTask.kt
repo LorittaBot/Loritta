@@ -9,6 +9,8 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.MarriageParticipants
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserMarriages
+import net.perfectdreams.loritta.cinnamon.pudding.tables.UserNotificationSettings
+import net.perfectdreams.loritta.common.utils.NotificationType
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.MarriageCommand
 import net.perfectdreams.loritta.morenitta.scheduledtasks.NamedRunnableCoroutine
@@ -36,27 +38,41 @@ class MarriageAffinityWarnerTask(val m: LorittaBot, val t: Long) : NamedRunnable
                 }
                 .toList()
 
-            val marriagesWithAffinity = marriages.map { 
+            val marriagesWithAffinity = marriages.associate {
                 it[UserMarriages.id] to it[UserMarriages.affinity]
-            }.toMap()
+            }
 
             // Get each participant of each marriage that was affected so we can notify them!
             val affectedParticipants = MarriageParticipants.selectAll()
                 .where {
                     MarriageParticipants.marriage inList marriages.map { it[UserMarriages.id] }
                 }
-                .toList()
+                .toSet()
+
+            val affectedParticipantIds = affectedParticipants.map { it[MarriageParticipants.user] }
+
+            // Get all users that have the notification disabled
+            val disabledDMsUsers = UserNotificationSettings.selectAll()
+                .where {
+                    UserNotificationSettings.type eq NotificationType.MARRIAGE_EXPIRATION_REMINDER and (UserNotificationSettings.enabled eq false) and (UserNotificationSettings.userId inList affectedParticipantIds)
+                }
+                .map { it[UserNotificationSettings.userId] }
+                .toSet()
 
             // Update the task timer
             updateStoredTimer(m)
 
             return@transaction MarriagesThatAreGoingToExpireResult(
                 marriagesWithAffinity.map { (marriageId, affinity) ->
+                    val marriageParticipantIds = affectedParticipants.filter { participantRow ->
+                        participantRow[MarriageParticipants.marriage] == marriageId
+                    }.map { it[MarriageParticipants.user] }
+                        .toSet()
+
                     MarriagesThatAreGoingToExpireResult.ExpiredMarriage(
                         marriageId.value,
-                        affectedParticipants.filter { participantRow ->
-                            participantRow[MarriageParticipants.marriage] == marriageId
-                        }.map { it[MarriageParticipants.user] },
+                        marriageParticipantIds,
+                        marriageParticipantIds - disabledDMsUsers,
                         affinity
                     )
                 }
@@ -64,8 +80,7 @@ class MarriageAffinityWarnerTask(val m: LorittaBot, val t: Long) : NamedRunnable
         }
 
         for (marriage in expiredMarriages.marriages) {
-            // TODO: Send the DM!
-            for (participantId in marriage.participantIds) {
+            for (participantId in marriage.sendDMsToIds) {
                 try {
                     val privateChannel = m.getOrRetrievePrivateChannelForUserOrNullIfUserDoesNotExist(participantId) ?: continue
 
@@ -101,7 +116,8 @@ class MarriageAffinityWarnerTask(val m: LorittaBot, val t: Long) : NamedRunnable
     ) {
         data class ExpiredMarriage(
             val marriageId: Long,
-            val participantIds: List<Long>,
+            val participantIds: Set<Long>,
+            val sendDMsToIds: Set<Long>,
             val affinity: Int
         )
     }

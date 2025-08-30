@@ -20,11 +20,13 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.MarriageLoveLetters
 import net.perfectdreams.loritta.cinnamon.pudding.tables.MarriageParticipants
 import net.perfectdreams.loritta.cinnamon.pudding.tables.MarriageRoleplayActions
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserMarriages
+import net.perfectdreams.loritta.cinnamon.pudding.tables.UserNotificationSettings
 import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
 import net.perfectdreams.loritta.common.achievements.AchievementType
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.EnvironmentType
 import net.perfectdreams.loritta.common.utils.LorittaColors
+import net.perfectdreams.loritta.common.utils.NotificationType
 import net.perfectdreams.loritta.common.utils.RoleplayAction
 import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.i18n.I18nKeysData
@@ -1043,7 +1045,19 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                             .orderBy(Pair(UserMarriages.affinity, SortOrder.ASC), Pair(UserMarriages.id, SortOrder.ASC))
                             .count()
 
-                        return@transaction MarriageLetterResult.Success(marriageParticipantsThatArentMe, newAffinity, marriageAffinityRank, price, receivedAffinityPoints)
+                        val marriageParticipantsThatArentMeIds = marriageParticipantsThatArentMe
+                            .map { it[MarriageParticipants.user] }
+                            .toSet()
+
+                        // Get all users that have the notification disabled
+                        val disabledDMsUsers = UserNotificationSettings.selectAll()
+                            .where {
+                                UserNotificationSettings.type eq NotificationType.MARRIAGE_LOVE_LETTER and (UserNotificationSettings.enabled eq false) and (UserNotificationSettings.userId inList marriageParticipantsThatArentMeIds)
+                            }
+                            .map { it[UserNotificationSettings.userId] }
+                            .toSet()
+
+                        return@transaction MarriageLetterResult.Success(marriageParticipantsThatArentMe, marriageParticipantsThatArentMeIds - disabledDMsUsers, newAffinity, marriageAffinityRank, price, receivedAffinityPoints)
                     }
                 }
 
@@ -1087,9 +1101,9 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                     is MarriageLetterResult.Success -> {
                         val messenger = MESSENGERS.random()
 
-                        for (participant in result.marriageParticipantsThatArentMe) {
+                        for (participantId in result.sendDMsToIds) {
                             try {
-                                val privateChannel = loritta.getOrRetrievePrivateChannelForUserOrNullIfUserDoesNotExist(participant[MarriageParticipants.user])
+                                val privateChannel = loritta.getOrRetrievePrivateChannelForUserOrNullIfUserDoesNotExist(participantId)
                                     ?: continue
 
                                 privateChannel.sendMessage(
@@ -1272,6 +1286,7 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
         private sealed class MarriageLetterResult {
             data class Success(
                 val marriageParticipantsThatArentMe: List<ResultRow>,
+                val sendDMsToIds: Set<Long>,
                 val affinity: Int,
                 val affinityRank: Long,
                 val price: Long,

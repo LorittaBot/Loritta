@@ -8,11 +8,13 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.pudding.tables.UserNotificationSettings
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.ExperienceRoleRates
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.LevelAnnouncementConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.RolesByExperience
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.common.utils.NotificationType
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.common.utils.placeholders.Placeholders
 import net.perfectdreams.loritta.i18n.I18nKeysData
@@ -306,11 +308,15 @@ class ExperienceModule(val loritta: LorittaBot) : MessageReceivedModule {
 						}
 					}
 					LevelUpAnnouncementType.DIRECT_MESSAGE -> {
-						val profileSettings = loritta.newSuspendedTransaction {
-							profile.settings
+						val hasLevelUpNotificationsEnabled = loritta.newSuspendedTransaction {
+                            UserNotificationSettings.selectAll()
+                                .where {
+                                    UserNotificationSettings.userId eq member.idLong and (UserNotificationSettings.type eq NotificationType.EXPERIENCE_LEVEL_UP) and (UserNotificationSettings.enabled eq false)
+                                }
+                                .count() != 0L
 						}
 
-						if (!profileSettings.doNotSendXpNotificationsInDm) {
+						if (hasLevelUpNotificationsEnabled) {
 							logger.info { "Direct msg, sending msg" }
 							try {
 								val privateChannel = loritta.getOrRetrievePrivateChannelForUser(member.user)
@@ -320,7 +326,7 @@ class ExperienceModule(val loritta: LorittaBot) : MessageReceivedModule {
 								val shouldNotifyThatUserCanDisable = previousLevel % 10
 
 								if (shouldNotifyThatUserCanDisable == 0) {
-									privateChannel.sendMessage(locale["modules.levelUp.howToDisableLevelNotifications", "`${guild.name.stripCodeMarks()}`", "`xpnotifications`", Emotes.LORI_YAY.toString()]).await()
+									privateChannel.sendMessage(locale["modules.levelUp.howToDisableLevelNotifications", "`${guild.name.stripCodeMarks()}`", "`notificações`", Emotes.LORI_YAY.toString()]).await()
 								}
 							} catch (e: Exception) {
 								logger.warn { "Error while sending DM to ${event.author} due to level up ($previousLevel -> $newLevel)"}
