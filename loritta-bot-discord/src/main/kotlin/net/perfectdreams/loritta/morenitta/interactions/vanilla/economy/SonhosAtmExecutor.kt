@@ -14,8 +14,6 @@ import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.pudding.tables.BoughtStocks
-import net.perfectdreams.loritta.cinnamon.pudding.tables.TickerPrices
 import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -23,7 +21,6 @@ import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
-import org.jetbrains.exposed.sql.count
 import java.util.*
 
 class SonhosAtmExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
@@ -62,33 +59,6 @@ class SonhosAtmExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor()
         var extendedSonhosInfo: ExtendedSonhosInfo? = null
 
         if (informationType == InformationType.EXTENDED) {
-            val totalSonecasInStocks = loritta.transaction {
-                val tickerFieldCount = BoughtStocks.ticker.count()
-                var totalBoughtStocks = 0L
-
-                val boughtStocks = BoughtStocks.select(BoughtStocks.ticker, tickerFieldCount)
-                    .where {
-                        BoughtStocks.user eq user.idLong
-                    }
-                    .groupBy(BoughtStocks.ticker)
-                    .associate { it[BoughtStocks.ticker].value to it[tickerFieldCount] }
-
-                val boughtTickers = boughtStocks.map { it.key }
-
-                val tickerPrices = TickerPrices.select(TickerPrices.ticker, TickerPrices.value)
-                    .where {
-                        TickerPrices.ticker inList boughtTickers
-                    }
-                    .toList()
-                    .associate { it[TickerPrices.ticker].value to it[TickerPrices.value] }
-
-                for ((tickerId, tickerPrice) in tickerPrices) {
-                    totalBoughtStocks += boughtStocks[tickerId]!! * tickerPrice
-                }
-
-                totalBoughtStocks
-            }
-
             // Get how many sonecas the user has on SparklyPower
             val sparklySonecasResult = run {
                 try {
@@ -122,7 +92,7 @@ class SonhosAtmExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor()
                 }
             }
 
-            extendedSonhosInfo = ExtendedSonhosInfo(totalSonecasInStocks, sparklySonecasResult)
+            extendedSonhosInfo = ExtendedSonhosInfo(sparklySonecasResult)
         }
 
         fun InlineMessage<*>.addExtendedSonhosInfoEmbed(extendedSonhosInfo: ExtendedSonhosInfo) {
@@ -238,7 +208,6 @@ class SonhosAtmExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor()
     }
 
     data class ExtendedSonhosInfo(
-        val boughtStocks: Long,
         val sparklySonecas: SparklySonecasResult
     ) {
         /**
@@ -247,7 +216,6 @@ class SonhosAtmExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor()
         val totalSonhos
             get() = run {
                 var totalSonhos = 0L
-                totalSonhos += boughtStocks
                 if (sparklySonecas is SparklySonecasSuccess)
                     totalSonhos += sparklySonecas.sonhos
                 return@run totalSonhos
