@@ -12,6 +12,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.UserLorittaAPITokens
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.DailyTaxTaxedUserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.UserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
+import net.perfectdreams.loritta.common.utils.DailyTaxThresholds
 import net.perfectdreams.loritta.common.utils.TokenType
 import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
@@ -91,18 +92,41 @@ class DailyTaxCollector(val m: LorittaBot) : RunnableCoroutine {
             val alreadyWarnedThatTheyWereTaxed = mutableSetOf<Long>()
             val alreadyWarnedThatTheyAreGoingToBeTaxed = mutableSetOf<Long>()
 
-            // We need to use Read Commited to avoid "Could not serialize access due to concurrent update"
-            // This is more "unsafe" because we may make someone be in the negative sonhos, but there isn't another good alterative, so yeah...
-            m.pudding.transaction(transactionIsolation = Connection.TRANSACTION_READ_COMMITTED) {
+            // This is bad, but there isn't any good solution for this
+            // This transaction is VERY prone to deadlocks, so we need to do this stupid hack
+            val inactiveDailyUsers = m.pudding.transaction(transactionIsolation = Connection.TRANSACTION_READ_COMMITTED) {
                 val notifiedUsers = DailyTaxNotifiedUsers.select(DailyTaxNotifiedUsers.user).map { it[DailyTaxNotifiedUsers.user].value }.toSet()
 
                 val bypassDailyTaxUserIds = queryDailyBypassList(m)
+
+                val inactiveDailyUsers = mutableListOf<Pair<DailyTaxUtils.InactiveDailyUser, DailyTaxThresholds.DailyTaxThreshold>>()
 
                 DailyTaxUtils.getAndProcessInactiveDailyUsers(
                     bypassDailyTaxUserIds,
                     0
                 ) { threshold, inactiveDailyUser ->
                     if (notifiedUsers.contains(inactiveDailyUser.id)) {
+                        logger.info { "Adding important notification to ${inactiveDailyUser.id} about daily tax taxed" }
+
+                        inactiveDailyUsers.add(Pair(inactiveDailyUser, threshold))
+                    } else {
+                        logger.info { "Skipping ${inactiveDailyUser.id} daily tax taxed because they weren't warned before..." }
+                    }
+                }
+
+                inactiveDailyUsers
+            }
+
+            logger.info { "Processing ${inactiveDailyUsers.size} inactive daily users..." }
+
+            // Good? Good!
+            // Now that we have released the transaction, we will now process everything again, but now in batches to avoid deadlocks (and, even if they happen, repeating should not cause catastrophic failure)
+            var count = 0
+            for (chunk in inactiveDailyUsers.chunked(10)) {
+                logger.info { "Processing ${chunk.size} users in the current batch... Total: $count/${inactiveDailyUsers.size}" }
+
+                m.transaction(transactionIsolation = Connection.TRANSACTION_READ_COMMITTED) {
+                    for ((inactiveDailyUser, threshold) in chunk) {
                         logger.info { "Adding important notification to ${inactiveDailyUser.id} about daily tax taxed" }
 
                         alreadyWarnedThatTheyWereTaxed.add(inactiveDailyUser.id)
@@ -150,10 +174,9 @@ class DailyTaxCollector(val m: LorittaBot) : RunnableCoroutine {
                             inactiveDailyUser,
                             userNotificationId.value
                         )
-                    } else {
-                        logger.info { "Skipping ${inactiveDailyUser.id} daily tax taxed because they weren't warned before..." }
                     }
                 }
+                count += chunk.size
             }
 
             logger.info { "Successfully collected today's daily tax!" }
