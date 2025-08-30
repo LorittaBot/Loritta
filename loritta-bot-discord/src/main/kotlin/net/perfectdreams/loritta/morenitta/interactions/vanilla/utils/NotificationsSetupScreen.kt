@@ -131,7 +131,11 @@ sealed class NotificationsSetupScreen(val m: LorittaBot) {
                 this.components += Container {
                     this.accentColor = LorittaColors.LorittaAqua.rgb
 
-                    +TextDisplay("### ${Emotes.LoriMegaphone} ${context.i18nContext.get(SETUP_I18N_PREFIX.Title)}")
+                    +TextDisplay(
+                        buildString {
+                            appendLine("### ${Emotes.LoriMegaphone} ${context.i18nContext.get(SETUP_I18N_PREFIX.Title)}")
+                            appendLine(context.i18nContext.get(SETUP_I18N_PREFIX.ChooseWhichNotification))
+                        })
 
                     +Section(dailyReminderToggle) {
                         +OptionExplanationCombo(

@@ -9,6 +9,7 @@ configure:
   disabled: "Desativado"
 
   title: "Notificações"
+  chooseWhichNotification: "Escolha quais notificações passivas você deseja receber no seu privado! Notificações passivas são notificações que você recebe sem ter uma interação com a Loritta. Afinal, não faz sentido poder desativar mensagens no privado de um comando que você pediu para que seja enviado no privado, né?"
 
   types:
     dailyReminder:
