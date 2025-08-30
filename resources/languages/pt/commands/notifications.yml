@@ -8,6 +8,8 @@ configure:
   enabled: "Ativado"
   disabled: "Desativado"
 
+  title: "Notificações"
+
   types:
     dailyReminder:
       title: "Notificação de Lembre do Daily"

@@ -6,6 +6,7 @@ import dev.minn.jda.ktx.messages.MessageEdit
 import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserNotificationSettings
 import net.perfectdreams.loritta.common.emojis.LorittaEmojis
 import net.perfectdreams.loritta.common.utils.LorittaColors
@@ -130,7 +131,7 @@ sealed class NotificationsSetupScreen(val m: LorittaBot) {
                 this.components += Container {
                     this.accentColor = LorittaColors.LorittaAqua.rgb
 
-                    +TextDisplay("### ${m.emojiManager.get(LorittaEmojis.LoriCard)} Notificações")
+                    +TextDisplay("### ${Emotes.LoriMegaphone} ${context.i18nContext.get(SETUP_I18N_PREFIX.Title)}")
 
                     +Section(dailyReminderToggle) {
                         +OptionExplanationCombo(
