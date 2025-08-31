@@ -92,7 +92,7 @@ class ProcessSubmittedDailyRemindersTask(val m: LorittaBot) {
                                     .count() != 0L
                             }
 
-                            if (!hasTypeDisabled) {
+                            if (hasTypeDisabled) {
                                 logger.info { "User $userId has disabled the daily reminder notification type, skipping..." }
                                 success = true
                             } else {
