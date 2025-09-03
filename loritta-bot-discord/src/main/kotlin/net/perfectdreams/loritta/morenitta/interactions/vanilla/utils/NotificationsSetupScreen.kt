@@ -55,7 +55,7 @@ sealed class NotificationsSetupScreen(val m: LorittaBot) {
             m.transaction {
                 UserNotificationSettings.upsert(UserNotificationSettings.userId, UserNotificationSettings.type) {
                     it[UserNotificationSettings.userId] = context.user.idLong
-                    it[UserNotificationSettings.type] = NotificationType.DAILY_REMINDER
+                    it[UserNotificationSettings.type] = type
                     it[UserNotificationSettings.enabled] = isEnabled.not()
                     it[UserNotificationSettings.configuredAt] = Instant.now()
                 }
