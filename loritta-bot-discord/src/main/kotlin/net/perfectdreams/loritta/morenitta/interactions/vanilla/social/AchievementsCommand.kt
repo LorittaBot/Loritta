@@ -65,7 +65,7 @@ class AchievementsCommand(private val loritta: LorittaBot) : SlashCommandDeclara
             val achievements = context.loritta.pudding.users.getUserAchievements(UserId(context.user.idLong))
 
             val userAchievementsInAllCategoriesCount = achievements.size
-            val totalAchievementsInAllCategoriesCount = AchievementType.values().size
+            val totalAchievementsInAllCategoriesCount = AchievementType.entries.filter { it.available }.size
             val userAchievementsInCurrentCategoryCount: Int
             val totalAchievementsInCurrentCategoryCount: Int
             val achievementsOfTheCurrentCategory: List<PuddingAchievement>
@@ -173,7 +173,7 @@ class AchievementsCommand(private val loritta: LorittaBot) : SlashCommandDeclara
                                 default = category == null, // Set "ALL" as the default if the category is null (which means... "all categories")
                             )
 
-                            AchievementCategory.entries.forEach {
+                            AchievementCategory.entries.filter { it.available }.forEach {
                                 insertOption(it)
                             }
                         }
