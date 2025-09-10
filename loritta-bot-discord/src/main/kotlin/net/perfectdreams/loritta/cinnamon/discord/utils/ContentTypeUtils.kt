@@ -5,6 +5,7 @@ object ContentTypeUtils {
         "image/gif",
         "image/jpeg",
         "image/bmp",
-        "image/png"
+        "image/png",
+        "image/webp"
     )
 }
