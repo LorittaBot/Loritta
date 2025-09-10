@@ -158,6 +158,18 @@ class GetDailyRewardProcessor(val m: LorittaWebsite) : LorittaRpcProcessor {
                                         var bestServer: ServerConfig? = null
                                         var bestServerInfo: TemmieDiscordAuth.Guild? = null
 
+                                        // VIVO SPONSOR
+                                        val vivoGuildId = "1102914516842446848"
+                                        val hasJoinedVivoSponsor = mutualGuilds.any { it.id == vivoGuildId }
+                                        if (hasJoinedVivoSponsor) {
+                                            bestServerInfo = mutualGuilds.first { it.id == vivoGuildId }
+
+                                            multipliedBy = 2.5
+                                            sponsoredBy = bestServerInfo
+                                            sponsoredByUserId = null
+                                            return@newSuspendedTransaction
+                                        }
+
                                         // We are going to sort by the donation value of the server (so a higher plan = more priority) and then by the multiplier guild ID priority
                                         // So if the user has multiple servers that has the best donation key, Loritta will use the Guild ID priority from the URL!
                                         // The value is sorted with a negative sign on front of it, while the priority is sorted by != because we want descending order!
