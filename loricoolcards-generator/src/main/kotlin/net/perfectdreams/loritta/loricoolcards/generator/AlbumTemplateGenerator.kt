@@ -13,7 +13,7 @@ data class TemplatingSlots(
 
 fun main() {
     // val pagePrefix = "/prototype/v10/"
-    val pagePrefix = "/production/v11/"
+    val pagePrefix = "/production/v13/"
 
     val stickersToBePlaced = (1..510).toMutableList()
 
@@ -70,29 +70,25 @@ fun main() {
     val templateSlots = mapOf(
         1 to loadTemplatingSlots("Season_v10/new_album_first_page"),
         3 to loadTemplatingSlots("Season_v10/new_album_second_page"),
-        // 5 to loadTemplatingSlots("combo_lori_sleepy"),
-        5 to loadTemplatingSlots("Season_v10/new_album_sparkly"), // full page
-        7 to loadTemplatingSlots("Season_v10/new_album_pride_month"), // full page
-        9 to loadTemplatingSlots("Season_v10/new_album_lori_beach"), // big
-        11 to loadTemplatingSlots("Season_v10/new_album_loritta_and_the_dreamers"), // small
-        13 to loadTemplatingSlots("Season_v10/new_album_lori_and_wumpus"), // small
-        15 to loadTemplatingSlots("Season_v10/new_album_lori_hey-hey-my-my-yo-yo"), // small
-        17 to loadTemplatingSlots("Season_v10/new_album_lori_water"), // big
-        19 to loadTemplatingSlots("Season_v10/new_album_lori_deitada"), // small
-        21 to loadTemplatingSlots("Season_v10/new_album_gabriela_easel"), // small
-        23 to loadTemplatingSlots("Season_v10/new_album_lori_pantufa_gabi"), // small
-        25 to loadTemplatingSlots("Season_v10/new_album_legoshi"), // full page
-        27 to loadTemplatingSlots("Season_v10/new_album_lori_stars_yafyr"), // big
-        29 to loadTemplatingSlots("Season_v10/new_album_lori_sleepy"), // small
-        31 to loadTemplatingSlots("Season_v10/new_album_deltarune"), // full page
-        33 to loadTemplatingSlots("Season_v10/new_album_vergonha"), // small
-        35 to loadTemplatingSlots("Season_v10/new_album_lori_running_sonhos"), // small
-        37 to loadTemplatingSlots("Season_v10/new_album_sao_joao"), // full page
-        39 to loadTemplatingSlots("Season_v10/new_album_lori_cool_pose"), // big
-        41 to loadTemplatingSlots("Season_v10/new_album_lori_you_bring_light_in"), // small
-        43 to loadTemplatingSlots("Season_v10/new_album_lori_code"), // small
-        45 to loadTemplatingSlots("Season_v10/new_album_sips"), // small
-        47 to loadTemplatingSlots("Season_v10/new_album_lori_mari_figurittas"), // full page
+        5 to loadTemplatingSlots("Season_v10/new_album_sparkly"),
+        7 to loadTemplatingSlots("Season_v10/new_album_lori_beach"),
+        9 to loadTemplatingSlots("Season_v10/new_album_loritta_and_the_dreamers"),
+        11 to loadTemplatingSlots("Season_v10/new_album_lori_and_wumpus"),
+        13 to loadTemplatingSlots("Season_v10/new_album_lori_hey-hey-my-my-yo-yo"),
+        15 to loadTemplatingSlots("Season_v10/new_album_lori_water"),
+        17 to loadTemplatingSlots("Season_v10/new_album_lori_deitada"),
+        19 to loadTemplatingSlots("Season_v10/new_album_gabriela_easel"),
+        21 to loadTemplatingSlots("Season_v10/new_album_lori_pantufa_gabi"),
+        23 to loadTemplatingSlots("Season_v10/new_album_lori_stars_yafyr"),
+        25 to loadTemplatingSlots("Season_v10/new_album_lori_sleepy"),
+        27 to loadTemplatingSlots("Season_v10/new_album_vergonha"),
+        29 to loadTemplatingSlots("Season_v10/new_album_lori_running_sonhos"),
+        31 to loadTemplatingSlots("Season_v10/new_album_lori_cool_pose"),
+        33 to loadTemplatingSlots("Season_v10/new_album_lori_you_bring_light_in"),
+        35 to loadTemplatingSlots("Season_v10/new_album_lori_code"),
+        37 to loadTemplatingSlots("Season_v10/new_album_sips"),
+        39 to loadTemplatingSlots("Season_v10/new_album_lori_mari_figurittas"),
+        41 to loadTemplatingSlots("Season_v10/new_album_generic_page"),
 
         -1 to loadTemplatingSlots("Season_v10/new_album_generic_page"),
 
@@ -457,7 +453,7 @@ fun main() {
             sonhosReward = 2_500_000,
             stickersInPack = 5,
             boosterPacksOnDailyReward = 7,
-            boosterPacksPurchaseAvailableAfter = Instant.parse("2025-07-25T03:00:00+00"),
+            boosterPacksPurchaseAvailableAfter = Instant.parse("2025-09-25T03:00:00+00"),
             stickerProbabilityWeights = mapOf(
                 CardRarity.COMMON to 1.0,
                 CardRarity.UNCOMMON to 1.0,
@@ -473,8 +469,8 @@ fun main() {
         )
     )
 
-    println("INSERT INTO loricoolcardsevents (event_name, starts_at, ends_at, template) VALUES ('Top 500 Sonhadores (Temporada 11)', '2025-07-01 03:00:00+00', '2025-08-01 03:00:00+00', '$resultAsJson');")
-    if (true) {
+    println("INSERT INTO loricoolcardsevents (event_name, starts_at, ends_at, template) VALUES ('Top 500 Sonhadores (Temporada 13)', '2025-09-01 03:00:00+00', '2025-10-01 03:00:00+00', '$resultAsJson');")
+    if (false) {
         println(
             "UPDATE loricoolcardsevents SET template = '${resultAsJson}' WHERE id = 23;"
         )
