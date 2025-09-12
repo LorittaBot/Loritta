@@ -11,22 +11,24 @@ repositories {
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile> {
-	kotlinOptions {
+	compilerOptions {
 		// Jetpack Compose doesn't support Kotlin 1.7.10 yet, but the latest version seems to compile just fine under Kotlin 1.7.10
-		freeCompilerArgs += listOf(
-			"-P",
-			"plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=true",
-			// Fixes an issue where "java.lang.IllegalStateException: IdSignature clash" when compiling the ReputationRoute's ReputationLeaderboardEntry
-			// (probably related to compose x kotlinx.serialization?)
-			// https://github.com/JetBrains/compose-multiplatform/issues/3418
-			"-Xklib-enable-signature-clash-checks=false",
+        freeCompilerArgs.addAll(
+            listOf(
+                "-P",
+                "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=true",
+                // Fixes an issue where "java.lang.IllegalStateException: IdSignature clash" when compiling the ReputationRoute's ReputationLeaderboardEntry
+                // (probably related to compose x kotlinx.serialization?)
+                // https://github.com/JetBrains/compose-multiplatform/issues/3418
+                "-Xklib-enable-signature-clash-checks=false",
 
-			// Live Literals seems to be only used for hot reloading in dev mode, but Compose Web doesn't support hot reload yet
-			"-P",
-			"plugin:androidx.compose.compiler.plugins.kotlin:liveLiterals=false",
-			"-P",
-			"plugin:androidx.compose.compiler.plugins.kotlin:liveLiteralsEnabled=false"
-		)
+                // Live Literals seems to be only used for hot reloading in dev mode, but Compose Web doesn't support hot reload yet
+                "-P",
+                "plugin:androidx.compose.compiler.plugins.kotlin:liveLiterals=false",
+                "-P",
+                "plugin:androidx.compose.compiler.plugins.kotlin:liveLiteralsEnabled=false"
+            )
+        )
 	}
 }
 

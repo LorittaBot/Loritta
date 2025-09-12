@@ -72,9 +72,6 @@ val generateI18nKeys = tasks.register<net.perfectdreams.i18nhelper.plugin.Genera
 
 kotlin {
     jvm {
-        compilations.all {
-            kotlinOptions.jvmTarget = Versions.JVM_TARGET
-        }
     }
 
     js(IR) {
@@ -106,8 +103,7 @@ kotlin {
             }
         }
 
-        // jvmMain and jsMain *should* work but for some reason they don't
-        jvm().compilations["main"].defaultSourceSet {
+        jvmMain {
             dependencies {
                 api(kotlin("stdlib-jdk8"))
 
@@ -151,7 +147,7 @@ kotlin {
             }
         }
 
-        jvm().compilations["test"].defaultSourceSet {
+        jvmTest {
             dependencies {
                 // Required for tests, if this is missing then Gradle will throw
                 // "No tests found for given includes: [***Test](filter.includeTestsMatching)"
@@ -162,7 +158,7 @@ kotlin {
             }
         }
 
-        js().compilations["main"].defaultSourceSet {
+        jsMain {
             dependencies {
                 api(kotlin("stdlib-js"))
                 api(npm("canvas", "2.6.1"))

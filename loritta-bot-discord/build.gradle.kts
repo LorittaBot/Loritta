@@ -158,7 +158,7 @@ tasks {
 
         // Copy the output from the frontend task to the backend resources
         if (!skipSpicyMorenitta) {
-            from(jsBrowserProductionWebpack.destinationDirectory) {
+            from(jsBrowserProductionWebpack.outputDirectory) {
                 into("spicy_morenitta/js/")
             }
         }
