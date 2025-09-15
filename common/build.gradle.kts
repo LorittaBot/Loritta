@@ -71,11 +71,7 @@ val generateI18nKeys = tasks.register<net.perfectdreams.i18nhelper.plugin.Genera
 }
 
 kotlin {
-    jvm {
-        compilations.all {
-            kotlinOptions.jvmTarget = Versions.JVM_TARGET
-        }
-    }
+    jvm {}
 
     js(IR) {
         // Declares that we want to compile for the browser and for nodejs

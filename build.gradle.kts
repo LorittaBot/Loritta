@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -26,8 +28,22 @@ allprojects {
 }
 
 subprojects {
+    plugins.withId("org.jetbrains.kotlin.multiplatform") {
+        extensions.configure<KotlinMultiplatformExtension> {
+            jvmToolchain(21)
+        }
+    }
+
+    plugins.withId("org.jetbrains.kotlin.jvm") {
+        extensions.configure<KotlinJvmProjectExtension> {
+            jvmToolchain(21)
+        }
+    }
+
     tasks.withType<KotlinCompile> {
-        kotlinOptions.javaParameters = true
+        compilerOptions {
+            this.javaParameters = true
+        }
     }
 }
 

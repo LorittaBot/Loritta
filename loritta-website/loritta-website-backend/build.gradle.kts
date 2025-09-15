@@ -82,7 +82,7 @@ tasks {
         dependsOn(sass)
 
         // Copy the output from the frontend task to the backend resources
-        from(jsBrowserProductionWebpack.destinationDirectory) {
+        from(jsBrowserProductionWebpack.outputDirectory) {
             into("static/v3/assets/js/")
         }
 

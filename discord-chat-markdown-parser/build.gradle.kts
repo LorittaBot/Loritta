@@ -4,9 +4,6 @@ plugins {
 
 kotlin {
     jvm {
-        compilations.all {
-            kotlinOptions.jvmTarget = Versions.JVM_TARGET
-        }
     }
 
     js(IR) {
