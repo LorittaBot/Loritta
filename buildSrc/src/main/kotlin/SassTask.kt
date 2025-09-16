@@ -49,7 +49,6 @@ abstract class SassTask : DefaultTask() {
 
     @TaskAction
     fun execute(inputChanges: InputChanges) {
-        logger.lifecycle("#1")
         val sassVersion = sassVersion.get()
         val operatingSystem = org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.getCurrentOperatingSystem()
 
@@ -71,7 +70,6 @@ abstract class SassTask : DefaultTask() {
             else -> throw UnsupportedOperationException("Unsupported OS $operatingSystem! The sassTask code must be updated to support it!")
         }
 
-        logger.lifecycle("#2")
         // The "caches" folder is used by Paperweight, so that's why I used the same name
         val dartSassTempFolder = File(project.rootDir, ".gradle/caches/dart-sass-$sassVersion")
         dartSassTempFolder.mkdirs()
@@ -105,7 +103,6 @@ abstract class SassTask : DefaultTask() {
             logger.lifecycle("SASS version $sassVersion already exists :)")
         }
 
-        logger.lifecycle("#3")
         // Execute SASS
         val originalSassLocation = inputSass.get().asFile
         val outputSassLocation = outputSass.get().asFile
