@@ -1,14 +1,13 @@
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.*
 import org.gradle.work.InputChanges
 import java.io.File
-import java.io.FileOutputStream
 import java.net.URL
-import java.util.*
-import java.util.zip.ZipEntry
-import java.util.zip.ZipFile
+import java.util.concurrent.TimeUnit
+import kotlin.concurrent.thread
 
 /**
  * Converts a SASS file to a CSS file and puts the converted file into `build/sass/[outputSass]`
@@ -38,11 +37,20 @@ abstract class SassTask : DefaultTask() {
     @get:InputDirectory
     abstract val inputSassFolder: DirectoryProperty
 
+    @get:Input
+    abstract val sassVersion: Property<String>
+
     @get:OutputDirectory
     abstract val outputSass: DirectoryProperty
 
+    init {
+        sassVersion.convention("1.35.2")
+    }
+
     @TaskAction
     fun execute(inputChanges: InputChanges) {
+        logger.lifecycle("#1")
+        val sassVersion = sassVersion.get()
         val operatingSystem = org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.getCurrentOperatingSystem()
 
         val isWindows = operatingSystem.internalOs.isWindows
@@ -57,21 +65,22 @@ abstract class SassTask : DefaultTask() {
         }
 
         val url = when {
-            isWindows -> "https://github.com/sass/dart-sass/releases/download/1.35.2/dart-sass-1.35.2-windows-x64.zip"
-            isLinux -> "https://github.com/sass/dart-sass/releases/download/1.35.2/dart-sass-1.35.2-linux-x64.tar.gz"
-            isMacOsX -> "https://github.com/sass/dart-sass/releases/download/1.35.2/dart-sass-1.35.2-macos-x64.tar.gz"
+            isWindows -> "https://github.com/sass/dart-sass/releases/download/$sassVersion/dart-sass-$sassVersion-windows-x64.zip"
+            isLinux -> "https://github.com/sass/dart-sass/releases/download/$sassVersion/dart-sass-$sassVersion-linux-x64.tar.gz"
+            isMacOsX -> "https://github.com/sass/dart-sass/releases/download/$sassVersion/dart-sass-$sassVersion-macos-x64.tar.gz"
             else -> throw UnsupportedOperationException("Unsupported OS $operatingSystem! The sassTask code must be updated to support it!")
         }
 
+        logger.lifecycle("#2")
         // The "caches" folder is used by Paperweight, so that's why I used the same name
-        val dartSassTempFolder = File(project.rootDir, ".gradle/caches/dart-sass")
+        val dartSassTempFolder = File(project.rootDir, ".gradle/caches/dart-sass-$sassVersion")
         dartSassTempFolder.mkdirs()
 
         val dartSassOsTempFolder = File(dartSassTempFolder, folderName)
 
         if (!dartSassOsTempFolder.exists()) {
             dartSassOsTempFolder.mkdirs()
-            println("Downloading SASS from $url... Hang tight!")
+            logger.lifecycle("Downloading SASS from $url to $dartSassOsTempFolder... Hang tight!")
             val sass = URL(url).readBytes()
 
             val extension = if (url.endsWith(".zip"))
@@ -84,59 +93,40 @@ abstract class SassTask : DefaultTask() {
             sassZipFile.writeBytes(sass)
 
             // And then extract it!
-            if (extension == "zip") {
-                extractZip(sassZipFile, dartSassOsTempFolder)
-            } else {
-                extractTarGz(sassZipFile, dartSassOsTempFolder)
+            project.copy {
+                if (extension == "zip") {
+                    this.from(project.zipTree(sassZipFile))
+                } else {
+                    this.from(project.tarTree(project.resources.gzip(sassZipFile)))
+                }
+                this.into(dartSassOsTempFolder)
             }
+        } else {
+            logger.lifecycle("SASS version $sassVersion already exists :)")
         }
 
+        logger.lifecycle("#3")
         // Execute SASS
         val originalSassLocation = inputSass.get().asFile
         val outputSassLocation = outputSass.get().asFile
         val outputSassLocationFile = File(outputSassLocation, originalSassLocation.nameWithoutExtension + ".css")
 
-        when {
+        val pb = when {
             isWindows -> {
-                val pb = ProcessBuilder(
+                ProcessBuilder(
                     "cmd.exe",
                     "/C",
                     "$dartSassOsTempFolder\\dart-sass\\sass.bat",
                     originalSassLocation.toString(),
                     outputSassLocationFile.toString()
                 )
-                    .also {
-                        println(it.command())
-                    }
-                    .start()
-
-                val status = pb.waitFor()
-
-                println(pb.inputStream.readAllBytes().toString(Charsets.UTF_8))
-                println(pb.errorStream.readAllBytes().toString(Charsets.UTF_8))
-
-                println("Process Status: $status")
-
-                if (status != 0)
-                    error("SASS failed! Status: $status")
             }
-
             isLinux || isMacOsX -> {
-                val pb = ProcessBuilder(
+                ProcessBuilder(
                     "$dartSassOsTempFolder/dart-sass/sass",
                     originalSassLocation.toString(),
                     outputSassLocationFile.toString()
-                ).start()
-
-                val status = pb.waitFor()
-
-                println(pb.inputStream.readAllBytes().toString(Charsets.UTF_8))
-                println(pb.errorStream.readAllBytes().toString(Charsets.UTF_8))
-
-                println("Process Status: $status")
-
-                if (status != 0)
-                    error("SASS failed! Status: $status")
+                )
             }
 
             else -> {
@@ -144,36 +134,34 @@ abstract class SassTask : DefaultTask() {
             }
         }
 
-        println("Done!")
-    }
+        logger.lifecycle("Executing SASS Process: ${pb.command().joinToString()}")
 
+        pb.redirectErrorStream(true)
 
-    private fun extractZip(input: File, output: File) {
-        ZipFile(input).use { zipFile ->
-            val entries: Enumeration<out ZipEntry?> = zipFile.entries()
-            while (entries.hasMoreElements()) {
-                val entry: ZipEntry = entries.nextElement() ?: return
-                val entryDestination = File(output, entry.name)
-                if (entry.isDirectory) {
-                    entryDestination.mkdirs()
-                } else {
-                    entryDestination.parentFile.mkdirs()
-                    zipFile.getInputStream(entry).use { `in` ->
-                        FileOutputStream(entryDestination).use { out ->
-                            zipFile.getInputStream(entry).transferTo(out)
-                        }
-                    }
-                }
+        val process = pb.start()
+
+        thread(isDaemon = true, name = "sass-gobbler") {
+            process.inputStream.bufferedReader().forEachLine { line ->
+                logger.lifecycle("SASS: $line")
             }
         }
-    }
 
-    private fun extractTarGz(input: File, output: File) {
-        // Pray that the user has sh and tar installed
-        val builder = ProcessBuilder()
-        builder.command("sh", "-c", java.lang.String.format("tar xfz %s -C %s", input, output))
-        builder.directory(File("/tmp"))
-        val process = builder.start()
-        process.waitFor()
+        logger.lifecycle("Waiting SASS process to finish...")
+
+        val waitFor = process.waitFor(30, TimeUnit.SECONDS)
+
+        if (!waitFor) {
+            process.destroyForcibly()
+            error("SASS process timed out!")
+        }
+
+        val status = process.exitValue()
+
+        logger.lifecycle("SASS Process Status: $status")
+
+        if (status != 0)
+            error("SASS failed! Status: $status")
+
+        logger.lifecycle("Generated SASS file ${outputSassLocationFile.absolutePath}")
     }
 }
