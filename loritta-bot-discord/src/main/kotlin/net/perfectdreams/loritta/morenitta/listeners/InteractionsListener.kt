@@ -260,7 +260,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 if (true) {
                     context.reply(false) {
                         styled(
-                            "A conta do criador da Loritta (MrPowerGamerBR) foi banida justamente do Discord e, com isso, eu corro o risco de deixar de existir para sempre no Discord. Compartilhe isso para mostrar o quão injusto o Discord está sendo punindo por mensagens enviadas por anos atrás e para que, se tivermos sorte, o MrPowerGamerBR consiga recuperar a conta e eu possa continuar a existir. https://mrpowergamerbr.com/br/blog/2025-09-18-my-discord-account-got-suspended"
+                            "A conta do criador da Loritta (MrPowerGamerBR) foi banida justamente do Discord e, com isso, eu corro o risco de deixar de existir para sempre no Discord. Compartilhe isso para mostrar o quão injusto o Discord está sendo punindo por mensagens enviadas por anos atrás e para que, se tivermos sorte, o MrPowerGamerBR consiga recuperar a conta e eu possa continuar a existir. **Eu só irei voltar a funcionar quando a conta deixar de ser suspensa, infelizmente isto é necessário pois eu posso acabar caso não seja resolvido.** https://mrpowergamerbr.com/br/blog/2025-09-18-my-discord-account-got-suspended"
                         )
                     }
                 } else {
