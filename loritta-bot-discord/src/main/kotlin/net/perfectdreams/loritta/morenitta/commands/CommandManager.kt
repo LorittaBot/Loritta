@@ -453,23 +453,15 @@ class CommandManager(val loritta: LorittaBot) {
 
 				loritta.lorittaShards.updateCachedUserData(context.userHandle)
 
-                if (true) {
-                    context.reply(
-                        LorittaReply(
-                            "A conta do criador da Loritta (MrPowerGamerBR) foi banida injustamente do Discord e, com isso, eu corro o risco de deixar de existir para sempre no Discord. Compartilhe isso para mostrar o quão injusto o Discord está sendo punindo por mensagens enviadas por anos atrás e para que, se tivermos sorte, o MrPowerGamerBR consiga recuperar a conta e eu possa continuar a existir. **Eu só irei voltar a funcionar quando a conta deixar de ser suspensa, infelizmente isto é necessário pois eu posso acabar caso não seja resolvido.** https://mrpowergamerbr.com/br/blog/2025-09-18-my-discord-account-got-suspended"
-                        )
-                    )
-                } else {
-                    command.run(context, context.locale)
+				command.run(context, context.locale)
 
-                    if (!isPrivateChannel && ev.guild != null) {
-                        if (ev.guild.selfMember.hasPermission(ev.channel as GuildChannel, Permission.MESSAGE_MANAGE) && (serverConfig.deleteMessageAfterCommand)) {
-                            ev.message.guildChannel.deleteMessageById(ev.messageId).queue({}, {
-                                // We don't care if we weren't able to delete the message because it was already deleted
-                            })
-                        }
-                    }
-                }
+				if (!isPrivateChannel && ev.guild != null) {
+					if (ev.guild.selfMember.hasPermission(ev.channel as GuildChannel, Permission.MESSAGE_MANAGE) && (serverConfig.deleteMessageAfterCommand)) {
+						ev.message.guildChannel.deleteMessageById(ev.messageId).queue({}, {
+							// We don't care if we weren't able to delete the message because it was already deleted
+						})
+					}
+				}
 
 				val end = System.currentTimeMillis()
 				val commandLatency = end - start

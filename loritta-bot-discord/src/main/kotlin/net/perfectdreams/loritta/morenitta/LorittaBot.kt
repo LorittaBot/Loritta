@@ -21,6 +21,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.datetime.Clock
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonPrimitive
@@ -362,6 +363,7 @@ class LorittaBot(
 	val gatewayShardsStartupResumeStatus = ConcurrentHashMap<Int, GatewayShardStartupResumeStatus>()
 
 	private val internalWebServer = InternalWebServer(this)
+
 	val preLoginStates = mutableMapOf<Int, MutableStateFlow<PreStartGatewayEventReplayListener.ProcessorState>>()
 	var isActive = true
 
@@ -518,7 +520,7 @@ class LorittaBot(
 		logger.info { "Starting Debug Web Server..." }
 		internalWebServer.start()
 
-        logger.info { "Success! Creating folders..." }
+		logger.info { "Success! Creating folders..." }
 		File(FOLDER).mkdirs()
 		File(ASSETS).mkdirs()
 		File(TEMP).mkdirs()
@@ -1264,6 +1266,78 @@ class LorittaBot(
 				this.cachedGabrielaHelperMerchBuyerIdsResponse = Json.parseToJsonElement(payload).jsonArray.map { it.jsonPrimitive.long }
 			} catch (e: Exception) {
 				logger.warn(e) { "Failed to get merch buyer IDs from Gabriela Helper!" }
+			}
+		}
+
+		val dailyTaxWarner = DailyTaxWarner(this)
+		val dailyTaxCollector = DailyTaxCollector(this)
+
+		// 12 hours before
+		scheduleCoroutineEveryDayAtSpecificHourIfMainReplica(
+			DailyTaxWarner::class.simpleName!!,
+			LocalTime.of(12, 0),
+			dailyTaxWarner
+		)
+
+		// 4 hours before
+		scheduleCoroutineEveryDayAtSpecificHourIfMainReplica(
+			DailyTaxWarner::class.simpleName!!,
+			LocalTime.of(20, 0),
+			dailyTaxWarner
+		)
+
+		// 1 hour before
+		scheduleCoroutineEveryDayAtSpecificHourIfMainReplica(
+			DailyTaxWarner::class.simpleName!!,
+			LocalTime.of(23, 0),
+			dailyTaxWarner
+		)
+
+		// at midnight + notify about the user about taxes
+		scheduleCoroutineEveryDayAtSpecificHourIfMainReplica(
+			DailyTaxCollector::class.simpleName!!,
+			LocalTime.MIDNIGHT,
+			dailyTaxCollector
+		)
+
+		runBlocking {
+			// Only the main instance should run these tasks!
+			if (isMainInstance) {
+				// 12 hours before
+				taskManager.scheduleCoroutineEveryDayAtSpecificHour(
+					LocalTime.of(12, 0),
+					MarriageAffinityWarnerTask(this@LorittaBot, 12)
+				)
+
+				// 4 hours before
+				taskManager.scheduleCoroutineEveryDayAtSpecificHour(
+					LocalTime.of(20, 0),
+					MarriageAffinityWarnerTask(this@LorittaBot, 20)
+				)
+
+				// 1 hour before
+				taskManager.scheduleCoroutineEveryDayAtSpecificHour(
+					LocalTime.of(23, 0),
+					MarriageAffinityWarnerTask(this@LorittaBot, 23)
+				)
+
+				// at midnight do the decay
+				taskManager.scheduleCoroutineEveryDayAtSpecificHour(
+					LocalTime.MIDNIGHT,
+					MarriageAffinityDecayTask(this@LorittaBot)
+				)
+
+				// at midnight remind about the daily
+				taskManager.scheduleCoroutineEveryDayAtSpecificHour(
+					LocalTime.of(3, 0), // Midnight at America/Sao_Paulo
+					DailyReminderTask(this@LorittaBot)
+				)
+
+				val processSubmittedDailyRemindersTask = ProcessSubmittedDailyRemindersTask(this@LorittaBot)
+
+				GlobalScope.launch {
+					processSubmittedDailyRemindersTask.processDailyReminders()
+				}
 			}
 		}
 	}
