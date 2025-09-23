@@ -26,7 +26,7 @@ class MarriedBadge(val pudding: Pudding) : Badge.LorittaBadge(
 			MarriageParticipants.innerJoin(UserMarriages)
                 .selectAll()
 				.where {
-					MarriageParticipants.user eq user.id and (UserMarriages.expiredAt.isNull())
+					MarriageParticipants.user eq user.id and (UserMarriages.active eq true)
 				}
 				.count() != 0L
 		}
