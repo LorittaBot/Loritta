@@ -244,10 +244,6 @@ class RateCommand(private val loritta: LorittaBot) : SlashCommandDeclarationWrap
 
             executor = RateHusbandoExecutor()
         }
-
-        subcommand(I18N_PREFIX.Loli.Label, I18N_PREFIX.Loli.Description, UUID.fromString("aecbeff4-38be-44c2-8486-4c268dab6a68")) {
-            executor = RateLoliExecutor()
-        }
     }
 
     class RateWaifuExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
@@ -308,46 +304,5 @@ class RateCommand(private val loritta: LorittaBot) : SlashCommandDeclarationWrap
 
             return mapOf(options.husbando to waifu)
         }
-    }
-
-    class RateLoliExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
-        inner class Options : ApplicationCommandOptions() {
-            val loli = string("younggirlinjapanese", I18N_PREFIX.Loli.Options.Loli)
-        }
-
-        override val options = Options()
-
-        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
-            val strScore = "∞"
-            val reason = context.i18nContext.get(
-                I18N_PREFIX.WaifuHusbando.ScoreLoritta
-            ).random() + " ${Emotes.LoriYay}"
-
-            context.reply(false) {
-                styled(
-                    content = context.i18nContext.get(
-                        RateCommand.I18N_PREFIX.Loli.IsThatATypo
-                    )
-                )
-
-                styled(
-                    content = context.i18nContext.get(
-                        RateCommand.I18N_PREFIX.Result(
-                            input = "Loritta",
-                            score = strScore,
-                            reason = reason
-                        )
-                    ),
-                    prefix = "\uD83E\uDD14"
-                )
-            }
-
-            context.giveAchievementAndNotify(AchievementType.WEIRDO, true)
-        }
-
-        override suspend fun convertToInteractionsArguments(
-            context: LegacyMessageCommandContext,
-            args: List<String>
-        ): Map<OptionReference<*>, Any?> = emptyMap()
     }
 }

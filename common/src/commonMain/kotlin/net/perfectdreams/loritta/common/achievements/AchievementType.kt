@@ -76,7 +76,7 @@ enum class AchievementType(
         AchievementCategory.RATE,
         I18nKeysData.Achievements.Achievement.Weirdo.Title,
         I18nKeysData.Achievements.Achievement.Weirdo.Description,
-        true
+        false
     ),
 
     // ===[ COIN FLIP BET ]===
