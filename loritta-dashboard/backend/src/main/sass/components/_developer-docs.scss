@@ -1,0 +1,186 @@
+:root {
+  --developer-docs-get-method: #00a650;
+  --developer-docs-post-method: var(--loritta-blue);
+  --developer-docs-put-method: #f73;
+  --developer-docs-delete-method: #f23d4f;
+  --developer-docs-patch-method: #B200FF;
+}
+
+.developer-docs {
+  code {
+    background-color: #{'hsl(from var(--background-color) h s calc(l / 1.05))'};
+    padding: .2em .4em;
+    border-radius: var(--first-level-border-radius);
+  }
+
+  // Based on the _alerts.scss
+  .endpoint-reference {
+    padding: 1em;
+    border-radius: var(--first-level-border-radius);
+    border: 1px solid;
+    font-family: monospace;
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+
+    .endpoint-path {
+      line-break: anywhere;
+    }
+
+    .http-method-pill {
+      padding: 0 6px 0 6px;
+      color: white;
+      font-weight: bold;
+      border-radius: var(--first-level-border-radius);
+    }
+
+    &.http-method-get {
+      background-color: #{'hsl(from var(--developer-docs-get-method) h s l / 10%)'};
+      border-color: #{'hsl(from var(--developer-docs-get-method) h calc(s * 5) calc(l / 5) / 25%)'};
+
+      .http-method-pill {
+        background-color: var(--developer-docs-get-method);
+      }
+    }
+
+    &.http-method-post {
+      background-color: #{'hsl(from var(--developer-docs-post-method) h s l / 10%)'};
+      border-color: #{'hsl(from var(--developer-docs-post-method) h calc(s * 5) calc(l / 5) / 25%)'};
+
+      .http-method-pill {
+        background-color: var(--developer-docs-post-method);
+      }
+    }
+
+    &.http-method-put {
+      background-color: #{'hsl(from var(--developer-docs-put-method) h s l / 10%)'};
+      border-color: #{'hsl(from var(--developer-docs-put-method) h calc(s * 5) calc(l / 5) / 25%)'};
+
+      .http-method-pill {
+        background-color: var(--developer-docs-put-method);
+      }
+    }
+
+    &.http-method-delete {
+      background-color: #{'hsl(from var(--developer-docs-delete-method) h s l / 10%)'};
+      border-color: #{'hsl(from var(--developer-docs-delete-method) h calc(s * 5) calc(l / 5) / 25%)'};
+
+      .http-method-pill {
+        background-color: var(--developer-docs-delete-method);
+      }
+    }
+
+    &.http-method-patch {
+      background-color: #{'hsl(from var(--developer-docs-patch-method) h s l / 10%)'};
+      border-color: #{'hsl(from var(--developer-docs-patch-method) h calc(s * 5) calc(l / 5) / 25%)'};
+
+      .http-method-pill {
+        background-color: var(--developer-docs-patch-method);
+      }
+    }
+  }
+
+  .mainframe-terminal-wrapper {
+    overflow: auto;
+    color: white;
+    background-color: #28282e;
+    border-radius: 3px;
+
+    .mainframe-terminal-title {
+      font-weight: bold;
+      height: 2em;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #45454e;
+      font-size: 1.1em;
+    }
+
+    .mainframe-terminal {
+      padding: 1em;
+      font-family: monospace;
+      overflow: auto;
+
+      .term-green {
+        color: #b0eb93;
+      }
+
+      .term-pink {
+        color: #feaae4;
+      }
+
+      .term-orange {
+        color: #ffc384;
+      }
+
+      .term-blue {
+        color: #accce4;
+      }
+    }
+  }
+
+  .test-parameter-type {
+    background-color: red;
+    border-radius: 3px;
+    color: white;
+    text-transform: uppercase;
+    font-size: 0.6em;
+    font-weight: bold;
+    padding: 3px;
+    position: relative;
+    top: -0.3em;
+
+    &.path-parameter {
+      background-color: #0eaf9b;
+    }
+
+    &.query-parameter {
+      background-color: #a884f3;
+    }
+
+    &.json-parameter {
+      background-color: #e8ab5e;
+    }
+
+    &.full-body-parameter {
+      background-color: #3e3546;
+    }
+  }
+}
+
+.http-method-circle {
+  height: 4px;
+  width: 4px;
+  border-radius: 100%;
+
+  &.http-method-get {
+    background-color: var(--developer-docs-get-method);
+  }
+
+  &.http-method-post {
+    background-color: var(--developer-docs-post-method);
+  }
+
+  &.http-method-put {
+    background-color: var(--developer-docs-put-method);
+  }
+
+  &.http-method-delete {
+    background-color: var(--developer-docs-delete-method);
+  }
+
+  &.http-method-patch {
+    background-color: var(--developer-docs-patch-method);
+  }
+}
+
+.http-method-sidebar {
+  width: 4em;
+  font-family: monospace;
+  font-size: 0.75em;
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  gap: 0.25em;
+  flex-shrink: 0; // Don't shrink if the text is too big
+}

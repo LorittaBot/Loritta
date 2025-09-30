@@ -1,0 +1,110 @@
+// ===[ CUSTOM SELECT MENU:TM: ]===
+// Because styling a default select menu is hard as fuc
+.select-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+
+    >.select {
+        border: 1px solid var(--input-border-color);
+        border-radius: var(--first-level-border-radius);
+        background-color: var(--input-background-color);
+        padding: 8px;
+        cursor: pointer;
+
+        text-overflow: ellipsis;
+        // Adding overflow: hidden adds unnecessary padding (why)
+        // overflow: hidden;
+        white-space: nowrap;
+
+        outline: 0 solid rgba(var(--loritta-blue-rgb), 0.5); // Only here to avoid a quick snap when the input is not focused anymore
+        // Avoids the textarea resize handle feeling sluggish
+        transition: height 0s, border-color 0.25s, outline 0.25s, background-color 0.25s;
+
+        &:hover {
+            outline: 4px solid rgba(var(--loritta-blue-rgb), 0.5);
+        }
+
+        &:focus {
+            outline: 2px solid rgba(var(--loritta-blue-rgb), 0.5);
+            border-color: var(--loritta-blue);
+        }
+
+        &.open {
+            border-radius: var(--first-level-border-radius) var(--first-level-border-radius) 0px 0px;
+        }
+
+        >div {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            min-width: 200px;
+            width: 100%;
+
+            >.currently-selected-option-content {
+                width: 100%;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
+            }
+
+            >.chevron {
+                opacity: 0.5;
+                display: flex;
+                // Center the chevron svg
+                align-items: center;
+                justify-content: center;
+                width: 1em;
+                height: 1em;
+
+                >svg {
+                    width: 1em;
+                    height: 1em;
+                }
+            }
+        }
+    }
+
+    >.menu {
+        // This can't have a z-index! If it has, then it breaks the pseudo element!
+        position: absolute;
+        top: 100%;
+        background-color: var(--input-background-color);
+        border-radius: 0px 0px var(--first-level-border-radius) var(--first-level-border-radius);
+        border-left: 1px solid var(--input-border-color);
+        border-right: 1px solid var(--input-border-color);
+        border-bottom: 1px solid var(--input-border-color);
+        width: 100%;
+        color: var(--content-text-color);
+        // This looks super ugly without "mix-blend-mode"
+        // However we also need to use "z-index" to avoid content overlapping the dropdown, but "z-index" creates a new stacking context
+        // and that breaks the "mix-blend-mode"!
+        // (with "mix-blend-mode", we need to use a pseudo element)
+        // So... yeah :(
+        box-shadow: 0px 8px 10px rgba(0, 0, 0, 0.3);
+        z-index: 1;
+        max-height: 400px;
+        overflow: auto;
+
+        >.select-menu-entry {
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            cursor: pointer;
+            transition-duration: 0.5s;
+            padding: 8px;
+
+            &:focus {
+                outline: blue solid 2px;
+            }
+
+            &:hover {
+                background-color: rgba(0, 0, 0, 0.1);
+            }
+
+            &.selected {
+                background-color: rgba(0, 0, 0, 0.15);
+            }
+        }
+    }
+}

@@ -1,0 +1,18 @@
+.error-section {
+    display: flex;
+    align-items: center;
+    font-size: 2em;
+    flex-direction: column;
+    text-align: center;
+
+    &.fill-content-error-section {
+        height: 100%;
+        justify-content: center;
+    }
+
+    img {
+        width: 192px;
+        height: 192px;
+        border-radius: 7px;
+    }
+}

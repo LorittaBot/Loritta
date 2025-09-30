@@ -1,0 +1,100 @@
+// Maybe, with what little power you have... You can SAVE something else.
+.save-bar {
+    color: white;
+    display: flex;
+    background-color: var(--loritta-blue);
+    position: sticky;
+    bottom: 1em;
+    border-radius: var(--first-level-border-radius);
+    padding: 1em;
+    box-shadow: 0 0px 10px rgba(0, 0, 0, 0.01), 0 0px 6px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--soft-border-color);
+    justify-content: center;
+    align-items: center;
+    transform: scale(1.025);
+    z-index: 25;
+    font-weight: bold;
+
+    .save-bar-small-text {
+        display: none;
+    }
+
+    .save-bar-large-text {
+        display: block;
+    }
+
+    // If the screen is too small, show the small text variant
+    @media (max-width: 800px) {
+        .save-bar-small-text {
+            display: block;
+        }
+
+        .save-bar-large-text {
+            display: none;
+        }
+    }
+
+    .save-bar-buttons {
+        margin-left: auto;
+        display: flex;
+        gap: 0.5em;
+    }
+
+    &.has-changes {
+        animation: save-bar-has-changes-animation .25s ease-out forwards;
+        animation-direction: normal;
+    }
+
+    &.no-changes {
+        animation: save-bar-no-changes-animation .25s ease-out forwards;
+        animation-direction: reverse;
+    }
+
+    &.initial-state {
+        opacity: 0 !important; // ewwww, but it works
+    }
+}
+
+// A div that its only purpose is to make the save bar be ALWAYS at the bottom of the screen
+.save-bar-fill-screen-height {
+    height: 100%;
+}
+
+// Yes, both are the same animation BUT we need to do it this way for CSS to think that it is a different animation to actually play it
+@keyframes save-bar-has-changes-animation {
+    0% {
+        transform: translateY(100%) scale(1.025);
+        opacity: 0;
+    }
+    80% {
+        transform: translateY(-10%) scale(1.025);
+        opacity: 1;
+    }
+    95% {
+        transform: translateY(-5%) scale(1.025);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(0%) scale(1.025);
+        opacity: 1;
+    }
+}
+
+@keyframes save-bar-no-changes-animation {
+    0% {
+        transform: translateY(100%) scale(1.025);
+        opacity: 0;
+    }
+    80% {
+        transform: translateY(-10%) scale(1.025);
+        opacity: 1;
+    }
+    95% {
+        transform: translateY(-5%) scale(1.025);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(0%) scale(1.025);
+        opacity: 1;
+    }
+}
