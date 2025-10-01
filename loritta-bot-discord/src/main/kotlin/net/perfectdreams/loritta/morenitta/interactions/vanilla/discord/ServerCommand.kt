@@ -334,12 +334,8 @@ class ServerCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                         inline = true
                     }
 
-                    field {
-                        name = "${Emotes.BustsInSilhouette} " + context.i18nContext.get(I18N_PREFIX.Role.Info.Members)
-                        value = context.guild.getMembersWithRoles(role).size.toString()
-
-                        inline = true
-                    }
+                    // We don't include the member count because that's the cached member count, not the real member count
+                    // So, to avoid confusion, we don't show it
 
                     var isFirst = true
 
