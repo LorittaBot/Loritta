@@ -25,14 +25,18 @@ class StickerFanBadge(val pudding: Pudding) : Badge.LorittaBadge(
 	override suspend fun checkIfUserDeservesBadge(user: ProfileUserInfoData, profile: Profile, mutualGuilds: Set<Long>): Boolean {
 		return pudding.transaction {
 			// Get the latest finished album
-			val latestEvent = LoriCoolCardsEvents.select(LoriCoolCardsEvents.id)
+			val latestEvents = LoriCoolCardsEvents.select(LoriCoolCardsEvents.id)
 				.orderBy(LoriCoolCardsEvents.endsAt, SortOrder.DESC)
-				.limit(1)
-				.firstOrNull() ?: return@transaction false // There hasn't had any cool cards event yet...
+                // We get the last two events
+				.limit(2)
+				.toList()
 
-			// Have we finished that event?
-			LoriCoolCardsFinishedAlbumUsers.selectAll().where { LoriCoolCardsFinishedAlbumUsers.user eq user.id and (LoriCoolCardsFinishedAlbumUsers.event eq latestEvent[LoriCoolCardsEvents.id]) }
-				.count() == 1L
+            if (latestEvents.isEmpty())
+                return@transaction false // There hasn't had any cool cards event yet...
+
+			// Have we finished any of those events?
+			LoriCoolCardsFinishedAlbumUsers.selectAll().where { LoriCoolCardsFinishedAlbumUsers.user eq user.id and (LoriCoolCardsFinishedAlbumUsers.event inList latestEvents.map { it[LoriCoolCardsEvents.id] }) }
+				.count() >= 1L
 		}
 	}
 }
