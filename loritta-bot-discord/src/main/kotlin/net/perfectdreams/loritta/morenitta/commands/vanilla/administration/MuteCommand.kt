@@ -48,6 +48,7 @@ class MuteCommand {
 
 		suspend fun muteUser(context: UnleashedContext, settings: AdminUtils.ModerationConfigSettings, time: Long?, locale: BaseLocale, user: User, reason: String, isSilent: Boolean): Boolean {
 			// We CANNOT use context.guild.isMember because they may not be in Loritta's cache!
+            val punisher = context.user
 			val member = context.guild.retrieveMemberOrNull(user)
 
 			val delay = if (time != null) {
@@ -133,7 +134,10 @@ class MuteCommand {
 
 				if (member != null) {
 					try {
-						member.timeoutFor(userWasTimedOutForDuration).await()
+						member
+                            .timeoutFor(userWasTimedOutForDuration)
+                            .reason(AdminUtils.generateAuditLogMessage(locale, punisher, reason))
+                            .await()
 					} catch (e: Exception) {
 						// This may happen if we user left during the timeout process!
 						logger.warn(e) { "Something went wrong while trying to timeout $user in guild ${context.guild.idLong}!" }
@@ -322,7 +326,10 @@ class MuteCommand {
 					}
 
 					logger.info { "Updating $currentMember timeout..." }
-					currentMember.timeoutFor(userWasTimedOutForDuration).await()
+					currentMember
+                        .timeoutFor(userWasTimedOutForDuration)
+                        .reason(i18nContext.get(I18nKeysData.Commands.Category.Moderation.UpdateTimeoutAuditLogReason))
+                        .await()
 
 					loritta.transaction {
 						// Update the timed out time
