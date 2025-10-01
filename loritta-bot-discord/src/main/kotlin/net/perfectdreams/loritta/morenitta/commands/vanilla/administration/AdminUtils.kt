@@ -501,7 +501,7 @@ object AdminUtils {
 				ConfirmationMessagePunishmentAction.Unmute -> {
 					styled(
 						context.i18nContext.get(
-							I18nKeysData.Commands.Category.Moderation.Warn.YouAreReadyToWarn(
+							I18nKeysData.Commands.Category.Moderation.Unmute.YouAreReadyToUnmute(
 								users.joinToString { it.asMention },
 								reason
 							)
