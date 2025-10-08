@@ -37,9 +37,18 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 
 	override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext) {
 		if (call.request.path().endsWith("/dashboard")) {
-			val hostHeader = call.request.hostFromHeader()
-			val scheme = LorittaWebsite.WEBSITE_URL.split(":").first()
+            val hostHeader: String
+            val scheme: String
 
+			if (call.request.header("Dashboard-Proxy") == "true") {
+                hostHeader = call.request.headers["X-Forwarded-Host"]!!
+                scheme = call.request.headers["X-Forwarded-Proto"]!!
+            } else {
+                hostHeader = call.request.hostFromHeader()
+                scheme = LorittaWebsite.WEBSITE_URL.split(":").first()
+            }
+
+            logger.info { "Host Header is $hostHeader and Scheme is $scheme" }
 			val state = call.parameters["state"]
 			val guildId = call.parameters["guild_id"]
 			val code = call.parameters["code"]
@@ -47,6 +56,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 			println("Dashboard Auth Route")
 			val session: LorittaJsonWebSession = call.sessions.get<LorittaJsonWebSession>() ?: LorittaJsonWebSession.empty()
 			val discordAuth = session.getDiscordAuth(loritta.config.loritta.discord.applicationId.toLong(), loritta.config.loritta.discord.clientSecret, call)
+            logger.info { "Session is $session, Discord Auth is $discordAuth" }
 
 			// Caso o usuário utilizou o invite link que adiciona a Lori no servidor, terá o parâmetro "guild_id" na URL
 			// Se o parâmetro exista, vamos redirecionar!
@@ -80,6 +90,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 
 					auth.doTokenExchange()
 					val userIdentification = auth.getUserIdentification()
+                    logger.info { "Successfully authenticated! ${userIdentification.username} (${userIdentification.id})" }
 					val forCache = userIdentification.toWebSessionIdentification()
 					call.sessions.set(
 						session.copy(
@@ -120,9 +131,10 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 						val lorittaDomain = loritta.connectionManager.getDomainFromUrl(loritta.config.loritta.website.url)
 						val redirectDomain = loritta.connectionManager.getDomainFromUrl(redirectUrl)
 
-						if (lorittaDomain == redirectDomain)
-							redirect(redirectUrl, false)
-						else
+						if (lorittaDomain == redirectDomain) {
+                            logger.info { "Redirecting to $redirectUrl due to state..." }
+                            redirect(redirectUrl, false)
+                        } else
 							logger.warn { "Someone tried to make me redirect to somewhere that isn't my website domain! Tried to redirect to $redirectDomain" }
 					}
 				}
@@ -275,7 +287,9 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 					return
 				}
 
-				redirect("$scheme://$hostHeader/dashboard", false) // Redirecionar para a dashboard, mesmo que nós já estejamos lá... (remove o "code" da URL)
+                val redirectUrl = "$scheme://$hostHeader/dashboard"
+                logger.info { "Redirecting to $redirectUrl" }
+				redirect(redirectUrl, false) // Redirecionar para a dashboard, mesmo que nós já estejamos lá... (remove o "code" da URL)
 			}
 		}
 
