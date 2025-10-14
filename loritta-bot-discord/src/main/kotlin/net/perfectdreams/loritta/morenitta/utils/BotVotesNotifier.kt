@@ -1,10 +1,14 @@
 package net.perfectdreams.loritta.morenitta.utils
 
+import dev.minn.jda.ktx.interactions.components.Container
+import dev.minn.jda.ktx.interactions.components.MediaGallery
+import dev.minn.jda.ktx.interactions.components.TextDisplay
+import dev.minn.jda.ktx.messages.MessageCreate
 import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
-import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.cinnamon.discord.utils.RunnableCoroutine
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BotVotesUserAvailableNotifications
+import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
@@ -38,16 +42,30 @@ class BotVotesNotifier(val m: LorittaBot) : RunnableCoroutine {
                 val privateChannel = m.getOrRetrievePrivateChannelForUserOrNullIfUserDoesNotExist(userId)
                 if (privateChannel != null) {
                     logger.info { "Notifying user ${userId} about top.gg vote..." }
-                    privateChannel.sendMessageEmbeds(
-                        EmbedBuilder()
-                            .setColor(Constants.LORITTA_AQUA)
-                            .setThumbnail("https://stuff.loritta.website/loritta-happy.gif")
-                            .setTitle("${m.languageManager.defaultI18nContext.get(I18nKeysData.Commands.Command.Vote.Notification.Topgg.Title)} ${Emotes.LoriSmile}")
-                            .setDescription(
-                                (m.languageManager.defaultI18nContext.get(I18nKeysData.Commands.Command.Vote.Notification.Topgg.Description(Emotes.LoriLurk.toString(), Emotes.LoriHeart.toString())) + "https://top.gg/bot/${m.config.loritta.discord.applicationId}/vote")
-                                    .joinToString("\n\n")
-                            )
-                            .build()
+                    privateChannel.sendMessage(
+                        MessageCreate {
+                            this.useComponentsV2 = true
+
+                            this.components += Container {
+                                this.accentColor = LorittaColors.LorittaAqua.rgb
+
+                                +TextDisplay(
+                                    buildString {
+                                        appendLine("### ${m.languageManager.defaultI18nContext.get(I18nKeysData.Commands.Command.Vote.Notification.Topgg.Title)} ${Emotes.LoriSmile}")
+                                        appendLine()
+                                        for (line in m.languageManager.defaultI18nContext.get(I18nKeysData.Commands.Command.Vote.Notification.Topgg.Description(Emotes.LoriLurk.toString(), Emotes.LoriHeart.toString()))) {
+                                            appendLine(line)
+                                        }
+                                        appendLine()
+                                        appendLine("https://top.gg/bot/${m.config.loritta.discord.applicationId}/vote")
+                                    }
+                                )
+
+                                +MediaGallery {
+                                    this.item("https://stuff.loritta.website/loritta-happy.gif")
+                                }
+                            }
+                        }
                     )
                         .await()
                 }
