@@ -139,10 +139,10 @@ class SwitchTwitchAPI(
                 callback.invoke()
             }
         } catch (e: RateLimitedException) {
-            logger.info { "rate limited exception! locked? ${mutex.isLocked}" }
+            logger.info { "Rate limited exception! locked? ${mutex.isLocked}" }
             doStuff(checkForRefresh, callback)
         } catch (e: NeedsRefreshException) {
-            logger.info { "refresh exception!" }
+            logger.info { "Refresh exception!" }
             refreshToken()
             doStuff(checkForRefresh, callback)
         } catch (e: TokenUnauthorizedException) {
@@ -288,6 +288,7 @@ class SwitchTwitchAPI(
 
     suspend fun makeTwitchApiRequest(url: String, httpRequestBuilderBlock: HttpRequestBuilder.() -> (Unit)): HttpResponse {
         return doStuff {
+            logger.info { "Executing Twitch request $url..." }
             val result = checkIfRequestWasValid(
                 http.request(url) {
                     userAgent(USER_AGENT)
@@ -297,6 +298,7 @@ class SwitchTwitchAPI(
                     httpRequestBuilderBlock.invoke(this)
                 }
             )
+            logger.info { "Twitch request $url executed successfully! Status: ${result.status}" }
             result
         }
     }
