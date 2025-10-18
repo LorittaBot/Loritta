@@ -1,15 +1,20 @@
 package net.perfectdreams.loritta.morenitta.utils
 
 import com.github.benmanes.caffeine.cache.Caffeine
+import dev.minn.jda.ktx.interactions.components.Container
+import dev.minn.jda.ktx.interactions.components.MediaGallery
+import dev.minn.jda.ktx.interactions.components.TextDisplay
+import dev.minn.jda.ktx.messages.MessageCreate
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BotVotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BotVotesUserAvailableNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.LegacyWebsiteVoteSource
+import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.common.utils.WebsiteVoteSource
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -112,13 +117,32 @@ object WebsiteVoteUtils {
 
 				if (privateChannel != null) {
 					try {
-						privateChannel.sendMessageEmbeds(
-							EmbedBuilder()
-								.setColor(Constants.LORITTA_AQUA)
-								.setThumbnail("https://stuff.loritta.website/loritta-gifts-itsgabi.png")
-								.setTitle("Obrigada por votar, e aqui está um presentinho para você... \uD83D\uDC9D")
-								.setDescription("Obrigada por votar em mim, cada voto me ajuda a crescer! ${Emotes.LORI_SMILE}\n\nVocê agora tem $voteCount votos e, como recompensa, você ganhou **$SONHOS_AMOUNT sonhos e uma key premium que você pode ativar nas configurações do seu servidor no meu painel**! ${Emotes.LORI_OWO}\n\nOstente as novidades, você merece por ter me ajudado tanto! ${Emotes.LORI_TEMMIE}\n\nContinue votando e sendo uma pessoa incrível! ${Emotes.LORI_HAPPY}")
-								.build()
+						privateChannel.sendMessage(
+							MessageCreate {
+								this.useComponentsV2 = true
+
+								this.components += Container {
+									this.accentColor = LorittaColors.LorittaAqua.rgb
+
+									+TextDisplay(
+										buildString {
+											appendLine("### Obrigada por votar, e aqui está um presentinho para você... 💝")
+											appendLine()
+											appendLine("Obrigada por votar em mim, cada voto me ajuda a crescer! ${Emotes.LORI_SMILE}")
+											appendLine()
+											appendLine("Você agora tem **$voteCount votos** e, como recompensa, você ganhou **$SONHOS_AMOUNT sonhos e uma key premium que você pode ativar nas configurações do seu servidor no meu painel**! ${Emotes.LORI_OWO}")
+											appendLine()
+											appendLine("Ostente as novidades, você merece por ter me ajudado tanto! ${Emotes.LORI_TEMMIE}")
+											appendLine()
+											appendLine("Continue votando e sendo uma pessoa incrível! ${Emotes.LORI_HAPPY}")
+										}
+									)
+
+									+MediaGallery {
+										this.item("https://stuff.loritta.website/loritta-gifts-itsgabi.png")
+									}
+								}
+							}
 						).await()
 					} catch (e: Exception) {
 					}
@@ -126,13 +150,32 @@ object WebsiteVoteUtils {
 			} else {
 				if (privateChannel != null) {
 					try {
-						privateChannel.sendMessageEmbeds(
-							EmbedBuilder()
-								.setColor(Constants.LORITTA_AQUA)
-								.setThumbnail("https://stuff.loritta.website/loritta-heart-eyes-heathecliff.png")
-								.setTitle("Obrigada por votar! ⭐")
-								.setDescription("Obrigada por votar em mim, cada voto me ajuda a crescer! ${Emotes.LORI_SMILE}\n\nVocê agora tem $voteCount votos e, como recompensa, você ganhou **$SONHOS_AMOUNT sonhos**! ${Emotes.LORI_OWO}\n\nAh, e sabia que a cada 60 votos você ganha um prêmio especial? ${Emotes.LORI_WOW}\n\nContinue votando e sendo uma pessoa incrível! ${Emotes.LORI_HAPPY}")
-								.build()
+						privateChannel.sendMessage(
+							MessageCreate {
+								this.useComponentsV2 = true
+
+								this.components += Container {
+									this.accentColor = LorittaColors.LorittaAqua.rgb
+
+									+TextDisplay(
+										buildString {
+											appendLine("### Obrigada por votar! ⭐")
+											appendLine()
+											appendLine("Obrigada por votar em mim, cada voto me ajuda a crescer! ${Emotes.LORI_SMILE}")
+											appendLine()
+											appendLine("Você agora tem **$voteCount votos** e, como recompensa, você ganhou **$SONHOS_AMOUNT sonhos**! ${Emotes.LORI_OWO}")
+											appendLine()
+											appendLine("Ah, e sabia que a cada 60 votos você ganha um prêmio especial? ${Emotes.LORI_WOW}")
+											appendLine()
+											appendLine("Continue votando e sendo uma pessoa incrível! ${Emotes.LORI_HAPPY}")
+										}
+									)
+
+									+MediaGallery {
+										this.item("https://stuff.loritta.website/loritta-heart-eyes-heathecliff.png")
+									}
+								}
+							}
 						).await()
 					} catch (e: Exception) {
 					}
