@@ -1,0 +1,4 @@
+website:
+  dashboard:
+    inviteBlocker:
+      title: "Bloqueador de Convites"

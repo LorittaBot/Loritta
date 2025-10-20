@@ -1,6 +1,8 @@
 package net.perfectdreams.loritta.dashboard.backend
 
 import io.ktor.client.*
+import io.ktor.client.plugins.sse.SSE
+import io.ktor.client.plugins.sse.sse
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -11,24 +13,26 @@ import io.ktor.server.engine.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.utils.io.flushIfNeeded
 import net.perfectdreams.loritta.dashboard.backend.configs.LorittaDashboardBackendConfig
+import net.perfectdreams.loritta.dashboard.backend.utils.writeSseEvent
 
 class LorittaDashboardBackend(val config: LorittaDashboardBackendConfig) {
     companion object {
         val ALLOWED_REQUEST_HEADERS = setOf(
             "Cookie",
-            "HX-Request",
-            "HX-Trigger"
+            "Bliss-Request",
+            "Bliss-Trigger-Element-Id",
+            "Bliss-Trigger-Element-Name",
+            "Accept-Language"
         ).map { it.lowercase() }.toSet()
 
         val ALLOWED_RESPONSE_HEADERS = setOf(
             "Location",
             "Set-Cookie",
-            "HX-Vary",
-            "HX-Redirect",
-            "HX-Trigger",
-            "SpicyMorenitta-Use-Response-As-HXTrigger",
-            "SpicyMorenitta-Open-Embedded-Spicy-Modal"
+            "Bliss-Redirect",
+            "Bliss-Push-Url",
+            "Bliss-Refresh",
         ).map { it.lowercase() }.toSet()
 
         val PROXIED_METHODS = setOf(
@@ -43,6 +47,8 @@ class LorittaDashboardBackend(val config: LorittaDashboardBackendConfig) {
     val http = HttpClient(io.ktor.client.engine.cio.CIO) {
         this.expectSuccess = false
         this.followRedirects = false
+
+        install(SSE)
     }
 
     fun start() {
@@ -61,7 +67,7 @@ class LorittaDashboardBackend(val config: LorittaDashboardBackendConfig) {
                                 if (queryString.isNotEmpty())
                                     queryString = "?$queryString"
 
-                                val guildHost = getLorittaClusterForGuildId(call.parameters["guildId"]!!.toLong()).websiteInternalUrl
+                                val guildHost = getLorittaClusterForGuildId(call.parameters["guildId"]!!.toLong()).dashboardBaseAPIUrl
 
                                 doProxy(call, method, guildHost, "$full$queryString")
                             }
@@ -78,7 +84,7 @@ class LorittaDashboardBackend(val config: LorittaDashboardBackendConfig) {
                                 if (queryString.isNotEmpty())
                                     queryString = "?$queryString"
 
-                                doProxy(call, method, config.clusters.first { it.id == 1 }.websiteInternalUrl, "$full$queryString")
+                                doProxy(call, method, config.clusters.first { it.id == 1 }.dashboardBaseAPIUrl, "$full$queryString")
                             }
                         }
                     }
@@ -90,25 +96,96 @@ class LorittaDashboardBackend(val config: LorittaDashboardBackendConfig) {
     }
 
     suspend fun doProxy(call: ApplicationCall, method: HttpMethod, host: String, path: String) {
-        val httpResponse = http.request("$host$path") {
-            this.method = method
+        val pathWithoutSlashPrefix = path.removePrefix("/")
+        val acceptHeader = call.request.accept()?.let {
+            ContentType.parse(it)
+        }
 
-            header("Dashboard-Proxy", "true")
-            header("X-Forwarded-Host", call.request.header("X-Forwarded-Host") ?: call.request.header("Host"))
-            header("X-Forwarded-Proto", call.request.header("X-Forwarded-Proto") ?: "http")
+        if (acceptHeader?.match(ContentType.Text.EventStream) == true) {
+            // SSE is a bit trickier!
+            // But because SSE are my beloved, we *need* to support them :3
+            call.respondBytesWriter(contentType = ContentType.Text.EventStream) {
+                http.sse(
+                    "$host$pathWithoutSlashPrefix",
+                    {
+                        header("Dashboard-Proxy", "true")
+                        header("X-Forwarded-Host", call.request.header("X-Forwarded-Host") ?: call.request.header("Host"))
+                        header("X-Forwarded-Proto", call.request.header("X-Forwarded-Proto") ?: "http")
 
-            for (header in call.request.headers.entries()) {
-                val headerLowercase = header.key.lowercase() // The headers themselves are case-insensitive
+                        for (header in call.request.headers.entries()) {
+                            val headerLowercase = header.key.lowercase() // The headers themselves are case-insensitive
 
-                if (headerLowercase in ALLOWED_REQUEST_HEADERS) {
+                            if (headerLowercase in ALLOWED_REQUEST_HEADERS) {
+                                for (value in header.value) {
+                                    var _value = value
+
+                                    for (entry in config.cookieReplacers) {
+                                        _value = _value.replace(entry.to, entry.from)
+                                    }
+
+                                    header(
+                                        header.key,
+                                        _value
+                                    )
+                                }
+                            }
+                        }
+                    }
+                ) {
+                    this.incoming.collect {
+                        writeSseEvent(it)
+                        flush()
+                    }
+                }
+            }
+        } else {
+            val httpResponse = http.request("$host$pathWithoutSlashPrefix") {
+                this.method = method
+
+                if (acceptHeader != null)
+                    accept(acceptHeader)
+
+                header("Dashboard-Proxy", "true")
+                header("X-Forwarded-Host", call.request.header("X-Forwarded-Host") ?: call.request.header("Host"))
+                header("X-Forwarded-Proto", call.request.header("X-Forwarded-Proto") ?: "http")
+
+                for (header in call.request.headers.entries()) {
+                    val headerLowercase = header.key.lowercase() // The headers themselves are case-insensitive
+
+                    if (headerLowercase in ALLOWED_REQUEST_HEADERS) {
+                        for (value in header.value) {
+                            var _value = value
+
+                            for (entry in config.cookieReplacers) {
+                                _value = _value.replace(entry.to, entry.from)
+                            }
+
+                            header(
+                                header.key,
+                                _value
+                            )
+                        }
+                    }
+                }
+
+                setBody(
+                    ByteArrayContent(
+                        call.receiveStream().readAllBytes(),
+                        call.request.contentType()
+                    )
+                )
+            }
+
+            for (header in httpResponse.headers.entries()) {
+                if (header.key.lowercase() in ALLOWED_RESPONSE_HEADERS) {
                     for (value in header.value) {
                         var _value = value
 
                         for (entry in config.cookieReplacers) {
-                            _value = _value.replace(entry.to, entry.from)
+                            _value = _value.replace(entry.from, entry.to)
                         }
 
-                        header(
+                        call.response.header(
                             header.key,
                             _value
                         )
@@ -116,51 +193,27 @@ class LorittaDashboardBackend(val config: LorittaDashboardBackendConfig) {
                 }
             }
 
-            setBody(
-                ByteArrayContent(
-                    call.receiveStream().readAllBytes(),
-                    call.request.contentType()
-                )
-            )
-        }
+            val originalResponse = httpResponse.bodyAsBytes()
+            val responseContentType = httpResponse.contentType() ?: ContentType.Any
+            if (responseContentType.match(ContentType.Text.Html)) {
+                var htmlResponse = originalResponse.toString(Charsets.UTF_8)
 
-        for (header in httpResponse.headers.entries()) {
-            if (header.key.lowercase() in ALLOWED_RESPONSE_HEADERS) {
-                for (value in header.value) {
-                    var _value = value
-
-                    for (entry in config.cookieReplacers) {
-                        _value = _value.replace(entry.from, entry.to)
-                    }
-
-                    call.response.header(
-                        header.key,
-                        _value
-                    )
+                for (entry in config.replacers) {
+                    htmlResponse = htmlResponse.replace(entry.from, entry.to)
                 }
+
+                call.respondBytes(
+                    htmlResponse.toByteArray(Charsets.UTF_8),
+                    status = httpResponse.status,
+                    contentType = responseContentType
+                )
+            } else {
+                call.respondBytes(
+                    originalResponse,
+                    status = httpResponse.status,
+                    contentType = responseContentType
+                )
             }
-        }
-
-        val originalResponse = httpResponse.bodyAsBytes()
-        val responseContentType = httpResponse.contentType() ?: ContentType.Any
-        if (responseContentType.match(ContentType.Text.Html)) {
-            var htmlResponse = originalResponse.toString(Charsets.UTF_8)
-
-            for (entry in config.replacers) {
-                htmlResponse = htmlResponse.replace(entry.from, entry.to)
-            }
-
-            call.respondBytes(
-                htmlResponse.toByteArray(Charsets.UTF_8),
-                status = httpResponse.status,
-                contentType = responseContentType
-            )
-        } else {
-            call.respondBytes(
-                originalResponse,
-                status = httpResponse.status,
-                contentType = responseContentType
-            )
         }
     }
 

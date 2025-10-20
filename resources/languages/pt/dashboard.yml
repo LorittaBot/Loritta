@@ -28,6 +28,15 @@ website:
           favoritesDescription: "Servidores adicionados aos favoritos aparecem no topo da sua lista de servidores no painel da Loritta"
           tooManyFavorites: "Você chegou no limite de servidores favoritos!"
           tooManyFavoritesDescription: "Remova outros servidores da sua lista de favoritos para adicionar novos servidores!"
+          serverAlreadyFavorited: "Você já favoritou este servidor!"
+          serverNotFavorited: "Você não pode desfavoritar um servidor que não é favorito seu!"
+    themeSelector:
+      themeButton: "Tema"
+      selectATheme: "Escolha um Tema"
+      lightTheme: "Tema Claro"
+      darkTheme: "Tema Escuro"
+      syncWithSystem: "Sincronizar com o Sistema"
+      themeChanged: "Tema alterado!"
     modal:
       close: "Fechar"
     purchaseVariants:

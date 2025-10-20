@@ -1,10 +1,10 @@
 website:
   dashboard:
     eventLog:
-      title: "Event Log"
+      title: "Registro de Eventos"
       description:
         - "Registre as ações que estão acontecendo no seu servidor, para ajudar você e a sua equipe a ficarem de olho no que está acontecendo."
-      enableEventLog: "Ativar o Event Log"
+      enableEventLog: "Ativar o Registro de Eventos"
       defaultChannelWhereTheActionsWillBeSent: "Canal padrão onde as ações serão anunciadas"
       channelWhereTheActionsWillBeSent: "Canal onde esta ação será anunciada"
       useDefaultChannel: "Usar canal padrão"

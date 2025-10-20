@@ -120,6 +120,7 @@ import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.SpicyMorenittaBundle
 import net.perfectdreams.loritta.morenitta.website.SpicyMorenittaDevelopmentBundle
 import net.perfectdreams.loritta.morenitta.website.SpicyMorenittaProductionBundle
+import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websiteinternal.InternalWebServer
 import net.perfectdreams.loritta.morenitta.youtube.CreateYouTubeWebhooksTask
 import net.perfectdreams.loritta.serializable.internal.requests.LorittaInternalRPCRequest
@@ -363,6 +364,7 @@ class LorittaBot(
 	val gatewayShardsStartupResumeStatus = ConcurrentHashMap<Int, GatewayShardStartupResumeStatus>()
 
 	private val internalWebServer = InternalWebServer(this)
+    private val dashboardWebServer = LorittaDashboardWebServer(this)
 
 	val preLoginStates = mutableMapOf<Int, MutableStateFlow<PreStartGatewayEventReplayListener.ProcessorState>>()
 	var isActive = true
@@ -519,6 +521,9 @@ class LorittaBot(
 	fun start() {
 		logger.info { "Starting Debug Web Server..." }
 		internalWebServer.start()
+
+        logger.info { "Starting Dashboard Web Server..." }
+        dashboardWebServer.start()
 
 		logger.info { "Success! Creating folders..." }
 		File(FOLDER).mkdirs()

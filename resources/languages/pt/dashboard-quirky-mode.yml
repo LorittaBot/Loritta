@@ -1,0 +1,9 @@
+website:
+  dashboard:
+    quirkyMode:
+      title: "Modo Tosco"
+      description:
+      - "Modo Tosco"
+      enableQuirkyMode:
+        title: "Ativar Modo Tosco"
+        description: "Me deixe ser mais ativa no seu servidor! Ao ativar, eu irei fazer coisas diferentes... como falar \"First!\" quando você cria um novo canal de texto, e outras coisas toscas."

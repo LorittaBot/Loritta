@@ -1,0 +1,7 @@
+website:
+  dashboard:
+    badge:
+      title: "Insígnia Personalizada"
+      description:
+      - "Coloque um emblema personalizado no {profileCommand} dos seus membros do seu servidor!"
+      enableCustomBadge: "Ativar Insígnia Personalizada"

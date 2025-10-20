@@ -1,0 +1,7 @@
+website:
+  dashboard:
+    dailyMultiplier:
+      title: "Multiplicador do Daily"
+      description:
+      - "Patrocine sonhos no {dailyCommand} dos seus membros! Quando um membro do seu servidor ganhar sonhos no {dailyCommand}, o membro irá ganhar mais sonhos e irá aparecer que você patrocinou os sonhos!"
+      enableDailyMultiplier: "Ativar Multiplicador do Daily"

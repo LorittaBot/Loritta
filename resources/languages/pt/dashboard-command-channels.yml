@@ -1,0 +1,4 @@
+website:
+  dashboard:
+    commandChannels:
+      title: "Canais de Comandos"

@@ -1,0 +1,45 @@
+input[type=text], input[type=number], input[type=password], textarea {
+    border: 1px solid var(--input-border-color);
+    border-radius: var(--first-level-border-radius);
+    background-color: var(--input-background-color);
+    padding: 8px;
+    width: 100%;
+    color: var(--input-text-color);
+    transition-duration: 0.25s;
+    outline: 0 solid rgba(var(--loritta-blue-rgb), 0.5); // Only here to avoid a quick snap when the input is not focused anymore
+    // Avoids the textarea resize handle feeling sluggish
+    transition: height 0s, border-color 0.25s, outline 0.25s, background-color 0.25s;
+
+    &:focus:not([disabled]) {
+        background-color: var(--input-background-color);
+        outline: 2px solid rgba(var(--loritta-blue-rgb), 0.5);
+        border-color: var(--loritta-blue);
+    }
+
+    &:hover:not([disabled]) {
+        background-color: var(--input-background-color);
+        border-color: var(--loritta-blue);
+        outline: 4px solid rgba(var(--loritta-blue-rgb), 0.5);
+    }
+
+    &:focus-visible:not([disabled]) {
+        outline: 2px solid var(--loritta-blue);
+        border-color: var(--loritta-blue);
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}
+
+input[type=text], input[type=password] {
+    // Additional settings if it is a text input
+    height: 40px;
+}
+
+textarea {
+    // Additional settings if it is a text area
+    resize: vertical;
+    min-height: 5em;
+}

@@ -1,0 +1,4 @@
+website:
+  dashboard:
+    memberCounter:
+      title: "Contador de Membros"

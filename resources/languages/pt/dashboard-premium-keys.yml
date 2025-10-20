@@ -1,0 +1,13 @@
+website:
+  dashboard:
+    premiumKeys:
+      title: "Premium Keys"
+      description:
+      - "Premium Keys"
+      keysOnThisGuild:
+        title: "Keys ativas neste servidor"
+        activeKeys: "{effectsCount,plural, =0 {# chaves ativas} one {# chave ativa} other {# chaves ativas}}"
+      userKeys:
+        title: "Suas Keys"
+        keys: "{effectsCount,plural, =0 {# chaves} one {# chave} other {# chaves}}"
+      activatedOnAnotherServer: "Ativada em outro Servidor"

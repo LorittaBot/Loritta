@@ -1,0 +1,13 @@
+website:
+  dashboard:
+    prefixedCommands:
+      title: "Comandos por Prefixo"
+      description:
+      - "Comandos por prefixos, também conhecido como comandos por mensagem, são comandos que você pode executar escrevendo diretamente no chat ao invés de usar o comando usando o sistema de slash command do Discord."
+      - "O Discord recomenda usar via slash command, mas é a vida a gente suporta ambos."
+      deleteMessageAfterCommand:
+        title: "Deletar mensagem do usuário ao executar um comando"
+        description: "Ao executar um comando, eu irei deletar a mensagem do usuário."
+      warnOnUnknownCommand:
+        title: "Avisar para o usuário quando ele executar um comando desconhecido"
+        description: "Caso um usuário executar um comando inexistente, eu irei avisar a ele que eu não possuo o comando desejado, recomendar qual comando ele provavelmente queria usar e, caso o usuário queira saber todos os meus lindos comandos, para que use o meu comando de ajuda."

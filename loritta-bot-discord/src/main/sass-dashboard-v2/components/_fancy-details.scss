@@ -1,0 +1,68 @@
+// Similar to Showtime's Fancy Details, but with a few changes
+.fancy-details-wrapper {
+    display: flex;
+    gap: 1em;
+    flex-direction: column;
+}
+
+details.fancy-details[open] summary {
+    // background-color: #F6F6F7;
+}
+
+// Hides anything that contains "hide-details-if-open" inside of a summary when it is open
+details.fancy-details[open] .hide-details-if-open {
+    display: none;
+}
+
+details.fancy-details:hover {}
+
+details.fancy-details {
+	transition-duration: 0.5s;
+	background-color: var(--secondary-element-background-color);
+	overflow: hidden;
+    border: 1px solid var(--card-border-color);
+    border-top-color: var(--card-border-highlight-color);
+    border-radius: var(--nice-border-radius);
+
+    > summary {
+        list-style: none;
+        font-size: 1.5em;
+        font-weight: bold;
+
+        // For the chevron icon
+        display: flex;
+        align-items: center;
+    }
+
+    > summary::-webkit-details-marker {
+        display: none;
+    }
+}
+
+details.fancy-details > summary .chevron-icon {
+	transform: rotate(0deg);
+	transition-duration: 0.5s;
+    margin-left: auto;
+    display: flex;
+    width: 1em;
+    height: 1em;
+}
+
+details.fancy-details[open] > summary .chevron-icon {
+	transform: rotate(-180deg);
+}
+
+details.fancy-details > summary {
+	cursor: pointer;
+    background-color: var(--card-background-color);
+	padding: 20px;
+}
+
+details.fancy-details[open] > summary {
+    border-bottom: 1px solid var(--input-border-color);
+}
+
+details.fancy-details .details-content {
+	// Padding is nice but we don't want to pad the top too much
+	padding: 10px 20px 20px 20px;
+}

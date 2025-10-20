@@ -34,6 +34,10 @@ class StarboardModule(val loritta: LorittaBot) {
 	companion object {
 		const val STAR_REACTION = "⭐"
 		private val logger by HarmonyLoggerFactory.logger {}
+
+        fun calculateStarboardEmbedColor(reactionCount: Int): Color {
+            return Color(255, 255, (255 - (reactionCount * 15)).coerceAtLeast(0))
+        }
 	}
 
 	private val mutexes = Caffeine.newBuilder()
@@ -166,7 +170,7 @@ class StarboardModule(val loritta: LorittaBot) {
 
 		thumbnail = message.stickers.firstOrNull { it.formatType == Sticker.StickerFormat.PNG || it.formatType == Sticker.StickerFormat.APNG || it.formatType == Sticker.StickerFormat.GIF }?.iconUrl
 
-		color = Color(255, 255, (255 - (reactionCount * 15)).coerceAtLeast(0)).rgb
+		color = calculateStarboardEmbedColor(reactionCount).rgb
 		timestamp = message.timeCreated
 	}
 }

@@ -8,6 +8,7 @@ plugins {
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(project(":common"))
+    implementation(project(":loritta-dashboard:dashboard-common"))
     implementation(project(":loritta-serializable-commons"))
     implementation(project(":pudding:client"))
     implementation(project(":temmie-discord-auth"))
@@ -16,6 +17,7 @@ dependencies {
     implementation(project(":discord-chat-message-renderer-entities"))
     implementation(project(":lori-public-http-api-common"))
     implementation(project(":yokye"))
+    implementation(project(":loritta-dashboard:message-renderer"))
 
     // Logging
     implementation("net.perfectdreams.harmony.logging:harmonylogging-slf4j:1.0.2")
@@ -31,7 +33,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-debug:${Versions.KOTLIN_COROUTINES}")
 
     implementation("com.google.guava:guava:32.1.3-jre")
-    implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.10.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.12.0")
     implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
 
     // Discord
@@ -116,6 +118,7 @@ dependencies {
 // :project (on the root directory)
 // :project:subprojectjs (on the child directory)
 evaluationDependsOn(":web:spicy-morenitta")
+evaluationDependsOn(":loritta-dashboard:frontend")
 
 val jsBrowserDistribution = tasks.getByPath(":web:spicy-morenitta:jsBrowserDistribution")
 val jsBrowserProductionWebpack = tasks.getByPath(":web:spicy-morenitta:jsBrowserProductionWebpack") as org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
@@ -137,6 +140,14 @@ val sassDashboard = tasks.register<SassTask>("sass-dashboard-style-scss") {
     this.inputSassFolder.set(file("src/main/sass-dashboard/"))
     this.outputSass.set(file("$buildDir/sass/style-dashboard-scss"))
 }
+
+val sassDashboardV2 = tasks.register<SassTask>("sassDashboardV2StyleScss") {
+    this.inputSass.set(file("src/main/sass-dashboard-v2/style.scss"))
+    this.inputSassFolder.set(file("src/main/sass-dashboard-v2/"))
+    this.outputSass.set(file("$buildDir/sass/style-dashboard-v2-scss"))
+}
+
+val dashboardJsBundle = tasks.getByPath(":loritta-dashboard:frontend:jsBrowserProductionWebpack")
 
 tasks.test {
     useJUnitPlatform()
@@ -172,6 +183,12 @@ tasks {
         }
         from(sassLegacy) {
             into("static/assets/css/")
+        }
+        from(sassDashboardV2) {
+            into("dashboard/css/")
+        }
+        from(dashboardJsBundle) {
+            into("dashboard/js/")
         }
     }
 }

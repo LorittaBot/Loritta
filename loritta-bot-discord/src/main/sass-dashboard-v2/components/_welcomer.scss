@@ -1,0 +1,39 @@
+.welcomer-web-animation {
+    max-height: 100%;
+    object-fit: contain;
+    aspect-ratio: 2384/1890;
+    margin: auto;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.welcome-wumpus-message {
+    color: black;
+    position: absolute;
+    top: 58%;
+    right: 10%;
+    background-color: white;
+    padding: 2px;
+    box-shadow: 0px 0px 3px #0000001a;
+    -webkit-animation-name: welcomer-message-shake;
+    -webkit-animation-duration: 3.2s;
+    -webkit-transform-origin: 50% 50%;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-timing-function: ease;
+}
+
+.welcomer-message-shake {
+    -webkit-animation-name: welcomer-message-shake;
+    -webkit-animation-duration: 1.6s;
+    -webkit-transform-origin: 50% 50%;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-timing-function: ease;
+}
+
+@-webkit-keyframes welcomer-message-shake {
+	0% { transform: rotate(-3deg); }
+	50% { transform: rotate(3deg); }
+    100% { transform: rotate(-3deg); }
+}

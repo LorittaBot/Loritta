@@ -1,0 +1,117 @@
+.toggleable-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 2em;
+}
+
+.toggleable-section {
+    // We can't use overflow: hidden here because that breaks select menu's menus! (they don't overflow)
+    background-color: var(--card-background-color);
+    border-radius: var(--nice-border-radius);
+    border: 1px solid var(--card-border-color);
+    border-top-color: var(--card-border-highlight-color);
+    --input-background-color: var(--input-secondary-element-background-color);
+
+    >.toggleable-selection {
+        padding: 1em 20px 1em 20px;
+
+        background-color: var(--card-background-color);
+        border: 1px solid var(--card-border-color);
+        border-top-color: var(--card-border-highlight-color);
+        border-radius: var(--nice-border-radius);
+    }
+
+    >.toggleable-content {
+        display: none;
+        padding: 10px 20px 20px 20px;
+    }
+
+    &.is-open.section-content-not-empty {
+        >.toggleable-content {
+            display: block;
+        }
+
+        >.toggleable-selection {
+            border-radius: var(--second-level-border-radius) var(--second-level-border-radius) 0px 0px;
+            border-bottom: 1px solid var(--card-border-color);
+        }
+    }
+
+    // Used in position: absolute; divs to reset the input to their default color
+    .reset-theme-variables {
+        --input-background-color: var(--OG-input-background-color);
+    }
+}
+
+label.toggle-wrapper {
+    display: flex;
+    cursor: pointer;
+    min-height: 3em;
+    align-items: center;
+    // To avoid the text being smushed together with the toggle
+    gap: 1em;
+
+    input {
+        display:none;
+    }
+
+    .toggle-information {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        justify-content: center;
+
+        .toggle-title {
+            font-weight: 600;
+        }
+
+        .toggle-description {
+            opacity: 0.8;
+            font-size: var(--description-font-size);
+        }
+    }
+}
+
+.switch-slider {
+    background-color: #72767d;
+    bottom: 0;
+    cursor: pointer;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: .4s;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.15);
+    display: inline-block;
+    min-height: 24px;
+    position: relative;
+    min-width: 42px;
+}
+
+.switch-slider:before {
+    background-color: #fff;
+    content: "";
+    height: 18px;
+    bottom: 3px;
+    left: 3px;
+    position: absolute;
+    transition: .4s;
+    width: 18px;
+}
+
+input:checked + .switch-slider {
+    background-color: var(--loritta-blue);
+}
+
+input:checked + .switch-slider:before {
+    transform: translateX(18px);
+}
+
+.switch-slider.round {
+    border-radius: 34px;
+}
+
+.switch-slider.round:before {
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}

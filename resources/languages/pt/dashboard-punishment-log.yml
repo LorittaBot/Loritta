@@ -1,0 +1,6 @@
+website:
+  dashboard:
+    punishmentLog:
+      title: "Registro de Punições"
+      description:
+        - "Registre as ações de moderação estão acontecendo no seu servidor."

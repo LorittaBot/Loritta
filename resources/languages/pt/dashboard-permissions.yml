@@ -1,0 +1,4 @@
+website:
+  dashboard:
+    permissions:
+      title: "Permissões"

@@ -1,0 +1,63 @@
+#bundles-content {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 6fr 4fr;
+
+  @media (max-width: 900px) {
+    display: flex;
+    flex-direction: column-reverse;
+  }
+}
+
+#trinket-info {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  .items-info-buttons-wrapper {
+    text-align: center;
+    margin-top: auto;
+    display: flex;
+    gap: 0.5em;
+    font-size: 1.25em;
+    justify-content: center;
+  }
+
+  #trinket-info-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .fill-loading-screen {
+    display: none;
+  }
+
+  &.bliss-request {
+    > #trinket-info-content {
+      display: none;
+    }
+
+    > .fill-loading-screen {
+      display: flex;
+    }
+  }
+}
+
+.bought-shop-items-list {
+  height: var(--right-sidebar-height);
+  overflow: auto;
+  padding: 1em;
+  background-color: var(--inset-background-color);
+  border: 1px solid var(--card-border-color);
+  border-top-color: var(--card-border-highlight-color);
+  border-radius: var(--nice-border-radius);
+
+  .loritta-items-wrapper {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  }
+
+  @media (max-width: 900px) {
+    height: initial;
+  }
+}

@@ -17,7 +17,8 @@ class LorittaDashboardBackendConfig(
         val maxShard: Int,
         val websiteUrl: String,
         val websiteInternalUrl: String,
-        val rpcUrl: String
+        val rpcUrl: String,
+        val dashboardBaseAPIUrl: String
     )
 
     @Serializable

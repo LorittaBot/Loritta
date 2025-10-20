@@ -5,3 +5,5 @@ website:
       createdCommands: "{effectsCount,plural, =0 {# comandos personalizados} one {# comando personalizado} other {# comandos personalizados}}"
       description:
         - "Crie comandos personalizados para realçar mensagens importantes para os seus membros, ou use eles para as piadinhas internas do seu servidor."
+      textCommand:
+        defaultMessage: "A Loritta é muito fofa! :3"

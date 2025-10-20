@@ -1,0 +1,257 @@
+package net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.eventlog
+
+import io.ktor.server.application.*
+import kotlinx.html.*
+import kotlinx.html.stream.createHTML
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
+import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.dashboard.EmbeddedToast
+import net.perfectdreams.loritta.i18n.I18nKeys
+import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls
+import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls.appendAsFormattedText
+import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls.handleI18nString
+import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
+import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
+import net.perfectdreams.loritta.morenitta.websitedashboard.GuildDashboardSection
+import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
+import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.dashboardBase
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldTitle
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrapper
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrappers
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.genericSaveBar
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.guildDashLeftSidebarEntries
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.rightSidebarContentAndSaveBarWrapper
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.toggleableSection
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissEvent
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
+import net.perfectdreams.loritta.serializable.ColorTheme
+
+class EventLogGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/event-log") {
+    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, theme: ColorTheme, guild: Guild) {
+        val eventLogConfig = website.loritta.transaction {
+            website.loritta.getOrCreateServerConfig(guild.idLong).eventLogConfig
+        }
+
+        fun FlowContent.eventLogTypeSection(
+            title: String,
+            description: String?,
+            sectionFieldName: String,
+            enabled: Boolean,
+            channelId: Long?,
+        ) {
+            toggleableSection(
+                {
+                    text(title)
+                },
+                if (description != null) {
+                    { text(description) }
+                } else null,
+                enabled,
+                sectionFieldName,
+                true
+            ) {
+                fieldWrappers {
+                    fieldWrapper {
+                        fieldTitle { text(i18nContext.get(DashboardI18nKeysData.EventLog.ChannelWhereTheActionsWillBeSent)) }
+
+                        select {
+                            attributes["bliss-component"] = "fancy-select-menu"
+                            attributes["loritta-config"] = "${sectionFieldName}LogChannelId"
+                            attributes["bliss-coerce-to-null-if-blank"] = "true"
+                            name = "${sectionFieldName}LogChannelId"
+
+                            option {
+                                this.label = i18nContext.get(DashboardI18nKeysData.EventLog.UseDefaultChannel)
+                                this.disabled = false
+                                if (channelId == null)
+                                    this.selected = true
+                            }
+
+                            for (channel in guild.channels) {
+                                if (channel is GuildMessageChannel) {
+                                    option {
+                                        this.label = channel.name
+                                        this.value = channel.id
+                                        this.disabled = false
+                                        if (channelId == channel.idLong)
+                                            this.selected = true
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        call.respondHtml(
+            createHTML()
+                .html {
+                    dashboardBase(
+                        i18nContext,
+                        i18nContext.get(DashboardI18nKeysData.EventLog.Title),
+                        session,
+                        theme,
+                        {
+                            guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.EVENT_LOG)
+                        },
+                        {
+                            rightSidebarContentAndSaveBarWrapper(
+                                {
+                                    if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
+                                        blissEvent("resyncState", "[bliss-component='save-bar']")
+                                        blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Configuração redefinida!"))
+                                    }
+
+                                    div(classes = "hero-wrapper") {
+                                        div(classes = "hero-text") {
+                                            h1 {
+                                                text(i18nContext.get(DashboardI18nKeysData.EventLog.Title))
+                                            }
+
+                                            for (str in i18nContext.language
+                                                .textBundle
+                                                .lists
+                                                .getValue(I18nKeys.Website.Dashboard.EventLog.Description.key)
+                                            ) {
+                                                p {
+                                                    handleI18nString(
+                                                        str,
+                                                        appendAsFormattedText(i18nContext, emptyMap()),
+                                                    ) {
+                                                        when (it) {
+                                                            else -> TextReplaceControls.AppendControlAsIsResult
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    hr {}
+
+                                    div {
+                                        id = "section-config"
+
+                                        fieldWrappers {
+                                            fieldWrapper {
+                                                fieldTitle { text(i18nContext.get(DashboardI18nKeysData.EventLog.DefaultChannelWhereTheActionsWillBeSent)) }
+
+                                                select {
+                                                    attributes["bliss-component"] = "fancy-select-menu"
+                                                    attributes["loritta-config"] = "eventLogChannelId"
+                                                    name = "eventLogChannelId"
+
+                                                    for (channel in guild.channels) {
+                                                        if (channel is GuildMessageChannel) {
+                                                            option {
+                                                                this.label = channel.name
+                                                                this.value = channel.id
+                                                                this.disabled = false
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+                                            fieldWrapper {
+                                                eventLogTypeSection(
+                                                    i18nContext.get(DashboardI18nKeysData.EventLog.Types.MemberBanned.Title),
+                                                    null,
+                                                    "memberBanned",
+                                                    eventLogConfig?.memberBanned ?: false,
+                                                    eventLogConfig?.memberBannedLogChannelId
+                                                )
+                                            }
+
+                                            fieldWrapper {
+                                                eventLogTypeSection(
+                                                    i18nContext.get(DashboardI18nKeysData.EventLog.Types.MemberUnbanned.Title),
+                                                    null,
+                                                    "memberUnbanned",
+                                                    eventLogConfig?.memberUnbanned ?: false,
+                                                    eventLogConfig?.memberUnbannedLogChannelId
+                                                )
+                                            }
+
+                                            fieldWrapper {
+                                                eventLogTypeSection(
+                                                    i18nContext.get(DashboardI18nKeysData.EventLog.Types.MessageEdited.Title),
+                                                    i18nContext.get(DashboardI18nKeysData.EventLog.Types.MessageEdited.Description),
+                                                    "messageEdited",
+                                                    eventLogConfig?.messageEdited ?: false,
+                                                    eventLogConfig?.messageEditedLogChannelId
+                                                )
+                                            }
+
+                                            fieldWrapper {
+                                                eventLogTypeSection(
+                                                    i18nContext.get(DashboardI18nKeysData.EventLog.Types.MessageDeleted.Title),
+                                                    i18nContext.get(DashboardI18nKeysData.EventLog.Types.MessageDeleted.Description),
+                                                    "messageDeleted",
+                                                    eventLogConfig?.messageDeleted ?: false,
+                                                    eventLogConfig?.messageDeletedLogChannelId
+                                                )
+                                            }
+
+                                            fieldWrapper {
+                                                eventLogTypeSection(
+                                                    i18nContext.get(DashboardI18nKeysData.EventLog.Types.NicknameChanges.Title),
+                                                    null,
+                                                    "nicknameChanges",
+                                                    eventLogConfig?.nicknameChanges ?: false,
+                                                    eventLogConfig?.nicknameChangesLogChannelId
+                                                )
+                                            }
+
+                                            fieldWrapper {
+                                                eventLogTypeSection(
+                                                    i18nContext.get(DashboardI18nKeysData.EventLog.Types.AvatarChanges.Title),
+                                                    null,
+                                                    "avatarChanges",
+                                                    eventLogConfig?.avatarChanges ?: false,
+                                                    eventLogConfig?.avatarChangesLogChannelId
+                                                )
+                                            }
+
+                                            fieldWrapper {
+                                                eventLogTypeSection(
+                                                    i18nContext.get(DashboardI18nKeysData.EventLog.Types.VoiceChannelJoins.Title),
+                                                    null,
+                                                    "voiceChannelJoins",
+                                                    eventLogConfig?.voiceChannelJoins ?: false,
+                                                    eventLogConfig?.voiceChannelJoinsLogChannelId
+                                                )
+                                            }
+
+                                            fieldWrapper {
+                                                eventLogTypeSection(
+                                                    i18nContext.get(DashboardI18nKeysData.EventLog.Types.VoiceChannelLeaves.Title),
+                                                    null,
+                                                    "voiceChannelLeaves",
+                                                    eventLogConfig?.voiceChannelLeaves ?: false,
+                                                    eventLogConfig?.voiceChannelLeavesLogChannelId
+                                                )
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    genericSaveBar(
+                                        i18nContext,
+                                        false,
+                                        guild,
+                                        "/event-log"
+                                    )
+                                }
+                            )
+                        }
+                    )
+                }
+        )
+    }
+}

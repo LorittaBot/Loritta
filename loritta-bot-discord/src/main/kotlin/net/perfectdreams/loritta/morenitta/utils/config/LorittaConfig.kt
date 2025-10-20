@@ -19,6 +19,7 @@ data class LorittaConfig(
     val folders: FoldersConfig,
     val commands: CommandsConfig,
     val website: WebsiteConfig,
+    val dashboard: DashboardConfig,
     val pudding: PuddingConfig,
     val perfectPayments: PerfectPaymentsConfig,
     val binaries: BinariesConfig,
@@ -145,6 +146,14 @@ data class LorittaConfig(
             val allowed: List<String>
         )
     }
+
+    @Serializable
+    data class DashboardConfig(
+        val jsPath: String?,
+        val cssPath: String?,
+        val url: String,
+        val cookieDomain: String
+    )
 
     @Serializable
     data class PuddingConfig(

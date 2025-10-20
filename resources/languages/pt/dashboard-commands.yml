@@ -6,5 +6,8 @@ website:
       - "Controle quais comandos da Loritta estão disponíveis no seu servidor!"
       - "Comandos desativados que estão disponíveis pela {pocketLoritta} ainda poderão ser usados no seu servidor caso o usuário tenha ela instalada na conta, mas as respostas aparecerão de forma efêmera se ele não possuir a permissão de {useExternalApplications} no canal."
       - "Se você quiser desativar outro comando que não está na lista, veja se ele está na {legacyCommandList}."
+      descriptionWithoutLegacyCommands:
+        - "Controle quais comandos da Loritta estão disponíveis no seu servidor!"
+        - "Comandos desativados que estão disponíveis pela {pocketLoritta} ainda poderão ser usados no seu servidor caso o usuário tenha ela instalada na conta, mas as respostas aparecerão de forma efêmera se ele não possuir a permissão de {useExternalApplications} no canal."
       legacyCommands: "Lista de Comandos (Legado)"
       summaryTitle: "Sem tempo? Pule diretamente para uma categoria!"

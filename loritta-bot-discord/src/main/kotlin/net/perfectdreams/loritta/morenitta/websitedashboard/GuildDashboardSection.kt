@@ -1,0 +1,28 @@
+package net.perfectdreams.loritta.morenitta.websitedashboard
+
+enum class GuildDashboardSection {
+    OVERVIEW,
+    COMMANDS,
+    PREFIXED_COMMANDS,
+    COMMAND_CHANNELS,
+    CUSTOM_COMMANDS,
+    INVITE_BLOCKER,
+    WELCOMER,
+    AUTOROLE,
+    PERMISSIONS,
+    MEMBER_COUNTER,
+    PUNISHMENT_LOG,
+    EVENT_LOG,
+    GAMERSAFER,
+    YOUTUBE,
+    TWITCH,
+    BLUESKY,
+    STARBOARD,
+    BOM_DIA_E_CIA,
+    QUIRKY_MODE,
+    LORITTA_REACTION_EVENTS,
+    LORITTA_TRINKETS_SHOP,
+    PREMIUM_KEYS,
+    DAILY_MULTIPLIER,
+    CUSTOM_BADGE
+}

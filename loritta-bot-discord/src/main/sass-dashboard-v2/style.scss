@@ -1,0 +1,877 @@
+@charset "utf-8";
+
+$loritta-blue: #29a6fe;
+$mobile-version: 1279px;
+
+@use "components/loading-section";
+@use "components/fan-art-card";
+@use "components/pagination";
+@use "components/select-menu";
+@use "components/text-input";
+@use "components/fan-art-name-and-artist";
+@use "components/fan-art-overview-tags";
+@use "components/inline-user-display";
+@use "components/error-section";
+@use "components/empty-section";
+@use "components/discord-button";
+@use "components/cards";
+@use "components/modal";
+@use "components/toast";
+@use "components/sonhos-bundles";
+@use "components/fancy-bullet-points";
+@use "components/fancy-details";
+@use "components/fancy-table";
+@use "components/payment-methods";
+@use "components/discord-mention";
+@use "components/loritta-spawner";
+@use "components/discord-invite-wrapper";
+@use "components/discord-toggle";
+@use "components/discord-message";
+@use "components/welcomer";
+@use "components/starboard";
+@use "components/custom-commands";
+@use "components/twitch";
+@use "components/discord-message-editor";
+@use "components/save-bar";
+@use "components/color-picker";
+@use "components/quick-magic";
+@use "components/theme-selector";
+@use "components/tag";
+@use "components/alerts";
+@use "components/state-tip";
+@use "components/daily-shop";
+@use "components/developer-docs";
+@use "components/trinkets-inventory";
+@use "placeholders/reset-link-styling";
+@use "placeholders/reset-button-styling";
+
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Pacifico&display=swap');
+
+@mixin bp($point) {
+    @if $point == 'small' {
+        @media (min-width: 360px) { @content; }
+    }
+    @if $point == 'medium' {
+      @media (min-width: 1280px) { @content; }
+    }
+}
+
+:root {
+    --loritta-blue: #{$loritta-blue};
+    --loritta-blue-rgb: 41, 166, 254;
+    --loritta-red: #da373c;
+    --loritta-green: #298546;
+    --input-background-color: rgb(244, 244, 244);
+    // Used when we need to fallback to the original color after the variable has already been changed
+    --OG-input-background-color: rgb(244, 244, 244);
+    --input-secondary-element-background-color: rgb(255, 255, 255);
+    --input-text-color: black;
+    --input-border-color: rgb(204, 204, 204);
+    --first-level-border-radius: 3.5px;
+    --second-level-border-radius: 7px;
+    --sidebar-ad-width: 160px;
+    --left-sidebar-width: 360px;
+    --soft-border-color: rgba(0, 0, 0, 0.2);
+    --save-bar-height: 70px;
+    --description-font-size: 0.875em;
+    --sidebar-entry-hover-color: rgba(0.0, 0.0, 0.0, 0.025);
+    --sidebar-entry-color-inactive: hsl(0, 0%, 0%, 0.6);
+    --sidebar-entry-color-hovered: hsl(0, 0%, 0%, 1.0);
+
+    --background-light: hsl(0, 100%, 100%);
+
+    --primary-100: hsl(205, 98%, 96%);
+    --primary-300: hsl(210, 90%, 80%);
+    --primary-500: hsl(205, 99%, 58%);
+    --primary-700: hsl(205, 40%, 40%);
+    --primary-900: hsl(205, 90%, 20%);
+
+    // ===[ LEFT SIDEBAR ]===
+    --left-sidebar-background-color: hsl(220, 13%, 95%);
+    --left-sidebar-divider-color: hsl(220, 13%, 90%);
+    --left-sidebar-shadow: 0 0 3px hsl(from var(--shadow-color) h s l / 0.4), 0 0 15px hsl(from var(--shadow-color) h s l / 0.4);
+
+    // ===[ USER INFO ]===
+    --user-info-wrapper-background-color: hsl(220, 15%, 92.2%);
+    --user-info-wrapper-border-color: hsl(220, 15%, 72.2%);
+    --user-info-wrapper-highlight-color: hsl(220, 15%, 82.2%);
+    --user-info-wrapper-margin: 0.25em;
+
+    // ===[ CARDS ]===
+    --card-background-color: hsl(0, 100%, 100%);
+    --card-border-color: hsl(220, 30%, 87.5%);
+    --card-border-highlight-color: hsl(220, 30%, 91.5%);
+
+    // ===[ INSETS ]===
+    --inset-background-color: hsl(220, 30%, 96.5%);
+
+    // ===[ SHADOWS ]===
+    --shadow-color: hsl(241.2, 15%, 43%);
+    // The first is the "hard shadow" around the object, the other one is a "soft" shadow
+    --shadow-elevation-1: 0 0.5px 1px hsl(from var(--shadow-color) h s l / 0.2), 0 4px 8px hsl(from var(--shadow-color) h s l / 0.05);
+    --shadow-elevation-2: 0 1px 2px hsl(from var(--shadow-color) h s l / 0.2), 0 8px 16px hsl(from var(--shadow-color) h s l / 0.2);
+    --shadow-inset: inset 0 2px 2px hsl(from var(--shadow-color) h s l / 0.2), inset 0 4px 8px hsl(from var(--shadow-color) h s l / 0.2);
+
+    --nice-border-radius: 7px;
+
+    // ===[ FONT SIZES ]===
+    --h1-font-size: 28px;
+    --h2-font-size: 24px;
+    --card-section-header-font-size: 20px;
+
+    --background-color: hsl(210, 5%, 98.5%);
+
+    --content-text-color: #333333;
+    --interactive-element-background-color: #f8f8f8;
+    --secondary-element-background-color: #f4f4f4;
+    --discord-embed-background-color: #f2f3f5;
+    --discord-embed-pill-color: rgb(227, 229, 232);
+    --button-no-background-light-text-color: #ffffff;
+    --button-no-background-dark-text-color: #000000;
+
+    --right-sidebar-height: calc(100vh - 1em - 1em);
+}
+
+@mixin dark-theme-rules {
+  --background-color: #313338;
+  --left-sidebar-background-color: #2b2d31;
+  --user-info-wrapper-background-color: #232428;
+  --content-text-color: #b5bac1;
+  --input-text-color: white;
+  --OG-input-background-color: rgb(24, 24, 24);
+  --input-background-color: rgb(24, 24, 24);
+  --input-secondary-element-background-color: var(--input-background-color);
+  --input-border-color: rgb(4, 4, 4);
+  --interactive-element-background-color: #2b2d31;
+  --secondary-element-background-color: #232428;
+  --discord-embed-background-color: #2b2d31;
+  --discord-embed-pill-color: rgb(30, 31, 34);
+  --divider-color: #3b3d44;
+  // Same thing but inverted woo
+  --button-no-background-light-text-color: #000000;
+  --button-no-background-dark-text-color: #ffffff;
+  --sidebar-entry-color: hsl(0, 0%, 100%, 1.0);
+}
+
+// To make the theme sync work, these rules should ALWAYS be before the light-theme/dark-theme ones
+@media (prefers-color-scheme: light) {
+  :root {
+    // We don't *actually* need to set the light theme colors, because the default :root variables are for the light theme :3
+    color-scheme: light;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    @include dark-theme-rules;
+  }
+}
+
+.dark-theme {
+  @include dark-theme-rules;
+}
+
+body {
+    margin: 0;
+    color: var(--content-text-color);
+    background-color: var(--background-light);
+    font-family: "Lato", "Arial", "sans-serif";
+}
+
+#app-wrapper {
+    color: var(--content-text-color);
+    background-color: var(--background-color);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+h1, h2, h3, h4, h5 {
+    color: var(--loritta-blue);
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+h1 {
+    font-size: var(--h1-font-size);
+}
+
+h2 {
+  font-size: var(--h2-font-size);
+}
+
+#outer-wrapper {}
+
+#wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+nav#mobile-left-sidebar {
+    background: var(--loritta-blue);
+    height: 50px;
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 10;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: rgba(0, 101, 255, 0.3) 0px 0px 15px; // Shadow
+    color: white;
+
+    @include bp('medium') {
+        display: none;
+    }
+
+    // We apply the padding on the svg, this way we have a bigger "clicking area", which is useful for mobile users!
+    > .hamburger-button {
+        @extend %reset-button-styling;
+        height: 50px;
+        width: 50px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        > svg {
+            padding: 16px;
+        }
+    }
+
+    > .small-ad {
+        display: none;
+
+        // Only show ad spot if the min width is 480px
+        @media (min-width: 480px) {
+            display: block;
+        }
+    }
+}
+
+// We animate it with a nice "push pane to screen" animation
+@keyframes sidebar-move {
+    from {
+        visibility: hidden;
+        right: 100%;
+    }
+    to {
+        visibility: visible;
+        right: 0%;
+    }
+}
+
+@keyframes toggle-sidebar-visibility {
+    from { visibility: visible; }
+    to { visibility: hidden; }
+}
+
+// This sidebar looks weird because we need to do a lot of weird tricks just to hide the sidebar WHEN THE TRANSITION ENDS
+// We did this by having a "is-closed" state that plays the "toggle-sidebar-visibility" animation
+nav#left-sidebar {
+    // We will keep this as visibility hidden to avoid tabbing to the sidebar elements when they should be hidden
+    // We don't use "display: none;" because it would not animate our mobile transition when opening the sidebar when toggling display state!
+    visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0; // Do not shink the sidebar!
+    border-right: 1px solid var(--card-border-color);
+    z-index: 9; // Make the left sidebar be on top of the right sidebar, fixes the shadow
+    color: var(--content-text-color);
+    background: var(--left-sidebar-background-color);
+    // Seems weird but this is used for mobile
+    top: 50px;
+    // Again, for small breakpoints
+    // We don't use 100vh because Chrome Mobile has a dynamic navbar that causes issues, this fixes the issue, albeit the page scroll animation becomes a bit crappy
+    // https://stackoverflow.com/questions/37112218/css3-100vh-not-constant-in-mobile-browser
+    height: calc(100% - 50px);
+    position: fixed;
+    transition-property: transform, box-shadow;
+    transition-duration: 0.65s; // Used for the nice mobile animation
+    width: 100%;
+    transform: translate(-100%);
+    // Both will change, yay!
+    will-change: transform, box-shadow;
+
+    @media (min-width: 600px) {
+        // Makes it look kinda pretty instead of filling the entire screen
+        // However we will only apply if the screen size lets us do this without looking weird or ugly
+        max-width: var(--left-sidebar-width);
+    }
+
+    // Used for mobile
+    &.is-open {
+        visibility: visible;
+        left: 0%;
+        transform: translate(0%);
+    }
+
+    &.is-closed {
+        animation: toggle-sidebar-visibility 1s;
+    }
+
+    @include bp('medium') {
+        transform: translate(0%);
+
+        visibility: visible;
+        height: 100vh;
+
+        min-width: 350px;
+
+        top: 0; // Keep it on the left side of the screen
+        left: 0;
+    }
+
+    > .entries {
+        padding-left: 1em;
+        padding-right: 1em;
+        height: 100%;
+        overflow: auto;
+        scrollbar-width: thin; // Firefox only for now
+        scrollbar-color: var(--loritta-blue) var(--left-sidebar-background-color); // Also only available in Firefox
+
+        > .divider {
+            width: 100%;
+            border: 1px solid var(--left-sidebar-divider-color);
+        }
+
+        > .category {
+            font-weight: 1000;
+            color: var(--loritta-blue);
+            text-transform: uppercase;
+            font-size: 18px;
+            margin-top: 0.25em;
+            margin-bottom: 0.25em;
+
+            // Clamp lines to avoid line breaks
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        > .guild-icon-wrapper {
+            display: flex;
+            justify-content: center;
+
+            img {
+                border-radius: 100%;
+                width: 160px;
+                height: 160px;
+                background-color: #c8c8c8;
+            }
+        }
+
+        // Can be nested within a div
+        .entry {
+            @extend %reset-link-styling;
+
+            opacity: 1.0;
+            display: flex;
+            align-items: center;
+            gap: 0.5em;
+            padding-top: 0.2em;
+            padding-bottom: 0.2em;
+            margin-top: 0.2em;
+            margin-bottom: 0.2em;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            // Smol trail effect when unhovering :)
+            transition: 75ms background-color, 75ms color;
+
+            &.section-entry {
+              padding-left: 0.75em;
+              padding-right: 0.75em;
+              padding-top: 0.5em;
+              padding-bottom: 0.5em;
+              border-radius: 7px;
+              color: var(--sidebar-entry-color-inactive);
+
+              &:hover {
+                background-color: var(--sidebar-entry-hover-color);
+                color: var(--sidebar-entry-color-hovered);
+                transition: 0s background-color, 0s color;
+              }
+
+              &.selected {
+                background-color: var(--sidebar-entry-hover-color);
+                color: oklch(from var(--loritta-blue) calc(l - 0.2) c h);
+
+                // This is for "client-side predictions", to avoid "duplicated entries" when clicking on them, we'll also apply the bliss request
+                // if another entry is being loaded
+                &.bliss-request {
+                  background-color: initial;
+                  color: var(--sidebar-entry-color-inactive);
+                }
+              }
+
+              &.bliss-request {
+                background-color: var(--sidebar-entry-hover-color);
+                color: oklch(from var(--loritta-blue) calc(l - 0.2) c h);
+              }
+            }
+
+            > .icon {
+                width: 24px;
+                height: 24px;
+                display: block;
+            }
+
+            .new-feature {
+                background-color: #da373c;
+                border-radius: 3px;
+                padding: 1px 3px 1px 5px;
+                color: white;
+                margin-left: auto;
+                text-transform: uppercase;
+                font-weight: bolder;
+            }
+        }
+
+        > .loritta-logo {
+            font-family: Pacifico;
+            font-size: 3em;
+            text-align: center;
+            display: block;
+            line-height: 1;
+            margin: 0;
+            color: var(--loritta-blue);
+            font-weight: normal;
+        }
+
+        > .guild-name {
+            font-family: "Lato", "Arial", "sans-serif";
+            font-size: 1.5em;
+            text-align: center;
+            display: block;
+            margin: 0;
+            color: var(--loritta-blue);
+            font-weight: 1000;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    }
+
+    > .user-info-wrapper {
+        margin: 0 var(--user-info-wrapper-margin) var(--user-info-wrapper-margin) var(--user-info-wrapper-margin);
+        height: 60px;
+
+        > .user-info {
+            background: var(--user-info-wrapper-background-color);
+            border-radius: var(--nice-border-radius);
+            border: 1px solid var(--user-info-wrapper-border-color);
+            border-top-color: var(--user-info-wrapper-highlight-color);
+
+            padding: 8px;
+            height: 100%;
+            width: 100%;
+
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 0.5em;
+
+            > img {
+                // Avatar Icon
+                height: 32px;
+                width: 32px;
+                border-radius: 50%;
+            }
+
+            > .user-tag {
+                display: flex;
+                flex-direction: column;
+                flex-grow: 1;
+
+                > .name {
+                    font-weight: bold;
+                }
+
+                > .discriminator {
+                    opacity: 0.8;
+                    font-size: 0.75em;
+                }
+            }
+        }
+    }
+}
+
+section#right-sidebar {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    // We don't use overflow here, to let the ad sidebar propagate scroll thru
+    // The space used by the left sidebar, we NEED to do it that way because we cannot use overflow + sticky on the sidebar, because we want the sidebar ad to propagate scroll events thru
+    margin-left: var(--left-sidebar-width);
+    overflow: auto;
+
+    @include bp('medium') {
+        width: calc(100% - 160px);
+    }
+
+    @media (max-width: 1279px) {
+        margin-top: 50px;
+        margin-left: 0;
+    }
+
+    #right-sidebar-wrapper {
+        width: 100%;
+        // Useful to allow full height elements to be overflown
+        height: 100vh;
+        max-width: 70em;
+        margin-left: auto;
+        margin-right: auto;
+        line-height: 1.58;
+        // It was 5em before, now it is 4em, to allow more content to be visible in the join/leave sections
+        // Also with 4em+, the color palette wraps to a new row and that looks fugly lmao
+        padding-left: 4em;
+        padding-right: 4em;
+        padding-top: 1em;
+        padding-bottom: 1em;
+
+        @media (max-width: 500px) {
+            padding-left: 1em;
+            padding-right: 1em;
+            height: calc(100vh - 50px);
+        }
+
+        hr {
+            box-sizing: content-box;
+            background: rgba(0, 0, 0, 0.05);
+            border: 0;
+            height: 1px;
+        }
+
+        .hero-wrapper {
+            display: grid;
+            align-items: center;
+            // wow
+            // such specific value
+            // much perfectionism
+            grid-template-columns: 64fr 36fr;
+
+            .hero-image {
+                text-align: center;
+                aspect-ratio: 16/12;
+            }
+
+            .hero-text {
+                order: -1;
+            }
+
+            @media (max-width: 900px) {
+                text-align: center;
+                grid-template-columns: 1fr;
+
+                .hero-text {
+                    order: 1;
+                }
+            }
+        }
+
+        // STATIC
+        .hero-image {
+            max-height: 100%;
+            width: 100%;
+            object-fit: contain;
+            -webkit-mask-image: linear-gradient(to bottom, rgb(0, 0, 0) 50%, rgba(0,0,0,0) 100%);
+            mask-image: linear-gradient(to bottom, rgb(0, 0, 0) 50%, rgba(0,0,0,0) 100%);
+        }
+
+        // ANIMATED
+        .hero-web-animation {
+            height: 350px;
+            width: 100%;
+            object-fit: contain;
+            -webkit-mask-image: linear-gradient(to bottom, rgb(0, 0, 0) 50%, rgba(0,0,0,0) 100%);
+            mask-image: linear-gradient(to bottom, rgb(0, 0, 0) 50%, rgba(0,0,0,0) 100%);
+
+            > div {
+                height: 100%;
+            }
+
+            svg {
+                width: 100%;
+                height: 100%;
+            }
+        }
+
+        > .fill-loading-screen {
+            display: none;
+        }
+
+        &.bliss-request {
+            > article {
+                display: none;
+            }
+
+            > .fill-loading-screen {
+                display: flex;
+            }
+        }
+    }
+}
+
+aside#that-wasnt-very-cash-money-of-you {
+    width: var(--sidebar-ad-width);
+    max-width: var(--sidebar-ad-width);
+    min-width: var(--sidebar-ad-width);
+    // background-color: rgba(200, 200, 200, 255);
+    align-items: center;
+    display: none;
+
+    position: fixed;
+    right: 0;
+    top: 0;
+    height: 100vh;
+
+    @include bp('medium') {
+        display: flex;
+    }
+
+    aside#loritta-snug {
+        display: flex;
+        height: 100%;
+        width: 100%;
+        justify-content: center;
+        align-items: flex-end;
+
+        @include bp('medium') {
+            display: flex;
+        }
+
+        img {
+            height: auto;
+            width: 90%;
+            cursor: pointer;
+            animation: 4s ease-in-out infinite loritta-breathing-animation alternate;
+            transform-origin: bottom;
+        }
+    }
+}
+
+// Used to reserve space on the layout
+aside#that-wasnt-very-cash-money-of-you-reserved-space {
+    width: var(--sidebar-ad-width);
+    max-width: var(--sidebar-ad-width);
+    min-width: var(--sidebar-ad-width);
+    align-items: center;
+    display: none;
+
+    height: 100vh;
+
+    @include bp('medium') {
+        display: flex;
+    }
+}
+
+@keyframes loritta-breathing-animation {
+  0% {
+    transform: scaleX(100%) scaleY(95%);
+  }
+  100% {
+    transform: scaleX(100%) scaleY(100%);
+  }
+}
+
+// This is like QuickMagic's vertical-list
+.field-wrappers {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.field-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25em;
+    flex-wrap: wrap;
+
+    input {
+        width: 100%;
+    }
+
+    /* button {
+        width: fit-content;
+    } */
+
+    .field-title {
+        // A Discord-like field title
+        font-weight: 600;
+        font-size: 1em;
+    }
+
+    .field-description {
+        // A Discord-like field description
+        font-size: var(--description-font-size);
+    }
+}
+
+.validation {
+    display: flex;
+    gap: 0.25em;
+    align-items: center;
+    margin-top: 0.5em;
+
+    &.error {
+        color: #d32f2f;
+    }
+
+    &.success {
+        color: #2e7d32;
+    }
+
+    .icon {
+        width: 1em;
+        height: 1em;
+        display: flex;
+        flex-shrink: 0; // Do not shrink the icon if the screen is smol
+    }
+}
+
+.legal-footer {
+    text-align: center;
+}
+
+// Show where Google AdSense ads would be if they are unfilled, good for testing purposes
+.adsbygoogle {
+    &[data-ad-status=unfilled] {
+        background-color: rgba(0, 0, 0, 0.1);
+    }
+}
+
+.icon-with-text {
+    display: flex;
+    align-items: center;
+    gap: 0.25em;
+
+    .icon {
+        display: flex;
+        width: 1em;
+        height: 1em;
+        color: $loritta-blue;
+    }
+}
+
+.loritta-game-canvas {
+    touch-action: none;
+    cursor: inherit;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 15;
+    pointer-events: none;
+    width: 100vw;
+    height: 100vh;
+}
+
+.choose-your-server {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1em;
+
+    @media screen and (max-width: 1024px) {
+        grid-template-columns: 1fr;
+    }
+
+    .favorite-guild-for-user-list-button {
+        // Reset all of the button apperance
+        background: none;
+        border: none;
+        padding: 0;
+        font: inherit;
+
+        cursor: pointer;
+        color: #feb529;
+        transform: scale(1.0);
+        transition: 0.2s ease-in;
+
+        &.guild-already-favorited {
+            &.htmx-settling {
+                transform: scale(1.5);
+            }
+        }
+
+        &.htmx-request {
+            animation: favorite-guild-opacity-animation 2s linear infinite;
+        }
+    }
+}
+
+@keyframes favorite-guild-opacity-animation {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.3;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.text-with-icon-wrapper {
+    display: flex;
+    gap: 0.5em;
+    align-items: center;
+
+    .text-icon {
+        height: 1em;
+        flex-shrink: 0; // Don't shrink if the button width is too smol
+    }
+}
+
+// We need to wrap if we want to set the "not-allowed" cursor
+.disableable-section-wrapper {
+    // Done it in this way to handle the transitions & stuff
+    &.disabled {
+        cursor: not-allowed;
+    }
+
+    .disableable-section {
+        transition: 0.25s;
+
+        &.disabled {
+            filter: blur(2px);
+            pointer-events: none;
+            user-select: none;
+            opacity: 0.5;
+        }
+    }
+}
+
+.character-counter {
+  font-size: 0.75em;
+  margin-left: auto;
+}
+
+#no-server-found {
+  text-align: center;
+}
+
+.configurable-channel-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  padding: 1em;
+  background-color: var(--inset-background-color);
+  border: 1px solid var(--card-border-color);
+  border-top-color: var(--card-border-highlight-color);
+  border-radius: var(--nice-border-radius);
+}
+
+.configurable-role-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  padding: 1em;
+  background-color: var(--inset-background-color);
+  border: 1px solid var(--card-border-color);
+  border-top-color: var(--card-border-highlight-color);
+  border-radius: var(--nice-border-radius);
+}
