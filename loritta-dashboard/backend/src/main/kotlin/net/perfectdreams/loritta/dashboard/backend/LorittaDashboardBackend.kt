@@ -14,6 +14,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.utils.io.flushIfNeeded
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.dashboard.backend.configs.LorittaDashboardBackendConfig
 import net.perfectdreams.loritta.dashboard.backend.utils.writeSseEvent
 
@@ -42,6 +43,8 @@ class LorittaDashboardBackend(val config: LorittaDashboardBackendConfig) {
             HttpMethod.Patch,
             HttpMethod.Delete
         )
+
+        val logger by HarmonyLoggerFactory.logger {}
     }
 
     val http = HttpClient(io.ktor.client.engine.cio.CIO) {
@@ -102,6 +105,7 @@ class LorittaDashboardBackend(val config: LorittaDashboardBackendConfig) {
         }
 
         if (acceptHeader?.match(ContentType.Text.EventStream) == true) {
+            logger.info { "Requesting $method $host$pathWithoutSlashPrefix (SSE)..." }
             // SSE is a bit trickier!
             // But because SSE are my beloved, we *need* to support them :3
             call.respondBytesWriter(contentType = ContentType.Text.EventStream) {
@@ -139,6 +143,7 @@ class LorittaDashboardBackend(val config: LorittaDashboardBackendConfig) {
                 }
             }
         } else {
+            logger.info { "Requesting $method $host$pathWithoutSlashPrefix..." }
             val httpResponse = http.request("$host$pathWithoutSlashPrefix") {
                 this.method = method
 
@@ -175,6 +180,7 @@ class LorittaDashboardBackend(val config: LorittaDashboardBackendConfig) {
                     )
                 )
             }
+            logger.info { "Request $method $host$pathWithoutSlashPrefix status is ${httpResponse.status}" }
 
             for (header in httpResponse.headers.entries()) {
                 if (header.key.lowercase() in ALLOWED_RESPONSE_HEADERS) {
