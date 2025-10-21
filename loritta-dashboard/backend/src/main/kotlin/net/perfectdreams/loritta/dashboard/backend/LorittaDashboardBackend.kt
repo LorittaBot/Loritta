@@ -114,52 +114,52 @@ class LorittaDashboardBackend(val config: LorittaDashboardBackendConfig) {
             logger.info { "Requesting $method $host$pathWithoutSlashPrefix (SSE)..." }
             // SSE is a bit trickier!
             // But because SSE are my beloved, we *need* to support them :3
-            call.respondBytesWriter(contentType = ContentType.Text.EventStream) {
-                http.sse(
-                    "$host$pathWithoutSlashPrefix",
-                    {
-                        header("Dashboard-Proxy", "true")
-                        header("X-Forwarded-Host", call.request.header("X-Forwarded-Host") ?: call.request.header("Host"))
-                        header("X-Forwarded-Proto", call.request.header("X-Forwarded-Proto") ?: "http")
+            http.sse(
+                "$host$pathWithoutSlashPrefix",
+                {
+                    header("Dashboard-Proxy", "true")
+                    header("X-Forwarded-Host", call.request.header("X-Forwarded-Host") ?: call.request.header("Host"))
+                    header("X-Forwarded-Proto", call.request.header("X-Forwarded-Proto") ?: "http")
 
-                        for (header in call.request.headers.entries()) {
-                            val headerLowercase = header.key.lowercase() // The headers themselves are case-insensitive
+                    for (header in call.request.headers.entries()) {
+                        val headerLowercase = header.key.lowercase() // The headers themselves are case-insensitive
 
-                            if (headerLowercase in ALLOWED_REQUEST_HEADERS) {
-                                for (value in header.value) {
-                                    var _value = value
-
-                                    for (entry in config.cookieReplacers) {
-                                        _value = _value.replace(entry.to, entry.from)
-                                    }
-
-                                    header(
-                                        header.key,
-                                        _value
-                                    )
-                                }
-                            }
-                        }
-                    }
-                ) {
-                    for (header in this.call.response.headers.entries()) {
-                        if (header.key.lowercase() in ALLOWED_RESPONSE_HEADERS) {
+                        if (headerLowercase in ALLOWED_REQUEST_HEADERS) {
                             for (value in header.value) {
                                 var _value = value
 
                                 for (entry in config.cookieReplacers) {
-                                    _value = _value.replace(entry.from, entry.to)
+                                    _value = _value.replace(entry.to, entry.from)
                                 }
 
-                                call.response.header(
+                                header(
                                     header.key,
                                     _value
                                 )
                             }
                         }
                     }
+                }
+            ) {
+                for (header in this.call.response.headers.entries()) {
+                    if (header.key.lowercase() in ALLOWED_RESPONSE_HEADERS) {
+                        for (value in header.value) {
+                            var _value = value
 
-                    this.incoming.collect {
+                            for (entry in config.cookieReplacers) {
+                                _value = _value.replace(entry.from, entry.to)
+                            }
+
+                            call.response.header(
+                                header.key,
+                                _value
+                            )
+                        }
+                    }
+                }
+
+                call.respondBytesWriter(contentType = ContentType.Text.EventStream) {
+                    this@sse.incoming.collect {
                         writeSseEvent(it)
                         flush()
                     }
