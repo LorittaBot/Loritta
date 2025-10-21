@@ -17,7 +17,7 @@ class RenderedLorittaPlayer(
         get() = entity.dead
 
     val text = entity.playerType.longName // Text to be displayed
-    private val textFont = "24px m5x7" // Font for the text
+    private val textFont = "24px OpenSansPX" // Font for the text
     private val textures = when (entity.playerType) {
         LorittaPlayer.PlayerType.LORITTA -> LorittaPlayerTextures.LorittaTextures()
         LorittaPlayer.PlayerType.PANTUFA -> LorittaPlayerTextures.PantufaTextures()

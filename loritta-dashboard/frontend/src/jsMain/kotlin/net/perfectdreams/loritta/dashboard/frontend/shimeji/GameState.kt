@@ -79,7 +79,7 @@ class GameState {
     fun start() {
         // DON'T USE EVAL!!!
         // it increases the bundle size (maybe DCE goes crazy?)
-        val fontFace = FontFace("m5x7", "url(${window.location.origin}/lori-slippy/assets/css/m5x7.woff2)")
+        val fontFace = FontFace("OpenSansPX", "url(${window.location.origin}/assets/fonts/OpenSansPX.woff2)")
 
         fontFace.loadAsync() // This is a promise
 

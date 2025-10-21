@@ -47,6 +47,22 @@ $mobile-version: 1279px;
 
 @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Pacifico&display=swap');
 
+@font-face {
+  font-family: 'OpenSansPX';
+  src: url('assets/fonts/OpenSansPXBold.woff2') format('woff2');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'OpenSansPX';
+  src: url('assets/fonts/OpenSansPX.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
 @mixin bp($point) {
   @if $point == 'small' {
     @media (min-width: 360px) { @content; }
