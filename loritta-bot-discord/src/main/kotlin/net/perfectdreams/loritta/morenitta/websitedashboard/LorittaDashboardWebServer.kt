@@ -86,6 +86,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.member
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.permissions.PermissionsGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.permissions.PutRolePermissionsGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.permissions.RolePermissionsGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.prefixedcommands.PostPrefixedCommandsPrefixPreviewGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.punishmentlog.PunishmentLogGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.prefixedcommands.PrefixedCommandsGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.prefixedcommands.PutPrefixedCommandsGuildDashboardRoute
@@ -251,6 +252,7 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
         // Prefixed Commands
         PrefixedCommandsGuildDashboardRoute(this),
         PutPrefixedCommandsGuildDashboardRoute(this),
+        PostPrefixedCommandsPrefixPreviewGuildDashboardRoute(this),
 
         // Bom Dia & Cia
         BomDiaECiaGuildDashboardRoute(this),

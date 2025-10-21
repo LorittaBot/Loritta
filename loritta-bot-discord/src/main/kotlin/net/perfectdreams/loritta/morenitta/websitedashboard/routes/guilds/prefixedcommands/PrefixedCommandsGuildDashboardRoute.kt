@@ -98,7 +98,7 @@ class PrefixedCommandsGuildDashboardRoute(website: LorittaDashboardWebServer) : 
                                                 }
 
                                                 textInput {
-                                                    attributes["bliss-post"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/general/prefix-preview"
+                                                    attributes["bliss-post"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/prefixed-commands/prefix-preview"
                                                     attributes["bliss-swap:200"] = "body (innerHTML) -> #prefix-preview (innerHTML)"
                                                     attributes["bliss-include-json"] = "[name='prefix']"
                                                     attributes["bliss-trigger"] = "input"
