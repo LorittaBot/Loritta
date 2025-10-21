@@ -61,7 +61,7 @@ class LorittaDashboardBackend(val config: LorittaDashboardBackendConfig) {
                     call.respondText("""Loritta's Dashboard Proxy - Loritta is so cute!! :3""")
                 }
 
-                route("/{localeId}/guild/{guildId}/{tail...}") {
+                route("/{localeId}/guilds/{guildId}/{tail...}") {
                     for (method in PROXIED_METHODS) {
                         method(method) {
                             handle {
