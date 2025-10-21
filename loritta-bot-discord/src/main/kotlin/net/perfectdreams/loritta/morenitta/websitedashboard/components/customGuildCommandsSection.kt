@@ -36,15 +36,8 @@ fun FlowContent.customGuildCommands(i18nContext: I18nContext, guild: Guild, cust
                 }
             }
 
-            discordButton(ButtonStyle.SUCCESS) {
-                attributes["bliss-get"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/custom-commands/create"
-                attributes["bliss-swap:200"] = "#right-sidebar-contents (innerHTML) -> #right-sidebar-contents (innerHTML), #left-sidebar (innerHTML) -> #left-sidebar (innerHTML)"
-                attributes["bliss-push-url:200"] = "true"
-                attributes["bliss-sync"] = "#left-sidebar"
-                attributes["bliss-indicator"] = "#right-sidebar-wrapper"
-                attributes["bliss-vals-query"] = buildJsonObject {
-                    put("type", "text")
-                }.toString()
+            discordButtonLink(ButtonStyle.SUCCESS, href = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/custom-commands/create?type=text") {
+                swapRightSidebarContentsAttributes()
 
                 text("Criar Comando")
             }
@@ -77,11 +70,7 @@ fun FlowContent.customGuildCommands(i18nContext: I18nContext, guild: Guild, cust
                             }
 
                             discordButtonLink(ButtonStyle.PRIMARY, href = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/custom-commands/${customCommand[CustomGuildCommands.id]}") {
-                                attributes["bliss-get"] = "[href]"
-                                attributes["bliss-swap:200"] = "#right-sidebar-contents -> #right-sidebar-contents (innerHTML)"
-                                attributes["bliss-push-url:200"] = "true"
-                                attributes["bliss-indicator"] = "#right-sidebar-contents"
-                                attributes["bliss-sync"] = "#left-sidebar"
+                                swapRightSidebarContentsAttributes()
 
                                 text("Editar")
                             }

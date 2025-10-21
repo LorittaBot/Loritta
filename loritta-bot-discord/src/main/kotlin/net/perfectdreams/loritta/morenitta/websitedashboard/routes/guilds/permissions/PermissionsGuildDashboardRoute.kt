@@ -30,6 +30,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.heroWrapp
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.loadingSpinnerImage
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.rightSidebarContentAndSaveBarWrapper
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.sectionConfig
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.swapRightSidebarContentsAttributes
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.toggle
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.toggleableSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
@@ -55,11 +56,7 @@ class PermissionsGuildDashboardRoute(website: LorittaDashboardWebServer) : Requi
                             for (role in guild.roles) {
                                 div {
                                     a(href = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/permissions/${role.idLong}") {
-                                        attributes["bliss-get"] = "[href]"
-                                        attributes["bliss-swap:200"] = "#right-sidebar-contents (innerHTML) -> #right-sidebar-contents (innerHTML), .entries (innerHTML) -> .entries (innerHTML)"
-                                        attributes["bliss-push-url:200"] = "true"
-                                        attributes["bliss-sync"] = "#left-sidebar"
-                                        attributes["bliss-indicator"] = "this, #right-sidebar-wrapper"
+                                        swapRightSidebarContentsAttributes()
                                         text(role.name)
                                     }
                                 }

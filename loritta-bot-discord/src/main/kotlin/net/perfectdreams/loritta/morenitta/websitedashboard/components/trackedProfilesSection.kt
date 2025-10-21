@@ -116,11 +116,7 @@ fun FlowContent.trackedProfilesSection(
                             }
 
                             discordButtonLink(ButtonStyle.PRIMARY, href = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/$sectionEndpointPathPart/${profile.entryId}") {
-                                attributes["bliss-get"] = "[href]"
-                                attributes["bliss-swap:200"] = "#right-sidebar-contents -> #right-sidebar-contents (innerHTML)"
-                                attributes["bliss-push-url:200"] = "true"
-                                attributes["bliss-indicator"] = "#right-sidebar-contents"
-                                attributes["bliss-sync"] = "#left-sidebar"
+                                swapRightSidebarContentsAttributes()
 
                                 text("Editar")
                             }

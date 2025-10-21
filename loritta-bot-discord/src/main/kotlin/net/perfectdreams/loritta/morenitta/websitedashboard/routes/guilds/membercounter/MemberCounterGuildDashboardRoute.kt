@@ -31,6 +31,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.heroWrapp
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.loadingSpinnerImage
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.rightSidebarContentAndSaveBarWrapper
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.sectionConfig
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.swapRightSidebarContentsAttributes
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.toggle
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.toggleableSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
@@ -46,7 +47,7 @@ class MemberCounterGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
                 .html {
                     dashboardBase(
                         i18nContext,
-                        i18nContext.get(DashboardI18nKeysData.Permissions.Title),
+                        i18nContext.get(DashboardI18nKeysData.MemberCounter.Title),
                         session,
                         theme,
                         {
@@ -57,11 +58,7 @@ class MemberCounterGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
                                 if (channel is StandardGuildMessageChannel) {
                                     div {
                                         a(href = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/member-counter/${channel.idLong}") {
-                                            attributes["bliss-get"] = "[href]"
-                                            attributes["bliss-swap:200"] = "#right-sidebar-contents (innerHTML) -> #right-sidebar-contents (innerHTML), .entries (innerHTML) -> .entries (innerHTML)"
-                                            attributes["bliss-push-url:200"] = "true"
-                                            attributes["bliss-sync"] = "#left-sidebar"
-                                            attributes["bliss-indicator"] = "this, #right-sidebar-wrapper"
+                                            swapRightSidebarContentsAttributes()
                                             text(channel.name)
                                         }
                                     }
