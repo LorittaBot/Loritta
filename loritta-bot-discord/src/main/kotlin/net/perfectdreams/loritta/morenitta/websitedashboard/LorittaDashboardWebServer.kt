@@ -127,7 +127,9 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.shipeffects.S
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.sonhosshop.SonhosShopUserDashboardRoute
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.update
+import org.jetbrains.exposed.sql.vendors.ForUpdateOption
 import java.io.File
+import java.sql.Connection
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.util.Locale
@@ -394,7 +396,8 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
 
         val sessionToken = call.request.cookies[WEBSITE_SESSION_COOKIE] ?: return null
 
-        val sessionData = loritta.transaction {
+        // We use READ COMMITED to avoid concurrent serialization exceptions when trying to UPDATE
+        val sessionData = loritta.transaction(transactionIsolation = Connection.TRANSACTION_READ_COMMITTED) {
             val data = UserWebsiteSessions.selectAll()
                 .where {
                     UserWebsiteSessions.token eq sessionToken
