@@ -34,6 +34,12 @@ class LorittaDashboardBackend(val config: LorittaDashboardBackendConfig) {
             "Bliss-Redirect",
             "Bliss-Push-Url",
             "Bliss-Refresh",
+            "X-Accel-Buffering",
+
+            // Caching
+            "Age",
+            "Cache-Control",
+            "Expires"
         ).map { it.lowercase() }.toSet()
 
         val PROXIED_METHODS = setOf(
