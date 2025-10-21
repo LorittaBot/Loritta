@@ -4,7 +4,6 @@ package net.perfectdreams.bliss
 
 import io.ktor.client.HttpClient
 import io.ktor.client.request.header
-import io.ktor.client.request.parameter
 import io.ktor.client.request.request
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
@@ -13,16 +12,13 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.URLBuilder
-import io.ktor.http.Url
 import io.ktor.utils.io.charsets.Charsets
 import js.array.asList
 import js.typedarrays.toByteArray
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.html.emptyMap
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
@@ -30,7 +26,6 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 import net.perfectdreams.loritta.dashboard.BlissHex
@@ -42,8 +37,10 @@ import web.cssom.ClassName
 import web.dom.Document
 import web.dom.Element
 import web.dom.document
+import web.events.CHANGE
 import web.events.CustomEvent
 import web.events.CustomEventInit
+import web.events.Event
 import web.events.EventHandler
 import web.events.EventType
 import web.events.addEventHandler
@@ -70,6 +67,7 @@ import kotlin.io.encoding.ExperimentalEncodingApi
 // I find I'm here this place of bliss
 object Bliss {
     private val SWAP_REGEX = Regex("(?<sourceQuerySelector>[A-Za-z#.-]+)( \\((?<sourceSwapType>[A-Za-z]+)\\))? -> (?<targetQuerySelector>[A-Za-z#.-]+)( \\((?<targetSwapType>[A-Za-z]+)\\))?")
+    private val DISABLE_WHEN_REGEX = Regex("(?<querySelector>.+) (?<op>==|!=) (?<part>\"(?<text>.+)\"|(?<blank>blank)|(?<empty>empty))")
 
     private val http = HttpClient {
         expectSuccess = false
@@ -352,44 +350,91 @@ object Bliss {
                 ?.split(",")
 
             if (disableWhen != null) {
+                println("BLISS DISABLE WHEN!!! $disableWhen")
                 for (entry in disableWhen) {
-                    // TODO: Maybe change it to this format: "blank(#coupon-input) && blank(#test)"?
-                    val (selector, condition) = entry.split(" ")
+                    val match = DISABLE_WHEN_REGEX.matchEntire(entry) ?: error("Failed to match $entry!")
+
+                    val selector = match.groups["querySelector"]!!.value
+                    val text = match.groups["text"]?.value
+                    val blank = match.groups["blank"]?.value
+                    val empty = match.groups["empty"]?.value
+                    val op = match.groups["op"]?.value
+                    val expectedBoolValue = op == "=="
+
+                    println("Registering $selector for disabled when (text: $text, blank: $blank, empty: $empty)")
                     val targetEventElement = document.querySelector(selector) ?: error("Could not find element $selector!")
 
+                    fun disableCondition(invokeBlock: () -> (Boolean)) {
+                        val result = invokeBlock.invoke()
+
+                        if (result) {
+                            element.setAttribute("disabled", "")
+                        } else {
+                            element.removeAttribute("disabled")
+                        }
+                    }
+
                     if (targetEventElement is HTMLInputElement) {
-                        fun emptyCondition() {
-                            if (targetEventElement.value.isNotEmpty()) {
+                        fun blankCondition(bool: Boolean) {
+                            if (targetEventElement.value.isBlank() == bool) {
                                 element.removeAttribute("disabled")
                             } else {
                                 element.setAttribute("disabled", "")
                             }
                         }
 
-                        fun blankCondition() {
-                            if (targetEventElement.value.isNotBlank()) {
+                        fun contentCondition(expected: String, bool: Boolean) {
+                            val checkValue = targetEventElement.value == expected
+
+                            if (checkValue == bool) {
                                 element.removeAttribute("disabled")
                             } else {
                                 element.setAttribute("disabled", "")
                             }
                         }
 
-                        when (condition) {
-                            "empty" -> {
-                                targetEventElement.addEventHandler(InputEvent.INPUT) {
-                                    emptyCondition()
-                                }
-
-                                emptyCondition()
+                        if (empty != null) {
+                            val emptyCondition = {
+                                targetEventElement.value.isEmpty() == expectedBoolValue
                             }
 
-                            "blank" -> {
-                                targetEventElement.addEventHandler(InputEvent.INPUT) {
-                                    blankCondition()
-                                }
-
-                                blankCondition()
+                            targetEventElement.addEventHandler(InputEvent.INPUT) {
+                                disableCondition(emptyCondition)
                             }
+
+                            disableCondition(emptyCondition)
+                        } else if (blank != null) {
+                            val blankCondition = {
+                                targetEventElement.value.isBlank() == expectedBoolValue
+                            }
+
+                            targetEventElement.addEventHandler(InputEvent.INPUT) {
+                                disableCondition(blankCondition)
+                            }
+
+                            disableCondition(blankCondition)
+                        } else if (text != null) {
+                            val textCondition = {
+                                (targetEventElement.value == text) == expectedBoolValue
+                            }
+
+                            targetEventElement.addEventHandler(InputEvent.INPUT) {
+                                disableCondition(textCondition)
+                            }
+
+                            disableCondition(textCondition)
+                        }
+                    } else if (targetEventElement is HTMLSelectElement) {
+                        if (text != null) {
+                            val textCondition = {
+                                (targetEventElement.value == text) == expectedBoolValue
+                            }
+
+                            targetEventElement.addEventHandler(Event.CHANGE) {
+                                disableCondition(textCondition)
+                            }
+
+                            disableCondition(textCondition)
                         }
                     }
                 }
@@ -647,10 +692,17 @@ object Bliss {
                         if (value.isNullOrBlank() && element.getAttribute("bliss-coerce-to-null-if-blank") == "true")
                             value = null
 
-                        setOrCreateList(
-                            keyName,
-                            JsonPrimitive(value)
-                        )
+                        if (value != null && element.getAttribute("bliss-parse-to-json") == "true") {
+                            setOrCreateList(
+                                keyName,
+                                Json.parseToJsonElement(value)
+                            )
+                        } else {
+                            setOrCreateList(
+                                keyName,
+                                JsonPrimitive(value)
+                            )
+                        }
                     }
                 } else if (element is HTMLSelectElement) {
                     var value: String? = element.value
@@ -746,7 +798,11 @@ object Bliss {
 
             val json = mutableMapOf<String, JsonElement>()
 
+            // We do it like this instead of checking if json is empty because we WANT the body to be included even if it empty, as long as there was an attempt to include json or vals
+            var includeBody = false
+
             if (includeJson != null) {
+                includeBody = true
                 val querySelectors = includeJson.split(",").map { it.trim() }
 
                 for (selector in querySelectors) {
@@ -756,12 +812,18 @@ object Bliss {
                 }
             }
 
-            valsJson.forEach { (key, value) ->
-                json[key] = value
+            if (valsJson.isNotEmpty()) {
+                includeBody = true
+                valsJson.forEach { (key, value) ->
+                    json[key] = value
+                }
             }
 
-            if (json.isNotEmpty())
-                setBody(TextContent(Json.encodeToString(json), ContentType.Application.Json))
+            if (includeBody) {
+                val bodyAsJson = Json.encodeToString(json)
+                println("Including JSON on the request: $bodyAsJson")
+                setBody(TextContent(bodyAsJson, ContentType.Application.Json))
+            }
         }
         println("result: ${httpRequest.status}")
 

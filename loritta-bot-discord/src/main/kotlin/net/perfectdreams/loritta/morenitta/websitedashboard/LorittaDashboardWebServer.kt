@@ -18,8 +18,6 @@ import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite.UserPermissionLevel
-import net.perfectdreams.loritta.morenitta.website.routes.LocalizedRoute
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.redirect
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.ChooseYourServerUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.DashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.DiscordLoginUserDashboardRoute
@@ -74,6 +72,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.dailys
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.dailyshoptrinkets.PutDailyShopTrinketsGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.eventlog.EventLogGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.eventlog.PutEventLogGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.experiencerewards.ExperienceRewardsGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.gamersafer.GamerSaferGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.overview.OverviewConfigurationGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.inviteblocker.InviteBlockerGuildDashboardRoute
@@ -98,13 +97,21 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.quirky
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.quirkymode.QuirkyModeGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.reactionevents.PutReactionEventsGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.reactionevents.ReactionEventsGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.resetxp.PostResetXPGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.resetxp.ResetXPGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.starboard.PutStarboardGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.starboard.PostStarboardStorytimeGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.starboard.StarboardGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.twitch.AddTwitchProfileGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.twitch.TwitchGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.warnactions.PostAddWarnActionGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.warnactions.PostRemoveWarnActionGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.warnactions.PutWarnActionsGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.warnactions.WarnActionsGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.welcomer.PutWelcomerGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.welcomer.WelcomerGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.xpnotifications.PutXPNotificationsGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.xpnotifications.XPNotificationsGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.youtube.AddYouTubeChannelGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.youtube.DeleteYouTubeChannelGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.youtube.EditYouTubeChannelGuildDashboardRoute
@@ -128,7 +135,6 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.shipeffects.S
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.sonhosshop.SonhosShopUserDashboardRoute
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.update
-import org.jetbrains.exposed.sql.vendors.ForUpdateOption
 import java.io.File
 import java.sql.Connection
 import java.time.OffsetDateTime
@@ -330,6 +336,23 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
         MemberCounterChannelGuildDashboardRoute(this),
         PutMemberCounterChannelGuildDashboardRoute(this),
 
+        // Warn Actions
+        WarnActionsGuildDashboardRoute(this),
+        PostAddWarnActionGuildDashboardRoute(this),
+        PutWarnActionsGuildDashboardRoute(this),
+        PostRemoveWarnActionGuildDashboardRoute(this),
+
+        // Experience Rewards
+        ExperienceRewardsGuildDashboardRoute(this),
+
+        // Reset XP
+        ResetXPGuildDashboardRoute(this),
+        PostResetXPGuildDashboardRoute(this),
+
+        // XP Notifications
+        XPNotificationsGuildDashboardRoute(this),
+        PutXPNotificationsGuildDashboardRoute(this),
+
         // Special
         UserProfilePreviewDashboardRoute(this),
         UserBackgroundPreviewDashboardRoute(this)
@@ -375,8 +398,6 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
                     }
                 }
 
-                staticResources("/assets", "/dashboard/static/assets")
-
                 get("/assets/css/style.css") {
                     call.respondText(assets.cssBundle.content)
                 }
@@ -384,6 +405,8 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
                 get("/assets/js/frontend.js") {
                     call.respondText(assets.jsBundle.content)
                 }
+
+                staticResources("/assets", "/dashboard/static/assets")
             }
         }
 

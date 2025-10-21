@@ -31,7 +31,7 @@ fun FlowContent.sonhosShopCouponInput(i18nContext: I18nContext) {
 
                 button(classes = "discord-button primary") {
                     style = "flex-shrink: 0;"
-                    attributes["bliss-disable-when"] = "#coupon-input blank"
+                    attributes["bliss-disable-when"] = "#coupon-input == blank"
                     attributes["bliss-include-query"] = "#coupon-input"
                     attributes["bliss-post"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/sonhos-shop/coupon"
                     attributes["bliss-swap:200"] = "body (innerHTML) -> #sonhos-bundles-with-coupon-wrapper (innerHTML)"

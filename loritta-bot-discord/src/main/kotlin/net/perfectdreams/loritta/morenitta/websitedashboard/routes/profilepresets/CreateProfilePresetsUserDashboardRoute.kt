@@ -96,7 +96,7 @@ class CreateProfilePresetsUserDashboardRoute(website: LorittaDashboardWebServer)
                                             put("activeProfileDesignId", result.activeProfileDesignId)
                                             put("activeBackgroundId", result.activeBackgroundId)
                                         }.toString()
-                                        attributes["bliss-disable-when"] = "[name=presetName] blank"
+                                        attributes["bliss-disable-when"] = "[name=presetName] == blank"
                                         attributes["bliss-swap:201"] = "body (innerHTML) -> #right-sidebar-contents (innerHTML)"
                                         attributes["bliss-push-url:201"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/profile-presets"
 

@@ -51,12 +51,23 @@ fun FlowContent.guildDashLeftSidebarEntries(
 
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/invite-blocker", i18nContext.get(DashboardI18nKeysData.InviteBlocker.Title), selectedGuildSection == GuildDashboardSection.INVITE_BLOCKER,  false)
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/punishment-log", i18nContext.get(DashboardI18nKeysData.PunishmentLog.Title), selectedGuildSection == GuildDashboardSection.PUNISHMENT_LOG,  false)
+    aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/warn-actions", i18nContext.get(DashboardI18nKeysData.WarnActions.Title), selectedGuildSection == GuildDashboardSection.WARN_ACTIONS,  false)
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/event-log", i18nContext.get(DashboardI18nKeysData.EventLog.Title), selectedGuildSection == GuildDashboardSection.EVENT_LOG,  false)
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/welcomer", i18nContext.get(DashboardI18nKeysData.Welcomer.Title), selectedGuildSection == GuildDashboardSection.WELCOMER,  false)
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/autorole", i18nContext.get(DashboardI18nKeysData.Autorole.Title), selectedGuildSection == GuildDashboardSection.AUTOROLE,  false)
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/permissions", i18nContext.get(DashboardI18nKeysData.Permissions.Title), selectedGuildSection == GuildDashboardSection.PERMISSIONS,  false)
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/member-counter", i18nContext.get(DashboardI18nKeysData.MemberCounter.Title), selectedGuildSection == GuildDashboardSection.MEMBER_COUNTER,  false)
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/gamersafer-verify", i18nContext.get(DashboardI18nKeysData.GamerSafer.Title), selectedGuildSection == GuildDashboardSection.GAMERSAFER,  false)
+
+    leftSidebarHr()
+
+    div(classes = "category") {
+        text("Experiência")
+    }
+
+    aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/experience-rewards", i18nContext.get(DashboardI18nKeysData.ExperienceRewards.Title), selectedGuildSection == GuildDashboardSection.EXPERIENCE_REWARDS,  false)
+    aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/xp-notifications", i18nContext.get(DashboardI18nKeysData.XpNotifications.Title), selectedGuildSection == GuildDashboardSection.XP_NOTIFICATIONS,  false)
+    aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/reset-xp", i18nContext.get(DashboardI18nKeysData.ResetXp.Title), selectedGuildSection == GuildDashboardSection.RESET_XP,  false)
 
     leftSidebarHr()
 
