@@ -142,6 +142,23 @@ class LorittaDashboardBackend(val config: LorittaDashboardBackendConfig) {
                         }
                     }
                 ) {
+                    for (header in this.call.response.headers.entries()) {
+                        if (header.key.lowercase() in ALLOWED_RESPONSE_HEADERS) {
+                            for (value in header.value) {
+                                var _value = value
+
+                                for (entry in config.cookieReplacers) {
+                                    _value = _value.replace(entry.from, entry.to)
+                                }
+
+                                call.response.header(
+                                    header.key,
+                                    _value
+                                )
+                            }
+                        }
+                    }
+
                     this.incoming.collect {
                         writeSseEvent(it)
                         flush()
