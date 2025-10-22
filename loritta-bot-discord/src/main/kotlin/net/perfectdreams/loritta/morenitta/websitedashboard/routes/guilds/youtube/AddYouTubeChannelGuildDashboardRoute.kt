@@ -5,6 +5,7 @@ import io.ktor.server.application.*
 import io.ktor.server.util.getOrFail
 import kotlinx.html.*
 import kotlinx.html.stream.createHTML
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
@@ -32,6 +33,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.guildDash
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.rightSidebarContentAndSaveBarWrapper
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.saveBar
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.sectionConfig
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.trackedProfileHeader
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.trackedYouTubeChannelEditor
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseModal
@@ -40,6 +42,13 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbedded
 import net.perfectdreams.loritta.serializable.ColorTheme
 
 class AddYouTubeChannelGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/youtube/add") {
+    @Serializable
+    data class CreateTwitchChannelTrackRequest(
+        val twitchUserId: Long,
+        val channelId: Long,
+        val message: String
+    )
+
     override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, theme: ColorTheme, guild: Guild) {
         val channelLink = call.parameters.getOrFail("channelLink")
         val result = YouTubeWebUtils.getYouTubeChannelInfoFromURL(website.loritta, channelLink)
@@ -78,6 +87,8 @@ class AddYouTubeChannelGuildDashboardRoute(website: LorittaDashboardWebServer) :
 
                                     rightSidebarContentAndSaveBarWrapper(
                                         {
+                                            trackedProfileHeader(result.channel.name, result.channel.avatarUrl)
+
                                             sectionConfig {
                                                 trackedYouTubeChannelEditor(
                                                     i18nContext,

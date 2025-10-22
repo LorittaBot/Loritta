@@ -66,6 +66,36 @@ fun FlowContent.trackedTwitchChannelsSection(
                             )
                             text("Quero adicionar o meu canal")
                         }
+
+                        discordButton(ButtonStyle.PRIMARY) {
+                            openModalOnClick(
+                                createEmbeddedModal(
+                                    "Adicionar canal de outra pessoa",
+                                    true,
+                                    {
+                                        textInput {
+                                            name = "channelLink"
+                                            placeholder = "https://www.twitch.tv/lorittamorenitta"
+                                        }
+                                    },
+                                    listOf(
+                                        {
+                                            defaultModalCloseButton(i18nContext)
+                                        },
+                                        {
+                                            discordButton(ButtonStyle.PRIMARY) {
+                                                attributes["bliss-get"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/twitch/add"
+                                                attributes["bliss-include-query"] = ".modal [name='channelLink']"
+                                                attributes["bliss-swap:200"] = "#right-sidebar-contents -> #right-sidebar-contents (innerHTML)"
+
+                                                text("Continuar")
+                                            }
+                                        }
+                                    )
+                                )
+                            )
+                            text("Quero adicionar o canal de outra pessoa")
+                        }
                     },
                     listOf {
                         defaultModalCloseButton(i18nContext)

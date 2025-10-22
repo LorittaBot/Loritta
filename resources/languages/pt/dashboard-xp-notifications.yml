@@ -1,0 +1,4 @@
+website:
+  dashboard:
+    xpNotifications:
+      title: "Mensagens ao Subir de Nível"

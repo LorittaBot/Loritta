@@ -102,7 +102,12 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.resetx
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.starboard.PutStarboardGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.starboard.PostStarboardStorytimeGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.starboard.StarboardGuildDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.twitch.AddTwitchProfileGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.twitch.AddTwitchChannelGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.twitch.DeletePremiumTwitchTrackGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.twitch.DeleteTwitchChannelGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.twitch.EditTwitchChannelGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.twitch.PostTwitchChannelGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.twitch.PutTwitchChannelGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.twitch.TwitchGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.warnactions.PostAddWarnActionGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.warnactions.PostRemoveWarnActionGuildDashboardRoute
@@ -309,7 +314,12 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
         // Twitch
         TwitchGuildDashboardRoute(this),
         TwitchAccountCallbackRoute(this),
-        AddTwitchProfileGuildDashboardRoute(this),
+        AddTwitchChannelGuildDashboardRoute(this),
+        PostTwitchChannelGuildDashboardRoute(this),
+        DeleteTwitchChannelGuildDashboardRoute(this),
+        EditTwitchChannelGuildDashboardRoute(this),
+        PutTwitchChannelGuildDashboardRoute(this),
+        DeletePremiumTwitchTrackGuildDashboardRoute(this),
 
         // Autorole
         AutoroleGuildDashboardRoute(this),

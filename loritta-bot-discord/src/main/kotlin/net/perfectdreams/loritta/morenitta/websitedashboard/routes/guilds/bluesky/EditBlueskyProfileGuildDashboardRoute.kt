@@ -1,5 +1,8 @@
 package net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.bluesky
 
+import io.ktor.client.request.get
+import io.ktor.client.request.parameter
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
@@ -12,8 +15,10 @@ import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.TrackedBlueskyAccounts
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.TrackedYouTubeAccounts
+import net.perfectdreams.loritta.common.utils.JsonIgnoreUnknownKeys
 import net.perfectdreams.loritta.dashboard.EmbeddedToast
 import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.bluesky.BlueskyProfile
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.youtube.YouTubeWebUtils
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
@@ -46,6 +51,17 @@ class EditBlueskyProfileGuildDashboardRoute(website: LorittaDashboardWebServer) 
             return
         }
 
+        val http = website.loritta.http.get("https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile") {
+            parameter("actor", data[TrackedBlueskyAccounts.repo])
+        }
+
+        // TODO - bliss-dash: Add proper not found page!
+        if (http.status == HttpStatusCode.BadRequest)
+            error("Unknown Bluesky did: ${data[TrackedBlueskyAccounts.repo]}")
+
+        val textStuff = http.bodyAsText(Charsets.UTF_8)
+        val profile = JsonIgnoreUnknownKeys.decodeFromString<BlueskyProfile>(textStuff)
+
         call.respondHtml(
             createHTML()
                 .html {
@@ -68,6 +84,8 @@ class EditBlueskyProfileGuildDashboardRoute(website: LorittaDashboardWebServer) 
 
                             rightSidebarContentAndSaveBarWrapper(
                                 {
+                                    trackedProfileHeader(profile.effectiveName, profile.avatar)
+
                                     sectionConfig {
                                         trackedBlueskyProfileEditor(
                                             i18nContext,

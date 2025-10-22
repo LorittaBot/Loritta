@@ -5,8 +5,11 @@ import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.util.*
 import kotlinx.html.body
+import kotlinx.html.div
+import kotlinx.html.h1
 import kotlinx.html.hr
 import kotlinx.html.html
+import kotlinx.html.img
 import kotlinx.html.stream.createHTML
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
@@ -71,6 +74,8 @@ class EditYouTubeChannelGuildDashboardRoute(website: LorittaDashboardWebServer) 
 
                                     rightSidebarContentAndSaveBarWrapper(
                                         {
+                                            trackedProfileHeader(result.channel.name, result.channel.avatarUrl)
+
                                             sectionConfig {
                                                 trackedYouTubeChannelEditor(
                                                     i18nContext,

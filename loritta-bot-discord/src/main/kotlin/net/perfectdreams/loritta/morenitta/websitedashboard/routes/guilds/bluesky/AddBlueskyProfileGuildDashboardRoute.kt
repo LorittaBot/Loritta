@@ -40,6 +40,8 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.guildDash
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.rightSidebarContentAndSaveBarWrapper
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.saveBar
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.sectionConfig
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.trackedBlueskyProfileEditor
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.trackedProfileHeader
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.trackedYouTubeChannelEditor
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseModal
@@ -100,8 +102,10 @@ class AddBlueskyProfileGuildDashboardRoute(website: LorittaDashboardWebServer) :
 
                             rightSidebarContentAndSaveBarWrapper(
                                 {
+                                    trackedProfileHeader(profile.effectiveName, profile.avatar)
+
                                     sectionConfig {
-                                        trackedYouTubeChannelEditor(
+                                        trackedBlueskyProfileEditor(
                                             i18nContext,
                                             guild,
                                             null,

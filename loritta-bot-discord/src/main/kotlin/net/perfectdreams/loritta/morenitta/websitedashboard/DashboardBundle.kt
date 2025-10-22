@@ -13,7 +13,7 @@ sealed class DashboardBundle {
 
     class FileSystemBundle(val file: File) : DashboardBundle() {
         override val hash
-            get() = System.currentTimeMillis().toString()
+            get() = DigestUtils.md5Hex(content)
         override val content
             get() = this.file.readText(Charsets.UTF_8)
     }

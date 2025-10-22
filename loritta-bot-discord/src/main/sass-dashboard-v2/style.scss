@@ -891,3 +891,15 @@ aside#that-wasnt-very-cash-money-of-you-reserved-space {
   border-top-color: var(--card-border-highlight-color);
   border-radius: var(--nice-border-radius);
 }
+
+.tracked-profile-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  img {
+    width: 64px;
+    height: 64px;
+    border-radius: 999999px;
+  }
+}

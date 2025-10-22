@@ -1,0 +1,4 @@
+website:
+  dashboard:
+    resetXp:
+      title: "Resetar XP"

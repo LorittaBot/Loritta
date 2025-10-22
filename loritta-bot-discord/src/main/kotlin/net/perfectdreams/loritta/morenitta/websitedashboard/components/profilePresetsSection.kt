@@ -54,11 +54,7 @@ fun FlowContent.profilePresetsSection(i18nContext: I18nContext, profilePresets: 
                     classes += "disabled"
                 } else {
                     href = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/profile-presets/create"
-                    attributes["bliss-get"] = "[href]"
-                    attributes["bliss-swap:200"] = "#right-sidebar-contents -> #right-sidebar-contents (innerHTML)"
-                    attributes["bliss-push-url"] = "true"
-                    attributes["bliss-replace-load"] = "#loading"
-                    attributes["bliss-sync"] = "#left-sidebar"
+                    swapRightSidebarContentsAttributes()
                 }
 
                 text(i18nContext.get(DashboardI18nKeysData.ProfilePresets.CreatePreset))
