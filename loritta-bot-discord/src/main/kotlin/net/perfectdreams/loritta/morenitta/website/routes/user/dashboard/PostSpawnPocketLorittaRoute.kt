@@ -15,6 +15,7 @@ import net.perfectdreams.loritta.morenitta.website.routes.RequiresDiscordLoginLo
 import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.respondBodyAsHXTrigger
 import net.perfectdreams.loritta.serializable.EmbeddedSpicyToast
 import net.perfectdreams.loritta.serializable.PocketLorittaSettings
+import net.perfectdreams.loritta.shimeji.ActivityLevel
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.selectAll
@@ -52,6 +53,7 @@ class PostSpawnPocketLorittaRoute(loritta: LorittaBot) : RequiresDiscordLoginLoc
 				it[UserPocketLorittaSettings.lorittaCount] = newLorittaCount
 				it[UserPocketLorittaSettings.pantufaCount] = newPantufaCount
 				it[UserPocketLorittaSettings.gabrielaCount] = newGabrielaCount
+                it[UserPocketLorittaSettings.activityLevel] = ActivityLevel.MEDIUM
 				it[UserPocketLorittaSettings.updatedAt] = Instant.now()
 			}
 

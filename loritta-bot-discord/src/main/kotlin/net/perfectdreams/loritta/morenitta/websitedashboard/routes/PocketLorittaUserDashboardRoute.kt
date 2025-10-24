@@ -11,6 +11,8 @@ import kotlinx.html.span
 import kotlinx.html.stream.createHTML
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.utils.DiscordOAuth2AuthorizationURL
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.i18n.I18nKeys
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.website.components.EtherealGambiUtils.etherealGambiImg
@@ -27,7 +29,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.userDashL
 import net.perfectdreams.loritta.serializable.ColorTheme
 
 class PocketLorittaUserDashboardRoute(website: LorittaDashboardWebServer) : RequiresUserAuthDashboardLocalizedRoute(website, "/user-app") {
-    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, theme: ColorTheme) {
+    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
         call.respondHtml(
             createHTML()
                 .html {
@@ -36,8 +38,10 @@ class PocketLorittaUserDashboardRoute(website: LorittaDashboardWebServer) : Requ
                         i18nContext.get(DashboardI18nKeysData.PocketLoritta.Title),
                         session,
                         theme,
+                        shimejiSettings,
+                        userPremiumPlan,
                         {
-                            userDashLeftSidebarEntries(i18nContext, UserDashboardSection.POCKET_LORITTA)
+                            userDashLeftSidebarEntries(website.loritta, i18nContext, UserDashboardSection.POCKET_LORITTA)
                         },
                         {
                             div(classes = "hero-wrapper") {

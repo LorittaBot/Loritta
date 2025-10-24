@@ -10,7 +10,8 @@ data class MessageEditorBootstrap(
     val templates: List<LorittaMessageTemplate>,
     val placeholders: List<MessageEditorMessagePlaceholder>,
     val guild: DiscordGuild,
-    val testMessageTarget: TestMessageTarget
+    val testMessageTarget: TestMessageTarget,
+    val verifiedIconRawHtml: String
 ) {
     @Serializable
     sealed class TestMessageTarget {

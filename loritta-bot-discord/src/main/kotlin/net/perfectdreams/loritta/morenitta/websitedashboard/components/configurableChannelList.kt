@@ -4,11 +4,13 @@ import dev.minn.jda.ktx.generics.getChannel
 import kotlinx.html.FlowContent
 import kotlinx.html.div
 import kotlinx.html.hiddenInput
+import kotlinx.html.span
 import kotlinx.html.style
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.SVGIconUtils
 
 fun FlowContent.configurableChannelList(
     i18nContext: I18nContext,
@@ -30,10 +32,16 @@ fun FlowContent.configurableChannelList(
                 div {
                     style = "display: flex; align-items: center;"
 
-                    div(classes = "discord-mention") {
+                    val svgIcon = SVGIconUtils.getSVGIconForChannelFallbackIfNull(guild, channel)
+
+                    div(classes = "discord-mention has-icon") {
                         style = "height: fit-content;"
 
-                        text((channel?.name ?: "???") + " (${channelId})")
+                        svgIcon(svgIcon)
+
+                        span {
+                            text((channel?.name ?: "???") + " (${channelId})")
+                        }
                     }
 
                     discordButton(ButtonStyle.NO_BACKGROUND_THEME_DEPENDENT_DARK_TEXT) {

@@ -6,17 +6,15 @@ import io.ktor.server.response.*
 import io.ktor.server.util.*
 import kotlinx.html.hr
 import kotlinx.html.html
-import kotlinx.html.numberInput
-import kotlinx.html.option
-import kotlinx.html.select
 import kotlinx.html.stream.createHTML
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerRolePermissions
 import net.perfectdreams.loritta.common.utils.LorittaPermission
+import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.dashboard.EmbeddedToast
-import net.perfectdreams.loritta.dashboard.messageeditor.MessageEditorBootstrap
+import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
@@ -30,11 +28,10 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
 import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
 
 class RolePermissionsGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/permissions/{roleId}") {
-    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, theme: ColorTheme, guild: Guild) {
+    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans) {
         val role = guild.getRoleById(call.parameters.getOrFail("roleId").toLong())
 
         if (role == null) {
@@ -57,6 +54,8 @@ class RolePermissionsGuildDashboardRoute(website: LorittaDashboardWebServer) : R
                         i18nContext.get(DashboardI18nKeysData.Permissions.Title),
                         session,
                         theme,
+                        shimejiSettings,
+                        userPremiumPlan,
                         {
                             guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.PERMISSIONS)
                         },

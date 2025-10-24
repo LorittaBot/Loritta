@@ -18,6 +18,7 @@ dependencies {
     implementation(project(":lori-public-http-api-common"))
     implementation(project(":yokye"))
     implementation(project(":loritta-dashboard:message-renderer"))
+    implementation(project(":loritta-dashboard:loritta-shimeji-common"))
 
     // Logging
     implementation("net.perfectdreams.harmony.logging:harmonylogging-slf4j:1.0.2")
@@ -123,6 +124,8 @@ evaluationDependsOn(":loritta-dashboard:frontend")
 val jsBrowserDistribution = tasks.getByPath(":web:spicy-morenitta:jsBrowserDistribution")
 val jsBrowserProductionWebpack = tasks.getByPath(":web:spicy-morenitta:jsBrowserProductionWebpack") as org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
+val skipDashboardFrontend = (findProperty("net.perfectdreams.loritta.skipDashboardFrontendDistribution") as String?)?.toBoolean() == true
+
 val sass = tasks.register<SassTask>("sass-style-scss") {
     this.inputSass.set(file("src/main/sass/style.scss"))
     this.inputSassFolder.set(file("src/main/sass/"))
@@ -187,8 +190,10 @@ tasks {
         from(sassDashboardV2) {
             into("dashboard/css/")
         }
-        from(dashboardJsBundle) {
-            into("dashboard/js/")
+        if (!skipDashboardFrontend) {
+            from(dashboardJsBundle) {
+                into("dashboard/js/")
+            }
         }
     }
 }

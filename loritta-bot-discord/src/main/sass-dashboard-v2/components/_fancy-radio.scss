@@ -1,0 +1,58 @@
+.fancy-radio-option-wrapper {
+    input[type="radio"] {
+        display: none;
+    }
+
+    .fancy-radio-option {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        padding: 0.5em 1em 0.5em 1em;
+        gap: 8px;
+        border-radius: var(--nice-border-radius);
+
+        .radio-option-info {
+            .radio-option-title {
+                font-weight: 600;
+            }
+
+            .radio-option-description {
+                opacity: 0.8;
+                font-size: var(--description-font-size);
+            }
+        }
+
+        .fancy-radio-option-circle {
+            width: 24px;
+            height: 24px;
+
+            border: 2px solid var(--card-border-highlight-color);
+            border-radius: 99999px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            .fancy-radio-option-circle-white {
+                display: none;
+                width: 12px;
+                height: 12px;
+                border-radius: 99999px;
+                background-color: white;
+            }
+        }
+    }
+
+    input[type="radio"]:checked + .fancy-radio-option {
+        background-color: var(--fancy-radio-input-selected-background-color);
+
+        .fancy-radio-option-circle {
+            border: 2px solid var(--loritta-blue);
+            background-color: var(--loritta-blue);
+
+            .fancy-radio-option-circle-white {
+                display: flex;
+            }
+        }
+    }
+}

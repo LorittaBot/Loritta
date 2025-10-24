@@ -19,55 +19,61 @@ fun FlowContent.configurableWarnList(
     warns: List<WarnAction>
 ) {
     // This is stupid, but we *need* to have a div to allow the save bar to detect the swap!
-    div(classes = "cards") {
-        for ((index, warn) in warns.sortedBy { it.count }.withIndex()) {
-            div(classes = "card") {
-                style = "flex-direction: row; align-items: center; gap: 0.5em;"
+    div {
+        if (warns.isNotEmpty()) {
+            div(classes = "cards") {
+                for ((index, warn) in warns.sortedBy { it.count }.withIndex()) {
+                    div(classes = "card") {
+                        style = "flex-direction: row; align-items: center; gap: 0.5em;"
 
-                div {
-                    style = "flex-grow: 1;"
-                    text("Ao chegar em ")
-                    b {
-                        text("${warn.count} avisos")
-                    }
-                    text(", ")
-                    text("o usuário será ")
-                    b {
-                        text(warn.action.name)
-                    }
+                        div {
+                            style = "flex-grow: 1;"
+                            text("Ao chegar em ")
+                            b {
+                                text("${warn.count} avisos")
+                            }
+                            text(", ")
+                            text("o usuário será ")
+                            b {
+                                text(warn.action.name)
+                            }
 
-                    if (warn.action == PunishmentAction.MUTE && warn.time != null) {
-                        text(" por ")
-                        b {
-                            text(warn.time)
+                            if (warn.action == PunishmentAction.MUTE && warn.time != null) {
+                                text(" por ")
+                                b {
+                                    text(warn.time)
+                                }
+                            }
+                        }
+
+                        hiddenInput {
+                            attributes["warn-action-add-element"] = "true"
+                            attributes["bliss-parse-to-json"] = "true"
+                            attributes["loritta-config"] = "actions[]"
+                            attributes["warn-action-warn"] = "true"
+                            name = "actions[]"
+                            value = buildJsonObject {
+                                put("count", warn.count)
+                                put("action", warn.action.name)
+                                put("time", warn.time)
+                            }.toString()
+                        }
+
+                        discordButton(ButtonStyle.NO_BACKGROUND_THEME_DEPENDENT_DARK_TEXT) {
+                            attributes["bliss-post"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/warn-actions/remove"
+                            attributes["bliss-vals-json"] = buildJsonObject {
+                                put("index", index)
+                            }.toString()
+                            attributes["bliss-swap:200"] = "body (innerHTML) -> #warn-actions (innerHTML)"
+                            attributes["bliss-include-json"] = "[warn-action-warn]"
+
+                            text("Remover")
                         }
                     }
                 }
-
-                hiddenInput {
-                    attributes["warn-action-add-element"] = "true"
-                    attributes["bliss-parse-to-json"] = "true"
-                    attributes["loritta-config"] = "actions[]"
-                    attributes["warn-action-warn"] = "true"
-                    name = "actions[]"
-                    value = buildJsonObject {
-                        put("count", warn.count)
-                        put("action", warn.action.name)
-                        put("time", warn.time)
-                    }.toString()
-                }
-
-                discordButton(ButtonStyle.NO_BACKGROUND_THEME_DEPENDENT_DARK_TEXT) {
-                    attributes["bliss-post"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/warn-actions/remove"
-                    attributes["bliss-vals-json"] = buildJsonObject {
-                        put("index", index)
-                    }.toString()
-                    attributes["bliss-swap:200"] = "body (innerHTML) -> #warn-actions (innerHTML)"
-                    attributes["bliss-include-json"] = "[warn-action-warn]"
-
-                    text("Remover")
-                }
             }
+        } else {
+            emptySection(i18nContext)
         }
     }
 }

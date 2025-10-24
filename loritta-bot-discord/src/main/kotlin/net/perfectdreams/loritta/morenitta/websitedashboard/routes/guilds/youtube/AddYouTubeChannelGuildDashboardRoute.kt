@@ -5,16 +5,13 @@ import io.ktor.server.application.*
 import io.ktor.server.util.getOrFail
 import kotlinx.html.*
 import kotlinx.html.stream.createHTML
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.dashboard.EmbeddedToast
-import net.perfectdreams.loritta.dashboard.discordmessages.DiscordMessage
-import net.perfectdreams.loritta.dashboard.messageeditor.MessageEditorBootstrap
+import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.youtube.YouTubeWebUtils
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
@@ -22,19 +19,12 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysDat
 import net.perfectdreams.loritta.morenitta.websitedashboard.GuildDashboardSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
-import net.perfectdreams.loritta.morenitta.websitedashboard.components.customGuildCommandTextEditor
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.dashboardBase
-import net.perfectdreams.loritta.morenitta.websitedashboard.components.discordMessageEditor
-import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldTitle
-import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrapper
-import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrappers
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.goBackToPreviousSectionButton
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.guildDashLeftSidebarEntries
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.rightSidebarContentAndSaveBarWrapper
-import net.perfectdreams.loritta.morenitta.websitedashboard.components.saveBar
-import net.perfectdreams.loritta.morenitta.websitedashboard.components.sectionConfig
-import net.perfectdreams.loritta.morenitta.websitedashboard.components.trackedProfileHeader
-import net.perfectdreams.loritta.morenitta.websitedashboard.components.trackedYouTubeChannelEditor
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.trackedNewProfileEditorSaveBar
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.trackedYouTubeChannelEditorWithProfile
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
@@ -42,14 +32,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbedded
 import net.perfectdreams.loritta.serializable.ColorTheme
 
 class AddYouTubeChannelGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/youtube/add") {
-    @Serializable
-    data class CreateTwitchChannelTrackRequest(
-        val twitchUserId: Long,
-        val channelId: Long,
-        val message: String
-    )
-
-    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, theme: ColorTheme, guild: Guild) {
+    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans) {
         val channelLink = call.parameters.getOrFail("channelLink")
         val result = YouTubeWebUtils.getYouTubeChannelInfoFromURL(website.loritta, channelLink)
 
@@ -63,6 +46,8 @@ class AddYouTubeChannelGuildDashboardRoute(website: LorittaDashboardWebServer) :
                                 i18nContext.get(DashboardI18nKeysData.CustomCommands.Title),
                                 session,
                                 theme,
+                                shimejiSettings,
+                                userPremiumPlan,
                                 {
                                     guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.YOUTUBE)
                                 },
@@ -87,39 +72,26 @@ class AddYouTubeChannelGuildDashboardRoute(website: LorittaDashboardWebServer) :
 
                                     rightSidebarContentAndSaveBarWrapper(
                                         {
-                                            trackedProfileHeader(result.channel.name, result.channel.avatarUrl)
-
-                                            sectionConfig {
-                                                trackedYouTubeChannelEditor(
-                                                    i18nContext,
-                                                    guild,
-                                                    null,
-                                                    "Novo vídeo!"
-                                                )
-                                            }
+                                            trackedYouTubeChannelEditorWithProfile(
+                                                i18nContext,
+                                                guild,
+                                                result.channel,
+                                                null,
+                                                "Novo vídeo!"
+                                            )
                                         },
                                         {
-                                            saveBar(
+                                            trackedNewProfileEditorSaveBar(
                                                 i18nContext,
-                                                true,
+                                                guild,
+                                                "youtube",
                                                 {
-                                                    attributes["bliss-get"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/youtube/add"
-                                                    attributes["bliss-swap:200"] = "#section-config (innerHTML) -> #section-config (innerHTML)"
-                                                    attributes["bliss-headers"] = buildJsonObject {
-                                                        put("Loritta-Configuration-Reset", "true")
-                                                    }.toString()
-                                                    attributes["bliss-vals-query"] = buildJsonObject {
-                                                        put("channelLink", "https://www.youtube.com/channel/${result.channel.channelId}")
-                                                    }.toString()
-                                                }
-                                            ) {
-                                                attributes["bliss-post"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/youtube"
-                                                attributes["bliss-swap:200"] = "body (innerHTML) -> #right-sidebar-content-and-save-bar-wrapper (innerHTML)"
-                                                attributes["bliss-include-json"] = "#section-config"
-                                                attributes["bliss-vals-json"] = buildJsonObject {
+                                                    put("channelLink", "https://www.youtube.com/channel/${result.channel.channelId}")
+                                                },
+                                                {
                                                     put("youtubeChannelId", result.channel.channelId)
-                                                }.toString()
-                                            }
+                                                }
+                                            )
                                         }
                                     )
                                 }

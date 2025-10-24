@@ -4,9 +4,11 @@ import io.ktor.server.application.*
 import kotlinx.html.*
 import kotlinx.html.stream.createHTML
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.dashboard.EmbeddedToast
+import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.dashboard.messageeditor.MessageEditorBootstrap
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.website.components.EtherealGambiUtils.etherealGambiImg
@@ -15,10 +17,8 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysDat
 import net.perfectdreams.loritta.morenitta.websitedashboard.GuildDashboardSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
-import net.perfectdreams.loritta.morenitta.websitedashboard.components.ButtonStyle
-import net.perfectdreams.loritta.morenitta.websitedashboard.components.configurableChannelList
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.channelSelectMenu
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.dashboardBase
-import net.perfectdreams.loritta.morenitta.websitedashboard.components.discordButton
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.discordMessageEditor
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldTitle
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrapper
@@ -27,10 +27,8 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.genericSa
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.guildDashLeftSidebarEntries
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.heroText
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.heroWrapper
-import net.perfectdreams.loritta.morenitta.websitedashboard.components.loadingSpinnerImage
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.rightSidebarContentAndSaveBarWrapper
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.sectionConfig
-import net.perfectdreams.loritta.morenitta.websitedashboard.components.toggle
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.toggleableSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissEvent
@@ -39,7 +37,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbedded
 import net.perfectdreams.loritta.serializable.ColorTheme
 
 class WelcomerGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/welcomer") {
-    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, theme: ColorTheme, guild: Guild) {
+    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans) {
         val welcomerConfig = website.loritta.transaction {
             website.loritta.getOrCreateServerConfig(guild.idLong).welcomerConfig
         }
@@ -52,6 +50,8 @@ class WelcomerGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                         i18nContext.get(DashboardI18nKeysData.Welcomer.Title),
                         session,
                         theme,
+                        shimejiSettings,
+                        userPremiumPlan,
                         {
                             guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.WELCOMER)
                         },
@@ -112,21 +112,12 @@ class WelcomerGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                                                             text("Canal onde será enviado as mensagens")
                                                         }
 
-                                                        select {
-                                                            attributes["bliss-component"] = "fancy-select-menu"
+                                                        channelSelectMenu(
+                                                            guild,
+                                                            welcomerConfig?.channelJoinId
+                                                        ) {
                                                             attributes["loritta-config"] = "channelJoinId"
                                                             name = "channelJoinId"
-
-                                                            for (channel in guild.channels) {
-                                                                if (channel is GuildMessageChannel) {
-                                                                    option {
-                                                                        this.label = channel.name
-                                                                        this.value = channel.id
-                                                                        this.selected = welcomerConfig?.channelJoinId == channel.idLong
-                                                                        this.disabled = false
-                                                                    }
-                                                                }
-                                                            }
                                                         }
                                                     }
 
@@ -156,8 +147,8 @@ class WelcomerGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                                                             listOf(),
                                                             welcomerConfig?.joinMessage ?: ""
                                                         ) {
-                                                            attributes["name"] = "joinMessage"
                                                             attributes["loritta-config"] = "joinMessage"
+                                                            name = "joinMessage"
                                                         }
                                                     }
                                                 }
@@ -178,21 +169,12 @@ class WelcomerGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                                                             text("Canal onde será enviado as mensagens")
                                                         }
 
-                                                        select {
-                                                            attributes["bliss-component"] = "fancy-select-menu"
+                                                        channelSelectMenu(
+                                                            guild,
+                                                            welcomerConfig?.channelRemoveId
+                                                        ) {
                                                             attributes["loritta-config"] = "channelRemoveId"
                                                             name = "channelRemoveId"
-
-                                                            for (channel in guild.channels) {
-                                                                if (channel is GuildMessageChannel) {
-                                                                    option {
-                                                                        this.label = channel.name
-                                                                        this.value = channel.id
-                                                                        this.selected = welcomerConfig?.channelRemoveId == channel.idLong
-                                                                        this.disabled = false
-                                                                    }
-                                                                }
-                                                            }
                                                         }
                                                     }
 

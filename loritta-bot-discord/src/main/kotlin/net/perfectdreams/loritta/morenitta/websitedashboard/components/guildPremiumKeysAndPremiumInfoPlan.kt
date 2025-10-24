@@ -50,7 +50,7 @@ fun FlowContent.guildPremiumKeysAndPremiumInfoPlan(
                 }
 
                 cardHeaderDescription {
-                    text(i18nContext.get(DashboardI18nKeysData.PremiumKeys.UserKeys.Title))
+                    text(i18nContext.get(DashboardI18nKeysData.PremiumKeys.KeysOnThisGuild.ActiveKeys(guildPremiumKeys.size)))
                 }
             }
         }

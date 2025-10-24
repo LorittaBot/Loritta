@@ -5,17 +5,25 @@
     background-color: var(--loritta-blue);
     position: fixed;
     bottom: 1em;
-    border-radius: var(--first-level-border-radius);
+    border-radius: var(--nice-border-radius);
     padding: 1em;
     box-shadow: var(--shadow-elevation-2), inset 0px 0.5px oklch(from var(--loritta-blue) calc(l + .1) c h);
     border: 1px solid var(--soft-border-color);
     justify-content: center;
     align-items: center;
-    transform: scale(1.025);
+    transform: translateY(100%) scale(1.025);
     z-index: 25;
     font-weight: bold;
     margin-top: auto;
     height: var(--save-bar-height);
+    transition: background-color 1s 0.25s, box-shadow 1s 0.25s;
+
+    // We can't use variables because we add and remove the class very quickly, so the variables are not "used" by the parent class
+    &.attention {
+        background-color: var(--loritta-red);
+        box-shadow: var(--shadow-elevation-2), inset 0px 0.5px oklch(from var(--loritta-red) calc(l + .1) c h);
+        transition: background-color 0s, box-shadow 0s;
+    }
 
     .save-bar-small-text {
         display: none;
@@ -28,7 +36,6 @@
     // If the screen is too small, show the small text variant
     @media (max-width: 800px) {
         .save-bar-small-text {
-            display: block;
             display: block;
         }
 
@@ -43,6 +50,7 @@
         gap: 0.5em;
     }
 
+    // We need two different animations because the browser will not animate if they are the same animation
     &.has-changes {
         animation: save-bar-has-changes-animation .25s ease-out forwards;
         animation-direction: normal;
@@ -54,13 +62,14 @@
     }
 
     &.initial-state {
-        opacity: 0 !important; // ewwww, but it works
+        // ewwww, but it works!!
+        opacity: 0 !important;
     }
 }
 
 .save-bar-reserved-space {
-  // 1em = the padding of the save bar!
-  height: calc(var(--save-bar-height) + 1em);
+    // 1em = the padding of the save bar!
+    height: calc(var(--save-bar-height) + 1em);
 }
 
 #right-sidebar-content-and-save-bar-wrapper {

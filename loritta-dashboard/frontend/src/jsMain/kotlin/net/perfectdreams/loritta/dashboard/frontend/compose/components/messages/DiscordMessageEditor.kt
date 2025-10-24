@@ -58,6 +58,7 @@ fun DiscordMessageEditor(
     // testMessageEndpointUrl: String,
     targetChannel: TargetChannelResult,
     renderableSelfUser: RenderableDiscordUser,
+    verifiedIconRawHtml: String,
     // messagesToBeRenderedBeforeTargetMessage: List<DiscordMessageWithAuthor>,
     // messagesToBeRenderedAfterTargetMessage: List<DiscordMessageWithAuthor>,
     rawMessage: String,
@@ -774,6 +775,7 @@ fun DiscordMessageEditor(
                                         renderableSelfUser,
                                         parsedMessage,
                                         null,
+                                        verifiedIconRawHtml,
                                         targetGuild.channels,
                                         targetGuild.roles,
                                         placeholders
@@ -788,6 +790,7 @@ fun DiscordMessageEditor(
                                             content = rawMessage
                                         ),
                                         null,
+                                        verifiedIconRawHtml,
                                         targetGuild.channels,
                                         targetGuild.roles,
                                         placeholders

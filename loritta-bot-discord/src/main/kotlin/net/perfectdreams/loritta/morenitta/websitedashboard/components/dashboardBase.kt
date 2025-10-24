@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.morenitta.websitedashboard.components
 import kotlinx.html.FlowContent
 import kotlinx.html.HTML
 import kotlinx.html.body
+import kotlinx.html.button
 import kotlinx.html.canvas
 import kotlinx.html.div
 import kotlinx.html.head
@@ -12,9 +13,16 @@ import kotlinx.html.meta
 import kotlinx.html.nav
 import kotlinx.html.script
 import kotlinx.html.title
+import kotlinx.serialization.json.Json
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.dashboard.BlissHex
+import net.perfectdreams.loritta.dashboard.EmbeddedToast
+import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.SVGIcons
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.dashboardTitle
 import net.perfectdreams.loritta.serializable.ColorTheme
 
@@ -23,6 +31,8 @@ fun HTML.dashboardBase(
     title: String,
     session: UserSession,
     theme: ColorTheme,
+    shimejiSettings: LorittaShimejiSettings,
+    userPremiumPlan: UserPremiumPlans,
     leftSidebarEntries: FlowContent.() -> Unit,
     rightSidebarContent: FlowContent.() -> Unit,
 ) {
@@ -43,6 +53,7 @@ fun HTML.dashboardBase(
 
         canvas(classes = "loritta-game-canvas") {
             attributes["bliss-component"] = "loritta-shimeji"
+            attributes["loritta-shimeji-settings"] = BlissHex.encodeToHexString(Json.encodeToString(shimejiSettings))
         }
 
         div(classes = theme.className) {
@@ -54,6 +65,20 @@ fun HTML.dashboardBase(
 
             div {
                 id = "modal-list"
+            }
+
+            script(type = "application/json") {
+                id = "save-changes-warning-toast-template"
+                attributes["bliss-toast"] = BlissHex.encodeToHexString(
+                    Json.encodeToString(
+                        createEmbeddedToast(
+                            EmbeddedToast.Type.WARN,
+                            "Não perca as suas configurações!"
+                        ) {
+                            text("Você precisa salvar ou redefinir as configurações antes de mudar para outra página!")
+                        }
+                    )
+                )
             }
 
             div {
@@ -70,13 +95,13 @@ fun HTML.dashboardBase(
                 nav {
                     id = "mobile-left-sidebar"
 
-                    discordButton(ButtonStyle.NO_BACKGROUND_THEME_DEPENDENT_LIGHT_TEXT) {
+                    button(classes = "hamburger-button") {
                         attributes["bliss-component"] = "sidebar-toggle"
-                        text("Barra Lateral")
+                        svgIcon(SVGIcons.List)
                     }
                 }
 
-                rightSidebar(i18nContext, rightSidebarContent)
+                rightSidebar(i18nContext, userPremiumPlan.displayAds, rightSidebarContent)
             }
         }
 

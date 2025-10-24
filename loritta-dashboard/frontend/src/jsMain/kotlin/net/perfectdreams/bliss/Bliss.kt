@@ -16,9 +16,8 @@ import io.ktor.utils.io.charsets.Charsets
 import js.array.asList
 import js.typedarrays.toByteArray
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
@@ -51,6 +50,7 @@ import web.html.HTMLTextAreaElement
 import web.html.InputType
 import web.html.checkbox
 import web.html.file
+import web.html.radio
 import web.input.INPUT
 import web.input.InputEvent
 import web.location.location
@@ -164,6 +164,60 @@ object Bliss {
                     )
                 }
 
+                fun prepareAndExecuteHttp(disableElement: Boolean) {
+                    val detail = BlissBeforeBlissRequestPrepare(element)
+
+                    val event = CustomEvent(
+                        type = EventType("bliss:beforeBlissRequestPrepare"),
+                        init = CustomEventInit(detail = detail, cancelable = true)
+                    )
+
+                    document.dispatchEvent(event)
+
+                    println("Default prevented? ${event.defaultPrevented}")
+                    if (event.defaultPrevented)
+                        return
+
+                    if (disableElement) {
+                        element.setAttribute("disabled", "")
+                    }
+
+                    val indicatorElements = mutableListOf<Element>()
+                    for (indicatorQuery in indicator ?: listOf()) {
+                        val indicators = if (indicatorQuery == "this")
+                            listOf(element)
+                        else document.querySelectorAll(indicatorQuery).asList()
+                        indicatorElements.addAll(indicators)
+                    }
+
+                    for (element in indicatorElements) {
+                        element.classList.add(ClassName("bliss-request"))
+                    }
+
+                    val syncManagerElementTarget = if (sync != null) {
+                        document.querySelector(sync) ?: error("Could not find element $sync!")
+                    } else {
+                        element
+                    }
+
+                    // Currently we only support keeping one request in flight, in the future it would be nice to support a request queue!
+                    val manager = if (syncManagerElementTarget.asDynamic().blissRequestManager == undefined) {
+                        val manager = BlissRequestManager()
+                        syncManagerElementTarget.asDynamic().blissRequestManager = manager
+                        manager
+                    } else syncManagerElementTarget.asDynamic().blissRequestManager as BlissRequestManager
+
+                    manager.inflight?.cancel()
+                    manager.inflight = GlobalScope.launch {
+                        executeHttp()
+
+                        for (indicatorElement in indicatorElements) {
+                            indicatorElement.classList.remove(ClassName("bliss-request"))
+                        }
+                        element.removeAttribute("disabled")
+                    }
+                }
+
                 for (triggerName in triggers) {
                     when (triggerName) {
                         "click" -> {
@@ -171,116 +225,18 @@ object Bliss {
                             element.addEventHandler(PointerEvent.CLICK) {
                                 it.preventDefault()
 
-                                GlobalScope.launch {
-                                    element.setAttribute("disabled", "")
-
-                                    val indicatorElements = mutableListOf<Element>()
-                                    for (indicatorQuery in indicator ?: listOf()) {
-                                        val indicators = if (indicatorQuery == "this")
-                                            listOf(element)
-                                        else document.querySelectorAll(indicatorQuery).asList()
-                                        indicatorElements.addAll(indicators)
-                                    }
-
-                                    for (element in indicatorElements) {
-                                        element.classList.add(ClassName("bliss-request"))
-                                    }
-
-                                    if (sync != null) {
-                                        val syncElement = document.querySelector(sync) ?: error("Could not find element $sync!")
-                                        val mutex = if (syncElement.asDynamic().blissRequestMutex == undefined) {
-                                            val mutex = Mutex()
-                                            syncElement.asDynamic().blissRequestMutex = mutex
-                                            mutex
-                                        } else syncElement.asDynamic().blissRequestMutex as Mutex
-
-                                        mutex.withLock {
-                                            executeHttp()
-                                        }
-                                    } else {
-                                        executeHttp()
-                                    }
-
-                                    for (indicatorElement in indicatorElements) {
-                                        indicatorElement.classList.remove(ClassName("bliss-request"))
-                                    }
-                                    element.removeAttribute("disabled")
-                                }
+                                prepareAndExecuteHttp(true)
                             }
                         }
 
                         "input" -> {
                             element.addEventHandler(InputEvent.INPUT) {
-                                GlobalScope.launch {
-                                    val indicatorElements = mutableListOf<Element>()
-                                    for (indicatorQuery in indicator ?: listOf()) {
-                                        val indicators = if (indicatorQuery == "this")
-                                            listOf(element)
-                                        else document.querySelectorAll(indicatorQuery).asList()
-                                        indicatorElements.addAll(indicators)
-                                    }
-
-                                    for (element in indicatorElements) {
-                                        element.classList.add(ClassName("bliss-request"))
-                                    }
-
-                                    if (sync != null) {
-                                        val syncElement = document.querySelector(sync) ?: error("Could not find element $sync!")
-                                        val mutex = if (syncElement.asDynamic().blissRequestMutex == undefined) {
-                                            val mutex = Mutex()
-                                            syncElement.asDynamic().blissRequestMutex = mutex
-                                            mutex
-                                        } else syncElement.asDynamic().blissRequestMutex as Mutex
-
-                                        mutex.withLock {
-                                            executeHttp()
-                                        }
-                                    } else {
-                                        executeHttp()
-                                    }
-
-                                    for (indicatorElement in indicatorElements) {
-                                        indicatorElement.classList.remove(ClassName("bliss-request"))
-                                    }
-                                }
+                                prepareAndExecuteHttp(false)
                             }
                         }
 
                         "load" -> {
-                            GlobalScope.launch {
-                                val indicatorElements = mutableListOf<Element>()
-                                for (indicatorQuery in indicator ?: listOf()) {
-                                    val indicators = if (indicatorQuery == "this")
-                                        listOf(element)
-                                    else document.querySelectorAll(indicatorQuery).asList()
-                                    indicatorElements.addAll(indicators)
-                                }
-
-                                for (element in indicatorElements) {
-                                    element.classList.add(ClassName("bliss-request"))
-                                }
-
-                                if (sync != null) {
-                                    val syncElement = document.querySelector(sync) ?: error("Could not find element $sync!")
-                                    val mutex = if (syncElement.asDynamic().blissRequestMutex == undefined) {
-                                        val mutex = Mutex()
-                                        syncElement.asDynamic().blissRequestMutex = mutex
-                                        mutex
-                                    } else syncElement.asDynamic().blissRequestMutex as Mutex
-
-                                    mutex.withLock {
-                                        executeHttp()
-                                    }
-                                } else {
-                                    executeHttp()
-                                }
-
-                                for (indicatorElement in indicatorElements) {
-                                    indicatorElement.classList.remove(ClassName("bliss-request"))
-                                }
-
-                                element.removeAttribute("disabled")
-                            }
+                            prepareAndExecuteHttp(true)
                         }
                     }
                 }
@@ -601,13 +557,18 @@ object Bliss {
     private fun processBlissComponents(element: Element) {
         val componentId = element.getAttribute("bliss-component")
         if (componentId != null) {
-            val componentConstructor = componentBuilders[componentId] ?: error("Could not find component $componentId!")
-            val component = componentConstructor.invoke()
-            element.asDynamic().blissComponent = component
-            component.mount(element)
+            try {
+                val componentConstructor = componentBuilders[componentId] ?: error("Could not find component $componentId!")
+                val component = componentConstructor.invoke()
+                element.asDynamic().blissComponent = component
+                component.mount(element)
 
-            element.whenRemovedFromDOM {
-                component.unmount()
+                element.whenRemovedFromDOM {
+                    component.unmount()
+                }
+            } catch (e: Throwable) {
+                println("Something went wrong while trying to setup component \"$componentId\"! Skipping...")
+                e.printStackTrace()
             }
         }
     }
@@ -687,6 +648,13 @@ object Bliss {
                             keyName,
                             JsonPrimitive(element.checked)
                         )
+                    } else if (element.type == InputType.radio) {
+                        if (element.checked) {
+                            setOrCreateList(
+                                keyName,
+                                JsonPrimitive(element.value)
+                            )
+                        }
                     } else {
                         var value: String? = element.value
                         if (value.isNullOrBlank() && element.getAttribute("bliss-coerce-to-null-if-blank") == "true")
@@ -819,7 +787,17 @@ object Bliss {
                 }
             }
 
-            if (includeBody) {
+            val detail = BlissProcessRequestJsonBody(sourceElement, json, includeBody)
+            val event = CustomEvent(
+                type = EventType("bliss:processRequestJsonBody"),
+                init = CustomEventInit(
+                    detail = detail
+                )
+            )
+
+            document.dispatchEvent(event)
+
+            if (detail.includeBody) {
                 val bodyAsJson = Json.encodeToString(json)
                 println("Including JSON on the request: $bodyAsJson")
                 setBody(TextContent(bodyAsJson, ContentType.Application.Json))
@@ -829,12 +807,14 @@ object Bliss {
 
         val blissRedirectUrl = httpRequest.headers["Bliss-Redirect"]
         if (blissRedirectUrl != null) {
+            println("Redirecting to $blissRedirectUrl...")
             location.replace(blissRedirectUrl)
             return
         }
 
         val blissRefresh = httpRequest.headers["Bliss-Refresh"]
         if (blissRefresh == "true") {
+            println("Refreshing webpage...")
             location.reload()
             return
         }
@@ -943,13 +923,17 @@ object Bliss {
             )
         }
 
+        println("Did any swap happen on this request? $didSwap")
         if (didSwap) {
+            println("Because a swap happened, we will process all attributes in the body...")
             // We process it after the fact, due to things like the "bliss-disabled-when" failing when trying to figure out which element it should match
             processAttributes(document.body)
         }
 
         // Just like reswaps, we expect that it overrides ANYTHING and EVERYTHING, no matter the response code!
         var pushUrlValue = httpRequest.headers["Bliss-Push-Url"]
+
+        println("pushUrlValue: $pushUrlValue")
 
         if (pushUrlValue == null) {
             // We do this way because we can select the responses based on the status response, sweet!
@@ -985,4 +969,8 @@ object Bliss {
         val statusCodes: Set<HttpStatusCode>,
         val pushUrl: String
     )
+
+    class BlissRequestManager() {
+        var inflight: Job? = null
+    }
 }

@@ -6,6 +6,7 @@ import net.perfectdreams.loritta.dashboard.renderer.discordMessageBlock
 import net.perfectdreams.loritta.dashboard.renderer.discordMessageUserGap
 import net.perfectdreams.loritta.dashboard.renderer.transformedDiscordText
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.SVGIcons
 
 fun FlowContent.prefixPreview(
     session: UserSession,
@@ -16,6 +17,8 @@ fun FlowContent.prefixPreview(
         session.globalName ?: session.username,
         session.getEffectiveAvatarUrl(),
         false,
+        false,
+        SVGIcons.CheckFat.html.toString()
     ) {
         transformedDiscordText("${prefix}ping", listOf(), listOf(), listOf())
     }
@@ -26,6 +29,8 @@ fun FlowContent.prefixPreview(
         "Loritta Morenitta \uD83D\uDE18",
         lorittaUser.effectiveAvatarUrl,
         true,
+        true,
+        SVGIcons.CheckFat.html.toString()
     ) {
         transformedDiscordText("\uD83C\uDFD3 **|** **Pong!**", listOf(), listOf(), listOf())
     }

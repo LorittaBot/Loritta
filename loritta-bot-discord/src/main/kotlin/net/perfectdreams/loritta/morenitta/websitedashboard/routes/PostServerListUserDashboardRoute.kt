@@ -19,6 +19,8 @@ import kotlinx.html.style
 import kotlinx.serialization.json.Json
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserFavoritedGuilds
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
@@ -34,7 +36,7 @@ class PostServerListUserDashboardRoute(website: LorittaDashboardWebServer) : Req
     private val USER_IDENTIFICATION_URL = "${PREFIX}/users/@me"
     private val USER_GUILDS_URL = "$USER_IDENTIFICATION_URL/guilds"
 
-    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, theme: ColorTheme) {
+    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
         val resultAsText = website.loritta.http.get {
             url(USER_GUILDS_URL)
             userAgent(USER_AGENT)

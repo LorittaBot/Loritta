@@ -11,6 +11,8 @@ import io.ktor.server.util.getOrFail
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageFormatType
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByteArray
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.morenitta.dao.ProfileDesign
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
@@ -21,7 +23,7 @@ import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
 
 class UserBackgroundPreviewDashboardRoute(website: LorittaDashboardWebServer) : RequiresUserAuthDashboardLocalizedRoute(website, "/background-preview/{internalName}") {
-    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, theme: ColorTheme) {
+    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
         val internalName = call.parameters.getOrFail("internalName")
         val profileDesign = call.parameters["profileDesign"] ?: ProfileDesign.DEFAULT_PROFILE_DESIGN_ID
         val dssNamespace = website.loritta.dreamStorageService.getCachedNamespaceOrRetrieve()

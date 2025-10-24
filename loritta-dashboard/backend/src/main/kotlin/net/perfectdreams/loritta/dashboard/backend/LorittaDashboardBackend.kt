@@ -35,6 +35,7 @@ class LorittaDashboardBackend(val config: LorittaDashboardBackendConfig) {
             "Bliss-Push-Url",
             "Bliss-Refresh",
             "X-Accel-Buffering",
+            "Loritta-Cluster",
 
             // Caching
             "Age",
@@ -167,6 +168,8 @@ class LorittaDashboardBackend(val config: LorittaDashboardBackendConfig) {
             }
         } else {
             logger.info { "Requesting $method $host$pathWithoutSlashPrefix..." }
+
+            val requestContentLength = call.request.contentLength()
             val httpResponse = http.request("$host$pathWithoutSlashPrefix") {
                 this.method = method
 
@@ -196,12 +199,20 @@ class LorittaDashboardBackend(val config: LorittaDashboardBackendConfig) {
                     }
                 }
 
-                setBody(
-                    ByteArrayContent(
-                        call.receiveStream().readAllBytes(),
-                        call.request.contentType()
+                // There's a bug in some bad clients (Bot Designer for Discord) that they send a "Content-Type" header for GET requests without any body, even if that's incorrect
+                // So, as an workaround, we'll only attempt to read the body only if the request is NOT a GET request
+                // The reason we do this is that somewhere (not in Ktor) there's a ~15s timeout waiting for the client to send a body, and that's causing issues
+                // ...but then I found out that this same behavior *also* happens with curl, if you do a POST without any body
+                // so as a 100% workaround, we'll check if the Content-Length is not null and if it is larger than 0
+                // This is also useful when working against the browser!
+                if (requestContentLength != null && requestContentLength > 0) {
+                    setBody(
+                        ByteArrayContent(
+                            call.receiveStream().readAllBytes(),
+                            call.request.contentType()
+                        )
                     )
-                )
+                }
             }
             logger.info { "Request $method $host$pathWithoutSlashPrefix status is ${httpResponse.status}" }
 

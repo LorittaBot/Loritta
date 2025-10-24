@@ -4,10 +4,12 @@ import io.ktor.server.application.*
 import kotlinx.html.*
 import kotlinx.html.stream.createHTML
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.LorittaDailyShopNotificationsConfigs
+import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.dashboard.EmbeddedToast
+import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.dashboard.messageeditor.MessageEditorBootstrap
 import net.perfectdreams.loritta.i18n.I18nKeys
 import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls
@@ -18,6 +20,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysDat
 import net.perfectdreams.loritta.morenitta.websitedashboard.GuildDashboardSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.channelSelectMenu
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.dashboardBase
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.discordMessageEditor
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldTitle
@@ -25,7 +28,10 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrap
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrappers
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.genericSaveBar
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.guildDashLeftSidebarEntries
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.heroText
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.heroWrapper
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.rightSidebarContentAndSaveBarWrapper
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.simpleHeroImage
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.toggleableSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissEvent
@@ -35,7 +41,7 @@ import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jetbrains.exposed.sql.selectAll
 
 class DailyShopTrinketsGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/daily-shop-trinkets") {
-    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, theme: ColorTheme, guild: Guild) {
+    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans) {
         val databaseConfig = website.loritta.transaction {
             LorittaDailyShopNotificationsConfigs.selectAll()
                 .where {
@@ -52,6 +58,8 @@ class DailyShopTrinketsGuildDashboardRoute(website: LorittaDashboardWebServer) :
                         i18nContext.get(DashboardI18nKeysData.DailyShopTrinkets.Title),
                         session,
                         theme,
+                        shimejiSettings,
+                        userPremiumPlan,
                         {
                             guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.LORITTA_TRINKETS_SHOP)
                         },
@@ -63,10 +71,10 @@ class DailyShopTrinketsGuildDashboardRoute(website: LorittaDashboardWebServer) :
                                         blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Configuração redefinida!"))
                                     }
 
-                                    div(classes = "hero-wrapper") {
-                                        img(classes = "hero-image", src = "https://stuff.loritta.website/loritta-daily-shop-nicholas.png")
+                                    heroWrapper {
+                                        simpleHeroImage("https://stuff.loritta.website/loritta-daily-shop-nicholas.png")
 
-                                        div(classes = "hero-text") {
+                                        heroText {
                                             h1 {
                                                 text(i18nContext.get(DashboardI18nKeysData.DailyShopTrinkets.Title))
                                             }
@@ -111,21 +119,12 @@ class DailyShopTrinketsGuildDashboardRoute(website: LorittaDashboardWebServer) :
                                                     fieldWrapper {
                                                         fieldTitle { text(i18nContext.get(DashboardI18nKeysData.DailyShopTrinkets.ShopRefresh.ChannelWhereTheMessagesWillBeSent)) }
 
-                                                        select {
-                                                            attributes["bliss-component"] = "fancy-select-menu"
-                                                            name = "shopTrinketsChannelId"
+                                                        channelSelectMenu(
+                                                            guild,
+                                                            databaseConfig?.get(LorittaDailyShopNotificationsConfigs.shopTrinketsChannelId),
+                                                        ) {
                                                             attributes["loritta-config"] = "shopTrinketsChannelId"
-
-                                                            for (channel in guild.channels) {
-                                                                if (channel is GuildMessageChannel) {
-                                                                    option {
-                                                                        this.label = channel.name
-                                                                        this.value = channel.id
-                                                                        this.disabled = false
-                                                                        this.selected = (databaseConfig?.get(LorittaDailyShopNotificationsConfigs.shopTrinketsChannelId) ?: 0L) == channel.idLong
-                                                                    }
-                                                                }
-                                                            }
+                                                            name = "shopTrinketsChannelId"
                                                         }
                                                     }
 
@@ -160,21 +159,12 @@ class DailyShopTrinketsGuildDashboardRoute(website: LorittaDashboardWebServer) :
                                                     fieldWrapper {
                                                         fieldTitle { text(i18nContext.get(DashboardI18nKeysData.DailyShopTrinkets.NewTrinkets.ChannelWhereTheMessagesWillBeSent)) }
 
-                                                        select {
-                                                            attributes["bliss-component"] = "fancy-select-menu"
-                                                            name = "newTrinketsChannelId"
+                                                        channelSelectMenu(
+                                                            guild,
+                                                            databaseConfig?.get(LorittaDailyShopNotificationsConfigs.shopTrinketsChannelId),
+                                                        ) {
                                                             attributes["loritta-config"] = "newTrinketsChannelId"
-
-                                                            for (channel in guild.channels) {
-                                                                if (channel is GuildMessageChannel) {
-                                                                    option {
-                                                                        this.label = channel.name
-                                                                        this.value = channel.id
-                                                                        this.disabled = false
-                                                                        this.selected = (databaseConfig?.get(LorittaDailyShopNotificationsConfigs.newTrinketsChannelId) ?: 0L) == channel.idLong
-                                                                    }
-                                                                }
-                                                            }
+                                                            name = "newTrinketsChannelId"
                                                         }
                                                     }
 

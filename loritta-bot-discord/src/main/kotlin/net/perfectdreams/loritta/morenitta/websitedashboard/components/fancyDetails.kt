@@ -12,7 +12,9 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.morenitta.website.components.SVGIcon.svgIcon
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.SVGIcons
 
 fun FlowContent.fancyDetails(
     summary: FlowContent.() -> (Unit),
@@ -23,7 +25,9 @@ fun FlowContent.fancyDetails(
             summary()
 
             div(classes = "chevron-icon") {
-                // TODO: Add the chevron icon here!
+                svgIcon(SVGIcons.CaretDown) {
+                    attr("style", "width: 100%; height: 100%;")
+                }
             }
         }
 

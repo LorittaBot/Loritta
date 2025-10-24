@@ -11,6 +11,7 @@ import net.perfectdreams.loritta.morenitta.website.components.EmptySection.empty
 import net.perfectdreams.loritta.morenitta.website.components.InlineNullableUserDisplay.inlineNullableUserDisplay
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.SVGIcons
 import net.perfectdreams.loritta.serializable.CachedUserInfo
 import net.perfectdreams.loritta.serializable.ShipEffect
 
@@ -47,7 +48,9 @@ fun FlowContent.shipEffectsBribes(
                             if (effect.user1 == effect.user2) {
                                 // Applied to self, so let's render the first user
                                 div(classes = "icon-with-text") {
-                                    i(classes = "icon fa-solid fa-heart") {}
+                                    svgIcon(SVGIcons.Heart) {
+                                        classNames(setOf("icon"))
+                                    }
                                     inlineNullableUserDisplay(effect.user1.value.toLong(), user1)
                                 }
                             } else {
@@ -55,14 +58,18 @@ fun FlowContent.shipEffectsBribes(
                                 // The reason we do it like this is... what if some day we let users apply effects to two different users? (Probably will never happen)
                                 if (session.userId != effect.user1.value.toLong()) {
                                     div(classes = "icon-with-text") {
-                                        i(classes = "icon fa-solid fa-heart") {}
+                                        svgIcon(SVGIcons.Heart) {
+                                            classNames(setOf("icon"))
+                                        }
                                         inlineNullableUserDisplay(effect.user1.value.toLong(), user1)
                                     }
                                 }
 
                                 if (session.userId != effect.user2.value.toLong()) {
                                     div(classes = "icon-with-text") {
-                                        i(classes = "icon fa-solid fa-heart") {}
+                                        svgIcon(SVGIcons.Heart) {
+                                            classNames(setOf("icon"))
+                                        }
                                         inlineNullableUserDisplay(effect.user2.value.toLong(), user2)
                                     }
                                 }
@@ -70,12 +77,16 @@ fun FlowContent.shipEffectsBribes(
                         }
 
                         div(classes = "icon-with-text") {
-                            i(classes = "icon fa-solid fa-star") {} // TODO - htmx-adventures: fa-sparkles
+                            svgIcon(SVGIcons.Sparkles) {
+                                classNames(setOf("icon"))
+                            }
                             text("${effect.editedShipValue}%")
                         }
 
                         div(classes = "icon-with-text") {
-                            i(classes = "icon fa-solid fa-clock") {}
+                            svgIcon(SVGIcons.Clock) {
+                                classNames(setOf("icon"))
+                            }
                             text(
                                 DateUtils.formatDateDiff(
                                     i18nContext,

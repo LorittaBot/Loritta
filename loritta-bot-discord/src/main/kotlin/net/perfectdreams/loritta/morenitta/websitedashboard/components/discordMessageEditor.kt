@@ -12,6 +12,7 @@ import net.perfectdreams.loritta.dashboard.discord.DiscordRole
 import net.perfectdreams.loritta.dashboard.discordmessages.RenderableDiscordUser
 import net.perfectdreams.loritta.dashboard.messageeditor.MessageEditorBootstrap
 import net.perfectdreams.loritta.dashboard.messageeditor.MessageEditorMessagePlaceholder
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.SVGIcons
 
 fun FlowContent.discordMessageEditor(
     guild: Guild,
@@ -29,6 +30,7 @@ fun FlowContent.discordMessageEditor(
                         guild.selfMember.effectiveName,
                         guild.selfMember.effectiveAvatarUrl,
                         guild.selfMember.user.isBot,
+                        true
                     ),
                     listOf(),
                     placeholders,
@@ -52,7 +54,8 @@ fun FlowContent.discordMessageEditor(
                             )
                         }
                     ),
-                    target
+                    target,
+                    SVGIcons.CheckFat.html.toString()
                 )
             )
         )

@@ -1,6 +1,9 @@
 package net.perfectdreams.loritta.dashboard.frontend.components
 
+import kotlinx.serialization.json.Json
 import net.perfectdreams.bliss.BlissComponent
+import net.perfectdreams.loritta.dashboard.BlissHex
+import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.dashboard.frontend.shimeji.GameState
 import net.perfectdreams.loritta.dashboard.frontend.shimeji.entities.LorittaPlayer
 import web.cssom.ClassName
@@ -20,10 +23,13 @@ class LorittaShimejiComponent : BlissComponent<HTMLCanvasElement>() {
     val gameState = GameState()
 
     override fun onMount() {
+        val settings = this.mountedElement.getAttribute("loritta-shimeji-settings")!!.let {
+            Json.decodeFromString<LorittaShimejiSettings>(BlissHex.decodeFromHexString(it))
+        }
+
         this.gameState.setCanvas(this.mountedElement)
         this.gameState.updateCanvasSize()
-        this.gameState.spawnPlayer(LorittaPlayer.PlayerType.LORITTA)
-        // this.gameState.syncStateWithSettings(pocketLorittaSettings)
+        this.gameState.syncStateWithSettings(settings)
 
         this.gameState.addedToTheDOM = true
 

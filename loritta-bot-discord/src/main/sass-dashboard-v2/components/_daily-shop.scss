@@ -1,274 +1,298 @@
 .shop-reset-timer {
-  display: flex;
-  align-items: center;
-  justify-content: right;
-  color:#1996ed;
-
-  .horizontal-line {
-    flex-grow: 1;
-    background-color: #1996ed;
-    height: 2px;
-    margin-right: 10px;
-  }
-
-  .stopwatch {
-    margin-right: 10px;
-    font-size: 2em;
-  }
-
-  .shop-timer {
     display: flex;
-    flex-direction: column;
-    text-align: center;
+    align-items: center;
+    justify-content: right;
+    color:#1996ed;
 
-    .shop-timer-date {
-      font-size: 2.25em;
-      text-transform: uppercase;
+    .horizontal-line {
+        flex-grow: 1;
+        background-color: #1996ed;
+        height: 2px;
+        margin-right: 10px;
     }
 
-    .shop-timer-subtitle {
-      text-transform: lowercase;
-      font-size: 1.25em;
+    .stopwatch {
+        margin-right: 10px;
+        width: 3em;
+        height: 3em;
+
+        .stopwatch-hand {
+            animation: stopwatch-hand-animation 3s ease-in-out infinite;
+            transform-origin: 128px 128px;
+        }
     }
-  }
+
+    .shop-timer {
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+
+        .shop-timer-date {
+            font-size: 2.25em;
+            text-transform: uppercase;
+        }
+
+        .shop-timer-subtitle {
+            text-transform: lowercase;
+            font-size: 1.25em;
+        }
+    }
 }
 
 .loritta-items-wrapper {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 8px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 8px;
 
-  // Loritta still uses this on the background and profile design routes, when they are redesigned this can be removed!
-  &.legacy-items-wrapper {
-    justify-content: space-evenly;
-    display: flex;
-    flex-wrap: wrap;
-    align-content: flex-start;
-  }
-
-  .shop-item-entry {
-    margin: 0.25em;
-    box-shadow: var(--shadow-elevation-1);
-    border-radius: 7px;
-    padding: 0.25em;
-    cursor: pointer;
-    height: min-content;
-    scale: 1.0;
-    transition-duration: 0.35s;
-
-    &:hover {
-      scale: 1.025;
-      transition-duration: 0.25s;
-      box-shadow: var(--shadow-elevation-2);
+    // Loritta still uses this on the background and profile design routes, when they are redesigned this can be removed!
+    &.legacy-items-wrapper {
+        justify-content: space-evenly;
+        display: flex;
+        flex-wrap: wrap;
+        align-content: flex-start;
     }
 
-    &.rarity-common {
-      background: linear-gradient(135deg, #e7e7e7, #939393);
-    }
-    &.rarity-uncommon {
-      background: linear-gradient(135deg, #2cff00, #0c8d08);
-    }
-    &.rarity-rare {
-      background: linear-gradient(135deg, #009fff, #003e80);
-    }
-    &.rarity-epic {
-      background: linear-gradient(135deg, #b03cff, #5c045c);
-    }
-    &.rarity-legendary {
-      background: linear-gradient(135deg, #fadf4b, #d3b200);
-    }
+    .shop-item-entry {
+        margin: 0.25em;
+        box-shadow: var(--shadow-elevation-1);
+        border-radius: 7px;
+        padding: 0.25em;
+        cursor: pointer;
+        height: min-content;
+        scale: 1.0;
+        transition-duration: 0.35s;
 
-    .item-entry-information {
-      position: absolute;
-      color: white;
-      text-align: center;
-      bottom: 0;
-      margin-left: auto;
-      margin-right: auto;
-      left: 0;
-      right: 0;
-      background-color: #000000a1;
-      padding: 0.5em;
-      pointer-events: none;
+        &:hover {
+            scale: 1.025;
+            transition-duration: 0.25s;
+            box-shadow: var(--shadow-elevation-2);
+        }
 
-      .item-entry-title {
         &.rarity-common {
-          background: linear-gradient(#fff, #dfdfdf);
-          -webkit-background-clip: text;
-          background-clip: text;
-          -webkit-text-fill-color: transparent;
+            background: linear-gradient(135deg, #e7e7e7, #939393);
         }
         &.rarity-uncommon {
-          background: linear-gradient(#fff, #b7ff86);
-          -webkit-background-clip: text;
-          background-clip: text;
-          -webkit-text-fill-color: transparent;
+            background: linear-gradient(135deg, #2cff00, #0c8d08);
         }
         &.rarity-rare {
-          background: linear-gradient(#fff, #aeddff);
-          -webkit-background-clip: text;
-          background-clip: text;
-          -webkit-text-fill-color: transparent;
+            background: linear-gradient(135deg, #009fff, #003e80);
         }
         &.rarity-epic {
-          background: linear-gradient(#fff, #e6aeff);
-          -webkit-background-clip: text;
-          background-clip: text;
-          -webkit-text-fill-color: transparent;
+            background: linear-gradient(135deg, #b03cff, #5c045c);
         }
         &.rarity-legendary {
-          background: linear-gradient(#fff, #fff2ae);
-          -webkit-background-clip: text;
-          background-clip: text;
-          -webkit-text-fill-color: transparent;
+            background: linear-gradient(135deg, #fadf4b, #d3b200);
         }
 
-        font-size: 2em;
-        line-height: 1.3em;
-        font-weight: 1000;
-      }
+        .item-entry-information {
+            position: absolute;
+            color: white;
+            text-align: center;
+            bottom: 0;
+            margin-left: auto;
+            margin-right: auto;
+            left: 0;
+            right: 0;
+            background-color: #000000a1;
+            padding: 0.5em;
+            pointer-events: none;
 
-      .item-entry-type {
-        opacity: 0.5;
-        font-size: 1em;
-        line-height: 1em;
-        font-weight: 500;
-      }
-    }
+            .item-entry-title {
+                &.rarity-common {
+                    background: linear-gradient(#fff, #dfdfdf);
+                    -webkit-background-clip: text;
+                    background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                }
+                &.rarity-uncommon {
+                    background: linear-gradient(#fff, #b7ff86);
+                    -webkit-background-clip: text;
+                    background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                }
+                &.rarity-rare {
+                    background: linear-gradient(#fff, #aeddff);
+                    -webkit-background-clip: text;
+                    background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                }
+                &.rarity-epic {
+                    background: linear-gradient(#fff, #e6aeff);
+                    -webkit-background-clip: text;
+                    background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                }
+                &.rarity-legendary {
+                    background: linear-gradient(#fff, #fff2ae);
+                    -webkit-background-clip: text;
+                    background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                }
 
-    .item-new-tag {
-      top: -10px;
-      left: -10px;
-      position: absolute;
-      font-size: 2em;
-      text-transform: uppercase;
-      background-color: #ff4b4b;
-      padding: 6px;
-      border-radius: 7px;
-      font-weight: 1000;
-      color: white;
-      box-shadow: 0px 0px 10px #00000054;
-      border: 3px solid white;
-    }
+                font-size: 2em;
+                line-height: 1.3em;
+                font-weight: 1000;
+            }
 
-    .item-user-information {
-      background-color: black;
-      line-height: 1.1em;
-      font-size: 1.1em;
-      z-index: 5;
-      position: relative;
-      text-align: center;
-      color: white;
-      padding: 0.25em;
-      font-weight: 700;
+            .item-entry-type {
+                opacity: 0.5;
+                font-size: 1em;
+                line-height: 1em;
+                font-weight: 500;
+            }
+        }
+
+        .item-new-tag {
+            top: -10px;
+            left: -10px;
+            position: absolute;
+            font-size: 2em;
+            text-transform: uppercase;
+            background-color: var(--loritta-red);
+            padding: 6px;
+            border-radius: 7px;
+            font-weight: 1000;
+            color: white;
+            box-shadow: 0px 0px 10px #00000054;
+            border: 3px solid white;
+        }
+
+        .item-user-information {
+            background-color: black;
+            line-height: 1.1em;
+            font-size: 1.1em;
+            z-index: 5;
+            position: relative;
+            color: white;
+            padding: 0.25em;
+            font-weight: 700;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 4px;
+
+            svg {
+                color: var(--loritta-green);
+                width: 1em;
+                height: 1em;
+            }
+        }
     }
-  }
 }
 
 .canvas-background-preview {
-  transition-duration: 0.7s;
-  transform: scale(1);
+    transition-duration: 0.7s;
+    transform: scale(1);
 }
 
 .canvas-background-preview:hover {
-  transform: scale(1.1);
-  transition-duration: 0.7s;
+    transform: scale(1.1);
+    transition-duration: 0.7s;
 }
 
 .canvas-preview {
-  transition-duration: 0.3s;
-  height: auto;
-  transform: rotateY(-10deg);
-  margin-bottom: 50px;
-  box-shadow: 0px 0px 10px #0009;
-  max-width: 100%;
+    transition-duration: 0.3s;
+    height: auto;
+    transform: rotateY(-10deg);
+    margin-bottom: 50px;
+    box-shadow: 0px 0px 10px #0009;
+    max-width: 100%;
 }
 
 .canvas-preview-profile-design {
-  transition-duration: 0.3s;
-  height: auto;
-  transform: rotateY(-10deg);
-  margin-bottom: 50px;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.9);
-  max-width: 100%;
+    transition-duration: 0.3s;
+    height: auto;
+    transform: rotateY(-10deg);
+    margin-bottom: 50px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.9);
+    max-width: 100%;
 }
 
 .canvas-preview:hover {
-  opacity: 0;
-  transition-duration: 0.3s;
+    opacity: 0;
+    transition-duration: 0.3s;
 }
 
 .canvas-preview-only-bg {
-  position: absolute;
-  height: auto;
-  transform: rotateY(-10deg);
-  margin-bottom: 50px;
-  box-shadow: 0px 0px 10px #0009;
-  max-width: 100%;
+    position: absolute;
+    height: auto;
+    transform: rotateY(-10deg);
+    margin-bottom: 50px;
+    box-shadow: 0px 0px 10px #0009;
+    max-width: 100%;
 }
 
 .canvas-preview-wrapper {
-  perspective: 500px;
-  position: relative;
+    perspective: 500px;
+    position: relative;
 }
 
 .item-shop-preview {
-  @media screen and (max-width: 1024px) {
-    flex-direction: column;
-  }
+    @media screen and (max-width: 1024px) {
+        flex-direction: column;
+    }
 
-  display: flex;
+    display: flex;
 }
 
 .loritta-items-list {
-  @media screen and (max-width: 1024px) {
-    flex-direction: column-reverse;
-  }
+    @media screen and (max-width: 1024px) {
+        flex-direction: column-reverse;
+    }
 
-  display: flex;
+    display: flex;
 }
 
 .loritta-items-sidebar {
-  @media screen and (max-width: 1024px) {
-    width: 100%;
-    margin: auto;
-  }
+    @media screen and (max-width: 1024px) {
+        width: 100%;
+        margin: auto;
+    }
 
-  input {
-    width: 100%;
-  }
+    input {
+        width: 100%;
+    }
 
-  width: 40vw;
-  margin-left: auto;
-  max-width: 350px;
+    width: 40vw;
+    margin-left: auto;
+    max-width: 350px;
 }
 
 .loritta-item-preview-wrapper {
-  display: flex;
-  flex-direction: column;
-
-  .canvas-preview-wrapper-wrapper {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
 
-    .canvas-preview-wrapper {
-      width: fit-content;
-      animation: 8s linear infinite forwards loritta-item-preview-animation;
+    .canvas-preview-wrapper-wrapper {
+        display: flex;
+        justify-content: center;
+
+        .canvas-preview-wrapper {
+            width: fit-content;
+            animation: 8s linear infinite forwards loritta-item-preview-animation;
+        }
     }
-  }
 }
 
 @keyframes loritta-item-preview-animation {
-  0%, 50%, 100% {
-    transform: translateY(0px);
-    animation-timing-function: ease-out;
-  }
-  25% {
-    transform: translateY(10px);
-    animation-timing-function: ease-in;
-  }
-  75% {
-    transform: translateY(-10px);
-    animation-timing-function: ease-in;
-  }
+    0%, 50%, 100% {
+        transform: translateY(0px);
+        animation-timing-function: ease-out;
+    }
+    25% {
+        transform: translateY(10px);
+        animation-timing-function: ease-in;
+    }
+    75% {
+        transform: translateY(-10px);
+        animation-timing-function: ease-in;
+    }
+}
+
+@keyframes stopwatch-hand-animation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }

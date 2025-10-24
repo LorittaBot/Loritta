@@ -1,0 +1,4 @@
+website:
+  dashboard:
+    xpBlockers:
+      title: "Bloqueios de XP"

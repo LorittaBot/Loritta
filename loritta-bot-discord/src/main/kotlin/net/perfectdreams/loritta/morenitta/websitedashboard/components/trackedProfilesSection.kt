@@ -23,6 +23,7 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.youtube.YouTubeChannel
 import net.perfectdreams.loritta.morenitta.website.views.dashboard.user.profilepresets.ProfilePresetsListView
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.SVGIconUtils
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedConfirmDeletionModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.defaultModalCloseButton
@@ -90,8 +91,16 @@ fun FlowContent.trackedProfilesSection(
 
                                     text(" em ")
 
-                                    span(classes = "discord-mention") {
-                                        text("#${postingInChannel?.name ?: "???"}")
+                                    val svgIcon = SVGIconUtils.getSVGIconForChannelFallbackIfNull(guild, postingInChannel)
+
+                                    span(classes = "discord-mention has-icon") {
+                                        style = "height: fit-content;"
+
+                                        svgIcon(svgIcon)
+
+                                        span {
+                                            text((postingInChannel?.name ?: "???") + " (${profile.channelId})")
+                                        }
                                     }
                                 }
 

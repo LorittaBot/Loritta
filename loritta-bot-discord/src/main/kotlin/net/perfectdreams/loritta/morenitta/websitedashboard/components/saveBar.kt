@@ -7,11 +7,11 @@ import kotlinx.html.classes
 import kotlinx.html.div
 import kotlinx.html.id
 import kotlinx.html.img
+import kotlinx.serialization.json.JsonObjectBuilder
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.TrackedYouTubeAccounts
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.website.components.LoadingSectionComponents
 import kotlin.collections.plus
@@ -34,7 +34,7 @@ fun FlowContent.saveBar(
             attributes["save-bar-always-dirty"] = "true"
             classes += "has-changes"
         } else {
-            // classes += "initial-state"
+            classes += "initial-state"
             classes += "no-changes"
         }
 
@@ -128,5 +128,35 @@ fun FlowContent.trackedProfileEditorSaveBar(
     ) {
         attributes["bliss-put"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/$socialPathPart/$entryId"
         attributes["bliss-include-json"] = "#section-config"
+    }
+}
+
+fun FlowContent.trackedNewProfileEditorSaveBar(
+    i18nContext: I18nContext,
+    guild: Guild,
+    socialPathPart: String,
+    valsQuery: JsonObjectBuilder.() -> (Unit),
+    valsJson: JsonObjectBuilder.() -> (Unit)
+) {
+    saveBar(
+        i18nContext,
+        true,
+        {
+            attributes["bliss-get"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/$socialPathPart/add"
+            attributes["bliss-swap:200"] = "#section-config (innerHTML) -> #section-config (innerHTML)"
+            attributes["bliss-headers"] = buildJsonObject {
+                put("Loritta-Configuration-Reset", "true")
+            }.toString()
+            attributes["bliss-vals-query"] = buildJsonObject {
+                valsQuery()
+            }.toString()
+        }
+    ) {
+        attributes["bliss-post"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/$socialPathPart"
+        attributes["bliss-swap:200"] = "#save-bar (innerHTML) -> #save-bar (innerHTML)"
+        attributes["bliss-include-json"] = "#section-config"
+        attributes["bliss-vals-json"] = buildJsonObject {
+            valsJson()
+        }.toString()
     }
 }

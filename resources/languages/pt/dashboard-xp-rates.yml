@@ -1,0 +1,4 @@
+website:
+  dashboard:
+    xpRates:
+      title: "Taxas de XP"

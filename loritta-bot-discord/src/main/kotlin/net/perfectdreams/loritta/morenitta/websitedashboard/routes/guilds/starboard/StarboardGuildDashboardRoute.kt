@@ -9,14 +9,14 @@ import kotlinx.html.hr
 import kotlinx.html.html
 import kotlinx.html.id
 import kotlinx.html.numberInput
-import kotlinx.html.option
 import kotlinx.html.p
-import kotlinx.html.select
 import kotlinx.html.stream.createHTML
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.dashboard.EmbeddedToast
+import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.website.components.EtherealGambiUtils.etherealGambiImg
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
@@ -24,6 +24,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysDat
 import net.perfectdreams.loritta.morenitta.websitedashboard.GuildDashboardSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.channelSelectMenu
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.dashboardBase
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldTitle
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrapper
@@ -40,7 +41,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbedded
 import net.perfectdreams.loritta.serializable.ColorTheme
 
 class StarboardGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/starboard") {
-    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, theme: ColorTheme, guild: Guild) {
+    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans) {
         val starboardConfig = website.loritta.transaction {
             val serverConfig = website.loritta.getOrCreateServerConfig(guild.idLong)
             serverConfig.starboardConfig
@@ -58,6 +59,8 @@ class StarboardGuildDashboardRoute(website: LorittaDashboardWebServer) : Require
                         i18nContext.get(DashboardI18nKeysData.Starboard.Title),
                         session,
                         theme,
+                        shimejiSettings,
+                        userPremiumPlan,
                         {
                             guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.STARBOARD)
                         },
@@ -111,42 +114,13 @@ class StarboardGuildDashboardRoute(website: LorittaDashboardWebServer) : Require
                                                         text(i18nContext.get(DashboardI18nKeysData.Starboard.StarboardChannel))
                                                     }
 
-                                                    select {
-                                                        attributes["bliss-component"] = "fancy-select-menu"
-                                                        attributes["save-bar-track"] = "true"
+                                                    channelSelectMenu(guild, starboardChannelId) {
                                                         attributes["bliss-post"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/starboard/storytime"
                                                         attributes["bliss-swap:200"] = "body (innerHTML) -> #starboard-storytime (innerHTML)"
                                                         attributes["bliss-trigger"] = "input"
                                                         attributes["bliss-include-json"] = "[loritta-config]"
                                                         attributes["loritta-config"] = "starboardChannelId"
                                                         name = "starboardChannelId"
-
-                                                        for (channel in guild.channels) {
-                                                            if (channel is GuildMessageChannel) {
-                                                                option {
-                                                                    this.label = channel.name
-                                                                    this.value = channel.id
-                                                                    this.selected = starboardChannelId == channel.idLong
-                                                                    this.disabled = false
-                                                                    /* this.attributes["fancy-select-menu-open-modal-if-disabled"] = BlissHex.encodeToHexString(
-                                                                        Json.encodeToString(
-                                                                            createEmbeddedModal(
-                                                                                "Sem Permissão!",
-                                                                                true,
-                                                                                {
-                                                                                    text("Sem permissão :(")
-                                                                                },
-                                                                                listOf(
-                                                                                    {
-                                                                                        defaultModalCloseButton(i18nContext)
-                                                                                    }
-                                                                                )
-                                                                            )
-                                                                        )
-                                                                    ) */
-                                                                }
-                                                            }
-                                                        }
                                                     }
                                                 }
 

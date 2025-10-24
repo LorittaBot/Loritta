@@ -10,6 +10,7 @@ version = Versions.PUDDING
 dependencies {
     implementation(project(":common"))
     api(project(":loritta-serializable-commons"))
+    implementation(project(":loritta-dashboard:loritta-shimeji-common"))
 
     // Databases
     api(libs.exposed.core)

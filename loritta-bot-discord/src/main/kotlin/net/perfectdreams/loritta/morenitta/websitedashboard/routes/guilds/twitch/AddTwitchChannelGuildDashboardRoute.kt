@@ -5,7 +5,6 @@ import io.ktor.http.URLBuilder
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import kotlinx.html.body
-import kotlinx.html.div
 import kotlinx.html.hr
 import kotlinx.html.html
 import kotlinx.html.p
@@ -17,7 +16,9 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DonationKeys
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.PremiumTrackTwitchAccounts
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.dashboard.EmbeddedToast
+import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.dao.DonationKey
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.twitch.TwitchWebUtils
@@ -41,7 +42,7 @@ import org.jetbrains.exposed.sql.selectAll
 import kotlin.math.ceil
 
 class AddTwitchChannelGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/twitch/add") {
-    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, theme: ColorTheme, guild: Guild) {
+    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans) {
         data class AddNewGuildTwitchChannelTransactionResult(
             val valueOfTheDonationKeysEnabledOnThisGuild: Double,
             val premiumTracksCount: Long,
@@ -85,12 +86,10 @@ class AddTwitchChannelGuildDashboardRoute(website: LorittaDashboardWebServer) : 
         }
 
         if (transactionResult.state == TwitchAccountTrackState.UNAUTHORIZED && !enablePremiumTrack) {
-            val plan = ServerPremiumPlans.getPlanFromValue(transactionResult.valueOfTheDonationKeysEnabledOnThisGuild)
-
             call.respondHtml(
                 createHTML()
                     .body {
-                        if (plan.maxUnauthorizedTwitchChannels > transactionResult.premiumTracksCount) {
+                        if (guildPremiumPlan.maxUnauthorizedTwitchChannels > transactionResult.premiumTracksCount) {
                             blissShowModal(
                                 createEmbeddedModal(
                                     "Conta não autorizada, mas...",
@@ -101,7 +100,7 @@ class AddTwitchChannelGuildDashboardRoute(website: LorittaDashboardWebServer) : 
                                         }
 
                                         p {
-                                            text("Você pode seguir até ${plan.maxUnauthorizedTwitchChannels} contas que não foram autorizadas. Ao autorizar uma conta, outras pessoas podem seguir a conta sem precisar de plano premium, até você remover a conta da sua lista de acompanhamentos premium.")
+                                            text("Você pode seguir até ${guildPremiumPlan.maxUnauthorizedTwitchChannels} contas que não foram autorizadas. Ao autorizar uma conta, outras pessoas podem seguir a conta sem precisar de plano premium, até você remover a conta da sua lista de acompanhamentos premium.")
                                         }
                                     },
                                     listOf(
@@ -170,6 +169,8 @@ class AddTwitchChannelGuildDashboardRoute(website: LorittaDashboardWebServer) : 
                         i18nContext.get(DashboardI18nKeysData.Twitch.Title),
                         session,
                         theme,
+                        shimejiSettings,
+                        userPremiumPlan,
                         {
                             guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.TWITCH)
                         },
@@ -197,64 +198,29 @@ class AddTwitchChannelGuildDashboardRoute(website: LorittaDashboardWebServer) : 
 
                             rightSidebarContentAndSaveBarWrapper(
                                 {
-                                    trackedProfileHeader(twitchUser.displayName, twitchUser.profileImageUrl)
-
-                                    when (transactionResult.state) {
-                                        TwitchAccountTrackState.AUTHORIZED -> {
-                                            div(classes = "alert alert-success") {
-                                                text("O canal foi autorizado pelo dono, então você receberá notificações quando o canal entrar ao vivo!")
-                                            }
-                                        }
-                                        TwitchAccountTrackState.ALWAYS_TRACK_USER -> {
-                                            div(classes = "alert alert-success") {
-                                                text("O canal não está autorizado, mas ela está na minha lista especial de \"pessoas tão incríveis que não preciso pedir autorização\". Você receberá notificações quando o canal entrar ao vivo.")
-                                            }
-                                        }
-                                        TwitchAccountTrackState.PREMIUM_TRACK_USER -> {
-                                            div(classes = "alert alert-success") {
-                                                text("O canal não está autorizado, mas você colocou ele na lista de acompanhamentos premium! Você receberá notificações quando o canal entrar ao vivo.")
-                                            }
-                                        }
-                                        TwitchAccountTrackState.UNAUTHORIZED -> {
-                                            div(classes = "alert alert-danger") {
-                                                text("O canal não está autorizado! Você só receberá notificações quando o canal for autorizado na Loritta.")
-                                            }
-                                        }
-                                    }
-
-                                    sectionConfig {
-                                        trackedTwitchChannelEditor(
-                                            i18nContext,
-                                            guild,
-                                            null,
-                                            "Ao vivo yayyy!"
-                                        )
-                                    }
+                                    trackedTwitchChannelEditorWithProfile(
+                                        i18nContext,
+                                        guild,
+                                        twitchUser,
+                                        transactionResult.state,
+                                        null,
+                                        "Ao vivo!"
+                                    )
                                 },
                                 {
-                                    saveBar(
+                                    trackedNewProfileEditorSaveBar(
                                         i18nContext,
-                                        true,
+                                        guild,
+                                        "twitch",
                                         {
-                                            attributes["bliss-get"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/twitch/add"
-                                            attributes["bliss-swap:200"] = "#section-config (innerHTML) -> #section-config (innerHTML)"
-                                            attributes["bliss-headers"] = buildJsonObject {
-                                                put("Loritta-Configuration-Reset", "true")
-                                            }.toString()
-                                            attributes["bliss-vals-query"] = buildJsonObject {
-                                                put("userId", twitchUser.id)
-                                                put("enablePremiumTrack", enablePremiumTrack)
-                                            }.toString()
-                                        }
-                                    ) {
-                                        attributes["bliss-post"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/twitch"
-                                        attributes["bliss-swap:200"] = "body (innerHTML) -> #right-sidebar-content-and-save-bar-wrapper (innerHTML)"
-                                        attributes["bliss-include-json"] = "#section-config"
-                                        attributes["bliss-vals-json"] = buildJsonObject {
+                                            put("userId", twitchUser.id)
+                                            put("enablePremiumTrack", enablePremiumTrack)
+                                        },
+                                        {
                                             put("twitchUserId", twitchUser.id)
                                             put("enablePremiumTrack", enablePremiumTrack)
-                                        }.toString()
-                                    }
+                                        }
+                                    )
                                 }
                             )
                         }

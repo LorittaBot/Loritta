@@ -9,6 +9,8 @@ import io.ktor.server.response.respondBytes
 import io.ktor.server.response.respondText
 import net.dv8tion.jda.api.entities.User.UserFlag
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
 import net.perfectdreams.loritta.morenitta.profile.profiles.AnimatedProfileCreator
 import net.perfectdreams.loritta.morenitta.profile.profiles.RawProfileCreator
@@ -25,7 +27,7 @@ import java.util.EnumSet
 import javax.imageio.ImageIO
 
 class UserProfilePreviewDashboardRoute(website: LorittaDashboardWebServer) : RequiresUserAuthDashboardLocalizedRoute(website, "/profile-preview") {
-    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, theme: ColorTheme) {
+    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
         val profile = website.loritta.getOrCreateLorittaProfile(session.userId)
         val settings = website.loritta.newSuspendedTransaction {
             profile.settings

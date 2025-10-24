@@ -14,7 +14,9 @@ import net.perfectdreams.bliss.SSEBliss
 import net.perfectdreams.bliss.SSEBlissShowToast
 import net.perfectdreams.bliss.SSEBlissSwap
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.dashboard.EmbeddedToast
+import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.SseEvent
 import net.perfectdreams.loritta.morenitta.utils.extensions.writeSseEvent
@@ -24,10 +26,9 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.dailyShop
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresUserAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
 import net.perfectdreams.loritta.serializable.ColorTheme
-import java.util.UUID
 
 class SSEDailyShopTimerUserDashboardRoute(website: LorittaDashboardWebServer) : RequiresUserAuthDashboardLocalizedRoute(website, "/daily-shop/timer") {
-    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, theme: ColorTheme) {
+    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
         // Makes SSE work behind nginx
         // https://stackoverflow.com/a/33414096/7271796
         call.response.header("X-Accel-Buffering", "no")
@@ -93,7 +94,7 @@ class SSEDailyShopTimerUserDashboardRoute(website: LorittaDashboardWebServer) : 
                     )
                 }
 
-                val newText = DateUtils.formatDateDiff(i18nContext, System.currentTimeMillis(), DashboardDailyShopUtils.getShopResetsEpochMilli(), maxParts = 1) + " ${UUID.randomUUID().toString().substring(0, 5)}"
+                val newText = DateUtils.formatDateDiff(i18nContext, System.currentTimeMillis(), DashboardDailyShopUtils.getShopResetsEpochMilli(), maxParts = 1)
                 if (lastGeneratedText == null || lastGeneratedText != newText) {
                     writeSseEvent(
                         SseEvent(

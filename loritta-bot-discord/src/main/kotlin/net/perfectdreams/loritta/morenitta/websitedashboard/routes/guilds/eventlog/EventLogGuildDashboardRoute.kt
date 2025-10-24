@@ -4,9 +4,11 @@ import io.ktor.server.application.*
 import kotlinx.html.*
 import kotlinx.html.stream.createHTML
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.dashboard.EmbeddedToast
+import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.i18n.I18nKeys
 import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls
 import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls.appendAsFormattedText
@@ -16,6 +18,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysDat
 import net.perfectdreams.loritta.morenitta.websitedashboard.GuildDashboardSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.channelSelectMenu
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.dashboardBase
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldTitle
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrapper
@@ -31,7 +34,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbedded
 import net.perfectdreams.loritta.serializable.ColorTheme
 
 class EventLogGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/event-log") {
-    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, theme: ColorTheme, guild: Guild) {
+    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans) {
         val eventLogConfig = website.loritta.transaction {
             website.loritta.getOrCreateServerConfig(guild.idLong).eventLogConfig
         }
@@ -58,30 +61,21 @@ class EventLogGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                     fieldWrapper {
                         fieldTitle { text(i18nContext.get(DashboardI18nKeysData.EventLog.ChannelWhereTheActionsWillBeSent)) }
 
-                        select {
-                            attributes["bliss-component"] = "fancy-select-menu"
-                            attributes["loritta-config"] = "${sectionFieldName}LogChannelId"
-                            attributes["bliss-coerce-to-null-if-blank"] = "true"
-                            name = "${sectionFieldName}LogChannelId"
-
-                            option {
-                                this.label = i18nContext.get(DashboardI18nKeysData.EventLog.UseDefaultChannel)
-                                this.disabled = false
-                                if (channelId == null)
-                                    this.selected = true
-                            }
-
-                            for (channel in guild.channels) {
-                                if (channel is GuildMessageChannel) {
-                                    option {
-                                        this.label = channel.name
-                                        this.value = channel.id
-                                        this.disabled = false
-                                        if (channelId == channel.idLong)
-                                            this.selected = true
-                                    }
+                        channelSelectMenu(
+                            guild,
+                            channelId,
+                            additionalOptions = {
+                                option {
+                                    this.label = i18nContext.get(DashboardI18nKeysData.EventLog.UseDefaultChannel)
+                                    this.disabled = false
+                                    if (channelId == null)
+                                        this.selected = true
                                 }
                             }
+                        ) {
+                            attributes["bliss-coerce-to-null-if-blank"] = "true"
+                            attributes["loritta-config"] = "${sectionFieldName}LogChannelId"
+                            name = "${sectionFieldName}LogChannelId"
                         }
                     }
                 }
@@ -96,6 +90,8 @@ class EventLogGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                         i18nContext.get(DashboardI18nKeysData.EventLog.Title),
                         session,
                         theme,
+                        shimejiSettings,
+                        userPremiumPlan,
                         {
                             guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.EVENT_LOG)
                         },
@@ -141,20 +137,12 @@ class EventLogGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                                             fieldWrapper {
                                                 fieldTitle { text(i18nContext.get(DashboardI18nKeysData.EventLog.DefaultChannelWhereTheActionsWillBeSent)) }
 
-                                                select {
-                                                    attributes["bliss-component"] = "fancy-select-menu"
+                                                channelSelectMenu(
+                                                    guild,
+                                                    eventLogConfig?.eventLogChannelId,
+                                                ) {
                                                     attributes["loritta-config"] = "eventLogChannelId"
                                                     name = "eventLogChannelId"
-
-                                                    for (channel in guild.channels) {
-                                                        if (channel is GuildMessageChannel) {
-                                                            option {
-                                                                this.label = channel.name
-                                                                this.value = channel.id
-                                                                this.disabled = false
-                                                            }
-                                                        }
-                                                    }
                                                 }
                                             }
 

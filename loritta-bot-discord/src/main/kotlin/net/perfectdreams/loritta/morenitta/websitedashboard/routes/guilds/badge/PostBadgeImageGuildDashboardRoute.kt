@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.badge
 
-import com.github.salomonbrys.kotson.nullBool
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.*
@@ -17,8 +16,11 @@ import net.perfectdreams.dreamstorageservice.data.api.DeleteImageLinkRequest
 import net.perfectdreams.dreamstorageservice.data.api.UploadImageRequest
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.utils.MediaTypeUtils
+import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.common.utils.StoragePaths
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.dashboard.EmbeddedToast
+import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.morenitta.dao.DonationConfig
 import net.perfectdreams.loritta.morenitta.utils.SimpleImageInfo
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
@@ -31,7 +33,6 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.backgrounds.P
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
-import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondConfigSaved
 import net.perfectdreams.loritta.serializable.ColorTheme
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
@@ -52,8 +53,24 @@ class PostBadgeImageGuildDashboardRoute(website: LorittaDashboardWebServer) : Re
         )
     }
 
-    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, theme: ColorTheme, guild: Guild) {
+    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans) {
         val request = Json.decodeFromString<UploadBackgroundRequest>(call.receiveText()).file.first()
+
+        if (!guildPremiumPlan.hasCustomBadge) {
+            call.respondHtml(
+                createHTML(false)
+                    .body {
+                        blissShowToast(
+                            createEmbeddedToast(
+                                EmbeddedToast.Type.WARN,
+                                "O servidor precisa ter premium para fazer isto!"
+                            )
+                        )
+                    },
+                status = HttpStatusCode.BadRequest
+            )
+            return
+        }
 
         val decodedBytes = Base64.getDecoder().decode(request.data)
 

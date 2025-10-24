@@ -4,26 +4,22 @@ import io.ktor.server.application.*
 import kotlinx.html.*
 import kotlinx.html.stream.createHTML
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.LevelAnnouncementConfigs
+import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.dashboard.EmbeddedToast
+import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.dashboard.messageeditor.MessageEditorBootstrap
-import net.perfectdreams.loritta.i18n.I18nKeys
-import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.LevelConfig
-import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls
-import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls.appendAsFormattedText
-import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls.handleI18nString
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.GuildDashboardSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
-import net.perfectdreams.loritta.morenitta.websitedashboard.components.ButtonStyle
-import net.perfectdreams.loritta.morenitta.websitedashboard.components.configurableWarnList
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.channelSelectMenu
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.dashboardBase
-import net.perfectdreams.loritta.morenitta.websitedashboard.components.discordButton
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.discordMessageEditor
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.fancySelectMenu
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldTitle
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrapper
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrappers
@@ -41,12 +37,10 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
 import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.serializable.levels.LevelUpAnnouncementType
-import net.perfectdreams.loritta.serializable.levels.RoleGiveType
-import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.selectAll
 
 class XPNotificationsGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/xp-notifications") {
-    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, theme: ColorTheme, guild: Guild) {
+    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans) {
         val announcements = website.loritta.newSuspendedTransaction {
             val serverConfig = website.loritta.getOrCreateServerConfig(guild.idLong)
             val levelConfig = serverConfig.levelConfig
@@ -68,6 +62,8 @@ class XPNotificationsGuildDashboardRoute(website: LorittaDashboardWebServer) : R
                         i18nContext.get(DashboardI18nKeysData.XpNotifications.Title),
                         session,
                         theme,
+                        shimejiSettings,
+                        userPremiumPlan,
                         {
                             guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.XP_NOTIFICATIONS)
                         },
@@ -111,7 +107,7 @@ class XPNotificationsGuildDashboardRoute(website: LorittaDashboardWebServer) : R
                                                                 text("Onde a mensagem será enviada")
                                                             }
 
-                                                            select {
+                                                            fancySelectMenu {
                                                                 name = "type"
                                                                 attributes["loritta-config"] = "type"
 
@@ -140,22 +136,15 @@ class XPNotificationsGuildDashboardRoute(website: LorittaDashboardWebServer) : R
                                                                 text("Canal onde a mensagem será enviada")
                                                             }
 
-                                                            select {
-                                                                attributes["bliss-disable-when"] = "[name='type'] != \"${LevelUpAnnouncementType.DIFFERENT_CHANNEL.name}\""
-                                                                attributes["loritta-config"] = "customChannelId"
-
-                                                                name = "customChannelId"
-
-                                                                for (channel in guild.channels) {
-                                                                    if (channel is GuildMessageChannel) {
-                                                                        option {
-                                                                            selected = announcement?.get(LevelAnnouncementConfigs.channelId) == channel.idLong
-                                                                            label = channel.name
-                                                                            value = channel.id
-                                                                        }
-                                                                    }
+                                                            channelSelectMenu(
+                                                                guild,
+                                                                announcement?.get(LevelAnnouncementConfigs.channelId),
+                                                                {
+                                                                    attributes["bliss-disable-when"] = "[name='type'] != \"${LevelUpAnnouncementType.DIFFERENT_CHANNEL.name}\""
+                                                                    attributes["loritta-config"] = "customChannelId"
+                                                                    name = "customChannelId"
                                                                 }
-                                                            }
+                                                            )
                                                         }
 
                                                         fieldWrapper {

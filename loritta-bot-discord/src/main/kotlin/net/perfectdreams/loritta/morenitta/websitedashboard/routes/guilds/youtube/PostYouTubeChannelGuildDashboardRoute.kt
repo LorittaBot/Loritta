@@ -14,7 +14,9 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DonationKeys
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.TrackedYouTubeAccounts
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.dashboard.EmbeddedToast
+import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.dao.DonationKey
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.youtube.YouTubeWebUtils
@@ -43,7 +45,7 @@ class PostYouTubeChannelGuildDashboardRoute(website: LorittaDashboardWebServer) 
         val message: String
     )
 
-    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, theme: ColorTheme, guild: Guild) {
+    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans) {
         val request = Json.decodeFromString<CreateYouTubeChannelTrackRequest>(call.receiveText())
 
         val result = YouTubeWebUtils.getYouTubeChannelInfoFromChannelId(website.loritta, request.youtubeChannelId)
@@ -53,19 +55,12 @@ class PostYouTubeChannelGuildDashboardRoute(website: LorittaDashboardWebServer) 
                 val insertedRow = website.loritta.transaction {
                     val now = Instant.now()
 
-                    val valueOfTheDonationKeysEnabledOnThisGuild = DonationKey.find { DonationKeys.activeIn eq guild.idLong and (DonationKeys.expiresAt greaterEq System.currentTimeMillis()) }
-                        .toList()
-                        .sumOf { it.value }
-                        .let { ceil(it) }
-
-                    val serverPremiumPlan = ServerPremiumPlans.getPlanFromValue(valueOfTheDonationKeysEnabledOnThisGuild)
-
                     val totalAccounts = TrackedYouTubeAccounts.selectAll()
                         .where {
                             TrackedYouTubeAccounts.guildId eq guild.idLong
                         }.count()
 
-                    if (totalAccounts >= serverPremiumPlan.maxYouTubeChannels) {
+                    if (totalAccounts >= guildPremiumPlan.maxYouTubeChannels) {
                         return@transaction null
                     }
 

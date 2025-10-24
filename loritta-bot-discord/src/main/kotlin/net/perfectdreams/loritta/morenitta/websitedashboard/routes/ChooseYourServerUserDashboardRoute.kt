@@ -6,6 +6,8 @@ import kotlinx.html.html
 import kotlinx.html.id
 import kotlinx.html.stream.createHTML
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
@@ -18,7 +20,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.userDashL
 import net.perfectdreams.loritta.serializable.ColorTheme
 
 class ChooseYourServerUserDashboardRoute(website: LorittaDashboardWebServer) : RequiresUserAuthDashboardLocalizedRoute(website, "/") {
-    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, theme: ColorTheme) {
+    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
         call.respondHtml(
             createHTML()
                 .html {
@@ -27,8 +29,10 @@ class ChooseYourServerUserDashboardRoute(website: LorittaDashboardWebServer) : R
                         i18nContext.get(DashboardI18nKeysData.ChooseAServer.Title),
                         session,
                         theme,
+                        shimejiSettings,
+                        userPremiumPlan,
                         {
-                            userDashLeftSidebarEntries(i18nContext, UserDashboardSection.CHOOSE_YOUR_SERVER)
+                            userDashLeftSidebarEntries(website.loritta, i18nContext, UserDashboardSection.CHOOSE_YOUR_SERVER)
                         },
                         {
                             div {

@@ -65,7 +65,6 @@ class ToastManager(private val m: LorittaDashboardFrontend) {
                     // https://kotlinlang.slack.com/archives/C01F2HV7868/p1694583087487209
                     key(toastWithAnimationState.toastId) {
                         LaunchedEffect(Unit) {
-                            // TODO: Sound Effects!
                             m.soundEffects.toastNotificationWhoosh.play(
                                 0.1,
                                 // Change the speed/pitch to avoid the sound effect sounding repetitive

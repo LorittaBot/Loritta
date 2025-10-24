@@ -4,11 +4,13 @@ import io.ktor.server.application.*
 import kotlinx.html.*
 import kotlinx.html.stream.createHTML
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.ModerationPunishmentMessagesConfig
 import net.perfectdreams.loritta.common.utils.PunishmentAction
+import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.dashboard.EmbeddedToast
+import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.dashboard.messageeditor.MessageEditorBootstrap
 import net.perfectdreams.loritta.i18n.I18nKeys
 import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls
@@ -28,7 +30,7 @@ import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jetbrains.exposed.sql.selectAll
 
 class PunishmentLogGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/punishment-log") {
-    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, theme: ColorTheme, guild: Guild) {
+    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans) {
         val (moderationLogConfig, punishmentMessages) = website.loritta.transaction {
             val moderationLogConfig = website.loritta.getOrCreateServerConfig(guild.idLong).moderationConfig
 
@@ -49,6 +51,8 @@ class PunishmentLogGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
                         i18nContext.get(DashboardI18nKeysData.PunishmentLog.Title),
                         session,
                         theme,
+                        shimejiSettings,
+                        userPremiumPlan,
                         {
                             guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.PUNISHMENT_LOG)
                         },
@@ -118,21 +122,12 @@ class PunishmentLogGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
                                                                 text("Canal de punições")
                                                             }
 
-                                                            select {
-                                                                attributes["bliss-component"] = "fancy-select-menu"
+                                                            channelSelectMenu(
+                                                                guild,
+                                                                moderationLogConfig?.punishLogChannelId
+                                                            ) {
                                                                 attributes["loritta-config"] = "punishLogChannelId"
                                                                 name = "punishLogChannelId"
-
-                                                                for (channel in guild.channels) {
-                                                                    if (channel is GuildMessageChannel) {
-                                                                        option {
-                                                                            this.label = channel.name
-                                                                            this.value = channel.id
-                                                                            this.selected = moderationLogConfig?.punishLogChannelId == channel.idLong
-                                                                            this.disabled = false
-                                                                        }
-                                                                    }
-                                                                }
                                                             }
                                                         }
 

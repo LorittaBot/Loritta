@@ -7,6 +7,7 @@ import kotlinx.html.div
 import kotlinx.html.i
 import kotlinx.html.img
 import kotlinx.html.p
+import kotlinx.html.span
 import kotlinx.html.style
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
@@ -14,7 +15,6 @@ import net.perfectdreams.galleryofdreams.common.data.api.GalleryOfDreamsDataResp
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls
 import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls.handleI18nString
 import net.perfectdreams.loritta.morenitta.website.views.dashboard.user.DailyShopView.BackgroundItemWrapper
@@ -22,6 +22,7 @@ import net.perfectdreams.loritta.morenitta.website.views.dashboard.user.DailySho
 import net.perfectdreams.loritta.morenitta.website.views.dashboard.user.DailyShopView.ShopItemWrapper
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.dailyshop.DailyShopResult
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.SVGIcons
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedConfirmPurchaseModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.defaultModalCloseButton
@@ -225,10 +226,10 @@ fun FlowContent.dailyShopItems(
 
                 div(classes = "item-user-information") {
                     if (bought) {
-                        i(classes = "fas fa-check") {
-                            style = "color: #80ff00;"
+                        svgIcon(SVGIcons.CheckFat)
+                        span {
+                            text(locale["website.dailyShop.itemAlreadyBought"])
                         }
-                        +" ${locale["website.dailyShop.itemAlreadyBought"]}"
                     } else {
                         +"${shopItem.price} Sonhos"
                     }

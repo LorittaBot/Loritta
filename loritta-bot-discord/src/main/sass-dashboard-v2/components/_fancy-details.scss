@@ -18,7 +18,7 @@ details.fancy-details:hover {}
 
 details.fancy-details {
 	transition-duration: 0.5s;
-	background-color: var(--secondary-element-background-color);
+	background-color: var(--toggleable-section-background-color);
 	overflow: hidden;
     border: 1px solid var(--card-border-color);
     border-top-color: var(--card-border-highlight-color);
@@ -59,7 +59,7 @@ details.fancy-details > summary {
 }
 
 details.fancy-details[open] > summary {
-    border-bottom: 1px solid var(--input-border-color);
+    border-bottom: 1px solid var(--card-border-color);
 }
 
 details.fancy-details .details-content {

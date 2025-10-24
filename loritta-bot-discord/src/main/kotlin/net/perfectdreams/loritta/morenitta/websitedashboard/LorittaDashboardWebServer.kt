@@ -27,6 +27,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.PostDashboard
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.PostLogoutUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.PostServerListUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.PostUnfavoriteGuildUserDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.PutLorittaSpawnerSettingsUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.TwitchAccountCallbackRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.UserBackgroundPreviewDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.UserProfilePreviewDashboardRoute
@@ -72,7 +73,11 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.dailys
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.dailyshoptrinkets.PutDailyShopTrinketsGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.eventlog.EventLogGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.eventlog.PutEventLogGuildDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.experiencerewards.ExperienceRewardsGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.xprewards.PostAddRoleRewardGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.xprewards.PostRemoveRoleRewardGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.xprewards.XPRewardsGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.xprewards.PostXP2LevelGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.xprewards.PutXPRewardsGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.gamersafer.GamerSaferGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.overview.OverviewConfigurationGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.inviteblocker.InviteBlockerGuildDashboardRoute
@@ -115,8 +120,18 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.warnac
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.warnactions.WarnActionsGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.welcomer.PutWelcomerGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.welcomer.WelcomerGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.xpblockers.PostAddChannelXPBlockersGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.xpblockers.PostAddRoleXPBlockersGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.xpblockers.PostRemoveChannelXPBlockersGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.xpblockers.PostRemoveRoleXPBlockersGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.xpblockers.PutXPBlockersGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.xpblockers.XPBlockersGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.xpnotifications.PutXPNotificationsGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.xpnotifications.XPNotificationsGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.xprates.PostAddRoleRateGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.xprates.PutXPRatesGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.xprates.XPRatesGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.xprewards.PostRemoveRoleRateGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.youtube.AddYouTubeChannelGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.youtube.DeleteYouTubeChannelGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.youtube.EditYouTubeChannelGuildDashboardRoute
@@ -188,6 +203,9 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
         PostUnfavoriteGuildUserDashboardRoute(this),
         PostDashboardThemeGuildUserDashboardRoute(this),
         PostLogoutUserDashboardRoute(this),
+
+        // Loritta Spawner
+        PutLorittaSpawnerSettingsUserDashboardRoute(this),
 
         // Ship Effects
         ShipEffectsUserDashboardRoute(this),
@@ -353,7 +371,11 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
         PostRemoveWarnActionGuildDashboardRoute(this),
 
         // Experience Rewards
-        ExperienceRewardsGuildDashboardRoute(this),
+        XPRewardsGuildDashboardRoute(this),
+        PostXP2LevelGuildDashboardRoute(this),
+        PostAddRoleRewardGuildDashboardRoute(this),
+        PostRemoveRoleRewardGuildDashboardRoute(this),
+        PutXPRewardsGuildDashboardRoute(this),
 
         // Reset XP
         ResetXPGuildDashboardRoute(this),
@@ -362,6 +384,20 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
         // XP Notifications
         XPNotificationsGuildDashboardRoute(this),
         PutXPNotificationsGuildDashboardRoute(this),
+
+        // XP Rates
+        XPRatesGuildDashboardRoute(this),
+        PostAddRoleRateGuildDashboardRoute(this),
+        PostRemoveRoleRateGuildDashboardRoute(this),
+        PutXPRatesGuildDashboardRoute(this),
+
+        // XP Blockers
+        XPBlockersGuildDashboardRoute(this),
+        PostAddChannelXPBlockersGuildDashboardRoute(this),
+        PostRemoveChannelXPBlockersGuildDashboardRoute(this),
+        PostAddRoleXPBlockersGuildDashboardRoute(this),
+        PostRemoveRoleXPBlockersGuildDashboardRoute(this),
+        PutXPBlockersGuildDashboardRoute(this),
 
         // Special
         UserProfilePreviewDashboardRoute(this),
@@ -391,6 +427,10 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
 
         val server = embeddedServer(CIO, 13004) {
             install(Compression)
+
+            intercept(ApplicationCallPipeline.Setup) {
+                call.response.headers.append("Loritta-Cluster", "Loritta Cluster ${loritta.lorittaCluster.id} (${loritta.lorittaCluster.name})")
+            }
 
             routing {
                 get("/howdy") {

@@ -4,28 +4,24 @@ import io.ktor.server.application.*
 import kotlinx.html.*
 import kotlinx.html.stream.createHTML
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.dashboard.EmbeddedToast
-import net.perfectdreams.loritta.dashboard.messageeditor.MessageEditorBootstrap
+import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.GuildDashboardSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
-import net.perfectdreams.loritta.morenitta.websitedashboard.components.ButtonStyle
-import net.perfectdreams.loritta.morenitta.websitedashboard.components.configurableChannelList
-import net.perfectdreams.loritta.morenitta.websitedashboard.components.configurableRoleList
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.configurableRoleListInput
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.dashboardBase
-import net.perfectdreams.loritta.morenitta.websitedashboard.components.discordButton
-import net.perfectdreams.loritta.morenitta.websitedashboard.components.discordMessageEditor
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldTitle
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrapper
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrappers
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.genericSaveBar
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.guildDashLeftSidebarEntries
-import net.perfectdreams.loritta.morenitta.websitedashboard.components.loadingSpinnerImage
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.rightSidebarContentAndSaveBarWrapper
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.sectionConfig
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.toggle
@@ -37,7 +33,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbedded
 import net.perfectdreams.loritta.serializable.ColorTheme
 
 class AutoroleGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/autorole") {
-    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, theme: ColorTheme, guild: Guild) {
+    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans) {
         val autoroleConfig = website.loritta.transaction {
             website.loritta.getOrCreateServerConfig(guild.idLong).autoroleConfig
         }
@@ -50,6 +46,8 @@ class AutoroleGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                         i18nContext.get(DashboardI18nKeysData.Autorole.Title),
                         session,
                         theme,
+                        shimejiSettings,
+                        userPremiumPlan,
                         {
                             guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.AUTOROLE)
                         },
@@ -87,59 +85,25 @@ class AutoroleGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                                         ) {
                                             fieldWrappers {
                                                 fieldWrapper {
-                                                    div {
-                                                        style = "display: flex; flex-gap: 0.5em;"
-                                                        select {
-                                                            style = "flex-grow: 1;"
-
-                                                            name = "roleId"
-
-                                                            for (role in guild.roles) {
-                                                                if (!role.isPublicRole) {
-                                                                    option {
-                                                                        label = role.name
-                                                                        value = role.id
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-
-                                                        discordButton(ButtonStyle.SUCCESS) {
-                                                            id = "add-role-button"
-                                                            attributes["bliss-indicator"] = "this"
-                                                            attributes["bliss-post"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/autorole/roles/add"
-                                                            attributes["bliss-include-json"] = "[name='roleId'],[name='roles[]']"
-                                                            attributes["bliss-swap:200"] = "body (innerHTML) -> #roles (innerHTML)"
-                                                            attributes["bliss-sync"] = "#add-role-button"
-
-                                                            div {
-                                                                text("Adicionar")
-                                                            }
-
-                                                            div(classes = "loading-text-wrapper") {
-                                                                loadingSpinnerImage()
-
-                                                                text(i18nContext.get(I18nKeysData.Website.Dashboard.Loading))
-                                                            }
-                                                        }
+                                                    fieldTitle {
+                                                        text("Cargos que serão dados ao usuário ao ele entrar")
                                                     }
 
-                                                    div {
-                                                        id = "roles"
-
-                                                        configurableRoleList(
-                                                            i18nContext,
-                                                            guild,
-                                                            "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/autorole/roles/remove",
-                                                            autoroleConfig?.roles?.toSet() ?: setOf()
-                                                        )
-                                                    }
+                                                    configurableRoleListInput(
+                                                        i18nContext,
+                                                        guild,
+                                                        "roles",
+                                                        "roles",
+                                                        "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/autorole/roles/add",
+                                                        "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/autorole/roles/remove",
+                                                        autoroleConfig?.roles?.toSet() ?: setOf()
+                                                    )
                                                 }
 
                                                 fieldWrapper {
                                                     toggle(
                                                         autoroleConfig?.giveOnlyAfterMessageWasSent ?: false,
-                                                        "enabled",
+                                                        "giveOnlyAfterMessageWasSent",
                                                         true,
                                                         {
                                                             text("Dar os cargos após o usuário enviar alguma mensagem no servidor")

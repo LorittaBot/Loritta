@@ -7,6 +7,8 @@ import io.ktor.util.date.*
 import js.array.asList
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import net.perfectdreams.loritta.shimeji.ActivityLevel
+import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.dashboard.frontend.shimeji.entities.Entity
 import net.perfectdreams.loritta.dashboard.frontend.shimeji.entities.LorittaPlayer
 import net.perfectdreams.loritta.dashboard.frontend.shimeji.entities.PlayerMovementState
@@ -254,12 +256,12 @@ class GameState {
         entities.add(player)
     }
 
-    /* fun syncStateWithSettings(settings: PocketLorittaSettings) {
+    fun syncStateWithSettings(settings: LorittaShimejiSettings) {
         // Sync entities
         syncPlayerTypeToCount(LorittaPlayer.PlayerType.LORITTA, settings.lorittaCount)
         syncPlayerTypeToCount(LorittaPlayer.PlayerType.PANTUFA, settings.pantufaCount)
         syncPlayerTypeToCount(LorittaPlayer.PlayerType.GABRIELA, settings.gabrielaCount)
-    } */
+    }
 
     private fun syncPlayerTypeToCount(type: LorittaPlayer.PlayerType, targetCount: Int) {
         // First, we will get all types of entities we want to match
@@ -337,27 +339,5 @@ class GameState {
             width = boundingRect.width.toInt()
             height = boundingRect.height.toInt()
         }
-    }
-
-    enum class ActivityLevel(
-        // These are in ticks
-        val minElapsed: Int,
-        val maxElapsed: Int
-    ) {
-        LOW(
-            // 20s -> 45s
-            400,
-            900
-        ),
-
-        MEDIUM(
-            // 0s -> 15s
-            0, 300
-        ),
-
-        HIGH(
-            // 0s -> 3s
-            0, 60
-        )
     }
 }

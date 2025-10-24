@@ -25,20 +25,12 @@ fun FlowContent.trackedTwitchChannelEditor(
                 text("Canal onde será enviado as mensagens")
             }
 
-            select {
-                style = "flex-grow: 1;"
-
-                name = "channelId"
+            channelSelectMenu(
+                guild,
+                channelId
+            ) {
                 attributes["loritta-config"] = "channelId"
-
-                for (channel in guild.channels) {
-                    if (channel is GuildMessageChannel) {
-                        option {
-                            label = channel.name
-                            value = channel.id
-                        }
-                    }
-                }
+                name = "channelId"
             }
         }
 

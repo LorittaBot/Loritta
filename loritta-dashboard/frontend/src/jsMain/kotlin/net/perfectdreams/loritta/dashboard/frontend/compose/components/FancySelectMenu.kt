@@ -25,6 +25,8 @@ fun FancySelectMenu(
     modalManager: ModalManager,
     placeholder: String,
     maxValues: Int? = 1,
+    chevronSVG: String,
+    disabled: Boolean,
     entries: List<FancySelectMenuEntry>,
     onSelect: (List<String>) -> (Unit)
 ) {
@@ -44,6 +46,8 @@ fun FancySelectMenu(
     key(recomp) {
         Div(attrs = {
             classes("select-wrapper")
+            if (disabled)
+                attr("aria-disabled", "true")
         }) {
             Div(
                 attrs = {
@@ -71,8 +75,7 @@ fun FancySelectMenu(
                         }
                     }
                     Div(attrs = { classes("chevron") }) {
-                        I(attrs = { classes("fa-solid", "fa-chevron-down") })
-                        // UIIcon(SVGIconManager.chevronDown)
+                        RawHtml(chevronSVG)
                     }
                 }
             }

@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.twitc
 
 import io.ktor.server.application.*
 import io.ktor.server.request.*
+import io.ktor.server.response.*
 import kotlinx.html.body
 import kotlinx.html.stream.createHTML
 import kotlinx.serialization.Serializable
@@ -12,18 +13,23 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.DonationKeys
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.PremiumTrackTwitchAccounts
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.TrackedTwitchAccounts
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.dashboard.EmbeddedToast
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.dao.DonationKey
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.twitch.PutTwitchTrackRoute.AddGuildTwitchChannelResult
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.twitch.TwitchWebUtils
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.trackedProfileEditorSaveBar
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.configSaved
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondConfigSaved
 import net.perfectdreams.loritta.serializable.ColorTheme
+import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import org.jetbrains.exposed.sql.*
 import java.time.Instant
 import kotlin.math.ceil
@@ -37,7 +43,7 @@ class PostTwitchChannelGuildDashboardRoute(website: LorittaDashboardWebServer) :
         val message: String
     )
 
-    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, theme: ColorTheme, guild: Guild) {
+    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans) {
         val request = Json.decodeFromString<CreateTwitchChannelTrackRequest>(call.receiveText())
 
         // This is the route that adds a NEW instance to the configuration
@@ -55,13 +61,6 @@ class PostTwitchChannelGuildDashboardRoute(website: LorittaDashboardWebServer) :
 
                 if (!isAlreadyAdded) {
                     // We don't reeally care if there's already a premium track inserted
-                    val valueOfTheDonationKeysEnabledOnThisGuild = DonationKey.find { DonationKeys.activeIn eq guild.idLong and (DonationKeys.expiresAt greaterEq System.currentTimeMillis()) }
-                        .toList()
-                        .sumOf { it.value }
-                        .let { ceil(it) }
-
-                    val plan = ServerPremiumPlans.getPlanFromValue(valueOfTheDonationKeysEnabledOnThisGuild)
-
                     val premiumTracksOfTheGuildCount =
                         PremiumTrackTwitchAccounts.select(PremiumTrackTwitchAccounts.twitchUserId).where {
                             PremiumTrackTwitchAccounts.guildId eq guild.idLong
@@ -71,7 +70,7 @@ class PostTwitchChannelGuildDashboardRoute(website: LorittaDashboardWebServer) :
                         ) // Ordered by the added at date...
                             .count()
 
-                    if (premiumTracksOfTheGuildCount >= plan.maxUnauthorizedTwitchChannels)
+                    if (premiumTracksOfTheGuildCount >= guildPremiumPlan.maxUnauthorizedTwitchChannels)
                         return@transaction AddGuildTwitchChannelResult.TooManyPremiumTracks
 
                     PremiumTrackTwitchAccounts.insert {
@@ -110,6 +109,21 @@ class PostTwitchChannelGuildDashboardRoute(website: LorittaDashboardWebServer) :
 
         when (result) {
             is AddGuildTwitchChannelResult.Success -> {
+                call.response.header("Bliss-Push-Url", "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/twitch/${result.trackId}")
+                call.respondHtml(
+                    createHTML(false)
+                        .body {
+                            configSaved(i18nContext)
+
+                            trackedProfileEditorSaveBar(
+                                i18nContext,
+                                guild,
+                                "twitch",
+                                result.trackId
+                            )
+                        }
+                )
+
                 call.respondConfigSaved(i18nContext)
             }
             AddGuildTwitchChannelResult.TooManyPremiumTracks -> {

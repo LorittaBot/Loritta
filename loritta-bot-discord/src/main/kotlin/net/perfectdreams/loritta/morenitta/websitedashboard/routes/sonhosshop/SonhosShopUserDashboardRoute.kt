@@ -1,11 +1,12 @@
 package net.perfectdreams.loritta.morenitta.websitedashboard.routes.sonhosshop
 
 import io.ktor.server.application.*
-import kotlinx.coroutines.delay
 import kotlinx.html.*
 import kotlinx.html.stream.createHTML
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosBundles
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
@@ -23,7 +24,7 @@ import net.perfectdreams.loritta.serializable.SonhosBundle
 import org.jetbrains.exposed.sql.selectAll
 
 class SonhosShopUserDashboardRoute(website: LorittaDashboardWebServer) : RequiresUserAuthDashboardLocalizedRoute(website, "/sonhos-shop") {
-    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, theme: ColorTheme) {
+    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
         val sonhosBundles = website.loritta.transaction {
             SonhosBundles.selectAll()
                 .where { SonhosBundles.active eq true }
@@ -46,8 +47,10 @@ class SonhosShopUserDashboardRoute(website: LorittaDashboardWebServer) : Require
                         i18nContext.get(DashboardI18nKeysData.SonhosShop.Title),
                         session,
                         theme,
+                        shimejiSettings,
+                        userPremiumPlan,
                         {
-                            userDashLeftSidebarEntries(i18nContext, UserDashboardSection.SONHOS_SHOP)
+                            userDashLeftSidebarEntries(website.loritta, i18nContext, UserDashboardSection.SONHOS_SHOP)
                         },
                         {
                             div {

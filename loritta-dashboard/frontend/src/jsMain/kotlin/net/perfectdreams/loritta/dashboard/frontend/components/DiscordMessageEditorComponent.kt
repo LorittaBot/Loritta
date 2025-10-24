@@ -68,6 +68,7 @@ class DiscordMessageEditorComponent(val m: LorittaDashboardFrontend) : BlissComp
                                     MessageEditorBootstrap.TestMessageTarget.Unavailable -> TargetChannelResult.ChannelNotSelected
                                 },
                                 bootstrap.selfUser,
+                                bootstrap.verifiedIconRawHtml,
                                 rawMessage,
                                 onMessageContentChange = {
                                     rawMessage = it
@@ -109,9 +110,10 @@ class DiscordMessageEditorComponent(val m: LorittaDashboardFrontend) : BlissComp
                                 bootstrap.selfUser,
                                 parsedMessage,
                                 null,
+                                bootstrap.verifiedIconRawHtml,
                                 bootstrap.guild.channels,
                                 bootstrap.guild.roles,
-                                bootstrap.placeholders
+                                bootstrap.placeholders,
                             )
                         })
                     }

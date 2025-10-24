@@ -4,6 +4,8 @@ import kotlinx.html.FlowContent
 import kotlinx.html.HTML
 import kotlinx.html.ImgLoading
 import kotlinx.html.body
+import kotlinx.html.button
+import kotlinx.html.classes
 import kotlinx.html.div
 import kotlinx.html.head
 import kotlinx.html.id
@@ -21,6 +23,7 @@ import net.perfectdreams.loritta.morenitta.website.LorittaWebsite.UserPermission
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.DiscordLoginUserDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.SVGIcons
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 fun FlowContent.configureServerEntry(
@@ -63,7 +66,7 @@ fun FlowContent.configureServerEntry(
                     style = "display: flex; gap: 8px; align-items: center;"
 
                     if (isFavorited) {
-                        unfavoriteGuildButton(i18nContext, guild.id)
+                        unfavoriteGuildButton(i18nContext, guild.id, false)
                     } else {
                         favoriteGuildButton(i18nContext, guild.id)
                     }
@@ -84,25 +87,31 @@ fun FlowContent.configureServerEntry(
 }
 
 fun FlowContent.favoriteGuildButton(i18nContext: I18nContext, guildId: Long) {
-    discordButton(ButtonStyle.PRIMARY) {
+    button(classes = "favorite-guild-for-user-list-button") {
+
         attributes["bliss-post"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/favorite"
         attributes["bliss-vals-json"] = buildJsonObject {
             put("guildId", guildId)
         }.toString()
         attributes["bliss-swap:200"] = "body (innerHTML) -> this (outerHTML)"
+        attributes["bliss-indicator"] = "this"
 
-        text("Favoritar")
+        svgIcon(SVGIcons.StarOutline)
     }
 }
 
-fun FlowContent.unfavoriteGuildButton(i18nContext: I18nContext, guildId: Long) {
-    discordButton(ButtonStyle.DANGER) {
+fun FlowContent.unfavoriteGuildButton(i18nContext: I18nContext, guildId: Long, bounceIcon: Boolean) {
+    button(classes = "favorite-guild-for-user-list-button") {
+        if (bounceIcon)
+            classes += "guild-favorited"
+
         attributes["bliss-post"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/unfavorite"
         attributes["bliss-vals-json"] = buildJsonObject {
             put("guildId", guildId)
         }.toString()
         attributes["bliss-swap:200"] = "body (innerHTML) -> this (outerHTML)"
+        attributes["bliss-indicator"] = "this"
 
-        text("Desfavoritar")
+        svgIcon(SVGIcons.Star)
     }
 }

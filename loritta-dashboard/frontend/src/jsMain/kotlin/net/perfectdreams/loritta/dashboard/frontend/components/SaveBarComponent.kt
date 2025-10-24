@@ -35,7 +35,6 @@ class SaveBarComponent : BlissComponent<HTMLDivElement>() {
 
     override fun onMount() {
         this.alwaysDirty = mountedElement.getAttribute("save-bar-always-dirty") == "true"
-
         saveBarActive = this.alwaysDirty
 
         val trackedSectionQuerySelector = mountedElement.getAttribute("save-bar-track-section") ?: error("I don't know which section to track!")
@@ -66,8 +65,8 @@ class SaveBarComponent : BlissComponent<HTMLDivElement>() {
 
             this@SaveBarComponent.originalState = Json.encodeToJsonElement(Bliss.createMapOfElementValues("loritta-config", listOf(trackedSection)))
 
-            if (!alwaysDirty) {
-                registeredEvents += trackedSection.addEventHandler(InputEvent.INPUT) {
+            registeredEvents += trackedSection.addEventHandler(InputEvent.INPUT) {
+                if (!alwaysDirty) {
                     println("Element ${it.target} changed!")
 
                     GlobalScope.launch {
@@ -78,6 +77,7 @@ class SaveBarComponent : BlissComponent<HTMLDivElement>() {
 
                         if (stateAsJson != originalState) {
                             println("NEW STATE!")
+                            mountedElement.classList.remove(ClassName("initial-state"))
                             mountedElement.classList.add(ClassName("has-changes"))
                             mountedElement.classList.remove(ClassName("no-changes"))
                             saveBarActive = true
@@ -89,16 +89,17 @@ class SaveBarComponent : BlissComponent<HTMLDivElement>() {
                         }
                     }
                 }
+            }
 
-                registeredEvents += mountedElement.addEventHandler(EventType<Event>("resyncState")) { _ ->
-                    // When the configuration is saved, we will resync the state based on the current configuration!
-                    GlobalScope.launch {
-                        originalState = Json.encodeToJsonElement(Bliss.createMapOfElementValues("loritta-config", listOf(trackedSection)))
+            registeredEvents += mountedElement.addEventHandler(EventType<Event>("resyncState")) { _ ->
+                // When the configuration is saved, we will resync the state based on the current configuration!
+                GlobalScope.launch {
+                    originalState = Json.encodeToJsonElement(Bliss.createMapOfElementValues("loritta-config", listOf(trackedSection)))
 
-                        mountedElement.classList.add(ClassName("no-changes"))
-                        mountedElement.classList.remove(ClassName("has-changes"))
-                        saveBarActive = false
-                    }
+                    mountedElement.classList.add(ClassName("no-changes"))
+                    mountedElement.classList.remove(ClassName("has-changes"))
+                    saveBarActive = false
+                    alwaysDirty = false
                 }
             }
         }
@@ -120,6 +121,7 @@ class SaveBarComponent : BlissComponent<HTMLDivElement>() {
 
                 if (stateAsJson != originalState) {
                     println("NEW STATE!")
+                    mountedElement.classList.remove(ClassName("initial-state"))
                     mountedElement.classList.add(ClassName("has-changes"))
                     mountedElement.classList.remove(ClassName("no-changes"))
                     saveBarActive = true

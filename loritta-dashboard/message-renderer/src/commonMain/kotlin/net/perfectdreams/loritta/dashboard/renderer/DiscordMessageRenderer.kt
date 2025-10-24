@@ -17,12 +17,13 @@ fun FlowContent.discordMessageRenderer(
     author: RenderableDiscordUser,
     message: DiscordMessage,
     additionalMessageData: AdditionalMessageData?,
+    verifiedIconRawHtml: String,
     channels: List<DiscordChannel>,
     roles: List<DiscordRole>,
     placeholders: List<MessageEditorMessagePlaceholder>
 ) {
     discordMessageStyle {
-        discordMessageBlock(author.name, author.avatarUrl, author.bot) {
+        discordMessageBlock(author.name, author.avatarUrl, author.bot, author.isAppVerified, verifiedIconRawHtml) {
             // ===[ MESSAGE CONTENT ]===
             div {
                 transformedDiscordText(message.content, channels, roles, placeholders)
@@ -227,7 +228,14 @@ fun FlowContent.discordMessageSidebar(content: FlowContent.() -> (Unit)) {
     }
 }
 
-fun FlowContent.discordMessageBlock(username: String, avatarUrl: String, isBot: Boolean, content: FlowContent.() -> (Unit)) {
+fun FlowContent.discordMessageBlock(
+    username: String,
+    avatarUrl: String,
+    isBot: Boolean,
+    isAppVerified: Boolean,
+    verifiedIconRawHtml: String,
+    content: FlowContent.() -> (Unit)
+) {
     div(classes = "discord-message") {
         discordMessageSidebar {
             img(src = avatarUrl, classes = "discord-message-avatar")
@@ -243,6 +251,12 @@ fun FlowContent.discordMessageBlock(username: String, avatarUrl: String, isBot: 
 
                 if (isBot) {
                     span(classes = "discord-message-bot-tag") {
+                        if (isAppVerified) {
+                            unsafe {
+                                raw(verifiedIconRawHtml)
+                            }
+                        }
+
                         text("APP")
                     }
                 }
@@ -282,7 +296,7 @@ fun FlowContent.discordMessageReactions(content: FlowContent.() -> Unit) {
     }
 }
 
-fun FlowContent.discordMessageReaction(content: FlowContent.() -> Unit) {
+fun FlowContent.discordMessageReaction(content: DIV.() -> Unit) {
     div(classes = "discord-message-reaction") {
         style = "display: flex; align-items: center; justify-content: center; gap: 0.5em;"
         content()

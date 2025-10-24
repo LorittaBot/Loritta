@@ -231,9 +231,9 @@
         width: 100%;
         height: fit-content;
         overflow: auto;
-        border-radius: var(--first-level-border-radius);
-        border: 1px solid var(--input-border-color);
-        background-color: var(--background-color);
+        border-radius: var(--nice-border-radius);
+        border: 1px solid var(--card-border-color);
+        background-color: var(--pure-background-color);
 
         .message-preview {
             padding: 1em;

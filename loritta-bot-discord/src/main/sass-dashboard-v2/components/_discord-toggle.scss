@@ -6,18 +6,15 @@
 
 .toggleable-section {
     // We can't use overflow: hidden here because that breaks select menu's menus! (they don't overflow)
-    background-color: var(--card-background-color);
+    background-color: var(--toggleable-section-background-color);
     border-radius: var(--nice-border-radius);
     border: 1px solid var(--card-border-color);
     border-top-color: var(--card-border-highlight-color);
-    --input-background-color: var(--input-secondary-element-background-color);
 
     >.toggleable-selection {
         padding: 1em 20px 1em 20px;
 
         background-color: var(--card-background-color);
-        border: 1px solid var(--card-border-color);
-        border-top-color: var(--card-border-highlight-color);
         border-radius: var(--nice-border-radius);
     }
 
@@ -32,7 +29,7 @@
         }
 
         >.toggleable-selection {
-            border-radius: var(--second-level-border-radius) var(--second-level-border-radius) 0px 0px;
+            border-radius: var(--nice-border-radius) var(--nice-border-radius) 0px 0px;
             border-bottom: 1px solid var(--card-border-color);
         }
     }

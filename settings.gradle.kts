@@ -83,6 +83,7 @@ include(":loritta-website:loritta-website-frontend")
 
 // ===[ DASHBOARD ]===
 include(":loritta-dashboard:message-renderer")
+include(":loritta-dashboard:loritta-shimeji-common")
 include(":loritta-dashboard:dashboard-common")
 include(":loritta-dashboard:backend")
 include(":loritta-dashboard:frontend")

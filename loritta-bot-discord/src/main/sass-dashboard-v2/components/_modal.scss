@@ -16,7 +16,7 @@
         background-color: var(--background-color);
         color: var(--content-text-color);
         box-shadow: 0px 0px 10px #00000059;
-        border-radius: var(--second-level-border-radius);
+        border-radius: var(--nice-border-radius);
         // For large screens, limit to half of the available screen size
         // If 50em is larger than half of the screen, then use it instead!
         max-width: max(50vw, 50em);
@@ -51,7 +51,7 @@
 
         .buttons-wrapper {
             padding: 1em;
-            background-color: var(--secondary-element-background-color);
+            background-color: var(--card-background-color);
             display: flex;
             justify-content: flex-end;
             gap: 1em;

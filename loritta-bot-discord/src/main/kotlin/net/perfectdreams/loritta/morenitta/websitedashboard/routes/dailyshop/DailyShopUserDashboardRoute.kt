@@ -4,12 +4,12 @@ import io.ktor.server.application.ApplicationCall
 import kotlinx.html.div
 import kotlinx.html.h1
 import kotlinx.html.html
-import kotlinx.html.i
 import kotlinx.html.id
-import kotlinx.html.img
 import kotlinx.html.p
 import kotlinx.html.stream.createHTML
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.website.components.EtherealGambiUtils.etherealGambiImg
@@ -20,12 +20,14 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.UserDashboardSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.dailyShopItems
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.dashboardBase
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.svgIcon
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.userDashLeftSidebarEntries
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresUserAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.SVGIcons
 import net.perfectdreams.loritta.serializable.ColorTheme
 
 class DailyShopUserDashboardRoute(website: LorittaDashboardWebServer) : RequiresUserAuthDashboardLocalizedRoute(website, "/daily-shop") {
-    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, theme: ColorTheme) {
+    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
         val dreamStorageServiceNamespace = website.loritta.dreamStorageService.getCachedNamespaceOrRetrieve()
         // Hacky!
         val locale = website.loritta.localeManager.getLocaleById("default")
@@ -49,8 +51,10 @@ class DailyShopUserDashboardRoute(website: LorittaDashboardWebServer) : Requires
                         i18nContext.get(DashboardI18nKeysData.DailyShop.Title),
                         session,
                         theme,
+                        shimejiSettings,
+                        userPremiumPlan,
                         {
-                            userDashLeftSidebarEntries(i18nContext, UserDashboardSection.TRINKETS_SHOP)
+                            userDashLeftSidebarEntries(website.loritta, i18nContext, UserDashboardSection.TRINKETS_SHOP)
                         },
                         {
                             div(classes = "hero-wrapper") {
@@ -70,22 +74,12 @@ class DailyShopUserDashboardRoute(website: LorittaDashboardWebServer) : Requires
                                 }
                             }
 
-                            img {
-                                attributes["rotating-image-urls"] = listOf(
-                                    "https://picsum.photos/id/10/400/300",
-                                    "https://picsum.photos/id/20/400/300",
-                                    "https://picsum.photos/id/30/400/300",
-                                    "https://picsum.photos/id/40/400/300",
-                                    "https://picsum.photos/id/50/400/300",
-                                    "https://picsum.photos/id/60/400/300",
-                                ).joinToString(",")
-
-                                attributes["bliss-component"] = "rotating-image"
-                            }
                             div(classes = "shop-reset-timer") {
                                 div(classes = "horizontal-line") {}
 
-                                i(classes = "fas fa-stopwatch stopwatch") {}
+                                svgIcon(SVGIcons.TimerAnimatedHand) {
+                                    classNames(setOf("stopwatch"))
+                                }
 
                                 div(classes = "shop-timer") {
                                     attributes["bliss-sse"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/daily-shop/timer"

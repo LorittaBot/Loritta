@@ -6,6 +6,8 @@ import kotlinx.html.*
 import kotlinx.html.stream.createHTML
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ShipEffects
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.i18n.I18nKeys
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls
@@ -25,7 +27,7 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.selectAll
 
 class APIKeysUserDashboardRoute(website: LorittaDashboardWebServer) : RequiresUserAuthDashboardLocalizedRoute(website, "/api-keys") {
-    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, theme: ColorTheme) {
+    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
         val activeShipEffects = website.loritta.transaction {
             ShipEffects.selectAll()
                 .where {
@@ -54,8 +56,10 @@ class APIKeysUserDashboardRoute(website: LorittaDashboardWebServer) : RequiresUs
                         i18nContext.get(DashboardI18nKeysData.ApiKeys.Title),
                         session,
                         theme,
+                        shimejiSettings,
+                        userPremiumPlan,
                         {
-                            userDashLeftSidebarEntries(i18nContext, UserDashboardSection.API_KEYS)
+                            userDashLeftSidebarEntries(website.loritta, i18nContext, UserDashboardSection.API_KEYS)
                         },
                         {
                             div(classes = "hero-wrapper") {
