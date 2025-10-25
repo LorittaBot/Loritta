@@ -60,6 +60,7 @@ class LorittaDashboardFrontend {
     fun start() {
         INSTANCE = this
 
+        Bliss.setupEvents()
         Bliss.registerComponent("counter") { CounterComponent() }
         Bliss.registerComponent("character-counter") { CharacterCounterComponent() }
         Bliss.registerComponent("toggleable-section") { ToggleableSectionComponent() }
@@ -79,11 +80,6 @@ class LorittaDashboardFrontend {
 
         toastManager.render(document.querySelector("#toast-list") as HTMLElement)
         modalManager.render(document.querySelector("#modal-list") as HTMLElement)
-
-        window.addEventHandler(PopStateEvent.POP_STATE) {
-            // When pressing the back button, reload the entire page to avoid broken states
-            window.location.reload()
-        }
 
         document.addEventHandler(EventType<CustomEvent<BlissProcessRequestJsonBody>>("bliss:processRequestJsonBody")) {
             val detail = it.detail

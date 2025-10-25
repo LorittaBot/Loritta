@@ -14,6 +14,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.URLBuilder
 import io.ktor.utils.io.charsets.Charsets
 import js.array.asList
+import js.objects.unsafeJso
 import js.typedarrays.toByteArray
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
@@ -43,6 +44,8 @@ import web.events.Event
 import web.events.EventHandler
 import web.events.EventType
 import web.events.addEventHandler
+import web.history.POP_STATE
+import web.history.PopStateEvent
 import web.history.history
 import web.html.HTMLInputElement
 import web.html.HTMLSelectElement
@@ -61,6 +64,7 @@ import web.parsing.textHtml
 import web.pointer.CLICK
 import web.pointer.PointerEvent
 import web.sse.EventSource
+import web.window.window
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
@@ -82,6 +86,17 @@ object Bliss {
     )
 
     private val componentBuilders = mutableMapOf<String, () -> (BlissComponent<*>)>()
+
+    fun setupEvents() {
+        window.addEventHandler(PopStateEvent.POP_STATE) {
+            // We will only reload the page if the state has generated from our "blessed" links
+            // This fixes an issue with hash "jump to" links causing a page refresh
+            if (it.state != null && it.state.asDynamic().blessed == true) {
+                // When pressing the back button, reload the entire page to avoid broken states
+                window.location.reload()
+            }
+        }
+    }
 
     fun processAttributes(element: Element) {
         if (!element.asDynamic().blissBlessed) {
@@ -951,7 +966,11 @@ object Bliss {
                 pushUrlValue
             }
 
-            history.pushState(null, "", realPushUrl)
+            val state = unsafeJso<dynamic> {
+                this.blessed = true
+            }
+
+            history.pushState(state, "", realPushUrl)
         }
 
         if (pageTitle != null) {
