@@ -17,10 +17,6 @@ import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
-import net.perfectdreams.loritta.dashboard.BlissHex
-import net.perfectdreams.loritta.dashboard.EmbeddedModal
-import net.perfectdreams.loritta.dashboard.EmbeddedToast
-import net.perfectdreams.loritta.dashboard.frontend.LorittaDashboardFrontend
 import web.blob.bytes
 import web.cssom.ClassName
 import web.dom.Document
@@ -44,10 +40,8 @@ import web.html.checkbox
 import web.html.file
 import web.html.radio
 import web.http.BodyInit
-import web.http.GET
 import web.http.Headers
 import web.http.RequestInit
-import web.http.RequestMethod
 import web.http.fetch
 import web.http.text
 import web.input.INPUT
@@ -79,6 +73,7 @@ object Bliss {
     )
 
     private val componentBuilders = mutableMapOf<String, () -> (BlissComponent<*>)>()
+    private val elementProcessors = mutableListOf<(Element) -> (Unit)>()
 
     fun setupEvents() {
         window.addEventHandler(PopStateEvent.POP_STATE) {
@@ -95,9 +90,10 @@ object Bliss {
         if (!element.asDynamic().blissBlessed) {
             element.asDynamic().blissBlessed = true
 
-            processShowToastOnClick(element)
-            processOpenModalOnClick(element)
-            processCloseModalOnClick(element)
+            for (processor in elementProcessors) {
+                processor(element)
+            }
+
             processCopyTextOnClick(element)
             processBlissComponents(element)
 
@@ -284,18 +280,19 @@ object Bliss {
                             }
                         }
 
-                        is SSEBlissShowToast -> {
-                            LorittaDashboardFrontend.INSTANCE.toastManager.showToast(sseEvent.toast)
-                        }
-
                         is SSECustomEvent -> {
-                            val query = document.querySelectorAll(sseEvent.eventTarget).asList()
+                            val query = if (sseEvent.eventTarget == "window")
+                                listOf(window)
+                            else if (sseEvent.eventTarget == "document")
+                                listOf(document)
+                            else
+                                document.querySelectorAll(sseEvent.eventTarget).asList()
 
                             if (query.isNotEmpty()) {
                                 val event = CustomEvent(
                                     type = EventType(sseEvent.event),
                                     init = CustomEventInit(
-                                        detail = null,
+                                        detail = sseEvent.content,
                                         bubbles = true, // let it bubble up the DOM
                                         composed = true // cross-shadow DOM boundary if needed
                                     )
@@ -446,6 +443,16 @@ object Bliss {
         this.componentBuilders[componentId] = construct
     }
 
+    fun registerElementProcessor(processor: (Element) -> (Unit)) {
+        this.elementProcessors.add(processor)
+    }
+
+    fun registerDocumentParsedEventListener(processor: (Document) -> (Unit)) {
+        document.addEventHandler(EventType<CustomEvent<BlissDocumentParsed>>("bliss:documentParsed")) {
+            processor.invoke(it.detail.document)
+        }
+    }
+
     fun doSwap(
         swapValue: String,
         element: Element,
@@ -514,42 +521,6 @@ object Bliss {
         }
 
         return didSwap
-    }
-
-    private fun processShowToastOnClick(element: Element) {
-        val toastOnClick = element.getAttribute("bliss-show-toast-on-click")
-
-        if (toastOnClick != null) {
-            val content = element.getAttribute("bliss-toast") ?: error("Missing bliss-toast attribute on a bliss-show-toast-on-click!")
-            val toast = Json.decodeFromString<EmbeddedToast>(BlissHex.decodeFromHexString(content))
-
-            element.addEventHandler(PointerEvent.CLICK) {
-                LorittaDashboardFrontend.INSTANCE.toastManager.showToast(toast)
-            }
-        }
-    }
-
-    private fun processOpenModalOnClick(element: Element) {
-        val modalOnClick = element.getAttribute("bliss-open-modal-on-click")
-
-        if (modalOnClick != null) {
-            val content = element.getAttribute("bliss-modal") ?: error("Missing bliss-modal attribute on a bliss-open-modal-on-click!")
-            val modal = Json.decodeFromString<EmbeddedModal>(BlissHex.decodeFromHexString(content))
-
-            element.addEventHandler(PointerEvent.CLICK) {
-                LorittaDashboardFrontend.INSTANCE.modalManager.openModal(modal)
-            }
-        }
-    }
-
-    private fun processCloseModalOnClick(element: Element) {
-        val closeModalOnClick = element.getAttribute("bliss-close-modal-on-click")
-
-        if (closeModalOnClick != null) {
-            element.addEventHandler(PointerEvent.CLICK) {
-                LorittaDashboardFrontend.INSTANCE.modalManager.closeModal()
-            }
-        }
     }
 
     private fun processCopyTextOnClick(element: Element) {
@@ -841,32 +812,14 @@ object Bliss {
 
         // We process all show-toast/show-modal/etc here, because sometimes the server does return one of the special attributes
         // and we want to process it, even if it is not included in the DOM
-        val showToastHack = doc.querySelectorAll("[bliss-show-toast]")
-        for (element in showToastHack.asList()) {
-            // This is a special attribute!
-            val content = element.getAttribute("bliss-toast") ?: error("Missing bliss-toast attribute on a bliss-show-toast!")
-            val toast = Json.decodeFromString<EmbeddedToast>(BlissHex.decodeFromHexString(content))
-            element.remove()
-
-            LorittaDashboardFrontend.INSTANCE.toastManager.showToast(toast)
-        }
-
-        val showModalHack = doc.querySelectorAll("[bliss-show-modal]")
-        for (element in showModalHack.asList()) {
-            // This is a special attribute!
-            val content = element.getAttribute("bliss-modal") ?: error("Missing bliss-toast attribute on a bliss-modal!")
-            val modal = Json.decodeFromString<EmbeddedModal>(BlissHex.decodeFromHexString(content))
-            element.remove()
-
-            LorittaDashboardFrontend.INSTANCE.modalManager.openModal(modal)
-        }
-
-        val closeModalHack = doc.querySelectorAll("[bliss-close-modal]")
-        for (element in closeModalHack.asList()) {
-            // This is a special attribute!
-            element.remove()
-            LorittaDashboardFrontend.INSTANCE.modalManager.closeModal()
-        }
+        val documentParsedEvent = CustomEvent(
+            type = EventType("bliss:documentParsed"),
+            init = CustomEventInit(
+                detail = BlissDocumentParsed(doc),
+                bubbles = true, // let it bubble up the DOM
+                composed = true // cross-shadow DOM boundary if needed
+            )
+        )
 
         val triggerEventHack = doc.querySelectorAll("[bliss-event]").asList()
         for (element in triggerEventHack) {
@@ -886,15 +839,6 @@ object Bliss {
                 .forEach {
                     it.dispatchEvent(event)
                 }
-        }
-
-        val playSoundEffectHack = doc.querySelectorAll("[bliss-sound-effect]").asList()
-        for (element in playSoundEffectHack) {
-            val sfx = element.getAttribute("bliss-sound-effect")!!
-            when (sfx) {
-                "configSaved" -> LorittaDashboardFrontend.INSTANCE.soundEffects.configSaved.play(1.0)
-                else -> error("Unknown SFX \"$sfx\"!")
-            }
         }
 
         val setAttributesHack = doc.querySelectorAll("[bliss-set-attributes]").asList()

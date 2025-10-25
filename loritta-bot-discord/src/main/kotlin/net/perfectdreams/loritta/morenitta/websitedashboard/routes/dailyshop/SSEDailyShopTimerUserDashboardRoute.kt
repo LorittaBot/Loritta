@@ -11,8 +11,8 @@ import kotlinx.html.body
 import kotlinx.html.stream.createHTML
 import kotlinx.serialization.json.Json
 import net.perfectdreams.bliss.SSEBliss
-import net.perfectdreams.bliss.SSEBlissShowToast
 import net.perfectdreams.bliss.SSEBlissSwap
+import net.perfectdreams.bliss.SSECustomEvent
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.dashboard.EmbeddedToast
@@ -58,6 +58,18 @@ class SSEDailyShopTimerUserDashboardRoute(website: LorittaDashboardWebServer) : 
                     )
                 }
 
+                writeSseEvent(
+                    SseEvent(
+                        data = Json.encodeToString<SSEBliss>(
+                            SSECustomEvent(
+                                "loritta:showToast",
+                                "document",
+                                Json.encodeToString<EmbeddedToast>(createEmbeddedToast(EmbeddedToast.Type.INFO, "tick", null))
+                            )
+                        )
+                    )
+                )
+
                 if (lastDailyShopGeneratedAt != currentDailyShop.generatedAt) {
                     lastDailyShopGeneratedAt = currentDailyShop.generatedAt
 
@@ -86,8 +98,10 @@ class SSEDailyShopTimerUserDashboardRoute(website: LorittaDashboardWebServer) : 
                     writeSseEvent(
                         SseEvent(
                             data = Json.encodeToString<SSEBliss>(
-                                SSEBlissShowToast(
-                                    createEmbeddedToast(EmbeddedToast.Type.INFO, "Loja atualizada!", null)
+                                SSECustomEvent(
+                                    "loritta:showToast",
+                                    "document",
+                                    Json.encodeToString<EmbeddedToast>(createEmbeddedToast(EmbeddedToast.Type.INFO, "Loja atualizada!", null))
                                 )
                             )
                         )

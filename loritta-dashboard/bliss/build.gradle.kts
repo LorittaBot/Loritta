@@ -1,12 +1,8 @@
-import org.gradle.kotlin.dsl.project
 import org.jetbrains.kotlin.gradle.dsl.JsModuleKind
 
 plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
-    id("org.jetbrains.compose") version "1.9.0-beta01"
-    id("org.jetbrains.kotlin.plugin.compose") version "2.2.0"
-    id("org.jetbrains.kotlin.plugin.js-plain-objects") version "2.2.0"
 }
 
 repositories {
@@ -30,20 +26,11 @@ kotlin {
     sourceSets {
         jsMain {
             dependencies {
-                implementation(project(":loritta-dashboard:bliss"))
-                implementation(project(":loritta-dashboard:dashboard-common"))
-                implementation(project(":loritta-dashboard:message-renderer"))
-                implementation(project(":loritta-dashboard:loritta-shimeji-common"))
-
-                implementation("net.perfectdreams.compose.htmldreams:html-core:1.9.0-beta01")
-                implementation(compose.runtime)
-
+                api(project(":loritta-dashboard:bliss-common"))
                 implementation("org.jetbrains.kotlin-wrappers:kotlin-browser:2025.9.4")
                 implementation("org.jetbrains.kotlin-wrappers:kotlin-js:2025.9.4")
-
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
-
-                implementation("org.jetbrains.kotlinx:kotlinx-html-js:0.12.0")
             }
         }
     }
