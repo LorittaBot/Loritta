@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.customcommands
 
 import io.ktor.server.application.*
+import io.ktor.server.util.getOrFail
 import kotlinx.html.*
 import kotlinx.html.stream.createHTML
 import kotlinx.serialization.json.Json
@@ -29,6 +30,8 @@ import net.perfectdreams.loritta.serializable.ColorTheme
 
 class CreateCustomCommandGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/custom-commands/create") {
     override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans) {
+        val type = call.parameters.getOrFail("type")
+
         call.respondHtml(
             createHTML()
                 .html {
@@ -73,10 +76,13 @@ class CreateCustomCommandGuildDashboardRoute(website: LorittaDashboardWebServer)
                                         i18nContext,
                                         true,
                                         {
-                                            attributes["bliss-get"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/daily-shop-trinkets"
+                                            attributes["bliss-get"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/custom-commands/create"
                                             attributes["bliss-swap:200"] = "#section-config (innerHTML) -> #section-config (innerHTML)"
                                             attributes["bliss-headers"] = buildJsonObject {
                                                 put("Loritta-Configuration-Reset", "true")
+                                            }.toString()
+                                            attributes["bliss-vals-query"] = buildJsonObject {
+                                                put("type", type)
                                             }.toString()
                                         }
                                     ) {
