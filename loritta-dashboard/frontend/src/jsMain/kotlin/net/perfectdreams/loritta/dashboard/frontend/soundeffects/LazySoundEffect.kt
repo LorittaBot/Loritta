@@ -1,18 +1,13 @@
 package net.perfectdreams.loritta.dashboard.frontend.soundeffects
 
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import js.typedarrays.Uint8Array
-import js.typedarrays.toUint8Array
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import net.perfectdreams.loritta.dashboard.frontend.LorittaDashboardFrontend
-import web.blob.Blob
-import web.blob.BlobPropertyBag
 import web.events.EventHandler
 import web.html.Audio
 import web.html.play
+import web.http.*
 import web.url.URL
 
 class LazySoundEffect(val m: LorittaDashboardFrontend, val url: String) {
@@ -46,10 +41,14 @@ class LazySoundEffect(val m: LorittaDashboardFrontend, val url: String) {
                 println("Cached objUrl is not present for $url, downloading...")
 
                 // Oof, not cached yet!
-                val errorAsByteArray = m.http.get(url)
-                    .bodyAsBytes()
+                val response = fetch(
+                    url,
+                    RequestInit(
+                        method = RequestMethod.GET
+                    )
+                )
 
-                val blob = Blob(arrayOf(errorAsByteArray.toUint8Array()), BlobPropertyBag(type = "audio/ogg"))
+                val blob = response.blob()
                 val objUrl = URL.createObjectURL(blob)
                 println("Successfully cached objUrl for $url!")
                 this@LazySoundEffect.objUrl = objUrl

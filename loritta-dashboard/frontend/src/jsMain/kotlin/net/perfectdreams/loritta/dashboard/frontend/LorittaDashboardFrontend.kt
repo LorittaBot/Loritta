@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.dashboard.frontend
 
-import io.ktor.client.HttpClient
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -52,7 +51,6 @@ class LorittaDashboardFrontend {
         lateinit var INSTANCE: LorittaDashboardFrontend
     }
 
-    val http = HttpClient {}
     val toastManager = ToastManager(this)
     val modalManager = ModalManager(this)
     val soundEffects = SoundEffects(this)

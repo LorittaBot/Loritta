@@ -2,17 +2,6 @@
 
 package net.perfectdreams.bliss
 
-import io.ktor.client.HttpClient
-import io.ktor.client.request.header
-import io.ktor.client.request.request
-import io.ktor.client.request.setBody
-import io.ktor.client.statement.bodyAsText
-import io.ktor.content.TextContent
-import io.ktor.http.ContentType
-import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.URLBuilder
-import io.ktor.utils.io.charsets.Charsets
 import js.array.asList
 import js.objects.unsafeJso
 import js.typedarrays.toByteArray
@@ -54,6 +43,13 @@ import web.html.InputType
 import web.html.checkbox
 import web.html.file
 import web.html.radio
+import web.http.BodyInit
+import web.http.GET
+import web.http.Headers
+import web.http.RequestInit
+import web.http.RequestMethod
+import web.http.fetch
+import web.http.text
 import web.input.INPUT
 import web.input.InputEvent
 import web.location.location
@@ -64,6 +60,7 @@ import web.parsing.textHtml
 import web.pointer.CLICK
 import web.pointer.PointerEvent
 import web.sse.EventSource
+import web.url.URL
 import web.window.window
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
@@ -72,10 +69,6 @@ import kotlin.io.encoding.ExperimentalEncodingApi
 object Bliss {
     private val SWAP_REGEX = Regex("(?<sourceQuerySelector>[A-Za-z#.-]+)( \\((?<sourceSwapType>[A-Za-z]+)\\))? -> (?<targetQuerySelector>[A-Za-z#.-]+)( \\((?<targetSwapType>[A-Za-z]+)\\))?")
     private val DISABLE_WHEN_REGEX = Regex("(?<querySelector>.+) (?<op>==|!=) (?<part>\"(?<text>.+)\"|(?<blank>blank)|(?<empty>empty))")
-
-    private val http = HttpClient {
-        expectSuccess = false
-    }
 
     private val methods = setOf(
         HttpMethod.Get,
@@ -734,7 +727,7 @@ object Bliss {
         swaps: List<SwapRequest>,
         pushUrls: List<PushUrlRequest>,
     ) {
-        val requestUrl = URLBuilder(baseUrl).apply {
+        val requestUrl = URL(baseUrl, window.location.origin).apply {
             if (includeQuery != null) {
                 val querySelectors = includeQuery.split(",").map { it.trim() }
 
@@ -742,13 +735,13 @@ object Bliss {
                     val includeElement = document.querySelector(selector) ?: error("Could not find element $selector!")
 
                     if (includeElement is HTMLInputElement) {
-                        this.parameters.append(includeElement.name, includeElement.value)
+                        this.searchParams.append(includeElement.name, includeElement.value)
                     } else {
                         val namedElements = includeElement.querySelectorAll("[name]")
 
                         for (element in namedElements.asList()) {
                             if (element is HTMLInputElement) {
-                                this.parameters.append(element.name, element.value)
+                                this.searchParams.append(element.name, element.value)
                             }
                         }
                     }
@@ -756,85 +749,92 @@ object Bliss {
             }
 
             valsQuery.forEach { (key, value) ->
-                this.parameters.append(key, value.jsonPrimitive.content)
+                this.searchParams.append(key, value.jsonPrimitive.content)
             }
-        }.buildString()
+        }.toString()
 
         println("execute http $requestUrl ($method)")
 
-        val httpRequest = http.request(requestUrl) {
-            this.method = method
+        val requestHeaders = Headers()
+        requestHeaders.append("Bliss-Request", "true")
+        val elementIdOrNull = sourceElement?.id?.toString()?.ifEmpty { null }
+        if (elementIdOrNull != null)
+            requestHeaders.append("Bliss-Trigger-Element-Id", elementIdOrNull)
 
-            header("Bliss-Request", "true")
+        val elementNameOrEmpty = sourceElement?.getAttribute("name")
+        if (elementNameOrEmpty != null)
+            requestHeaders.append("Bliss-Trigger-Element-Name", elementNameOrEmpty)
 
-            val elementIdOrNull = sourceElement?.id?.toString()?.ifEmpty { null }
-            if (elementIdOrNull != null)
-                header("Bliss-Trigger-Element-Id", elementIdOrNull)
+        for (header in headers) {
+            requestHeaders.append(header.key, header.value)
+        }
 
-            val elementNameOrEmpty = sourceElement?.getAttribute("name")
-            if (elementNameOrEmpty != null)
-                header("Bliss-Trigger-Element-Name", elementNameOrEmpty)
+        val json = mutableMapOf<String, JsonElement>()
 
-            for (header in headers) {
-                header(header.key, header.value)
-            }
+        // We do it like this instead of checking if json is empty because we WANT the body to be included even if it empty, as long as there was an attempt to include json or vals
+        var includeBody = false
 
-            val json = mutableMapOf<String, JsonElement>()
+        if (includeJson != null) {
+            includeBody = true
+            val querySelectors = includeJson.split(",").map { it.trim() }
 
-            // We do it like this instead of checking if json is empty because we WANT the body to be included even if it empty, as long as there was an attempt to include json or vals
-            var includeBody = false
+            for (selector in querySelectors) {
+                val includeElements = document.querySelectorAll(selector).asList()
 
-            if (includeJson != null) {
-                includeBody = true
-                val querySelectors = includeJson.split(",").map { it.trim() }
-
-                for (selector in querySelectors) {
-                    val includeElements = document.querySelectorAll(selector).asList()
-
-                    json += createMapOfElementValues("name", includeElements)
-                }
-            }
-
-            if (valsJson.isNotEmpty()) {
-                includeBody = true
-                valsJson.forEach { (key, value) ->
-                    json[key] = value
-                }
-            }
-
-            val detail = BlissProcessRequestJsonBody(sourceElement, json, includeBody)
-            val event = CustomEvent(
-                type = EventType("bliss:processRequestJsonBody"),
-                init = CustomEventInit(
-                    detail = detail
-                )
-            )
-
-            document.dispatchEvent(event)
-
-            if (detail.includeBody) {
-                val bodyAsJson = Json.encodeToString(json)
-                println("Including JSON on the request: $bodyAsJson")
-                setBody(TextContent(bodyAsJson, ContentType.Application.Json))
+                json += createMapOfElementValues("name", includeElements)
             }
         }
+
+        if (valsJson.isNotEmpty()) {
+            includeBody = true
+            valsJson.forEach { (key, value) ->
+                json[key] = value
+            }
+        }
+
+        val detail = BlissProcessRequestJsonBody(sourceElement, json, includeBody)
+        val event = CustomEvent(
+            type = EventType("bliss:processRequestJsonBody"),
+            init = CustomEventInit(
+                detail = detail
+            )
+        )
+
+        document.dispatchEvent(event)
+
+        val bodyInit = if (detail.includeBody) {
+            val bodyAsJson = Json.encodeToString(json)
+            println("Including JSON on the request: $bodyAsJson")
+            BodyInit(bodyAsJson)
+        } else null
+
+
+        val httpRequest = fetch(
+            requestUrl,
+            RequestInit(
+                method = method.toRequestMethod(),
+                headers = requestHeaders,
+                body = bodyInit
+            )
+        )
+
         println("result: ${httpRequest.status}")
 
-        val blissRedirectUrl = httpRequest.headers["Bliss-Redirect"]
+        val blissRedirectUrl = httpRequest.headers.get("Bliss-Redirect")
         if (blissRedirectUrl != null) {
             println("Redirecting to $blissRedirectUrl...")
             location.replace(blissRedirectUrl)
             return
         }
 
-        val blissRefresh = httpRequest.headers["Bliss-Refresh"]
+        val blissRefresh = httpRequest.headers.get("Bliss-Refresh")
         if (blissRefresh == "true") {
             println("Refreshing webpage...")
             location.reload()
             return
         }
 
-        val body = httpRequest.bodyAsText(Charsets.UTF_8)
+        val body = httpRequest.text()
 
         val parser = DOMParser()
         val doc = parser.parseFromString(body, DOMParserSupportedType.textHtml)
@@ -918,12 +918,13 @@ object Bliss {
         var didSwap = false
 
         // If the server sent a reswap, we expect that it overrides ANYTHING and EVERYTHING, no matter the response code!
-        var swapValue = httpRequest.headers["Bliss-Reswap"]
+        var swapValue = httpRequest.headers.get("Bliss-Reswap")
+        val statusCode = HttpStatusCode.fromValue(httpRequest.status.toInt())
 
         if (swapValue == null) {
             // We do this way because we can select the responses based on the status response, sweet!
             // The default will be "nothing", to avoid weird errors (like client or server errors) being swapped to the DOM
-            val swapRequest = swaps.firstOrNull { httpRequest.status in it.statusCodes }
+            val swapRequest = swaps.firstOrNull { statusCode in it.statusCodes }
             if (swapRequest != null) {
                 swapValue = swapRequest.swapValue
             }
@@ -946,14 +947,14 @@ object Bliss {
         }
 
         // Just like reswaps, we expect that it overrides ANYTHING and EVERYTHING, no matter the response code!
-        var pushUrlValue = httpRequest.headers["Bliss-Push-Url"]
+        var pushUrlValue = httpRequest.headers.get("Bliss-Push-Url")
 
         println("pushUrlValue: $pushUrlValue")
 
         if (pushUrlValue == null) {
             // We do this way because we can select the responses based on the status response, sweet!
             // The default will be "nothing", to avoid weird errors (like client or server errors) being pushed
-            val pushRequest = pushUrls.firstOrNull { httpRequest.status in it.statusCodes }
+            val pushRequest = pushUrls.firstOrNull { statusCode in it.statusCodes }
             if (pushRequest != null) {
                 pushUrlValue = pushRequest.pushUrl
             }

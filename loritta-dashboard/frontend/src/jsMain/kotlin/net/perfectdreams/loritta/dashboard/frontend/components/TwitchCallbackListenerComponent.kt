@@ -1,16 +1,13 @@
 package net.perfectdreams.loritta.dashboard.frontend.components
 
-import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.html.emptyMap
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonPrimitive
 import net.perfectdreams.bliss.Bliss
 import net.perfectdreams.bliss.Bliss.executeAjax
 import net.perfectdreams.bliss.BlissComponent
+import net.perfectdreams.bliss.HttpMethod
+import net.perfectdreams.bliss.HttpStatusCode
 import net.perfectdreams.loritta.dashboard.frontend.LorittaDashboardFrontend
 import web.dom.document
 import web.events.addEventHandler

@@ -3,10 +3,7 @@ package net.perfectdreams.loritta.dashboard.frontend.shimeji
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import io.ktor.util.date.*
 import js.array.asList
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import net.perfectdreams.loritta.shimeji.ActivityLevel
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.dashboard.frontend.shimeji.entities.Entity
@@ -15,6 +12,7 @@ import net.perfectdreams.loritta.dashboard.frontend.shimeji.entities.PlayerMovem
 import net.perfectdreams.loritta.dashboard.frontend.shimeji.render.RenderedEntity
 import net.perfectdreams.loritta.dashboard.frontend.shimeji.render.RenderedLorittaPlayer
 import net.perfectdreams.loritta.dashboard.frontend.shimeji.render.RenderedObject
+import net.perfectdreams.loritta.dashboard.frontend.utils.getTimeMillis
 import web.animations.requestAnimationFrame
 import web.canvas.CanvasRenderingContext2D
 import web.canvas.ID
