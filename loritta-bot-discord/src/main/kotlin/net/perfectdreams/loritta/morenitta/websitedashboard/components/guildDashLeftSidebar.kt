@@ -76,7 +76,7 @@ fun FlowContent.guildDashLeftSidebarEntries(
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/xp-rewards", i18nContext.get(DashboardI18nKeysData.XpRewards.Title), SVGIcons.Ranking, selectedGuildSection == GuildDashboardSection.XP_REWARDS,  false)
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/xp-rates", i18nContext.get(DashboardI18nKeysData.XpRates.Title), SVGIcons.ChartDonut, selectedGuildSection == GuildDashboardSection.XP_RATES,  false)
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/xp-blockers", i18nContext.get(DashboardI18nKeysData.XpBlockers.Title), SVGIcons.LockSimple, selectedGuildSection == GuildDashboardSection.XP_BLOCKERS,  false)
-    aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/xp-notifications", i18nContext.get(DashboardI18nKeysData.XpNotifications.Title), SVGIcons.TrendUp, selectedGuildSection == GuildDashboardSection.XP_NOTIFICATIONS,  false)
+    aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/xp-notifications", i18nContext.get(DashboardI18nKeysData.XpNotifications.Title), SVGIcons.SortDescending, selectedGuildSection == GuildDashboardSection.XP_NOTIFICATIONS,  false)
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/reset-xp", i18nContext.get(DashboardI18nKeysData.ResetXp.Title), SVGIcons.Knife, selectedGuildSection == GuildDashboardSection.RESET_XP,  false)
 
     leftSidebarHr()

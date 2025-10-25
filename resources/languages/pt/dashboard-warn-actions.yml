@@ -2,3 +2,5 @@ website:
   dashboard:
     warnActions:
       title: "Punições de Avisos"
+
+      timePlaceholder: "1 hora"

@@ -89,63 +89,68 @@ class WarnActionsGuildDashboardRoute(website: LorittaDashboardWebServer) : Requi
                                     hr {}
 
                                     sectionConfig {
-                                        controlsWithButton {
-                                            inlinedControls {
-                                                text("Ao chegar em ")
-                                                numberInput {
-                                                    attributes["warn-action-add-element"] = "true"
-                                                    name = "count"
-                                                    style = "width: 100px;"
-                                                    value = "1"
-                                                    min = "1"
+                                        fieldWrappers {
+                                            fieldWrapper {
+                                                controlsWithButton {
+                                                    inlinedControls {
+                                                        text("Ao chegar em ")
+                                                        numberInput {
+                                                            attributes["warn-action-add-element"] = "true"
+                                                            name = "count"
+                                                            style = "width: 100px;"
+                                                            value = "1"
+                                                            min = "1"
+                                                        }
+                                                        text(" avisos, ")
+
+                                                        fancySelectMenu {
+                                                            attributes["warn-action-add-element"] = "true"
+                                                            name = "action"
+                                                            option {
+                                                                label = "KICK"
+                                                                value = "KICK"
+                                                            }
+                                                            option {
+                                                                label = "BAN"
+                                                                value = "BAN"
+                                                            }
+                                                            option {
+                                                                label = "MUTE"
+                                                                value = "MUTE"
+                                                            }
+                                                        }
+
+                                                        text(" o usuário por ")
+
+                                                        growInputWrapper {
+                                                            textInput {
+                                                                attributes["warn-action-add-element"] = "true"
+                                                                attributes["bliss-disable-when"] = "[name='action'] != \"MUTE\""
+                                                                attributes["bliss-coerce-to-null-if-blank"] = "true"
+                                                                name = "time"
+                                                                placeholder = i18nContext.get(DashboardI18nKeysData.WarnActions.TimePlaceholder)
+                                                            }
+                                                        }
+                                                    }
+
+                                                    discordButton(ButtonStyle.SUCCESS) {
+                                                        attributes["bliss-post"] = "/${i18nContext.get(I18nKeys.Website.LocalePathId)}/guilds/${guild.idLong}/warn-actions/add"
+                                                        attributes["bliss-include-json"] = "[warn-action-add-element]"
+                                                        attributes["bliss-swap:200"] = "body (innerHTML) -> #warn-actions (innerHTML)"
+                                                        text("Adicionar")
+                                                    }
                                                 }
-                                                text(" avisos, ")
 
-                                                fancySelectMenu {
-                                                    attributes["warn-action-add-element"] = "true"
-                                                    name = "action"
-                                                    option {
-                                                        label = "KICK"
-                                                        value = "KICK"
-                                                    }
-                                                    option {
-                                                        label = "BAN"
-                                                        value = "BAN"
-                                                    }
-                                                    option {
-                                                        label = "MUTE"
-                                                        value = "MUTE"
-                                                    }
-                                                }
+                                                div {
+                                                    id = "warn-actions"
 
-                                                text(" o usuário por ")
-
-                                                growInputWrapper {
-                                                    textInput {
-                                                        attributes["warn-action-add-element"] = "true"
-                                                        attributes["bliss-disable-when"] = "[name='action'] != \"MUTE\""
-                                                        attributes["bliss-coerce-to-null-if-blank"] = "true"
-                                                        name = "time"
-                                                    }
+                                                    configurableWarnList(
+                                                        i18nContext,
+                                                        guild,
+                                                        actions
+                                                    )
                                                 }
                                             }
-
-                                            discordButton(ButtonStyle.SUCCESS) {
-                                                attributes["bliss-post"] = "/${i18nContext.get(I18nKeys.Website.LocalePathId)}/guilds/${guild.idLong}/warn-actions/add"
-                                                attributes["bliss-include-json"] = "[warn-action-add-element]"
-                                                attributes["bliss-swap:200"] = "body (innerHTML) -> #warn-actions (innerHTML)"
-                                                text("Adicionar")
-                                            }
-                                        }
-
-                                        div {
-                                            id = "warn-actions"
-
-                                            configurableWarnList(
-                                                i18nContext,
-                                                guild,
-                                                actions
-                                            )
                                         }
                                     }
                                 },
