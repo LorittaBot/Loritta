@@ -58,18 +58,6 @@ class SSEDailyShopTimerUserDashboardRoute(website: LorittaDashboardWebServer) : 
                     )
                 }
 
-                writeSseEvent(
-                    SseEvent(
-                        data = Json.encodeToString<SSEBliss>(
-                            SSECustomEvent(
-                                "loritta:showToast",
-                                "document",
-                                Json.encodeToString<EmbeddedToast>(createEmbeddedToast(EmbeddedToast.Type.INFO, "tick", null))
-                            )
-                        )
-                    )
-                )
-
                 if (lastDailyShopGeneratedAt != currentDailyShop.generatedAt) {
                     lastDailyShopGeneratedAt = currentDailyShop.generatedAt
 
