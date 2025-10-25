@@ -4,8 +4,11 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.util.*
+import kotlinx.html.FlowContent
+import kotlinx.html.div
 import kotlinx.html.hr
 import kotlinx.html.html
+import kotlinx.html.id
 import kotlinx.html.numberInput
 import kotlinx.html.option
 import kotlinx.html.select
@@ -57,6 +60,14 @@ class MemberCounterChannelGuildDashboardRoute(website: LorittaDashboardWebServer
 
         // Hacky!
         val locale = website.loritta.localeManager.getLocaleById(LocaleManager.DEFAULT_LOCALE_ID)
+
+        fun FlowContent.setupPreviewAttributes() {
+            attributes["bliss-post"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/member-counter/preview"
+            attributes["bliss-sync"] = "#counter-preview"
+            attributes["bliss-swap:200"] = "body (innerHTML) -> #counter-preview (innerHTML)"
+            attributes["bliss-include-json"] = "[counter-preview-parameter]"
+            attributes["counter-preview-parameter"] = "true"
+        }
 
         call.respondHtml(
             createHTML()
@@ -119,9 +130,11 @@ class MemberCounterChannelGuildDashboardRoute(website: LorittaDashboardWebServer
                                                                 text("Tema do Contador de Membros")
                                                             }
 
-                                                            select {
+                                                            fancySelectMenu {
                                                                 name = "theme"
                                                                 attributes["loritta-config"] = "theme"
+                                                                attributes["bliss-trigger"] = "input"
+                                                                setupPreviewAttributes()
 
                                                                 for (counterTheme in CounterThemes.entries) {
                                                                     option {
@@ -143,12 +156,29 @@ class MemberCounterChannelGuildDashboardRoute(website: LorittaDashboardWebServer
                                                             numberInput {
                                                                 name = "padding"
                                                                 attributes["loritta-config"] = "padding"
+                                                                attributes["bliss-trigger"] = "input"
+                                                                setupPreviewAttributes()
 
                                                                 value = "5"
                                                                 min = "1"
                                                                 max = "10"
                                                                 if (channelMemberCounter != null)
                                                                     value = channelMemberCounter[MemberCounterChannelConfigs.padding].toString()
+                                                            }
+                                                        }
+
+                                                        fieldWrapper {
+                                                            fieldTitle {
+                                                                text("Pré-visualização")
+                                                            }
+
+                                                            div {
+                                                                id = "counter-preview"
+
+                                                                val counts = setOf(5, 10, 250, guild.memberCount, 1234567890).sorted()
+                                                                for (count in counts) {
+                                                                    memberCounterPreview(count, channelMemberCounter?.get(MemberCounterChannelConfigs.theme) ?: CounterThemes.DEFAULT, channelMemberCounter?.get(MemberCounterChannelConfigs.padding) ?: 5)
+                                                                }
                                                             }
                                                         }
                                                     }

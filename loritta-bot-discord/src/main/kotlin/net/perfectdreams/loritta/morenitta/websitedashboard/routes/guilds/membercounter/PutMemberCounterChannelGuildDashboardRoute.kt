@@ -49,6 +49,9 @@ class PutMemberCounterChannelGuildDashboardRoute(website: LorittaDashboardWebSer
 
         val request = Json.decodeFromString<SaveMemberCounterRequest>(call.receiveText())
 
+        if (request.padding !in 1..10)
+            error("Too much padding! Padding must be between 1 and 10, but was ${request.padding}")
+
         val serverConfig = website.loritta.transaction {
             val serverConfig = website.loritta.getOrCreateServerConfig(guild.idLong)
 

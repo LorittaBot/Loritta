@@ -86,6 +86,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.invite
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.inviteblocker.PutInviteBlockerGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.membercounter.MemberCounterChannelGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.membercounter.MemberCounterGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.membercounter.PostMemberCounterPreviewGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.membercounter.PutMemberCounterChannelGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.permissions.PermissionsGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.permissions.PutRolePermissionsGuildDashboardRoute
@@ -363,6 +364,7 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
         MemberCounterGuildDashboardRoute(this),
         MemberCounterChannelGuildDashboardRoute(this),
         PutMemberCounterChannelGuildDashboardRoute(this),
+        PostMemberCounterPreviewGuildDashboardRoute(this),
 
         // Warn Actions
         WarnActionsGuildDashboardRoute(this),
