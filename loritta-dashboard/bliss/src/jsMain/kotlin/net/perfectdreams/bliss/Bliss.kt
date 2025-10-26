@@ -821,6 +821,8 @@ object Bliss {
             )
         )
 
+        document.dispatchEvent(documentParsedEvent)
+
         val triggerEventHack = doc.querySelectorAll("[bliss-event]").asList()
         for (element in triggerEventHack) {
             val event = CustomEvent(
