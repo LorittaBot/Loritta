@@ -1,23 +1,28 @@
 package net.perfectdreams.loritta.dashboard.frontend.toasts
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.html.HTMLTag
+import kotlinx.html.div
+import kotlinx.html.dom.append
+import kotlinx.html.unsafe
 import net.perfectdreams.loritta.dashboard.EmbeddedToast
 import net.perfectdreams.loritta.dashboard.frontend.LorittaDashboardFrontend
-import net.perfectdreams.loritta.dashboard.frontend.components.SaveBarComponent
-import net.perfectdreams.loritta.dashboard.frontend.compose.components.RawHtml
-import org.jetbrains.compose.web.dom.Div
-import org.jetbrains.compose.web.dom.Text
-import org.jetbrains.compose.web.renderComposable
-import org.w3c.dom.Element
+import web.animations.ANIMATION_END
+import web.animations.AnimationEvent
+import web.cssom.ClassName
+import web.dom.ElementId
+import web.dom.document
+import web.events.addEventHandler
 import web.html.HTMLElement
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.seconds
 
 class ToastManager(private val m: LorittaDashboardFrontend) {
-    val activeToasts = mutableStateListOf<ToastWithAnimationState>()
+    lateinit var toastListElement: HTMLElement
 
     fun showToast(embeddedToast: EmbeddedToast) {
         val descriptionHtml = embeddedToast.descriptionHtml
@@ -30,101 +35,92 @@ class ToastManager(private val m: LorittaDashboardFrontend) {
             },
             embeddedToast.title,
             {
-                if (descriptionHtml != null)
-                    RawHtml(descriptionHtml)
+                if (descriptionHtml != null) {
+                    unsafe {
+                        raw(descriptionHtml)
+                    }
+                }
             }
         )
     }
 
-    fun showToast(toastType: Toast.Type, title: String, body: @Composable () -> (Unit) = {}) {
+    fun showToast(toastType: Toast.Type, title: String, body: HTMLTag.() -> (Unit) = {}) {
         val toast = Toast(
             toastType,
             title,
             body
         )
-        val toastWithAnimationState = ToastWithAnimationState(toast, Random.nextLong(0, Long.MAX_VALUE), mutableStateOf(ToastWithAnimationState.State.ADDED))
 
-        activeToasts.add(toastWithAnimationState)
+        val toastWithAnimationState = ToastWithAnimationState(toast, Random.nextLong(0, Long.MAX_VALUE), mutableStateOf(ToastWithAnimationState.State.ADDED))
+        m.soundEffects.toastNotificationWhoosh.play(
+            0.1,
+            // Change the speed/pitch to avoid the sound effect sounding repetitive
+            Random.nextDouble(
+                0.975,
+                1.025
+            )
+        )
+
+        val toastElement = document.createElement("div").apply {
+            id = ElementId("toast-${toastWithAnimationState.toastId}")
+            val toastStyle = when (toastWithAnimationState.toast.type) {
+                Toast.Type.INFO -> "info"
+                Toast.Type.SUCCESS -> "success"
+                Toast.Type.WARN -> "warn"
+            }
+
+            className = ClassName("toast $toastStyle added")
+
+            addEventHandler(AnimationEvent.ANIMATION_END) {
+                when (toastWithAnimationState.state.value) {
+                    ToastWithAnimationState.State.ADDED -> {
+                        this.classList.remove(ClassName("added"))
+                        toastWithAnimationState.state.value = ToastWithAnimationState.State.DEFAULT
+                    }
+
+                    ToastWithAnimationState.State.DEFAULT -> {
+                        // I'm just happy to be here
+                    }
+                    ToastWithAnimationState.State.REMOVED -> {
+                        this.remove()
+                    }
+                }
+            }
+
+            appendChild(
+                document.createElement("div").apply {
+                    classList.value = ClassName("toast-title")
+                    textContent = toastWithAnimationState.toast.title
+                }
+            )
+
+            appendChild(
+                document.createElement("div").apply {
+                    classList.value = ClassName("toast-description")
+                    this as org.w3c.dom.HTMLElement
+                    this.append.div {
+                        body()
+                    }
+                }
+            )
+        }
+
+        toastListElement.append(toastElement)
 
         GlobalScope.launch {
             delay(7.seconds)
             toastWithAnimationState.state.value = ToastWithAnimationState.State.REMOVED
+            toastElement.classList.add(ClassName("removed"))
         }
     }
 
     fun render(element: HTMLElement) {
-        renderComposable(element) {
-            Div(attrs = {
-                classes("toast-list")
-
-                if (SaveBarComponent.saveBarActive)
-                    classes("save-bar-active")
-            }) {
-                for (toastWithAnimationState in activeToasts) {
-                    // We need to key it based on the ID to avoid Compose recomposing the toast notification during an animation
-                    // https://kotlinlang.slack.com/archives/C01F2HV7868/p1694583087487209
-                    key(toastWithAnimationState.toastId) {
-                        LaunchedEffect(Unit) {
-                            m.soundEffects.toastNotificationWhoosh.play(
-                                0.1,
-                                // Change the speed/pitch to avoid the sound effect sounding repetitive
-                                Random.nextDouble(
-                                    0.975,
-                                    1.025
-                                )
-                            )
-                        }
-
-                        Div(attrs = {
-                            id("toast-${toastWithAnimationState.toastId}")
-                            classes(
-                                "toast",
-                                when (toastWithAnimationState.toast.type) {
-                                    Toast.Type.INFO -> "info"
-                                    Toast.Type.SUCCESS -> "success"
-                                    Toast.Type.WARN -> "warn"
-                                }
-                            )
-
-                            when (toastWithAnimationState.state.value) {
-                                ToastManager.ToastWithAnimationState.State.ADDED -> {
-                                    classes("added")
-                                    onAnimationEnd {
-                                        println("Finished toast (added) animation!")
-                                        toastWithAnimationState.state.value =
-                                            ToastManager.ToastWithAnimationState.State.DEFAULT
-                                    }
-                                }
-
-                                ToastManager.ToastWithAnimationState.State.DEFAULT -> {
-                                    // I'm just happy to be here
-                                }
-
-                                ToastManager.ToastWithAnimationState.State.REMOVED -> {
-                                    classes("removed")
-                                    onAnimationEnd {
-                                        println("Finished toast (removed) animation!")
-                                        activeToasts.remove(toastWithAnimationState)
-                                    }
-                                }
-                            }
-                        }) {
-                            Div(attrs = {
-                                classes("toast-title")
-                            }) {
-                                Text(toastWithAnimationState.toast.title)
-                            }
-
-                            Div(attrs = {
-                                classes("toast-description")
-                            }) {
-                                toastWithAnimationState.toast.body.invoke()
-                            }
-                        }
-                    }
-                }
-            }
+        val toastListElement = document.createElement("div").apply {
+            classList.value = ClassName("toast-list")
         }
+
+        this.toastListElement = toastListElement
+        element.append(toastListElement)
     }
 
     class ToastWithAnimationState(
