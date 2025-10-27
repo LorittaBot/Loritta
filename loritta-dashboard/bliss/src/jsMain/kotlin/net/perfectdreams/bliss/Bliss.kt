@@ -27,12 +27,15 @@ import web.events.CustomEvent
 import web.events.CustomEventInit
 import web.events.Event
 import web.events.EventHandler
+import web.events.EventInit
+import web.events.EventInit.Companion.invoke
 import web.events.EventType
 import web.events.addEventHandler
 import web.history.POP_STATE
 import web.history.PopStateEvent
 import web.history.history
 import web.html.HTMLInputElement
+import web.html.HTMLOptionElement
 import web.html.HTMLSelectElement
 import web.html.HTMLTextAreaElement
 import web.html.InputType
@@ -46,6 +49,8 @@ import web.http.fetch
 import web.http.text
 import web.input.INPUT
 import web.input.InputEvent
+import web.input.InputEventInit
+import web.input.InputEventInit.Companion.invoke
 import web.location.location
 import web.navigator.navigator
 import web.parsing.DOMParser
@@ -61,7 +66,7 @@ import kotlin.io.encoding.ExperimentalEncodingApi
 
 // I find I'm here this place of bliss
 object Bliss {
-    private val SWAP_REGEX = Regex("(?<sourceQuerySelector>[A-Za-z#.-]+)( \\((?<sourceSwapType>[A-Za-z]+)\\))? -> (?<targetQuerySelector>[A-Za-z#.-]+)( \\((?<targetSwapType>[A-Za-z]+)\\))?")
+    private val SWAP_REGEX = Regex("(?<sourceQuerySelector>[A-Za-z#.\\-0-9]+)( \\((?<sourceSwapType>[A-Za-z]+)\\))? -> (?<targetQuerySelector>[A-Za-z#.\\-0-9]+)( \\((?<targetSwapType>[A-Za-z]+)\\))?")
     private val DISABLE_WHEN_REGEX = Regex("(?<querySelector>.+) (?<op>==|!=) (?<part>\"(?<text>.+)\"|(?<blank>blank)|(?<empty>empty))")
 
     private val methods = setOf(
@@ -95,6 +100,7 @@ object Bliss {
             }
 
             processCopyTextOnClick(element)
+            processMirrorValueToElement(element)
             processBlissComponents(element)
 
             for (method in methods) {
@@ -465,6 +471,7 @@ object Bliss {
         var didSwap = false
 
         for (entry in swaps) {
+            println("Swap entry: \"$entry\"")
             // "nothing" is special: it literally does nothing, useful for things that you expect the server to return a redirect
             if (entry != "nothing") {
                 val result = SWAP_REGEX.matchEntire(entry) ?: error("Invalid swap setting ${entry}!")
@@ -529,6 +536,60 @@ object Bliss {
         if (copyTextOnClick != null) {
             element.addEventHandler(PointerEvent.CLICK) {
                 navigator.clipboard.writeTextAsync(copyTextOnClick)
+            }
+        }
+    }
+
+    /**
+     * Mirrors the value of the [element] to the query selector
+     */
+    private fun processMirrorValueToElement(element: Element) {
+        val mirrorValue = element.getAttribute("bliss-mirror-value-to-element")
+
+        if (mirrorValue != null) {
+            fun setValue(newValue: String) {
+                val targetElement = document.querySelector(mirrorValue) ?: error("Could not find element $mirrorValue!")
+
+                when (targetElement) {
+                    is HTMLInputElement -> {
+                        targetElement.value = newValue
+                    }
+
+                    is HTMLTextAreaElement -> {
+                        targetElement.value = newValue
+                    }
+
+                    is HTMLOptionElement -> {
+                        targetElement.value = newValue
+                    }
+
+                    else -> error("Unsupported target element!")
+                }
+
+                targetElement.dispatchEvent(InputEvent(InputEvent.INPUT, InputEventInit(bubbles = true)))
+                targetElement.dispatchEvent(Event(Event.CHANGE, EventInit(bubbles = true)))
+            }
+
+            when (element) {
+                is HTMLInputElement -> {
+                    element.addEventHandler(InputEvent.INPUT) {
+                        setValue(element.value)
+                    }
+                }
+
+                is HTMLTextAreaElement -> {
+                    element.addEventHandler(InputEvent.INPUT) {
+                        setValue(element.value)
+                    }
+                }
+
+                is HTMLOptionElement -> {
+                    element.addEventHandler(InputEvent.INPUT) {
+                        setValue(element.value)
+                    }
+                }
+
+                else -> error("Unsupported source type!")
             }
         }
     }
