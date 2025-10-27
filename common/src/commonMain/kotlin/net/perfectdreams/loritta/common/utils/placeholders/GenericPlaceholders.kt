@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.common.utils.placeholders
 
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 
+@Deprecated("This should not be used, use the new placeholder system instead.")
 object GenericPlaceholders {
     abstract class GenericPlaceholder(override val description: StringI18nData? = null) : MessagePlaceholder
 

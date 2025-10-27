@@ -17,6 +17,14 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.GuildDashboardSectio
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.configurableChannelListInput
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.createGuildIconUrlPlaceholderGroup
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.createGuildNamePlaceholderGroup
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.createGuildSizePlaceholderGroup
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.createMessageTemplate
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.createUserDiscriminatorPlaceholderGroup
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.createUserMentionPlaceholderGroup
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.createUserNamePlaceholderGroup
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.createUserTagPlaceholderGroup
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.dashboardBase
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.discordMessageEditor
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldTitle
@@ -33,13 +41,33 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuild
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissEvent
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
+import net.perfectdreams.loritta.placeholders.sections.BlockedCommandChannelPlaceholders
+import net.perfectdreams.loritta.placeholders.sections.InviteBlockedPlaceholders
 import net.perfectdreams.loritta.serializable.ColorTheme
+import kotlin.collections.map
 
 class InviteBlockerGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/invite-blocker") {
     override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans) {
         val inviteBlockerConfig = website.loritta.transaction {
             website.loritta.getOrCreateServerConfig(guild.idLong).inviteBlockerConfig
         }
+
+        val inviteBlockedPlaceholders = InviteBlockedPlaceholders.placeholders.map {
+            when (it) {
+                InviteBlockedPlaceholders.GuildIconUrlPlaceholder -> createGuildIconUrlPlaceholderGroup(i18nContext, it, guild)
+                InviteBlockedPlaceholders.GuildNamePlaceholder -> createGuildNamePlaceholderGroup(i18nContext, it, guild)
+                InviteBlockedPlaceholders.GuildSizePlaceholder -> createGuildSizePlaceholderGroup(i18nContext, it, guild)
+                InviteBlockedPlaceholders.UserDiscriminatorPlaceholder -> createUserDiscriminatorPlaceholderGroup(i18nContext, it, session.discriminator)
+                InviteBlockedPlaceholders.UserMentionPlaceholder -> createUserMentionPlaceholderGroup(i18nContext, it, session.userId, session.username, session.globalName)
+                InviteBlockedPlaceholders.UserNamePlaceholder -> createUserNamePlaceholderGroup(i18nContext, it, session.username, session.globalName)
+                InviteBlockedPlaceholders.UserTagPlaceholder -> createUserTagPlaceholderGroup(i18nContext, it, session.username)
+            }
+        }
+
+        val defaultDenyMessage = createMessageTemplate(
+            "Padrão",
+            "{@user} você não pode enviar convites aqui!"
+        )
 
         call.respondHtml(
             createHTML()
@@ -139,8 +167,9 @@ class InviteBlockerGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
                                                     discordMessageEditor(
                                                         guild,
                                                         MessageEditorBootstrap.TestMessageTarget.Unavailable,
-                                                        listOf(),
-                                                        inviteBlockerConfig?.warnMessage ?: ""
+                                                        listOf(defaultDenyMessage),
+                                                        inviteBlockedPlaceholders,
+                                                        inviteBlockerConfig?.warnMessage ?: defaultDenyMessage.content
                                                     ) {
                                                         name = "message"
                                                         attributes["loritta-config"] = "message"

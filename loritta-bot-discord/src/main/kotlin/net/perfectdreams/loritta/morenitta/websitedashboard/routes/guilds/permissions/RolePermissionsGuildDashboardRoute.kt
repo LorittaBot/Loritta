@@ -90,8 +90,8 @@ class RolePermissionsGuildDashboardRoute(website: LorittaDashboardWebServer) : R
 
                                             fieldWrapper {
                                                 toggle(
-                                                    LorittaPermission.IGNORE_COMMANDS in permissions,
-                                                    "ignoreCommands",
+                                                    LorittaPermission.IGNORE_COMMANDS !in permissions,
+                                                    "allowCommands",
                                                     true,
                                                     {
                                                         text("Permitir usar comandos")
@@ -111,7 +111,7 @@ class RolePermissionsGuildDashboardRoute(website: LorittaDashboardWebServer) : R
                                                         text("Permitir usar comandos em qualquer canal")
                                                     },
                                                     {
-                                                        text("Caso esteja ativado, usuários com esta permissão poderão acessar e manipular a configuração deste servidor no meu painel. Essa é uma permissão perigosa para conceder.")
+                                                        text("Caso esteja ativado, eu irei permitir usar comandos em canais que foram adicionados para eu ignorar.")
                                                     }
                                                 )
                                             }

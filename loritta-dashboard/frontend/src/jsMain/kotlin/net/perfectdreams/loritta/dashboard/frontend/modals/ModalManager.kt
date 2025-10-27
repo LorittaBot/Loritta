@@ -21,6 +21,10 @@ class ModalManager(val m: LorittaDashboardFrontend) {
     fun closeModal(modal: Modal) = this.modals.remove(modal)
 
     fun closeModal() {
+        this.modals.removeLastOrNull()
+    }
+
+    fun closeAllModals() {
         this.modals.clear()
     }
 

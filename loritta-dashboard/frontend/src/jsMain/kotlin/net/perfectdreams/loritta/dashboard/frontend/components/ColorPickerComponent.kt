@@ -28,7 +28,8 @@ class ColorPickerComponent(val m: LorittaDashboardFrontend) : BlissComponent<HTM
         renderComposable(rootNode) {
             var currentColor by remember { mutableStateOf(initialValue) }
 
-            ColorPicker(m, currentColor) {
+            // TODO: We need to somehow provide the SVG icons here
+            ColorPicker(m, TODO(), TODO(), currentColor) {
                 currentColor = it
                 mountedElement.value = it?.toHex() ?: ""
                 mountedElement.dispatchEvent(InputEvent(InputEvent.INPUT))

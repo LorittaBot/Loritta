@@ -13,7 +13,7 @@ fun FlowContent.trackedYouTubeChannelEditorWithProfile(
     guild: Guild,
     channel: YouTubeChannel,
     channelId: Long?,
-    message: String
+    message: String?
 ) {
     fieldWrappers {
         fieldWrapper {

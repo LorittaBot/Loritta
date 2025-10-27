@@ -61,6 +61,7 @@ class PostCustomCommandsGuildDashboardRoute(website: LorittaDashboardWebServer) 
                         customGuildCommandTextEditor(
                             i18nContext,
                             guild,
+                            session,
                             request.label,
                             request.message,
                         )

@@ -1,10 +1,6 @@
 package net.perfectdreams.loritta.dashboard.frontend.compose.components.messages
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.html.div
@@ -18,27 +14,28 @@ import net.perfectdreams.loritta.dashboard.discordmessages.DiscordMessage
 import net.perfectdreams.loritta.dashboard.discordmessages.RenderableDiscordUser
 import net.perfectdreams.loritta.dashboard.frontend.DiscordMessageEditorUtils
 import net.perfectdreams.loritta.dashboard.frontend.LorittaDashboardFrontend
-import net.perfectdreams.loritta.dashboard.frontend.compose.components.DiscordButton
-import net.perfectdreams.loritta.dashboard.frontend.compose.components.DiscordButtonType
-import net.perfectdreams.loritta.dashboard.frontend.compose.components.DiscordToggle
-import net.perfectdreams.loritta.dashboard.frontend.compose.components.FieldLabel
-import net.perfectdreams.loritta.dashboard.frontend.compose.components.FieldWrapper
-import net.perfectdreams.loritta.dashboard.frontend.compose.components.FieldWrappers
-import net.perfectdreams.loritta.dashboard.frontend.compose.components.HorizontalList
-import net.perfectdreams.loritta.dashboard.frontend.compose.components.RawHtml
-import net.perfectdreams.loritta.dashboard.frontend.compose.components.TextWithIconWrapper
-import net.perfectdreams.loritta.dashboard.frontend.compose.components.VerticalList
+import net.perfectdreams.loritta.dashboard.frontend.compose.components.*
 import net.perfectdreams.loritta.dashboard.frontend.compose.components.colorpicker.Color
 import net.perfectdreams.loritta.dashboard.frontend.compose.components.colorpicker.ColorPicker
 import net.perfectdreams.loritta.dashboard.frontend.toasts.Toast
+import net.perfectdreams.loritta.dashboard.frontend.utils.Details
+import net.perfectdreams.loritta.dashboard.frontend.utils.SVGIconManager
+import net.perfectdreams.loritta.dashboard.frontend.utils.Summary
 import net.perfectdreams.loritta.dashboard.messageeditor.LorittaMessageTemplate
-import net.perfectdreams.loritta.dashboard.messageeditor.MessageEditorMessagePlaceholder
+import net.perfectdreams.loritta.dashboard.messageeditor.MessageEditorMessagePlaceholderGroup
 import net.perfectdreams.loritta.dashboard.renderer.discordMessageRenderer
 import org.jetbrains.compose.web.attributes.disabled
+import org.jetbrains.compose.web.dom.Code
 import org.jetbrains.compose.web.dom.Div
+import org.jetbrains.compose.web.dom.Table
+import org.jetbrains.compose.web.dom.Tbody
+import org.jetbrains.compose.web.dom.Td
 import org.jetbrains.compose.web.dom.Text
 import org.jetbrains.compose.web.dom.TextArea
 import org.jetbrains.compose.web.dom.TextInput
+import org.jetbrains.compose.web.dom.Th
+import org.jetbrains.compose.web.dom.Thead
+import org.jetbrains.compose.web.dom.Tr
 import kotlin.random.Random
 
 val JsonForDiscordMessages = Json {
@@ -49,18 +46,14 @@ val JsonForDiscordMessages = Json {
 @Composable
 fun DiscordMessageEditor(
     m: LorittaDashboardFrontend,
-    // TODO: Replace with a "mini" i18nContext-like thing
-    // i18nContext: I18nContext,
     templates: List<LorittaMessageTemplate>,
-    // placeholderSectionType: PlaceholderSectionType,
-    placeholders: List<MessageEditorMessagePlaceholder>,
+    placeholderGroups: List<MessageEditorMessagePlaceholderGroup>,
     targetGuild: DiscordGuild,
-    // testMessageEndpointUrl: String,
     targetChannel: TargetChannelResult,
     renderableSelfUser: RenderableDiscordUser,
-    verifiedIconRawHtml: String,
-    // messagesToBeRenderedBeforeTargetMessage: List<DiscordMessageWithAuthor>,
-    // messagesToBeRenderedAfterTargetMessage: List<DiscordMessageWithAuthor>,
+    verifiedIconRawHtml: SVGIconManager.SVGIcon,
+    eyeDropperIconRawHtml: SVGIconManager.SVGIcon,
+    chevdronDownIconRawHtml: SVGIconManager.SVGIcon,
     rawMessage: String,
     onMessageContentChange: (String) -> (Unit)
 ) {
@@ -96,7 +89,7 @@ fun DiscordMessageEditor(
                         onClick {
                             m.modalManager.openModalWithOnlyCloseButton(
                                 "Templates de Mensagens",
-                            ) {
+                            ) { templatesModal ->
                                 Text("Sem criatividade? Então pegue um template!")
 
                                 VerticalList {
@@ -118,6 +111,7 @@ fun DiscordMessageEditor(
                                                                 attrs = {
                                                                     onClick {
                                                                         onMessageContentChange.invoke(template.content)
+                                                                        templatesModal.close()
                                                                         modal.close()
                                                                         m.toastManager.showToast(
                                                                             Toast.Type.SUCCESS,
@@ -142,9 +136,7 @@ fun DiscordMessageEditor(
                     } else disabled()
                 }
             ) {
-                TextWithIconWrapper(/* SVGIconManager.bars, {} */) {
-                    Text("Template de Mensagens")
-                }
+                Text("Template de Mensagens")
             }
 
             Div {
@@ -154,7 +146,7 @@ fun DiscordMessageEditor(
                         onClick {
                             m.modalManager.openModalWithOnlyCloseButton(
                                 "Importar",
-                            ) {
+                            ) { importModal ->
                                 Text("Qual mensagem você deseja importar?")
 
                                 VerticalList {
@@ -194,10 +186,9 @@ fun DiscordMessageEditor(
                                                                                     "",
                                                                                     embed
                                                                                 )
-                                                                            ).also {
-                                                                                println(it)
-                                                                            }
+                                                                            )
                                                                         )
+                                                                        importModal.close()
                                                                         modal.close()
                                                                         m.toastManager.showToast(
                                                                             Toast.Type.SUCCESS,
@@ -220,9 +211,7 @@ fun DiscordMessageEditor(
                         }
                     }
                 ) {
-                    TextWithIconWrapper(/* SVGIconManager.fileImport, {} */) {
-                        Text("Importar")
-                    }
+                    Text("Importar")
                 }
             }
 
@@ -238,9 +227,7 @@ fun DiscordMessageEditor(
                         }
                     }
                 ) {
-                    TextWithIconWrapper(/* SVGIconManager.pencil, {} */) {
-                        Text("Alterar modo de edição")
-                    }
+                    Text("Alterar modo de edição")
                 }
             }
 
@@ -251,19 +238,18 @@ fun DiscordMessageEditor(
                         if (targetChannel is TargetChannelResult.ChannelNotSelected) {
                             disabled()
                         } else {
-                            onClick {
+                            disabled()
+                            /* onClick {
                                 GlobalScope.launch {
                                     m.toastManager.showToast(Toast.Type.INFO, "Enviando mensagem...")
 
                                     // TODO (bliss-dash): Use bliss directly maybe?
                                 }
-                            }
+                            } */
                         }
                     }
                 ) {
-                    TextWithIconWrapper(/* SVGIconManager.paperPlane, {} */) {
-                        Text("Testar Mensagem")
-                    }
+                    Text("Testar Mensagem")
                 }
             }
 
@@ -281,16 +267,9 @@ fun DiscordMessageEditor(
                         }
                     }
                 ) {
-                    TextWithIconWrapper(/* SVGIconManager.diagramNext, {
-                        if (m.globalState.messageEditorRenderDirection == DiscordMessageUtils.RenderDirection.VERTICAL)
-                            attr("style", "transform: rotate(270deg);")
-                        else
-                            attr("style", "transform: initial;")
-                    } */) {
-                        when (DiscordMessageEditorUtils.messageEditorRenderDirection) {
-                            DiscordMessageEditorUtils.RenderDirection.VERTICAL -> Text("Visualização na Horizontal")
-                            DiscordMessageEditorUtils.RenderDirection.HORIZONTAL -> Text("Visualização na Vertical")
-                        }
+                    when (DiscordMessageEditorUtils.messageEditorRenderDirection) {
+                        DiscordMessageEditorUtils.RenderDirection.VERTICAL -> Text("Visualização na Horizontal")
+                        DiscordMessageEditorUtils.RenderDirection.HORIZONTAL -> Text("Visualização na Vertical")
                     }
                 }
             }
@@ -307,9 +286,7 @@ fun DiscordMessageEditor(
                         } else disabled()
                     }
                 ) {
-                    TextWithIconWrapper(/* SVGIconManager.sparkles, {} */) {
-                        Text("Formatar JSON")
-                    }
+                    Text("Formatar JSON")
                 }
             }
         }
@@ -374,6 +351,7 @@ fun DiscordMessageEditor(
                         }
 
                         val embed = mutableMessage.embed
+
                         // We check for the components to make it look BETTER, putting two buttons side by side
                         if (embed == null) {
                             if (mutableMessage.components.isNotEmpty()) {
@@ -397,6 +375,8 @@ fun DiscordMessageEditor(
 
                                     ColorPicker(
                                         m,
+                                        verifiedIconRawHtml,
+                                        eyeDropperIconRawHtml,
                                         embed.color?.let {
                                             val red = it shr 16 and 0xFF
                                             val green = it shr 8 and 0xFF
@@ -513,7 +493,7 @@ fun DiscordMessageEditor(
                                     }
                                 }
 
-                                Div {
+                                FieldWrapper {
                                     FieldLabel("Fields")
 
                                     VerticalList(attrs = {
@@ -682,7 +662,7 @@ fun DiscordMessageEditor(
 
                                 // Remove embed button
                                 DiscordButton(
-                                    DiscordButtonType.DANGER,
+                                    DiscordButtonType.NO_BACKGROUND_THEME_DEPENDENT_DARK_TEXT,
                                     attrs = {
                                         onClick {
                                             mutableMessage.embed = null
@@ -775,10 +755,10 @@ fun DiscordMessageEditor(
                                         renderableSelfUser,
                                         parsedMessage,
                                         null,
-                                        verifiedIconRawHtml,
+                                        verifiedIconRawHtml.rawHtml,
                                         targetGuild.channels,
                                         targetGuild.roles,
-                                        placeholders
+                                        placeholderGroups
                                     )
                                 })
                             } else {
@@ -790,10 +770,10 @@ fun DiscordMessageEditor(
                                             content = rawMessage
                                         ),
                                         null,
-                                        verifiedIconRawHtml,
+                                        verifiedIconRawHtml.rawHtml,
                                         targetGuild.channels,
                                         targetGuild.roles,
-                                        placeholders
+                                        placeholderGroups
                                     )
                                 })
                             }
@@ -815,53 +795,72 @@ fun DiscordMessageEditor(
         }
 
         // TODO: Fix this! (do we need this in here? can't we render it on the backend?
-        /* Div {
-            FancyDetails(
-                {},
-                {
-                    Text("Quais são as variáveis/placeholders que eu posso usar?")
-                },
-                {
-                    Table {
-                        Thead {
-                            Tr {
-                                Th {
-                                    Text("Placeholder")
-                                }
-                                Th {
-                                    Text("Significado")
-                                }
-                            }
+        Details(attrs = {
+            classes("fancy-details")
+        }) {
+            Summary {
+                Text("Quais variáveis/placeholders eu posso usar?")
+
+                Div(attrs = { classes("chevron-icon") }) {
+                    SVGIcon(chevdronDownIconRawHtml) {
+                        setAttribute("style", "width: 100%; height: 100%;")
+                    }
+                }
+            }
+
+            Div(attrs = { classes("details-content") }) {
+                Table {
+                    Thead {
+                        Th {
+                            Text("Placeholder")
                         }
 
-                        Tbody {
-                            customTokens.forEach {
+                        Th {
+                            Text("Valor")
+                        }
+
+                        Th {
+                            Text("Descrição")
+                        }
+                    }
+
+                    Tbody {
+                        for (placeholderGroup in placeholderGroups) {
+                            val anyVisible = placeholderGroup.placeholders.any { !it.hidden }
+
+                            if (anyVisible) {
                                 Tr {
                                     Td {
                                         var isFirst = true
-                                        for (placeholder in it.placeholder.names.filter { !it.hidden }) {
+                                        for (placeholder in placeholderGroup.placeholders.filter { !it.hidden }) {
                                             if (!isFirst)
                                                 Text(", ")
 
                                             Code {
-                                                Text(placeholder.placeholder.asKey)
+                                                Text(placeholder.asKey)
                                             }
+
                                             isFirst = false
                                         }
                                     }
 
                                     Td {
-                                        val description = it.placeholder.description
+                                        Text(placeholderGroup.replaceWithFrontend)
+                                    }
+
+                                    Td {
+                                        val description = placeholderGroup.description
+
                                         if (description != null)
-                                            Text(i18nContext.get(description))
+                                            Text(description)
                                     }
                                 }
                             }
                         }
                     }
                 }
-            )
-        } */
+            }
+        }
     }
 }
 

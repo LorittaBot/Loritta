@@ -62,12 +62,9 @@ class CreateCustomCommandGuildDashboardRoute(website: LorittaDashboardWebServer)
                                         customGuildCommandTextEditor(
                                             i18nContext,
                                             guild,
+                                            session,
                                             "loritta",
-                                            Json.encodeToString(
-                                                DiscordMessage(
-                                                    content = i18nContext.get(DashboardI18nKeysData.CustomCommands.TextCommand.DefaultMessage)
-                                                )
-                                            ),
+                                            null,
                                         )
                                     }
                                 },

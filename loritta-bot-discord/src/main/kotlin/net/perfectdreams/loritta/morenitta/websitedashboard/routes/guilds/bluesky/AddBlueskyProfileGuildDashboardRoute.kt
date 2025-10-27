@@ -94,7 +94,7 @@ class AddBlueskyProfileGuildDashboardRoute(website: LorittaDashboardWebServer) :
                                         guild,
                                         profile,
                                         null,
-                                        "Nova postagem!"
+                                        null
                                     )
                                 },
                                 {

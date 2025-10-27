@@ -15,18 +15,14 @@
         .discord-button {
             width: 100%;
 
-            .text-with-icon-wrapper {
-                // Required for the text-overflow to work
-                overflow: hidden;
+            // Both are required for the text-overflow to work
+            display: flex;
+            overflow: hidden;
 
-                >div {
-                    text-overflow: ellipsis;
+            text-overflow: ellipsis;
 
-                    // Required for text-overflow to do anything
-                    white-space: nowrap;
-                    overflow: hidden;
-                }
-            }
+            // Required for text-overflow to do anything
+            white-space: nowrap;
         }
 
         .change-message-preview-direction {

@@ -17,6 +17,7 @@ import net.perfectdreams.loritta.dashboard.frontend.compose.components.RawHtml
 import net.perfectdreams.loritta.dashboard.frontend.compose.components.messages.DiscordMessageEditor
 import net.perfectdreams.loritta.dashboard.frontend.compose.components.messages.JsonForDiscordMessages
 import net.perfectdreams.loritta.dashboard.frontend.compose.components.messages.TargetChannelResult
+import net.perfectdreams.loritta.dashboard.frontend.utils.SVGIconManager
 import net.perfectdreams.loritta.dashboard.messageeditor.MessageEditorBootstrap
 import net.perfectdreams.loritta.dashboard.renderer.discordMessageRenderer
 import org.jetbrains.compose.web.dom.Div
@@ -39,6 +40,10 @@ class DiscordMessageEditorComponent(val m: LorittaDashboardFrontend) : BlissComp
 
         var rawMessage by mutableStateOf(mountedElement.value)
         val bootstrap = Json.decodeFromString<MessageEditorBootstrap>(BlissHex.decodeFromHexString(mountedElement.getAttribute("discord-message-editor-bootstrap")!!))
+
+        val verifiedIcon = SVGIconManager.fromRawHtml(bootstrap.verifiedIconRawHtml)
+        val eyeDropperIcon = SVGIconManager.fromRawHtml(bootstrap.eyeDropperIconRawHtml)
+        val chevronDownIcon = SVGIconManager.fromRawHtml(bootstrap.chevronDownIconRawHtml)
 
         renderComposable(rootNode) {
             DiscordButton(DiscordButtonType.PRIMARY, attrs = {
@@ -68,7 +73,9 @@ class DiscordMessageEditorComponent(val m: LorittaDashboardFrontend) : BlissComp
                                     MessageEditorBootstrap.TestMessageTarget.Unavailable -> TargetChannelResult.ChannelNotSelected
                                 },
                                 bootstrap.selfUser,
-                                bootstrap.verifiedIconRawHtml,
+                                verifiedIcon,
+                                eyeDropperIcon,
+                                chevronDownIcon,
                                 rawMessage,
                                 onMessageContentChange = {
                                     rawMessage = it

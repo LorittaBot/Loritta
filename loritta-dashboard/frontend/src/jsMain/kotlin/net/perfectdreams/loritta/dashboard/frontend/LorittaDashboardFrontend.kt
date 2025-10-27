@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.dashboard.frontend
 
 import js.array.asList
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonPrimitive
@@ -12,43 +11,20 @@ import net.perfectdreams.bliss.BlissProcessRequestJsonBody
 import net.perfectdreams.loritta.dashboard.BlissHex
 import net.perfectdreams.loritta.dashboard.EmbeddedModal
 import net.perfectdreams.loritta.dashboard.EmbeddedToast
-import net.perfectdreams.loritta.dashboard.frontend.components.CharacterCounterComponent
-import net.perfectdreams.loritta.dashboard.frontend.components.CloseLeftSidebarOnClickComponent
-import net.perfectdreams.loritta.dashboard.frontend.components.ColorPickerComponent
-import net.perfectdreams.loritta.dashboard.frontend.components.CounterComponent
-import net.perfectdreams.loritta.dashboard.frontend.components.DiscordMessageEditorComponent
-import net.perfectdreams.loritta.dashboard.frontend.components.FancySelectMenuComponent
-import net.perfectdreams.loritta.dashboard.frontend.components.LorittaShimejiActivityLevelComponent
-import net.perfectdreams.loritta.dashboard.frontend.components.LorittaShimejiClearComponent
-import net.perfectdreams.loritta.dashboard.frontend.components.LorittaShimejiComponent
-import net.perfectdreams.loritta.dashboard.frontend.components.LorittaShimejiSpawnerComponent
-import net.perfectdreams.loritta.dashboard.frontend.components.RotatingImageComponent
-import net.perfectdreams.loritta.dashboard.frontend.components.SaveBarComponent
-import net.perfectdreams.loritta.dashboard.frontend.components.SidebarToggleComponent
-import net.perfectdreams.loritta.dashboard.frontend.components.ToggleableSectionComponent
-import net.perfectdreams.loritta.dashboard.frontend.components.TwitchCallbackListenerComponent
+import net.perfectdreams.loritta.dashboard.frontend.components.*
 import net.perfectdreams.loritta.dashboard.frontend.modals.ModalManager
 import net.perfectdreams.loritta.dashboard.frontend.shimeji.entities.LorittaPlayer
 import net.perfectdreams.loritta.dashboard.frontend.soundeffects.SoundEffects
-import net.perfectdreams.loritta.dashboard.frontend.toasts.Toast
 import net.perfectdreams.loritta.dashboard.frontend.toasts.ToastManager
-import org.jetbrains.compose.web.dom.Text
 import web.animations.awaitAnimationFrame
 import web.cssom.ClassName
 import web.dom.document
 import web.events.CustomEvent
-import web.events.CustomEventInit
-import web.events.Event
 import web.events.EventType
 import web.events.addEventHandler
-import web.history.PAGE_SHOW
-import web.history.POP_STATE
-import web.history.PageTransitionEvent
-import web.history.PopStateEvent
 import web.html.HTMLElement
 import web.pointer.CLICK
 import web.pointer.PointerEvent
-import web.window.window
 
 class LorittaDashboardFrontend {
     companion object {
@@ -88,6 +64,16 @@ class LorittaDashboardFrontend {
         }
 
         Bliss.registerElementProcessor { element ->
+            val closeModalOnClick = element.getAttribute("bliss-close-all-modals-on-click")
+
+            if (closeModalOnClick != null) {
+                element.addEventHandler(PointerEvent.CLICK) {
+                    this.modalManager.closeAllModals()
+                }
+            }
+        }
+
+        Bliss.registerElementProcessor { element ->
             val toastOnClick = element.getAttribute("bliss-show-toast-on-click")
 
             if (toastOnClick != null) {
@@ -103,7 +89,6 @@ class LorittaDashboardFrontend {
         Bliss.registerDocumentParsedEventListener { parsedDocument ->
             val showToastHack = parsedDocument.querySelectorAll("[bliss-show-toast]")
             for (element in showToastHack.asList()) {
-                // This is a special attribute!
                 val content = element.getAttribute("bliss-toast") ?: error("Missing bliss-toast attribute on a bliss-show-toast!")
                 val toast = Json.decodeFromString<EmbeddedToast>(BlissHex.decodeFromHexString(content))
                 element.remove()
@@ -113,7 +98,6 @@ class LorittaDashboardFrontend {
 
             val showModalHack = parsedDocument.querySelectorAll("[bliss-show-modal]")
             for (element in showModalHack.asList()) {
-                // This is a special attribute!
                 val content = element.getAttribute("bliss-modal") ?: error("Missing bliss-toast attribute on a bliss-modal!")
                 val modal = Json.decodeFromString<EmbeddedModal>(BlissHex.decodeFromHexString(content))
                 element.remove()
@@ -123,15 +107,19 @@ class LorittaDashboardFrontend {
 
             val closeModalHack = parsedDocument.querySelectorAll("[bliss-close-modal]")
             for (element in closeModalHack.asList()) {
-                // This is a special attribute!
                 element.remove()
                 this.modalManager.closeModal()
+            }
+
+            val closeAllModalsHack = parsedDocument.querySelectorAll("[bliss-close-all-modals]")
+            for (element in closeAllModalsHack.asList()) {
+                element.remove()
+                this.modalManager.closeAllModals()
             }
 
             val playSoundEffectHack = parsedDocument.querySelectorAll("[bliss-sound-effect]").asList()
             for (element in playSoundEffectHack) {
                 val sfx = element.getAttribute("bliss-sound-effect")!!
-                // This is a special attribute!
                 element.remove()
                 when (sfx) {
                     "configSaved" -> this.soundEffects.configSaved.play(1.0)

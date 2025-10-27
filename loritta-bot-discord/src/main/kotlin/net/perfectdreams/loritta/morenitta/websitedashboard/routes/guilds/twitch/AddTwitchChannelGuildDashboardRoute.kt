@@ -204,7 +204,7 @@ class AddTwitchChannelGuildDashboardRoute(website: LorittaDashboardWebServer) : 
                                         twitchUser,
                                         transactionResult.state,
                                         null,
-                                        "Ao vivo!"
+                                        null
                                     )
                                 },
                                 {

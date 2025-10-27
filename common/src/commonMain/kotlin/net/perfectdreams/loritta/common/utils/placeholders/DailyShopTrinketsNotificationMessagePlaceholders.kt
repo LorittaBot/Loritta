@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.common.utils.placeholders
 
 import net.perfectdreams.loritta.i18n.I18nKeysData
 
+@Deprecated("This should not be used, use the new placeholder system instead.")
 data object DailyShopTrinketsNotificationMessagePlaceholders : SectionPlaceholders<DailyShopTrinketsNotificationMessagePlaceholders.DailyShopTrinketsNotificationPlaceholder> {
     override val type = PlaceholderSectionType.DAILY_SHOP_TRINKETS_NOTIFICATION_MESSAGE
 

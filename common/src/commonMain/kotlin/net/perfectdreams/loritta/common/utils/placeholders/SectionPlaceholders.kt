@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.common.utils.placeholders
 
+@Deprecated("This should not be used, use the new placeholder system instead.")
 sealed interface SectionPlaceholders<T : MessagePlaceholder> {
     companion object {
         val sections = listOf<SectionPlaceholders<*>>(

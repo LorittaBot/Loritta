@@ -8,6 +8,7 @@ plugins {
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(project(":common"))
+    implementation(project(":loritta-placeholders"))
     implementation(project(":loritta-dashboard:bliss-common"))
     implementation(project(":loritta-dashboard:dashboard-common"))
     implementation(project(":loritta-serializable-commons"))

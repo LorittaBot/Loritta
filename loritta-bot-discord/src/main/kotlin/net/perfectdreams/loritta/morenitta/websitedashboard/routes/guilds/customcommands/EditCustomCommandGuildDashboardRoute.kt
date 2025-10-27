@@ -79,6 +79,7 @@ class EditCustomCommandGuildDashboardRoute(website: LorittaDashboardWebServer) :
                                         customGuildCommandTextEditor(
                                             i18nContext,
                                             guild,
+                                            session,
                                             command[CustomGuildCommands.label],
                                             command[CustomGuildCommands.code],
                                         )

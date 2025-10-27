@@ -5,6 +5,7 @@ import kotlinx.html.div
 import kotlinx.html.html
 import kotlinx.html.id
 import kotlinx.html.stream.createHTML
+import kotlinx.html.textInput
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
@@ -35,6 +36,18 @@ class ChooseYourServerUserDashboardRoute(website: LorittaDashboardWebServer) : R
                             userDashLeftSidebarEntries(website.loritta, i18nContext, UserDashboardSection.CHOOSE_YOUR_SERVER)
                         },
                         {
+                            textInput {
+                                attributes["bliss-mirror-value-to-element"] = "#target-input"
+                            }
+
+                            textInput {
+                                id = "target-input"
+                            }
+
+                            div {
+                                attributes["bliss-component"] = "stardust-counter"
+                            }
+
                             div {
                                 id = "user-guilds"
                                 attributes["bliss-post"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds"

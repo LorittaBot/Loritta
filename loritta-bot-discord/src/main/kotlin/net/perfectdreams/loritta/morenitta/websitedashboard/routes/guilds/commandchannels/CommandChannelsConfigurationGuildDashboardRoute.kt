@@ -13,6 +13,7 @@ import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.dashboard.messageeditor.MessageEditorBootstrap
+import net.perfectdreams.loritta.dashboard.messageeditor.MessageEditorMessagePlaceholderGroup
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
@@ -20,6 +21,15 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.GuildDashboardSectio
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.configurableChannelListInput
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.createGuildIconUrlPlaceholderGroup
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.createGuildNamePlaceholderGroup
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.createGuildSizePlaceholderGroup
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.createMessageTemplate
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.createPlaceholderGroup
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.createUserDiscriminatorPlaceholderGroup
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.createUserMentionPlaceholderGroup
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.createUserNamePlaceholderGroup
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.createUserTagPlaceholderGroup
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.dashboardBase
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.discordMessageEditor
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldDescription
@@ -31,6 +41,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.rightSide
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.saveBar
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.toggleableSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.placeholders.sections.BlockedCommandChannelPlaceholders
 import net.perfectdreams.loritta.serializable.ColorTheme
 
 class CommandChannelsConfigurationGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/command-channels") {
@@ -38,6 +49,54 @@ class CommandChannelsConfigurationGuildDashboardRoute(website: LorittaDashboardW
         val serverConfig = website.loritta.newSuspendedTransaction {
             website.loritta.getOrCreateServerConfig(guild.idLong)
         }
+
+        val blockedCommandsPlaceholders = BlockedCommandChannelPlaceholders.placeholders.map {
+            when (it) {
+                BlockedCommandChannelPlaceholders.GuildIconUrlPlaceholder -> createGuildIconUrlPlaceholderGroup(
+                    i18nContext,
+                    it,
+                    guild
+                )
+                BlockedCommandChannelPlaceholders.GuildNamePlaceholder -> createGuildNamePlaceholderGroup(
+                    i18nContext,
+                    it,
+                    guild
+                )
+                BlockedCommandChannelPlaceholders.GuildSizePlaceholder -> createGuildSizePlaceholderGroup(
+                    i18nContext,
+                    it,
+                    guild
+                )
+                BlockedCommandChannelPlaceholders.UserDiscriminatorPlaceholder -> createUserDiscriminatorPlaceholderGroup(
+                    i18nContext,
+                    it,
+                    session.discriminator
+                )
+                BlockedCommandChannelPlaceholders.UserMentionPlaceholder -> createUserMentionPlaceholderGroup(
+                    i18nContext,
+                    it,
+                    session.userId,
+                    session.username,
+                    session.globalName
+                )
+                BlockedCommandChannelPlaceholders.UserNamePlaceholder -> createUserNamePlaceholderGroup(
+                    i18nContext,
+                    it,
+                    session.username,
+                    session.globalName
+                )
+                BlockedCommandChannelPlaceholders.UserTagPlaceholder -> createUserTagPlaceholderGroup(
+                    i18nContext,
+                    it,
+                    session.username
+                )
+            }
+        }
+
+        val defaultDenyMessage = createMessageTemplate(
+            "Padrão",
+            "{@user} você não pode enviar comandos aqui!"
+        )
 
         call.respondHtml(
             createHTML()
@@ -89,15 +148,16 @@ class CommandChannelsConfigurationGuildDashboardRoute(website: LorittaDashboardW
                                                     {
                                                         text("Caso você tenha configurado canais que sejam proibidos de usar comandos, você pode ativar esta opção para que, quando um usuário tente executar um comando em canais proibidos, eu avise que não é possível executar comandos no canal.")
                                                     },
-                                                    blockedWarning != null,
-                                                    "sendMessageWhenBlacklistedChannel",
+                                                    serverConfig.warnIfBlacklisted,
+                                                    "warnIfBlacklisted",
                                                     true
                                                 ) {
                                                     discordMessageEditor(
                                                         guild,
                                                         MessageEditorBootstrap.TestMessageTarget.Unavailable,
-                                                        listOf(),
-                                                        blockedWarning ?: ""
+                                                        listOf(defaultDenyMessage),
+                                                        blockedCommandsPlaceholders,
+                                                        blockedWarning ?: defaultDenyMessage.content
                                                     ) {
                                                         name = "blockedWarning"
                                                         attributes["loritta-config"] = "blockedWarning"

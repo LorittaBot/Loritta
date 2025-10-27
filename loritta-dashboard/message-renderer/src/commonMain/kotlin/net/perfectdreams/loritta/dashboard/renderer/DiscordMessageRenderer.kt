@@ -7,8 +7,9 @@ import net.perfectdreams.loritta.dashboard.discordmessages.DiscordComponent
 import net.perfectdreams.loritta.dashboard.discordmessages.DiscordEmbed
 import net.perfectdreams.loritta.dashboard.discordmessages.DiscordMessage
 import net.perfectdreams.loritta.dashboard.discordmessages.RenderableDiscordUser
-import net.perfectdreams.loritta.dashboard.messageeditor.MessageEditorMessagePlaceholder
+import net.perfectdreams.loritta.dashboard.messageeditor.MessageEditorMessagePlaceholderGroup
 import net.perfectdreams.loritta.discordchatmarkdownparser.*
+import net.perfectdreams.loritta.placeholders.LorittaPlaceholder
 
 /**
  * Renders a Discord message
@@ -20,7 +21,7 @@ fun FlowContent.discordMessageRenderer(
     verifiedIconRawHtml: String,
     channels: List<DiscordChannel>,
     roles: List<DiscordRole>,
-    placeholders: List<MessageEditorMessagePlaceholder>
+    placeholders: List<MessageEditorMessagePlaceholderGroup>
 ) {
     discordMessageStyle {
         discordMessageBlock(author.name, author.avatarUrl, author.bot, author.isAppVerified, verifiedIconRawHtml) {
@@ -432,7 +433,7 @@ fun FlowContent.transformedDiscordText(
     input: String,
     channels: List<DiscordChannel>,
     roles: List<DiscordRole>,
-    placeholders: List<MessageEditorMessagePlaceholder>
+    placeholderGroups: List<MessageEditorMessagePlaceholderGroup>
 ) {
     val convertedFromMarkdown = parser.parse(input) as ChatRootNode // Should ALWAYS be a chat root node!
 
@@ -563,16 +564,23 @@ fun FlowContent.transformedDiscordText(
                             for (node in nodes) {
                                 when (node) {
                                     is MessagePlaceholderNode -> {
-                                        val placeholder = placeholders.firstOrNull { node.placeholder == it.name }
+                                        var matchedPlaceholderGroup: MessageEditorMessagePlaceholderGroup? = null
+
+                                        for (placeholderGroup in placeholderGroups) {
+                                            if (placeholderGroup.placeholders.any { it.name == node.placeholder }) {
+                                                matchedPlaceholderGroup = placeholderGroup
+                                                break
+                                            }
+                                        }
 
                                         // TODO: Add a hover tooltip when you hover a placeholder, to show what placeholder triggers it
-                                        if (placeholder != null) {
-                                            when (placeholder.renderType) {
+                                        if (matchedPlaceholderGroup != null) {
+                                            when (matchedPlaceholderGroup.renderType) {
                                                 // TODO: Convert text with URL
-                                                MessageEditorMessagePlaceholder.RenderType.TEXT -> text(placeholder.replaceWithFrontend)
-                                                MessageEditorMessagePlaceholder.RenderType.MENTION -> {
+                                                MessageEditorMessagePlaceholderGroup.RenderType.TEXT -> text(matchedPlaceholderGroup.replaceWithFrontend)
+                                                MessageEditorMessagePlaceholderGroup.RenderType.MENTION -> {
                                                     span(classes = "discord-mention") {
-                                                        text(placeholder.replaceWithFrontend)
+                                                        text(matchedPlaceholderGroup.replaceWithFrontend)
                                                     }
                                                 }
                                             }

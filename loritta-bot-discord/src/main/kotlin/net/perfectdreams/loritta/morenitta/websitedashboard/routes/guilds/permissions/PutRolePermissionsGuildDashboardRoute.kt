@@ -31,7 +31,7 @@ class PutRolePermissionsGuildDashboardRoute(website: LorittaDashboardWebServer) 
     @Serializable
     data class SaveRolePermissionsRequest(
         val allowInvites: Boolean,
-        val ignoreCommands: Boolean,
+        val allowCommands: Boolean,
         val bypassCommandBlacklist: Boolean
     )
 
@@ -49,24 +49,22 @@ class PutRolePermissionsGuildDashboardRoute(website: LorittaDashboardWebServer) 
         val permissions = mutableSetOf<LorittaPermission>()
         if (request.allowInvites)
             permissions.add(LorittaPermission.ALLOW_INVITES)
-        if (request.ignoreCommands)
+        if (!request.allowCommands)
             permissions.add(LorittaPermission.IGNORE_COMMANDS)
         if (request.bypassCommandBlacklist)
             permissions.add(LorittaPermission.BYPASS_COMMAND_BLACKLIST)
 
         website.loritta.transaction {
-            // First we delete all of them...
+            // First we delete all of this role's permissions...
             ServerRolePermissions.deleteWhere {
                 ServerRolePermissions.guild eq guild.idLong and (ServerRolePermissions.roleId eq role.idLong)
             }
 
-            for (role in guild.roles) {
-                for (permission in permissions) {
-                    ServerRolePermissions.insert {
-                        it[ServerRolePermissions.guild] = guild.idLong
-                        it[ServerRolePermissions.roleId] = role.idLong
-                        it[ServerRolePermissions.permission] = permission
-                    }
+            for (permission in permissions) {
+                ServerRolePermissions.insert {
+                    it[ServerRolePermissions.guild] = guild.idLong
+                    it[ServerRolePermissions.roleId] = role.idLong
+                    it[ServerRolePermissions.permission] = permission
                 }
             }
         }

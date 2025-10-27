@@ -23,7 +23,7 @@ class PutCommandChannelsConfigurationGuildDashboardRoute(website: LorittaDashboa
     @Serializable
     data class CommandChannelsRequest(
         val channels: Set<Long> = setOf(),
-        val sendMessageWhenBlacklistedChannel: Boolean,
+        val warnIfBlacklisted: Boolean,
         val blockedWarning: String
     )
 
@@ -34,7 +34,8 @@ class PutCommandChannelsConfigurationGuildDashboardRoute(website: LorittaDashboa
             val serverConfig = website.loritta.getOrCreateServerConfig(guild.idLong)
 
             serverConfig.blacklistedChannels = request.channels.take(DiscordResourceLimits.Guild.Channels)
-            if (request.sendMessageWhenBlacklistedChannel) {
+            serverConfig.warnIfBlacklisted = request.warnIfBlacklisted
+            if (request.warnIfBlacklisted) {
                 serverConfig.blacklistedWarning = request.blockedWarning
             } else {
                 serverConfig.blacklistedWarning = null

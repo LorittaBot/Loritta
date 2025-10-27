@@ -1,21 +1,23 @@
 package net.perfectdreams.loritta.morenitta.websitedashboard.components
 
 import kotlinx.html.FlowContent
-import kotlinx.html.option
-import kotlinx.html.select
-import kotlinx.html.style
-import kotlinx.html.textInput
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.dashboard.messageeditor.MessageEditorBootstrap
+import net.perfectdreams.loritta.dashboard.messageeditor.MessageEditorMessagePlaceholderGroup
+import net.perfectdreams.loritta.placeholders.sections.BlueskyPostPlaceholders
 
 fun FlowContent.trackedBlueskyProfileEditor(
     i18nContext: I18nContext,
     guild: Guild,
     channelId: Long?,
-    message: String
+    message: String?
 ) {
+    val defaultPostMessage = createMessageTemplate(
+        "Padrão",
+        "Nova postagem no Bluesky! {post.url}"
+    )
+
     fieldWrappers {
         fieldWrapper {
             fieldTitle {
@@ -36,7 +38,43 @@ fun FlowContent.trackedBlueskyProfileEditor(
                 guild,
                 MessageEditorBootstrap.TestMessageTarget.QuerySelector("[name='channelId']"),
                 listOf(),
-                message
+                BlueskyPostPlaceholders.placeholders.map {
+                    when (it) {
+                        BlueskyPostPlaceholders.GuildIconUrlPlaceholder -> {
+                            createPlaceholderGroup(
+                                it,
+                                null,
+                                guild.iconUrl ?: "???",
+                                MessageEditorMessagePlaceholderGroup.RenderType.TEXT
+                            )
+                        }
+                        BlueskyPostPlaceholders.GuildNamePlaceholder -> {
+                            createPlaceholderGroup(
+                                it,
+                                null,
+                                guild.name,
+                                MessageEditorMessagePlaceholderGroup.RenderType.TEXT
+                            )
+                        }
+                        BlueskyPostPlaceholders.GuildSizePlaceholder -> {
+                            createPlaceholderGroup(
+                                it,
+                                null,
+                                guild.memberCount.toString(),
+                                MessageEditorMessagePlaceholderGroup.RenderType.TEXT
+                            )
+                        }
+                        BlueskyPostPlaceholders.PostUrlPlaceholder -> {
+                            createPlaceholderGroup(
+                                it,
+                                null,
+                                "https://bsky.app/profile/loritta.website/post/3l34ux7btja24",
+                                MessageEditorMessagePlaceholderGroup.RenderType.TEXT
+                            )
+                        }
+                    }
+                },
+                message ?: defaultPostMessage.content
             ) {
                 this.name = "message"
                 this.attributes["loritta-config"] = "message"

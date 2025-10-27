@@ -64,6 +64,7 @@ include(":pudding:client")
 // ===[ COMMON ]===
 include(":common")
 include(":loritta-serializable-commons")
+include(":loritta-placeholders")
 
 // ===[ LORITTA ]===
 include(":loritta-bot-discord")

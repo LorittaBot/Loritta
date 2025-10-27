@@ -403,7 +403,7 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
 
         // Special
         UserProfilePreviewDashboardRoute(this),
-        UserBackgroundPreviewDashboardRoute(this)
+        UserBackgroundPreviewDashboardRoute(this),
     )
 
     @OptIn(ExperimentalCoroutinesApi::class)

@@ -140,6 +140,7 @@ class PunishmentLogGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
                                                                 guild,
                                                                 MessageEditorBootstrap.TestMessageTarget.Unavailable,
                                                                 listOf(),
+                                                                listOf(),
                                                                 moderationLogConfig?.punishLogMessage ?: ""
                                                             ) {
                                                                 attributes["loritta-config"] = "punishLogMessage"
@@ -180,6 +181,7 @@ class PunishmentLogGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
                                                                             discordMessageEditor(
                                                                                 guild,
                                                                                 MessageEditorBootstrap.TestMessageTarget.Unavailable,
+                                                                                listOf(),
                                                                                 listOf(),
                                                                                 punishmentMessage?.get(ModerationPunishmentMessagesConfig.punishLogMessage) ?: ""
                                                                             ) {

@@ -6,16 +6,22 @@ import kotlinx.coroutines.launch
 import net.perfectdreams.loritta.dashboard.frontend.LorittaDashboardFrontend
 import net.perfectdreams.loritta.dashboard.frontend.compose.components.DiscordButton
 import net.perfectdreams.loritta.dashboard.frontend.compose.components.DiscordButtonType
+import net.perfectdreams.loritta.dashboard.frontend.compose.components.RawHtml
+import net.perfectdreams.loritta.dashboard.frontend.compose.components.SVGIcon
+import net.perfectdreams.loritta.dashboard.frontend.utils.SVGIconManager
 import org.jetbrains.compose.web.attributes.ButtonType
 import org.jetbrains.compose.web.attributes.type
 import org.jetbrains.compose.web.css.*
 import org.jetbrains.compose.web.dom.*
+import web.cssom.ClassName
 import web.html.HTMLDivElement
 import kotlin.random.Random
 
 @Composable
 fun ColorPicker(
     m: LorittaDashboardFrontend,
+    checkmarkIconRawHtml: SVGIconManager.SVGIcon,
+    eyeDropperIconRawHtml: SVGIconManager.SVGIcon,
     currentColor: Color?,
     onColorSelection: (Color?) -> (Unit)
 ) {
@@ -35,11 +41,10 @@ fun ColorPicker(
                 onColorSelection.invoke(null)
             }
         }) {
-            // TODO: Fix this!
-            /* if (currentColor == null)
-                UIIcon(SVGIconManager.check) {
-                    classes("selected-icon")
-                } */
+            if (currentColor == null)
+                SVGIcon(checkmarkIconRawHtml) {
+                    classList.add(ClassName("selected-icon"))
+                }
         }
 
         Button(attrs = {
@@ -97,7 +102,7 @@ fun ColorPicker(
                                             Div(attrs = {
                                                 classes("quick-color-swatch-combo")
                                             }) {
-                                                ColorSwatch(colorAsRGB, colorUp) {
+                                                ColorSwatch(checkmarkIconRawHtml, colorAsRGB, colorUp) {
                                                     colorAsHSB = createHSBColorFromArray(
                                                         ColorUtils.RGBtoHSB(
                                                             it.red,
@@ -107,7 +112,7 @@ fun ColorPicker(
                                                         )
                                                     )
                                                 }
-                                                ColorSwatch(colorAsRGB, colorDown) {
+                                                ColorSwatch(checkmarkIconRawHtml, colorAsRGB, colorDown) {
                                                     colorAsHSB = createHSBColorFromArray(
                                                         ColorUtils.RGBtoHSB(
                                                             it.red,
@@ -377,15 +382,15 @@ fun ColorPicker(
                 )
             }
         }) {
-            // TODO: Fix this!
-            /* UIIcon(SVGIconManager.eyeDropper) {
-                classes("eye-dropper-icon")
+            SVGIcon(eyeDropperIconRawHtml) {
+                classList.add(ClassName("eye-dropper-icon"))
             }
 
-            if (isCustomColor)
-                UIIcon(SVGIconManager.check) {
-                    classes("selected-icon")
-                } */
+            if (isCustomColor) {
+                SVGIcon(checkmarkIconRawHtml) {
+                    classList.add(ClassName("selected-icon"))
+                }
+            }
         }
 
         Div(attrs = {
@@ -395,8 +400,8 @@ fun ColorPicker(
                 Div(attrs = {
                     classes("quick-color-swatch-combo")
                 }) {
-                    ColorSwatch(currentColor, colorUp, onColorSelection)
-                    ColorSwatch(currentColor, colorDown, onColorSelection)
+                    ColorSwatch(checkmarkIconRawHtml, currentColor, colorUp, onColorSelection)
+                    ColorSwatch(checkmarkIconRawHtml, currentColor, colorDown, onColorSelection)
                 }
             }
         }
@@ -404,7 +409,7 @@ fun ColorPicker(
 }
 
 @Composable
-fun ColorSwatch(currentColor: Color?, color: Color, onColorSelection: (Color) -> Unit) {
+fun ColorSwatch(checkmarkIconRawHtml: SVGIconManager.SVGIcon, currentColor: Color?, color: Color, onColorSelection: (Color) -> Unit) {
     Button(attrs = {
         type(ButtonType.Button)
         classes("quick-color-swatch")
@@ -416,11 +421,11 @@ fun ColorSwatch(currentColor: Color?, color: Color, onColorSelection: (Color) ->
             onColorSelection.invoke(color)
         }
     }) {
-        // TODO: Fix this!
-        /* if (currentColor == color)
-            UIIcon(SVGIconManager.check) {
-                classes("selected-icon")
-            } */
+        if (currentColor == color) {
+            SVGIcon(checkmarkIconRawHtml) {
+                classList.add(ClassName("selected-icon"))
+            }
+        }
     }
 }
 

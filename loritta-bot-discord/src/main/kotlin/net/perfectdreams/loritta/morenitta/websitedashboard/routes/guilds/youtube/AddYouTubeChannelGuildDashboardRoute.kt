@@ -77,7 +77,7 @@ class AddYouTubeChannelGuildDashboardRoute(website: LorittaDashboardWebServer) :
                                                 guild,
                                                 result.channel,
                                                 null,
-                                                "Novo vídeo!"
+                                                null
                                             )
                                         },
                                         {

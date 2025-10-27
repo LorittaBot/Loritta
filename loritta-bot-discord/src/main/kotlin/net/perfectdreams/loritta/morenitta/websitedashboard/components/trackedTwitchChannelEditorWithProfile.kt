@@ -13,7 +13,7 @@ fun FlowContent.trackedTwitchChannelEditorWithProfile(
     twitchUser: TwitchUser,
     state: TwitchAccountTrackState,
     channelId: Long?,
-    message: String
+    message: String?
 ) {
     fieldWrappers {
         fieldWrapper {
@@ -48,6 +48,7 @@ fun FlowContent.trackedTwitchChannelEditorWithProfile(
                 trackedTwitchChannelEditor(
                     i18nContext,
                     guild,
+                    twitchUser,
                     channelId,
                     message
                 )

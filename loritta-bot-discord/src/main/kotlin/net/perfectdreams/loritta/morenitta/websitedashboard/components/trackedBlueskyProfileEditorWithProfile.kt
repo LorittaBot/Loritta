@@ -14,7 +14,7 @@ fun FlowContent.trackedBlueskyChannelEditorWithProfile(
     guild: Guild,
     profile: BlueskyProfile,
     channelId: Long?,
-    message: String
+    message: String?
 ) {
     fieldWrappers {
         fieldWrapper {

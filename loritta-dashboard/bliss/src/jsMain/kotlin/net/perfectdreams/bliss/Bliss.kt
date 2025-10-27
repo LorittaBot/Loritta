@@ -28,7 +28,6 @@ import web.events.CustomEventInit
 import web.events.Event
 import web.events.EventHandler
 import web.events.EventInit
-import web.events.EventInit.Companion.invoke
 import web.events.EventType
 import web.events.addEventHandler
 import web.history.POP_STATE
@@ -50,7 +49,6 @@ import web.http.text
 import web.input.INPUT
 import web.input.InputEvent
 import web.input.InputEventInit
-import web.input.InputEventInit.Companion.invoke
 import web.location.location
 import web.navigator.navigator
 import web.parsing.DOMParser
@@ -492,17 +490,16 @@ object Bliss {
                     else -> error("Unknown swap type: $sourceSwapType")
                 }
 
-                val sourceElementsCopy = sourceElements.toMutableList()
-                println("Elements to be swapped #1: $sourceElementsCopy")
+                val clonedSourceElements = sourceElements.toMutableList().map { it.cloneNode(true) }
+                val clonedSourceElementsCopy = clonedSourceElements.toMutableList()
 
                 // We need to use child nodes here, to avoid responses that only have text nodes being "ignored"
                 when (targetSwapType) {
-                    "outerHTML" -> targetElement.replaceWith(*sourceElements.toTypedArray())
-                    "innerHTML" -> targetElement.replaceChildren(*sourceElements.toTypedArray())
+                    "outerHTML" -> targetElement.replaceWith(*clonedSourceElements.toTypedArray())
+                    "innerHTML" -> targetElement.replaceChildren(*clonedSourceElements.toTypedArray())
                     else -> error("Unknown swap type: $targetSwapType")
                 }
 
-                println("Elements to be swapped #2: $sourceElementsCopy")
                 val componentsInTheDOM = document.querySelectorAll("[bliss-component]").asList()
                 for (component in componentsInTheDOM) {
                     val blissComponent = component.asDynamic().blissComponent
@@ -512,7 +509,7 @@ object Bliss {
                     if (blissComponent != null) {
                         blissComponent as BlissComponent<*>
 
-                        for (sourceElement in sourceElementsCopy) {
+                        for (sourceElement in clonedSourceElementsCopy) {
                             if (sourceElement is Element) {
                                 println("Triggering onElementSwap for $blissComponent!")
                                 blissComponent.onElementSwap(sourceElement)

@@ -1,24 +1,27 @@
 package net.perfectdreams.loritta.morenitta.websitedashboard.components
 
 import kotlinx.html.FlowContent
-import kotlinx.html.option
-import kotlinx.html.select
-import kotlinx.html.style
-import kotlinx.html.textInput
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.utils.placeholders.TwitchStreamOnlineMessagePlaceholders
-import net.perfectdreams.loritta.common.utils.placeholders.YouTubePostMessagePlaceholders
 import net.perfectdreams.loritta.dashboard.messageeditor.MessageEditorBootstrap
-import net.perfectdreams.loritta.dashboard.messageeditor.MessageEditorMessagePlaceholder
+import net.perfectdreams.loritta.dashboard.messageeditor.MessageEditorMessagePlaceholderGroup
+import net.perfectdreams.loritta.placeholders.sections.TwitchStreamOnlinePlaceholders
+import net.perfectdreams.loritta.placeholders.toNewPlaceholderSystem
+import net.perfectdreams.switchtwitch.data.TwitchUser
 
 fun FlowContent.trackedTwitchChannelEditor(
     i18nContext: I18nContext,
     guild: Guild,
+    twitchUser: TwitchUser,
     channelId: Long?,
-    message: String
+    message: String?
 ) {
+    val defaultPostMessage = createMessageTemplate(
+        "Padrão",
+        "Venha assistir a minha live na Twitch! {stream.url}"
+    )
+
     fieldWrappers {
         fieldWrapper {
             fieldTitle {
@@ -38,24 +41,60 @@ fun FlowContent.trackedTwitchChannelEditor(
             discordMessageEditor(
                 guild,
                 MessageEditorBootstrap.TestMessageTarget.QuerySelector("[name='channelId']"),
-                TwitchStreamOnlineMessagePlaceholders.placeholders.map {
+                listOf(defaultPostMessage),
+                TwitchStreamOnlinePlaceholders.placeholders.map {
                     when (it) {
-                        TwitchStreamOnlineMessagePlaceholders.GuildIconUrlPlaceholder -> listOf()
-                        TwitchStreamOnlineMessagePlaceholders.GuildNamePlaceholder -> it.names.map {
-                            MessageEditorMessagePlaceholder(
-                                it.placeholder.name,
-                                guild.name,
-                                guild.name,
-                                MessageEditorMessagePlaceholder.RenderType.TEXT
+                        TwitchStreamOnlinePlaceholders.GuildIconUrlPlaceholder -> {
+                            createPlaceholderGroup(
+                                it,
+                                null,
+                                guild.iconUrl ?: "???",
+                                MessageEditorMessagePlaceholderGroup.RenderType.TEXT
                             )
                         }
-                        TwitchStreamOnlineMessagePlaceholders.GuildSizePlaceholder -> listOf()
-                        TwitchStreamOnlineMessagePlaceholders.StreamGamePlaceholder -> listOf()
-                        TwitchStreamOnlineMessagePlaceholders.StreamTitlePlaceholder -> listOf()
-                        TwitchStreamOnlineMessagePlaceholders.StreamUrlPlaceholder -> listOf()
+                        TwitchStreamOnlinePlaceholders.GuildNamePlaceholder -> {
+                            createPlaceholderGroup(
+                                it,
+                                null,
+                                guild.name,
+                                MessageEditorMessagePlaceholderGroup.RenderType.TEXT
+                            )
+                        }
+                        TwitchStreamOnlinePlaceholders.GuildSizePlaceholder -> {
+                            createPlaceholderGroup(
+                                it,
+                                null,
+                                guild.memberCount.toString(),
+                                MessageEditorMessagePlaceholderGroup.RenderType.TEXT
+                            )
+                        }
+                        TwitchStreamOnlinePlaceholders.StreamGamePlaceholder -> {
+                            createPlaceholderGroup(
+                                it,
+                                null,
+                                "Just Chatting",
+                                MessageEditorMessagePlaceholderGroup.RenderType.TEXT
+                            )
+                        }
+                        TwitchStreamOnlinePlaceholders.StreamTitlePlaceholder -> {
+                            createPlaceholderGroup(
+                                it,
+                                null,
+                                "Configurando a Loritta!",
+                                MessageEditorMessagePlaceholderGroup.RenderType.TEXT
+                            )
+                        }
+                        TwitchStreamOnlinePlaceholders.StreamUrlPlaceholder -> {
+                            createPlaceholderGroup(
+                                it,
+                                null,
+                                "https://twitch.tv/${twitchUser.login}",
+                                MessageEditorMessagePlaceholderGroup.RenderType.TEXT
+                            )
+                        }
                     }
-                }.flatten(),
-                message
+                },
+                message ?: defaultPostMessage.content
             ) {
                 this.name = "message"
                 this.attributes["loritta-config"] = "message"

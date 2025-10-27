@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.dashboard.frontend.compose.components.colorpicker
 
-class Color(val rgb: Int) {
+data class Color(val rgb: Int) {
     constructor(red: Int, green: Int, blue: Int) : this((red and 0xff shl 16) or (green and 0xff shl 8) or (blue and 0xff))
 
     val red: Int get() = (rgb shr 16) and 0xFF

@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.common.utils.placeholders
 
 import net.perfectdreams.loritta.i18n.I18nKeysData
 
+@Deprecated("This should not be used, use the new placeholder system instead.")
 data object JoinMessagePlaceholders : SectionPlaceholders<JoinMessagePlaceholders.JoinMessagePlaceholder> {
     override val type = PlaceholderSectionType.JOIN_MESSAGE
 

@@ -32,6 +32,7 @@ kotlin {
             dependencies {
                 implementation(project(":loritta-dashboard:bliss"))
                 implementation(project(":loritta-dashboard:dashboard-common"))
+                implementation(project(":loritta-placeholders"))
                 implementation(project(":loritta-dashboard:message-renderer"))
                 implementation(project(":loritta-dashboard:loritta-shimeji-common"))
 
