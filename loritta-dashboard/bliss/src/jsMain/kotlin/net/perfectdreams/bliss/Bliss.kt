@@ -525,7 +525,12 @@ object Bliss {
                                 if (element.type == "text/javascript" || element.type == "") {
                                     // We use asDynamic to invoke the eval function due to this bug: https://kotlinlang.slack.com/archives/C0B8L3U69/p1715660256035359
                                     // Last tested: 27/10/2025
-                                    window.asDynamic().eval(element.innerHTML)
+                                    try {
+                                        window.asDynamic().eval(element.innerHTML)
+                                    } catch (e: Throwable) {
+                                        println("Something went wrong while evalutating a swapped script!")
+                                        e.printStackTrace()
+                                    }
                                 }
                             }
                         }
