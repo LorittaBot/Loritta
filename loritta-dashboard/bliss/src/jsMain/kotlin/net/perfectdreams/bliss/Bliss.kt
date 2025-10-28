@@ -514,6 +514,11 @@ object Bliss {
                 for (swappedElement in clonedSourceElementsCopy) {
                     if (swappedElement is Element) {
                         val scriptElements = swappedElement.querySelectorAll("script").asList()
+                            .toMutableList()
+
+                        if (swappedElement is HTMLScriptElement) {
+                            scriptElements.add(swappedElement)
+                        }
 
                         for (element in scriptElements) {
                             if (element is HTMLScriptElement) {
