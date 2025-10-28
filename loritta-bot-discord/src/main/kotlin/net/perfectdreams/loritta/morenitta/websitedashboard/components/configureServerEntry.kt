@@ -59,7 +59,17 @@ fun FlowContent.configureServerEntry(
                 }
             }
 
-            div {
+            div(classes = "invite-mobile-buttons") {
+                style = "margin-left: auto;"
+
+                if (isFavorited) {
+                    unfavoriteGuildButton(i18nContext, guild.id, false)
+                } else {
+                    favoriteGuildButton(i18nContext, guild.id)
+                }
+            }
+
+            div(classes = "invite-desktop-buttons") {
                 style = "margin-left: auto;"
 
                 div {
@@ -81,6 +91,20 @@ fun FlowContent.configureServerEntry(
                         text("Configurar")
                     }
                 }
+            }
+        }
+
+        div(classes = "invite-mobile-buttons") {
+            discordButtonLink(ButtonStyle.PRIMARY, href = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.id}/overview") {
+                style = "flex-grow: 1"
+
+                attributes["bliss-get"] = "[href]"
+                attributes["bliss-swap:200"] = "#right-sidebar-contents (innerHTML) -> #right-sidebar-contents (innerHTML), #left-sidebar (innerHTML) -> #left-sidebar (innerHTML)"
+                attributes["bliss-push-url:200"] = "true"
+                attributes["bliss-sync"] = "#left-sidebar"
+                attributes["bliss-indicator"] = "#right-sidebar-wrapper"
+
+                text("Configurar")
             }
         }
     }

@@ -284,7 +284,10 @@ h2 {
 
 #wrapper {
     display: flex;
-    min-height: 100vh;
+    // This is funny: In Firefox Mobile, if we use "height: 100dvh;" (instead of "min-height: 100vh;")
+    // The address bar does not disappear for some reason
+    // Which is... somewhat what we want because we want to always use the entire screen and that's what dvh is for
+    height: 100dvh;
 }
 
 nav#mobile-left-sidebar {
@@ -657,8 +660,11 @@ section#right-sidebar {
             }
 
             @media (max-width: 900px) {
-                text-align: center;
                 grid-template-columns: 1fr;
+
+                h1 {
+                    text-align: center;
+                }
 
                 .hero-text {
                     order: 1;
@@ -858,8 +864,9 @@ aside#that-wasnt-very-cash-money-of-you-reserved-space {
     left: 0;
     z-index: 15;
     pointer-events: none;
-    width: 100vw;
-    height: 100vh;
+    // We need to use dvw/dvh to make the canvas not be all stretchy on mobile devices
+    width: 100dvw;
+    height: 100dvh;
 }
 
 .choose-your-server {

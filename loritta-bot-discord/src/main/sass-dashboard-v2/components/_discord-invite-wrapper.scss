@@ -9,6 +9,20 @@
     gap: 0.5em;
     width: 100%;
 
+    .invite-mobile-buttons {
+        display: none;
+    }
+
+    @media (500px >= width) {
+        .invite-desktop-buttons {
+            display: none;
+        }
+
+        .invite-mobile-buttons {
+            display: flex;
+        }
+    }
+
     .discord-invite-title {
         text-transform: uppercase;
         font-weight: bold;

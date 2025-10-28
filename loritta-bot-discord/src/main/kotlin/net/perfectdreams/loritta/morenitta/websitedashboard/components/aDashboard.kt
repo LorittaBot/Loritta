@@ -74,6 +74,7 @@ fun FlowContent.aDashboardSidebarEntryButton(
         attributes["bliss-push-url:200"] = "true"
         attributes["bliss-sync"] = "#left-sidebar"
         attributes["bliss-indicator"] = "#right-sidebar-wrapper"
+        attributes["bliss-component"] = "close-left-sidebar-on-click"
 
         div(classes = "section-text") {
             text(text)

@@ -222,6 +222,7 @@
     display: flex;
     flex-direction: column;
     gap: 0.25em;
+    width: 100%; // This is required to make it have scrollbars when the container doesn't fit
 
     .message-preview-wrapper {
         width: 100%;
