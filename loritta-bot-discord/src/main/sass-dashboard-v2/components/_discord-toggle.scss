@@ -10,9 +10,6 @@
     border-radius: var(--nice-border-radius);
     border: 1px solid var(--card-border-color);
     border-top-color: var(--card-border-highlight-color);
-    // This looks stupid, "why do we need this *here*?"
-    // Well, this fixes a bug with the message preview overflowing the parent container for... some reason!?
-    width: 100%;
 
     >.toggleable-selection {
         padding: 1em 20px 1em 20px;

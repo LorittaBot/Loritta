@@ -36,6 +36,9 @@ class DiscordMessageEditorComponent(val m: LorittaDashboardFrontend) : BlissComp
         mountedElement.style.display = "none"
 
         val rootNode = document.createElement("div")
+        // This looks stupid, "why do we need this *here*?"
+        // Well, this fixes a bug with the message preview overflowing the parent container for... some reason!?
+        rootNode.style.width = "100%"
         mountedElement.before(rootNode)
 
         var rawMessage by mutableStateOf(mountedElement.value)
