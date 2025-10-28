@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.dashboard.frontend.modals
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateListOf
 import net.perfectdreams.bliss.Bliss
@@ -12,6 +13,8 @@ import net.perfectdreams.loritta.dashboard.frontend.compose.components.RawHtml
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Text
 import org.jetbrains.compose.web.renderComposable
+import web.cssom.ClassName
+import web.dom.document
 import web.html.HTMLElement
 
 class ModalManager(val m: LorittaDashboardFrontend) {
@@ -101,6 +104,10 @@ class ModalManager(val m: LorittaDashboardFrontend) {
                 val activeModal = this@ModalManager.modals.lastOrNull()
 
                 if (activeModal != null) {
+                    LaunchedEffect(Unit) {
+                        document.body.classList.add(ClassName("modal-open"))
+                    }
+
                     // Open modal if there is one present
                     Div(attrs = {
                         classes("modal-wrapper")
@@ -148,6 +155,10 @@ class ModalManager(val m: LorittaDashboardFrontend) {
                                 }
                             }
                         }
+                    }
+                } else {
+                    LaunchedEffect(Unit) {
+                        document.body.classList.remove(ClassName("modal-open"))
                     }
                 }
             }
