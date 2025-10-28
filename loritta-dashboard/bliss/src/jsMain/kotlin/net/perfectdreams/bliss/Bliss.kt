@@ -3,6 +3,7 @@
 package net.perfectdreams.bliss
 
 import js.array.asList
+import js.errors.TypeError
 import js.objects.unsafeJso
 import js.typedarrays.toByteArray
 import kotlinx.coroutines.GlobalScope
@@ -21,6 +22,7 @@ import web.blob.bytes
 import web.cssom.ClassName
 import web.dom.Document
 import web.dom.Element
+import web.dom.ElementId
 import web.dom.document
 import web.events.CHANGE
 import web.events.CustomEvent
@@ -33,6 +35,7 @@ import web.events.addEventHandler
 import web.history.POP_STATE
 import web.history.PopStateEvent
 import web.history.history
+import web.html.HTMLDivElement
 import web.html.HTMLInputElement
 import web.html.HTMLOptionElement
 import web.html.HTMLScriptElement
@@ -67,6 +70,7 @@ import kotlin.io.encoding.ExperimentalEncodingApi
 object Bliss {
     private val SWAP_REGEX = Regex("(?<sourceQuerySelector>[A-Za-z#.\\-0-9]+)( \\((?<sourceSwapType>[A-Za-z]+)\\))? -> (?<targetQuerySelector>[A-Za-z#.\\-0-9]+)( \\((?<targetSwapType>[A-Za-z]+)\\))?")
     private val DISABLE_WHEN_REGEX = Regex("(?<querySelector>.+) (?<op>==|!=) (?<part>\"(?<text>.+)\"|(?<blank>blank)|(?<empty>empty))")
+    private val supportsMoveBeforeAPI = js("typeof Element !== 'undefined' && 'moveBefore' in Element.prototype") as Boolean
 
     private val methods = setOf(
         HttpMethod.Get,
@@ -478,6 +482,16 @@ object Bliss {
 
         var didSwap = false
 
+        val pantryElement = targetDocument.createElement("div").apply {
+            this.id = ElementId("--bliss-preserve-pantry--")
+        } as HTMLDivElement
+
+        // Yes, we need to append to the document
+        targetDocument.body.appendChild(pantryElement)
+
+        // Check which elements should be preserved
+        val elementsToBePreserved = mutableListOf<Element>()
+
         for (entry in swaps) {
             println("Swap entry: \"$entry\"")
             // "nothing" is special: it literally does nothing, useful for things that you expect the server to return a redirect
@@ -502,6 +516,18 @@ object Bliss {
 
                 val clonedSourceElements = sourceElements.map { it.cloneNode(true) }
                 val clonedSourceElementsCopy = clonedSourceElements.toMutableList()
+
+                // Before we actually swap, we need to check which elements are marked as preserved in the target!
+                val elementsToBePreservedThatAreInsideOfTarget = targetElement.querySelectorAll("[bliss-preserve='true']").asList()
+
+                // We need to keep the preserved elements in the DOM, to avoid them being removed by the browser and causing issues when using moveBefore
+                // (That's how htmx solves this issue :3)
+                for (element in elementsToBePreservedThatAreInsideOfTarget) {
+                    if (this.supportsMoveBeforeAPI) {
+                        pantryElement.asDynamic().moveBefore(element, null)
+                        elementsToBePreserved.add(element)
+                    }
+                }
 
                 // We need to use child nodes here, to avoid responses that only have text nodes being "ignored"
                 when (targetSwapType) {
@@ -560,6 +586,33 @@ object Bliss {
                 didSwap = true
             }
         }
+
+        if (didSwap) {
+            for (elementToBePreserved in elementsToBePreserved) {
+                val targetToBeReplaced = targetDocument.body.querySelector("#${elementToBePreserved.id}:not(#--bliss-preserve-pantry-- *)\n")
+
+                if (targetToBeReplaced != null) {
+                    if (this.supportsMoveBeforeAPI) {
+                        // TODO: This can be replaced with the proper bindings after we update the dependencies!
+                        //  (So, that would mean after we update to Kotlin 2.2.21)
+
+                        // Yes, the moveBefore should be called by the PARENT of the element!
+                        targetToBeReplaced
+                            .parentElement!!
+                            .asDynamic()
+                            .moveBefore(
+                                elementToBePreserved,
+                                null
+                            )
+
+                        targetToBeReplaced.remove() // bye!
+                    }
+                }
+            }
+        }
+
+        // Remove the pantry from the DOM
+        pantryElement.remove()
 
         return didSwap
     }

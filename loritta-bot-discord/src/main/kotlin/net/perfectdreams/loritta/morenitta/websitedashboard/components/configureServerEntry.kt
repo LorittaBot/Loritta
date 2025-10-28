@@ -38,7 +38,7 @@ fun FlowContent.configureServerEntry(
             style = "flex-grow: 1"
 
             attributes["bliss-get"] = "[href]"
-            attributes["bliss-swap:200"] = "#right-sidebar-contents (innerHTML) -> #right-sidebar-contents (innerHTML), #left-sidebar (innerHTML) -> #left-sidebar (innerHTML), #that-wasnt-very-cash-money-of-you-fixed-sidebar-fnuy (innerHTML) -> #that-wasnt-very-cash-money-of-you-fixed-sidebar-fnuy (innerHTML)"
+            attributes["bliss-swap:200"] = "#right-sidebar-contents (innerHTML) -> #right-sidebar-contents (innerHTML), #left-sidebar (innerHTML) -> #left-sidebar (innerHTML), #that-wasnt-very-cash-money-of-you-fixed-sidebar (innerHTML) -> #that-wasnt-very-cash-money-of-you-fixed-sidebar (innerHTML)"
             attributes["bliss-push-url:200"] = "true"
             attributes["bliss-sync"] = "#left-sidebar"
             attributes["bliss-indicator"] = "#right-sidebar-wrapper"

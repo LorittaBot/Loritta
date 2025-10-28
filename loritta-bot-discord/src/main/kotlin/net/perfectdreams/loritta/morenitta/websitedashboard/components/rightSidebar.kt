@@ -18,6 +18,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysDat
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.defaultModalCloseButton
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.openModalOnClick
+import java.util.UUID
 
 fun FlowContent.rightSidebar(
     i18nContext: I18nContext,
@@ -44,16 +45,11 @@ fun FlowContent.rightSidebar(
             id = "that-wasnt-very-cash-money-of-you-fixed-sidebar"
 
             if (!displayAds) {
-                // This is to have a random element to not fail the swap request
-                // TODO: we really should implement a "ignore if element does not exist" on the frontend
-                span {
-                    id = "that-wasnt-very-cash-money-of-you-fixed-sidebar-fnuy"
-                }
-
                 if (displayLorittaSnug) {
                     div {
                         id = "loritta-snug"
-
+                        attributes["bliss-preserve"] = "true"
+                    
                         img(src = "https://stuff.loritta.website/loritta-snuggle.png") {
                             openModalOnClick(
                                 createEmbeddedModal(
@@ -84,8 +80,6 @@ fun FlowContent.rightSidebar(
                 }
             } else {
                 div {
-                    id = "that-wasnt-very-cash-money-of-you-fixed-sidebar-fnuy"
-
                     // [Loritta] Dashboard Desktop Right Sidebar
                     ins(classes = "adsbygoogle") {
                         style = "display:inline-block;width:160px;height:600px"
