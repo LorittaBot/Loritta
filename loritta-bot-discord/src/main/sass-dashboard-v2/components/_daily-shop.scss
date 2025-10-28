@@ -206,11 +206,6 @@
     margin-bottom: 50px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.9);
     max-width: 100%;
-
-    img {
-        // Required to avoid the div occupying more space than the img below it when running in non-quirks mode (go figure why)
-        display: block;
-    }
 }
 
 .canvas-preview:hover {
@@ -230,6 +225,11 @@
 .canvas-preview-wrapper {
     perspective: 500px;
     position: relative;
+
+    img {
+        // Required to avoid the div occupying more space than the img below it when running in non-quirks mode (go figure why)
+        display: block;
+    }
 }
 
 .item-shop-preview {
