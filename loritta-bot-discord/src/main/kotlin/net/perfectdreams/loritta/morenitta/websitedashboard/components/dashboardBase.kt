@@ -61,23 +61,23 @@ fun HTML.dashboardBase(
         link(rel = "stylesheet", href = "/assets/css/style.css?v=${LorittaDashboardWebServer.assets.cssBundle.hash}", type = "text/css")
 
         // Plausible Analytics
-        script(src = "https://web-analytics.perfectdreams.net/js/plausible.js", type = "text/javascript") {
+        script(src = "https://web-analytics.perfectdreams.net/js/plausible.js") {
             attributes["data-domain"] = "loritta.website"
             defer = true
         }
 
         // AdSense
-        script(src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9989170954243288", type = "text/javascript") {
+        script(src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9989170954243288") {
             defer = true
         }
 
         // ad bait :3
-        script(src = "/assets/js/fuckadblock.js", type = "text/javascript") {
+        script(src = "/assets/js/fuckadblock.js") {
             defer = true
         }
 
         // Loritta!
-        script(src = "/assets/js/frontend.js?v=${LorittaDashboardWebServer.assets.jsBundle.hash}", type = "text/javascript") {
+        script(src = "/assets/js/frontend.js?v=${LorittaDashboardWebServer.assets.jsBundle.hash}") {
             defer = true
         }
     }
