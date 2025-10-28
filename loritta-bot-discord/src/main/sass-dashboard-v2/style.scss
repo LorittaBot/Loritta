@@ -284,10 +284,6 @@ h2 {
 
 #wrapper {
     display: flex;
-    // This is funny: In Firefox Mobile, if we use "height: 100dvh;" (instead of "min-height: 100vh;")
-    // The address bar does not disappear for some reason
-    // Which is... somewhat what we want because we want to always use the entire screen and that's what dvh is for
-    height: 100dvh;
 }
 
 nav#mobile-left-sidebar {
@@ -603,7 +599,6 @@ section#right-sidebar {
     // We don't use overflow here, to let the ad sidebar propagate scroll thru
     // The space used by the left sidebar, we NEED to do it that way because we cannot use overflow + sticky on the sidebar, because we want the sidebar ad to propagate scroll events thru
     margin-left: var(--left-sidebar-width);
-    overflow: auto;
 
     @include bp('medium') {
         width: calc(100% - 160px);
@@ -616,8 +611,6 @@ section#right-sidebar {
 
     #right-sidebar-wrapper {
         width: 100%;
-        // Useful to allow full height elements to be overflown
-        height: 100vh;
         max-width: 70em;
         margin-left: auto;
         margin-right: auto;
