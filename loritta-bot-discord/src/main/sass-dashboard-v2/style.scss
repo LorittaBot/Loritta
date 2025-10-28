@@ -88,6 +88,9 @@ $mobile-version: 1279px;
     --sidebar-ad-width: 160px;
     --left-sidebar-width: 360px;
 
+    // ===[ NAVBAR ]===
+    --navbar-height: 50px;
+
     // ===[ SAVE BAR ]===
     --save-bar-height: 70px;
 
@@ -288,7 +291,7 @@ h2 {
 
 nav#mobile-left-sidebar {
     background: var(--loritta-blue);
-    height: 50px;
+    height: var(--navbar-height);
     display: flex;
     position: fixed;
     top: 0;
@@ -307,8 +310,8 @@ nav#mobile-left-sidebar {
     // We apply the padding on the svg, this way we have a bigger "clicking area", which is useful for mobile users!
     > .hamburger-button {
         @extend %reset-button-styling;
-        height: 50px;
-        width: 50px;
+        height: var(--navbar-height);
+        width: var(--navbar-height);
         display: flex;
         justify-content: center;
         align-items: center;
@@ -361,11 +364,11 @@ nav#left-sidebar {
     color: var(--content-text-color);
     background: var(--left-sidebar-background-color);
     // Seems weird but this is used for mobile
-    top: 50px;
+    top: var(--navbar-height);
     // Again, for small breakpoints
     // We don't use 100vh because Chrome Mobile has a dynamic navbar that causes issues, this fixes the issue, albeit the page scroll animation becomes a bit crappy
     // https://stackoverflow.com/questions/37112218/css3-100vh-not-constant-in-mobile-browser
-    height: calc(100% - 50px);
+    height: calc(100% - var(--navbar-height));
     position: fixed;
     transition-property: transform, box-shadow;
     transition-duration: 0.65s; // Used for the nice mobile animation
@@ -605,8 +608,11 @@ section#right-sidebar {
     }
 
     @media (max-width: 1279px) {
-        margin-top: 50px;
+        margin-top: var(--navbar-height);
         margin-left: 0;
+        // Required for the screen to actually stretch the entire page
+        // If this ain't here, on mobile devices you can see a empty/white background below the sections
+        min-height: calc(100dvh - var(--navbar-height));
     }
 
     #right-sidebar-wrapper {
