@@ -57,6 +57,16 @@ fun HTML.dashboardBase(
             defer = true
         }
 
+        // AdSense
+        script(src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9989170954243288", type = "text/javascript") {
+            defer = true
+        }
+
+        // ad bait :3
+        script(src = "/assets/js/fuckadblock.js", type = "text/javascript") {
+            defer = true
+        }
+
         // Loritta!
         script(src = "/assets/js/frontend.js?v=${LorittaDashboardWebServer.assets.jsBundle.hash}", type = "text/javascript") {
             defer = true

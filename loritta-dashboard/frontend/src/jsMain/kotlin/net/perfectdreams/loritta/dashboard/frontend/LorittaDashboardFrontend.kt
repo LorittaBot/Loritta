@@ -16,6 +16,7 @@ import net.perfectdreams.loritta.dashboard.frontend.modals.ModalManager
 import net.perfectdreams.loritta.dashboard.frontend.shimeji.entities.LorittaPlayer
 import net.perfectdreams.loritta.dashboard.frontend.soundeffects.SoundEffects
 import net.perfectdreams.loritta.dashboard.frontend.toasts.ToastManager
+import net.perfectdreams.loritta.dashboard.frontend.utils.isUserUsingAdblock
 import web.animations.awaitAnimationFrame
 import web.cssom.ClassName
 import web.dom.document
@@ -37,6 +38,9 @@ class LorittaDashboardFrontend {
 
     fun start() {
         INSTANCE = this
+
+        if (isUserUsingAdblock())
+            println("Stop using Adblock >:(")
 
         Bliss.setupEvents()
 

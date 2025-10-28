@@ -6,9 +6,12 @@ import kotlinx.html.aside
 import kotlinx.html.div
 import kotlinx.html.id
 import kotlinx.html.img
+import kotlinx.html.ins
 import kotlinx.html.p
+import kotlinx.html.script
 import kotlinx.html.section
 import kotlinx.html.style
+import kotlinx.html.unsafe
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedModal
@@ -70,20 +73,19 @@ fun FlowContent.rightSidebar(
                     }
                 }
             } else {
-                // TODO - bliss-dash: Show ads!
-                //                                             val adType = Ads.RIGHT_SIDEBAR_AD
-                //
-                //                                            ins(classes = "adsbygoogle") {
-                //                                                classes += "adsbygoogle"
-                //                                                style = "display: inline-block; width: ${adType.size.width}px; height: ${adType.size.height}px;"
-                //                                                attributes["data-ad-client"] = "ca-pub-9989170954243288"
-                //                                                attributes["data-ad-slot"] = adType.googleAdSenseId
-                //                                            }
-                //                                            script {
-                //                                                unsafe {
-                //                                                    raw("(adsbygoogle = window.adsbygoogle || []).push({});")
-                //                                                }
-                //                                            }
+                div {
+                    ins(classes = "adsbygoogle") {
+                        style = "display:inline-block;width:160px;height:600px"
+                        attributes["data-ad-client"] = "ca-pub-9989170954243288"
+                        attributes["data-ad-slot"] = "6094198302"
+                    }
+
+                    script {
+                        unsafe {
+                            raw("""(adsbygoogle = window.adsbygoogle || []).push({})""")
+                        }
+                    }
+                }
             }
         }
 

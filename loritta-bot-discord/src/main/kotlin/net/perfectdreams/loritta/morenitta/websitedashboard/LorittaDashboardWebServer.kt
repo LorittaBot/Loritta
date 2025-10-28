@@ -465,6 +465,14 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
                     )
                 }
 
+                // ad bait :3
+                get("/assets/js/fuckadblock.js") {
+                    call.respondText(
+                        """window.isUserUsingAdblock = false;""",
+                        contentType = ContentType.Application.JavaScript
+                    )
+                }
+
                 staticResources("/assets", "/dashboard/static/assets")
             }
         }
