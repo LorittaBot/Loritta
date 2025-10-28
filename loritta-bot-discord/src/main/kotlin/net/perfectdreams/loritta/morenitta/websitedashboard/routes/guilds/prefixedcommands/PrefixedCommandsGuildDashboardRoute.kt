@@ -50,6 +50,7 @@ class PrefixedCommandsGuildDashboardRoute(website: LorittaDashboardWebServer) : 
                 theme,
                 shimejiSettings,
                 userPremiumPlan,
+                null,
                 {
                     guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.PREFIXED_COMMANDS)
                 },

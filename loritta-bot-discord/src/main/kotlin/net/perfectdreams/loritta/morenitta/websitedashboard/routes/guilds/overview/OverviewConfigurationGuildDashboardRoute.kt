@@ -29,6 +29,7 @@ class OverviewConfigurationGuildDashboardRoute(website: LorittaDashboardWebServe
                 theme,
                 shimejiSettings,
                 userPremiumPlan,
+                null,
                 {
                     guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.OVERVIEW)
                 },

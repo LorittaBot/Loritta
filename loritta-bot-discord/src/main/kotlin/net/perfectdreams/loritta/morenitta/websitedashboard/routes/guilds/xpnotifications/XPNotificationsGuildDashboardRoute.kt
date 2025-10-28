@@ -139,6 +139,7 @@ class XPNotificationsGuildDashboardRoute(website: LorittaDashboardWebServer) : R
                 theme,
                 shimejiSettings,
                 userPremiumPlan,
+                null,
                 {
                     guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.XP_NOTIFICATIONS)
                 },

@@ -55,6 +55,7 @@ class RolePermissionsGuildDashboardRoute(website: LorittaDashboardWebServer) : R
                 theme,
                 shimejiSettings,
                 userPremiumPlan,
+                null,
                 {
                     guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.PERMISSIONS)
                 },

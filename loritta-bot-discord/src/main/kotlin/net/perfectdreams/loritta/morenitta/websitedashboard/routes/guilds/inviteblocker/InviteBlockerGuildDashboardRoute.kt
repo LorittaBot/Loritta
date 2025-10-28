@@ -82,6 +82,7 @@ class InviteBlockerGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
                 theme,
                 shimejiSettings,
                 userPremiumPlan,
+                null,
                 {
                     guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.INVITE_BLOCKER)
                 },

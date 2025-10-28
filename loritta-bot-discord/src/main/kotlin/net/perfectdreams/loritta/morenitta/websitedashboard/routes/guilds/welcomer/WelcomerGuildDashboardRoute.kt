@@ -129,6 +129,7 @@ class WelcomerGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                 theme,
                 shimejiSettings,
                 userPremiumPlan,
+                null,
                 {
                     guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.WELCOMER)
                 },

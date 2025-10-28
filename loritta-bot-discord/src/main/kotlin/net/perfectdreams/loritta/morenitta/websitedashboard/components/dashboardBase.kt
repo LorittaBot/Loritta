@@ -39,6 +39,11 @@ fun HTML.dashboardBase(
     theme: ColorTheme,
     shimejiSettings: LorittaShimejiSettings,
     userPremiumPlan: UserPremiumPlans,
+    // null = use as is
+    // true = always display ads
+    // false = never display ads
+    // used for the sonhos shop!
+    overrideAdsDisplay: Boolean?,
     leftSidebarEntries: FlowContent.() -> Unit,
     rightSidebarContent: FlowContent.() -> Unit,
 ) {
@@ -115,7 +120,7 @@ fun HTML.dashboardBase(
                     div(classes = "entries") {
                         leftSidebarEntries()
 
-                        if (userPremiumPlan.displayAds) {
+                        if (overrideAdsDisplay ?: userPremiumPlan.displayAds) {
                             leftSidebarHr()
 
                             div {
@@ -145,7 +150,14 @@ fun HTML.dashboardBase(
                     }
                 }
 
-                rightSidebar(i18nContext, userPremiumPlan.displayAds, rightSidebarContent)
+                rightSidebar(
+                    i18nContext,
+                    overrideAdsDisplay ?: userPremiumPlan.displayAds,
+                    if (overrideAdsDisplay == true)
+                        false
+                    else !userPremiumPlan.displayAds,
+                    rightSidebarContent
+                )
             }
         }
     }

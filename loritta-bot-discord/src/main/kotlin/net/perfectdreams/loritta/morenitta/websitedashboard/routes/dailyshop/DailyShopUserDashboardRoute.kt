@@ -52,6 +52,7 @@ class DailyShopUserDashboardRoute(website: LorittaDashboardWebServer) : Requires
                 theme,
                 shimejiSettings,
                 userPremiumPlan,
+                null,
                 {
                     userDashLeftSidebarEntries(website.loritta, i18nContext, userPremiumPlan, UserDashboardSection.TRINKETS_SHOP)
                 },

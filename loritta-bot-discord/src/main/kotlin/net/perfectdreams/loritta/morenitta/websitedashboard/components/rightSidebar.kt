@@ -22,6 +22,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.utils.openModalOnCli
 fun FlowContent.rightSidebar(
     i18nContext: I18nContext,
     displayAds: Boolean,
+    displayLorittaSnug: Boolean,
     block: FlowContent.() -> (Unit)
 ) {
     section {
@@ -44,38 +45,41 @@ fun FlowContent.rightSidebar(
 
             if (!displayAds) {
                 // This is to have a random element to not fail the swap request
+                // TODO: we really should implement a "ignore if element does not exist" on the frontend
                 span {
                     id = "that-wasnt-very-cash-money-of-you-fixed-sidebar-fnuy"
                 }
 
-                div {
-                    id = "loritta-snug"
+                if (displayLorittaSnug) {
+                    div {
+                        id = "loritta-snug"
 
-                    img(src = "https://stuff.loritta.website/loritta-snuggle.png") {
-                        openModalOnClick(
-                            createEmbeddedModal(
-                                i18nContext.get(DashboardI18nKeysData.ThankYouMoneyModal.Title),
-                                true,
-                                {
-                                    div {
-                                        style = "text-align: center;"
+                        img(src = "https://stuff.loritta.website/loritta-snuggle.png") {
+                            openModalOnClick(
+                                createEmbeddedModal(
+                                    i18nContext.get(DashboardI18nKeysData.ThankYouMoneyModal.Title),
+                                    true,
+                                    {
+                                        div {
+                                            style = "text-align: center;"
 
-                                        img(src = "https://stuff.loritta.website/emotes/lori-kiss.png") {
-                                            height = "192"
-                                        }
+                                            img(src = "https://stuff.loritta.website/emotes/lori-kiss.png") {
+                                                height = "192"
+                                            }
 
-                                        for (line in i18nContext.get(DashboardI18nKeysData.ThankYouMoneyModal.Description)) {
-                                            p {
-                                                text(line)
+                                            for (line in i18nContext.get(DashboardI18nKeysData.ThankYouMoneyModal.Description)) {
+                                                p {
+                                                    text(line)
+                                                }
                                             }
                                         }
+                                    },
+                                    listOf {
+                                        defaultModalCloseButton(i18nContext)
                                     }
-                                },
-                                listOf {
-                                    defaultModalCloseButton(i18nContext)
-                                }
+                                )
                             )
-                        )
+                        }
                     }
                 }
             } else {

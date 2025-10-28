@@ -54,6 +54,7 @@ class YouTubeGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresG
                 theme,
                 shimejiSettings,
                 userPremiumPlan,
+                null,
                 {
                     guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.YOUTUBE)
                 },

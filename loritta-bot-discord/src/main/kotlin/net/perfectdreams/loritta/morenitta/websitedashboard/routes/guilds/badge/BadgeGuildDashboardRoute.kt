@@ -44,6 +44,7 @@ class BadgeGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGui
                 theme,
                 shimejiSettings,
                 userPremiumPlan,
+                null,
                 {
                     guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.CUSTOM_BADGE)
                 },

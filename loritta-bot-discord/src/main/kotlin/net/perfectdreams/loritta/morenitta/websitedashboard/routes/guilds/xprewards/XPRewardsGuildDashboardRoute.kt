@@ -63,6 +63,7 @@ class XPRewardsGuildDashboardRoute(website: LorittaDashboardWebServer) : Require
                 theme,
                 shimejiSettings,
                 userPremiumPlan,
+                null,
                 {
                     guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.XP_REWARDS)
                 },

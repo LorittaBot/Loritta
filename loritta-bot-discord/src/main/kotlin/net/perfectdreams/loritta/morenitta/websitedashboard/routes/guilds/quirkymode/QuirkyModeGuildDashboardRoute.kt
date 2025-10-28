@@ -45,6 +45,7 @@ class QuirkyModeGuildDashboardRoute(website: LorittaDashboardWebServer) : Requir
                 theme,
                 shimejiSettings,
                 userPremiumPlan,
+                null,
                 {
                     guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.QUIRKY_MODE)
                 },

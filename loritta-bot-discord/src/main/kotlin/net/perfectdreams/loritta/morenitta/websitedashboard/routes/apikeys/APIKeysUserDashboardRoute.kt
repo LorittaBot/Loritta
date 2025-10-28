@@ -35,6 +35,7 @@ class APIKeysUserDashboardRoute(website: LorittaDashboardWebServer) : RequiresUs
                 theme,
                 shimejiSettings,
                 userPremiumPlan,
+                null,
                 {
                     userDashLeftSidebarEntries(website.loritta, i18nContext, userPremiumPlan, UserDashboardSection.API_KEYS)
                 },

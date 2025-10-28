@@ -73,6 +73,7 @@ class ShipEffectsUserDashboardRoute(website: LorittaDashboardWebServer) : Requir
                 theme,
                 shimejiSettings,
                 userPremiumPlan,
+                null,
                 {
                     userDashLeftSidebarEntries(website.loritta, i18nContext, userPremiumPlan, UserDashboardSection.SHIP_EFFECTS)
                 },

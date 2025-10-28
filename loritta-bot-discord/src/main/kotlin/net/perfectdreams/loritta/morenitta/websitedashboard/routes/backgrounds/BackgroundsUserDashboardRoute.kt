@@ -64,6 +64,7 @@ class BackgroundsUserDashboardRoute(website: LorittaDashboardWebServer) : Requir
                 theme,
                 shimejiSettings,
                 userPremiumPlan,
+                null,
                 {
                     userDashLeftSidebarEntries(website.loritta, i18nContext, userPremiumPlan, UserDashboardSection.PROFILE_BACKGROUND)
                 },

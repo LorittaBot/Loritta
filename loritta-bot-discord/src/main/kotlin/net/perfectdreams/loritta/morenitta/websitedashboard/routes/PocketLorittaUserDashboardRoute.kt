@@ -31,6 +31,7 @@ class PocketLorittaUserDashboardRoute(website: LorittaDashboardWebServer) : Requ
                 theme,
                 shimejiSettings,
                 userPremiumPlan,
+                null,
                 {
                     userDashLeftSidebarEntries(website.loritta, i18nContext, userPremiumPlan, UserDashboardSection.POCKET_LORITTA)
                 },

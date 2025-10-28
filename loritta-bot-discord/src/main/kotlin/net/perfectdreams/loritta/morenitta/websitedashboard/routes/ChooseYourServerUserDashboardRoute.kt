@@ -36,6 +36,7 @@ class ChooseYourServerUserDashboardRoute(website: LorittaDashboardWebServer) : R
                 theme,
                 shimejiSettings,
                 userPremiumPlan,
+                null,
                 {
                     userDashLeftSidebarEntries(website.loritta, i18nContext, userPremiumPlan, UserDashboardSection.CHOOSE_YOUR_SERVER)
                 },

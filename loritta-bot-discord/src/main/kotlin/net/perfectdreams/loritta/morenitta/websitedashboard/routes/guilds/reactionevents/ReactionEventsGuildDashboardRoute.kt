@@ -55,6 +55,7 @@ class ReactionEventsGuildDashboardRoute(website: LorittaDashboardWebServer) : Re
                 theme,
                 shimejiSettings,
                 userPremiumPlan,
+                null,
                 {
                     guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.LORITTA_REACTION_EVENTS)
                 },

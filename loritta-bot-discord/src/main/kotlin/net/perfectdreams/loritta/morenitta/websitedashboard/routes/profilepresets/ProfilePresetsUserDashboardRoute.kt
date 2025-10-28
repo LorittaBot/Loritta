@@ -39,6 +39,7 @@ class ProfilePresetsUserDashboardRoute(website: LorittaDashboardWebServer) : Req
                 theme,
                 shimejiSettings,
                 userPremiumPlan,
+                null,
                 {
                     userDashLeftSidebarEntries(website.loritta, i18nContext, userPremiumPlan, UserDashboardSection.PROFILE_PRESETS)
                 },

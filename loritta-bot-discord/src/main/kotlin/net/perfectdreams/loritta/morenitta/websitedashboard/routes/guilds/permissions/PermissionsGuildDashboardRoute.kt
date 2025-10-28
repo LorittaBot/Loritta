@@ -31,6 +31,7 @@ class PermissionsGuildDashboardRoute(website: LorittaDashboardWebServer) : Requi
                 theme,
                 shimejiSettings,
                 userPremiumPlan,
+                null,
                 {
                     guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.PERMISSIONS)
                 },

@@ -40,6 +40,7 @@ class DailyMultiplierGuildDashboardRoute(website: LorittaDashboardWebServer) : R
                 theme,
                 shimejiSettings,
                 userPremiumPlan,
+                null,
                 {
                     guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.DAILY_MULTIPLIER)
                 },

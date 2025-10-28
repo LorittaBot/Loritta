@@ -32,6 +32,7 @@ class MemberCounterGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
                 theme,
                 shimejiSettings,
                 userPremiumPlan,
+                null,
                 {
                     guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.MEMBER_COUNTER)
                 },
