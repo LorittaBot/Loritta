@@ -9,13 +9,17 @@ import kotlinx.html.HTMLTag
 import kotlinx.html.div
 import kotlinx.html.dom.append
 import kotlinx.html.unsafe
+import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.dashboard.EmbeddedToast
 import net.perfectdreams.loritta.dashboard.frontend.LorittaDashboardFrontend
+import net.perfectdreams.loritta.dashboard.frontend.components.SaveBarState
 import web.animations.ANIMATION_END
 import web.animations.AnimationEvent
 import web.cssom.ClassName
 import web.dom.ElementId
 import web.dom.document
+import web.events.CustomEvent
+import web.events.EventType
 import web.events.addEventHandler
 import web.html.HTMLElement
 import kotlin.random.Random
@@ -121,6 +125,14 @@ class ToastManager(private val m: LorittaDashboardFrontend) {
 
         this.toastListElement = toastListElement
         element.append(toastListElement)
+
+        document.addEventHandler(EventType<CustomEvent<SaveBarState>>("loritta:saveBarState")) {
+            if (it.detail.active) {
+                toastListElement.classList.add(ClassName("save-bar-active"))
+            } else {
+                toastListElement.classList.remove(ClassName("save-bar-active"))
+            }
+        }
     }
 
     class ToastWithAnimationState(

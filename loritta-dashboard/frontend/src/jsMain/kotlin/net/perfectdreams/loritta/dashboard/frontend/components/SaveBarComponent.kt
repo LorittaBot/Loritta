@@ -13,11 +13,7 @@ import net.perfectdreams.bliss.BlissComponent
 import web.cssom.ClassName
 import web.dom.Element
 import web.dom.document
-import web.events.Event
-import web.events.EventType
-import web.events.RESIZE
-import web.events.SCROLL
-import web.events.addEventHandler
+import web.events.*
 import web.html.HTMLDivElement
 import web.input.INPUT
 import web.input.InputEvent
@@ -35,7 +31,7 @@ class SaveBarComponent : BlissComponent<HTMLDivElement>() {
 
     override fun onMount() {
         this.alwaysDirty = mountedElement.getAttribute("save-bar-always-dirty") == "true"
-        saveBarActive = this.alwaysDirty
+        setSaveBarState(this.alwaysDirty)
 
         val trackedSectionQuerySelector = mountedElement.getAttribute("save-bar-track-section") ?: error("I don't know which section to track!")
         val trackedSection = document.querySelector(trackedSectionQuerySelector)!!
@@ -80,12 +76,12 @@ class SaveBarComponent : BlissComponent<HTMLDivElement>() {
                             mountedElement.classList.remove(ClassName("initial-state"))
                             mountedElement.classList.add(ClassName("has-changes"))
                             mountedElement.classList.remove(ClassName("no-changes"))
-                            saveBarActive = true
+                            setSaveBarState(true)
                         } else {
                             println("OLD STATE!")
                             mountedElement.classList.add(ClassName("no-changes"))
                             mountedElement.classList.remove(ClassName("has-changes"))
-                            saveBarActive = false
+                            setSaveBarState(false)
                         }
                     }
                 }
@@ -98,7 +94,7 @@ class SaveBarComponent : BlissComponent<HTMLDivElement>() {
 
                     mountedElement.classList.add(ClassName("no-changes"))
                     mountedElement.classList.remove(ClassName("has-changes"))
-                    saveBarActive = false
+                    setSaveBarState(false)
                     alwaysDirty = false
                 }
             }
@@ -106,7 +102,7 @@ class SaveBarComponent : BlissComponent<HTMLDivElement>() {
     }
 
     override fun onUnmount() {
-        saveBarActive = false
+        setSaveBarState(false)
     }
 
     override fun onElementSwap(element: Element) {
@@ -124,14 +120,26 @@ class SaveBarComponent : BlissComponent<HTMLDivElement>() {
                     mountedElement.classList.remove(ClassName("initial-state"))
                     mountedElement.classList.add(ClassName("has-changes"))
                     mountedElement.classList.remove(ClassName("no-changes"))
-                    saveBarActive = true
+                    setSaveBarState(true)
                 } else {
                     println("OLD STATE!")
                     mountedElement.classList.add(ClassName("no-changes"))
                     mountedElement.classList.remove(ClassName("has-changes"))
-                    saveBarActive = false
+                    setSaveBarState(false)
                 }
             }
         }
+    }
+
+    fun setSaveBarState(active: Boolean) {
+        saveBarActive = active
+        val detail = SaveBarState(active)
+
+        val event = CustomEvent(
+            type = EventType("loritta:saveBarState"),
+            init = CustomEventInit(detail = detail)
+        )
+
+        document.dispatchEvent(event)
     }
 }
