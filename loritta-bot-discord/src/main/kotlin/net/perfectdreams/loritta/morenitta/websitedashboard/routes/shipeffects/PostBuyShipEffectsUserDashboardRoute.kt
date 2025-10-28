@@ -35,6 +35,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.defaultModalCloseButton
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.serializable.EmbeddedSpicyToast
 import net.perfectdreams.loritta.serializable.ShipEffect
@@ -130,61 +131,53 @@ class PostBuyShipEffectsUserDashboardRoute(website: LorittaDashboardWebServer) :
 
         when (result) {
             Result.NotEnoughSonhos -> {
-                call.respondHtml(
-                    createHTML(false)
-                        .body {
-                            blissShowToast(
-                                createEmbeddedToast(
-                                    EmbeddedToast.Type.WARN,
-                                    "Você não tem sonhos suficientes para comprar este item!"
-                                )
-                            )
+                call.respondHtmlFragment(status = HttpStatusCode.PaymentRequired) {
+                    blissShowToast(
+                        createEmbeddedToast(
+                            EmbeddedToast.Type.WARN,
+                            "Você não tem sonhos suficientes para comprar este item!"
+                        )
+                    )
 
-                            blissCloseModal()
-                        },
-                    status = HttpStatusCode.PaymentRequired
-                )
+                    blissCloseModal()
+                }
             }
             is Result.Success -> {
                 val resolvedUsers = result.activeShipEffects.flatMap { listOf(it.user1, it.user2, it.buyerId) }
                     .distinct()
                     .mapNotNull { website.loritta.pudding.users.getCachedUserInfoById(it) }
 
-                call.respondHtml(
-                    createHTML(false)
-                        .body {
-                            blissShowModal(
-                                createEmbeddedModal(
-                                    i18nContext.get(I18nKeysData.Website.Dashboard.ShipEffects.EffectApplied.Title),
-                                    true,
-                                    {
-                                        val randomPicture = listOf(
-                                            "https://stuff.loritta.website/ship/pantufa.png",
-                                            "https://stuff.loritta.website/ship/gabriela.png"
-                                        )
-
-                                        div {
-                                            style = "text-align: center;"
-
-                                            img(src = randomPicture.random()) {
-                                                width = "300"
-                                            }
-                                        }
-
-                                        text(i18nContext.get(I18nKeysData.Website.Dashboard.ShipEffects.EffectApplied.Description))
-                                    },
-                                    listOf(
-                                        {
-                                            defaultModalCloseButton(i18nContext, text = I18nKeysData.Website.Dashboard.ShipEffects.EffectApplied.ThanksLoveOracle)
-                                        }
-                                    )
+                call.respondHtmlFragment(status = HttpStatusCode.OK) {
+                    blissShowModal(
+                        createEmbeddedModal(
+                            i18nContext.get(I18nKeysData.Website.Dashboard.ShipEffects.EffectApplied.Title),
+                            true,
+                            {
+                                val randomPicture = listOf(
+                                    "https://stuff.loritta.website/ship/pantufa.png",
+                                    "https://stuff.loritta.website/ship/gabriela.png"
                                 )
-                            )
 
-                            shipEffectsBribes(i18nContext, session, result.activeShipEffects, resolvedUsers)
-                        },
-                    status = HttpStatusCode.OK
-                )
+                                div {
+                                    style = "text-align: center;"
+
+                                    img(src = randomPicture.random()) {
+                                        width = "300"
+                                    }
+                                }
+
+                                text(i18nContext.get(I18nKeysData.Website.Dashboard.ShipEffects.EffectApplied.Description))
+                            },
+                            listOf(
+                                {
+                                    defaultModalCloseButton(i18nContext, text = I18nKeysData.Website.Dashboard.ShipEffects.EffectApplied.ThanksLoveOracle)
+                                }
+                            )
+                        )
+                    )
+
+                    shipEffectsBribes(i18nContext, session, result.activeShipEffects, resolvedUsers)
+                }
             }
         }
     }

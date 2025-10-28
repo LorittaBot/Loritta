@@ -21,6 +21,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.profilePr
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresUserAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insert
@@ -38,32 +39,26 @@ class PostCreateProfilePresetsUserDashboardRoute(website: LorittaDashboardWebSer
     override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
         val request = Json.decodeFromString<CreateProfilePresetRequest>(call.receiveText())
         if (request.presetName.isBlank()) {
-            call.respondHtml(
-                createHTML(false)
-                    .body {
-                        blissShowToast(
-                            createEmbeddedToast(
-                                EmbeddedToast.Type.WARN,
-                                "Você precisa dar um nome para a sua predefinição!"
-                            )
-                        )
-                    }
-            )
+            call.respondHtmlFragment(status = HttpStatusCode.BadRequest) {
+                blissShowToast(
+                    createEmbeddedToast(
+                        EmbeddedToast.Type.WARN,
+                        "Você precisa dar um nome para a sua predefinição!"
+                    )
+                )
+            }
             return
         }
 
         if (request.presetName.length !in 1..MAX_PRESET_LENGTH) {
-            call.respondHtml(
-                createHTML(false)
-                    .body {
-                        blissShowToast(
-                            createEmbeddedToast(
-                                EmbeddedToast.Type.WARN,
-                                "O nome da predefinição é muito longo!"
-                            )
-                        )
-                    }
-            )
+            call.respondHtmlFragment(status = HttpStatusCode.BadRequest) {
+                blissShowToast(
+                    createEmbeddedToast(
+                        EmbeddedToast.Type.WARN,
+                        "O nome da predefinição é muito longo!"
+                    )
+                )
+            }
             return
         }
 
@@ -96,33 +91,26 @@ class PostCreateProfilePresetsUserDashboardRoute(website: LorittaDashboardWebSer
 
         when (result) {
             is Result.Success -> {
-                call.respondHtml(
-                    createHTML()
-                        .body {
-                            profilePresetsSection(i18nContext, result.profilePresets)
+                call.respondHtmlFragment(status = HttpStatusCode.Created) {
+                    profilePresetsSection(i18nContext, result.profilePresets)
 
-                            blissShowToast(
-                                createEmbeddedToast(
-                                    EmbeddedToast.Type.SUCCESS,
-                                    "Predefinição criada!"
-                                )
-                            )
-                        },
-                    status = HttpStatusCode.Created
-                )
+                    blissShowToast(
+                        createEmbeddedToast(
+                            EmbeddedToast.Type.SUCCESS,
+                            "Predefinição criada!"
+                        )
+                    )
+                }
             }
             Result.TooManyPresets -> {
-                call.respondHtml(
-                    createHTML(false)
-                        .body {
-                            blissShowToast(
-                                createEmbeddedToast(
-                                    EmbeddedToast.Type.WARN,
-                                    "Você já tem muitas predefinições criadas!"
-                                )
-                            )
-                        }
-                )
+                call.respondHtmlFragment(status = HttpStatusCode.BadRequest) {
+                    blissShowToast(
+                        createEmbeddedToast(
+                            EmbeddedToast.Type.WARN,
+                            "Você já tem muitas predefinições criadas!"
+                        )
+                    )
+                }
             }
         }
     }

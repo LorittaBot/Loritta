@@ -29,6 +29,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.sectionCo
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.simpleHeroImage
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.trackedBlueskyProfilesSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jetbrains.exposed.sql.selectAll
 import kotlin.collections.map
@@ -56,56 +57,53 @@ class BlueskyGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresG
             blueskyProfiles.putAll(profiles.profiles.associateBy { it.did })
         }
 
-        call.respondHtml(
-            createHTML()
-                .html {
-                    dashboardBase(
-                        i18nContext,
-                        i18nContext.get(DashboardI18nKeysData.Twitch.Title),
-                        session,
-                        theme,
-                        shimejiSettings,
-                        userPremiumPlan,
-                        {
-                            guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.BLUESKY)
-                        },
-                        {
-                            heroWrapper {
-                                simpleHeroImage("https://stuff.loritta.website/monica-ata-bluetero.jpeg")
+        call.respondHtml {
+            dashboardBase(
+                i18nContext,
+                i18nContext.get(DashboardI18nKeysData.Twitch.Title),
+                session,
+                theme,
+                shimejiSettings,
+                userPremiumPlan,
+                {
+                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.BLUESKY)
+                },
+                {
+                    heroWrapper {
+                        simpleHeroImage("https://stuff.loritta.website/monica-ata-bluetero.jpeg")
 
-                                heroText {
-                                    h1 {
-                                        text(i18nContext.get(DashboardI18nKeysData.Bluesky.Title))
-                                    }
-
-                                    p {
-                                        text("Anuncie para seus membros quando você posta algo no Bluesky! Assim, seus fãs não irão perder as suas opiniões filosóficas.")
-                                    }
-                                }
+                        heroText {
+                            h1 {
+                                text(i18nContext.get(DashboardI18nKeysData.Bluesky.Title))
                             }
 
-                            hr {}
-
-                            sectionConfig {
-                                trackedBlueskyProfilesSection(
-                                    i18nContext,
-                                    guild,
-                                    trackedBlueskyProfiles.map {
-                                        val profileInfo = blueskyProfiles[it[TrackedBlueskyAccounts.repo]]
-
-                                        TrackedProfile(
-                                            profileInfo?.handle,
-                                            profileInfo?.avatar,
-                                            it[TrackedBlueskyAccounts.repo],
-                                            it[TrackedBlueskyAccounts.id].value,
-                                            it[TrackedBlueskyAccounts.channelId]
-                                        )
-                                    }
-                                )
+                            p {
+                                text("Anuncie para seus membros quando você posta algo no Bluesky! Assim, seus fãs não irão perder as suas opiniões filosóficas.")
                             }
                         }
-                    )
+                    }
+
+                    hr {}
+
+                    sectionConfig {
+                        trackedBlueskyProfilesSection(
+                            i18nContext,
+                            guild,
+                            trackedBlueskyProfiles.map {
+                                val profileInfo = blueskyProfiles[it[TrackedBlueskyAccounts.repo]]
+
+                                TrackedProfile(
+                                    profileInfo?.handle,
+                                    profileInfo?.avatar,
+                                    it[TrackedBlueskyAccounts.repo],
+                                    it[TrackedBlueskyAccounts.id].value,
+                                    it[TrackedBlueskyAccounts.channelId]
+                                )
+                            }
+                        )
+                    }
                 }
-        )
+            )
+        }
     }
 }

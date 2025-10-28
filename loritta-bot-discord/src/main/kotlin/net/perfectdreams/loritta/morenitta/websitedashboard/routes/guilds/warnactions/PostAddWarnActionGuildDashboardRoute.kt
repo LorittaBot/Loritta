@@ -17,6 +17,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebS
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.configurableWarnList
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.ColorTheme
 
 class PostAddWarnActionGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/warn-actions/add") {
@@ -42,15 +43,12 @@ class PostAddWarnActionGuildDashboardRoute(website: LorittaDashboardWebServer) :
             )
         )
 
-        call.respondHtml(
-            createHTML(false)
-                .body {
-                    configurableWarnList(
-                        i18nContext,
-                        guild,
-                        newWarns
-                    )
-                }
-        )
+        call.respondHtmlFragment {
+            configurableWarnList(
+                i18nContext,
+                guild,
+                newWarns
+            )
+        }
     }
 }

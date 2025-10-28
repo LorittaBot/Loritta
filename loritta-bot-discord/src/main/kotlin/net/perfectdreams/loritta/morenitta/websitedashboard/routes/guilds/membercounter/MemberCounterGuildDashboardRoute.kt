@@ -19,37 +19,35 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.dashboard
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.guildDashLeftSidebarEntries
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.swapRightSidebarContentsAttributes
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.serializable.ColorTheme
 
 class MemberCounterGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/member-counter") {
     override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans) {
-        call.respondHtml(
-            createHTML()
-                .html {
-                    dashboardBase(
-                        i18nContext,
-                        i18nContext.get(DashboardI18nKeysData.MemberCounter.Title),
-                        session,
-                        theme,
-                        shimejiSettings,
-                        userPremiumPlan,
-                        {
-                            guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.MEMBER_COUNTER)
-                        },
-                        {
-                            for (channel in guild.channels) {
-                                if (channel is StandardGuildMessageChannel) {
-                                    div {
-                                        a(href = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/member-counter/${channel.idLong}") {
-                                            swapRightSidebarContentsAttributes()
-                                            text(channel.name)
-                                        }
-                                    }
+        call.respondHtml {
+            dashboardBase(
+                i18nContext,
+                i18nContext.get(DashboardI18nKeysData.MemberCounter.Title),
+                session,
+                theme,
+                shimejiSettings,
+                userPremiumPlan,
+                {
+                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.MEMBER_COUNTER)
+                },
+                {
+                    for (channel in guild.channels) {
+                        if (channel is StandardGuildMessageChannel) {
+                            div {
+                                a(href = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/member-counter/${channel.idLong}") {
+                                    swapRightSidebarContentsAttributes()
+                                    text(channel.name)
                                 }
                             }
                         }
-                    )
+                    }
                 }
-        )
+            )
+        }
     }
 }

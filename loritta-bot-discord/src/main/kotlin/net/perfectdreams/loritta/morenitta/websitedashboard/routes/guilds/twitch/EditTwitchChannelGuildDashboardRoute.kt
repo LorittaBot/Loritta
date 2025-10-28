@@ -22,6 +22,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebS
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.*
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.selectAll
@@ -51,51 +52,48 @@ class EditTwitchChannelGuildDashboardRoute(website: LorittaDashboardWebServer) :
         val twitchUser = TwitchWebUtils.getCachedUsersInfoById(website.loritta, data[TrackedTwitchAccounts.twitchUserId])
             .first()
 
-        call.respondHtml(
-            createHTML()
-                .html {
-                    dashboardBase(
-                        i18nContext,
-                        i18nContext.get(DashboardI18nKeysData.Twitch.Title),
-                        session,
-                        theme,
-                        shimejiSettings,
-                        userPremiumPlan,
+        call.respondHtml {
+            dashboardBase(
+                i18nContext,
+                i18nContext.get(DashboardI18nKeysData.Twitch.Title),
+                session,
+                theme,
+                shimejiSettings,
+                userPremiumPlan,
+                {
+                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.TWITCH)
+                },
+                {
+                    goBackToPreviousSectionButton(
+                        href = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/twitch",
+                    ) {
+                        text("Voltar para a lista de contas da Twitch")
+                    }
+
+                    hr {}
+
+                    rightSidebarContentAndSaveBarWrapper(
                         {
-                            guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.TWITCH)
+                            trackedTwitchChannelEditorWithProfile(
+                                i18nContext,
+                                guild,
+                                twitchUser,
+                                twitchAccountTrackingState,
+                                data[TrackedTwitchAccounts.channelId],
+                                data[TrackedTwitchAccounts.message]
+                            )
                         },
                         {
-                            goBackToPreviousSectionButton(
-                                href = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/twitch",
-                            ) {
-                                text("Voltar para a lista de contas da Twitch")
-                            }
-
-                            hr {}
-
-                            rightSidebarContentAndSaveBarWrapper(
-                                {
-                                    trackedTwitchChannelEditorWithProfile(
-                                        i18nContext,
-                                        guild,
-                                        twitchUser,
-                                        twitchAccountTrackingState,
-                                        data[TrackedTwitchAccounts.channelId],
-                                        data[TrackedTwitchAccounts.message]
-                                    )
-                                },
-                                {
-                                    trackedProfileEditorSaveBar(
-                                        i18nContext,
-                                        guild,
-                                        "twitch",
-                                        data[TrackedTwitchAccounts.id].value
-                                    )
-                                }
+                            trackedProfileEditorSaveBar(
+                                i18nContext,
+                                guild,
+                                "twitch",
+                                data[TrackedTwitchAccounts.id].value
                             )
                         }
                     )
                 }
-        )
+            )
+        }
     }
 }

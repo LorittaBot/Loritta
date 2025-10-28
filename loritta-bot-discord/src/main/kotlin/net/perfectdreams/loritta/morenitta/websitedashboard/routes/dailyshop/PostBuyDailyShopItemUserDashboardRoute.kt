@@ -23,6 +23,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresUserA
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.*
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
@@ -220,72 +221,56 @@ class PostBuyDailyShopItemUserDashboardRoute(website: LorittaDashboardWebServer)
 
         when (result) {
             Result.ItemNotInItemShop -> {
-                call.respondHtml(
-                    createHTML(false)
-                        .body {
-                            blissCloseModal()
-                            blissShowToast(
-                                createEmbeddedToast(
-                                    EmbeddedToast.Type.WARN,
-                                    "Item fora de rotação",
-                                    {
-                                        text("Vixe, parece que o item saiu da rotação diária da loja bem na hora que você foi comprar!")
-                                    }
-                                )
-                            )
-                        },
-                    status = HttpStatusCode.BadRequest
-                )
+                call.respondHtmlFragment(status = HttpStatusCode.BadRequest) {
+                    blissCloseModal()
+                    blissShowToast(
+                        createEmbeddedToast(
+                            EmbeddedToast.Type.WARN,
+                            "Item fora de rotação",
+                            {
+                                text("Vixe, parece que o item saiu da rotação diária da loja bem na hora que você foi comprar!")
+                            }
+                        )
+                    )
+                }
             }
             Result.NotEnoughSonhos -> {
-                call.respondHtml(
-                    createHTML(false)
-                        .body {
-                            blissCloseModal()
-                            blissShowToast(
-                                createEmbeddedToast(
-                                    EmbeddedToast.Type.WARN,
-                                    "Você não tem sonhos suficientes para comprar este item!",
-                                    null
-                                )
-                            )
-                        },
-                    status = HttpStatusCode.PaymentRequired
-                )
+                call.respondHtmlFragment(status = HttpStatusCode.PaymentRequired) {
+                    blissCloseModal()
+                    blissShowToast(
+                        createEmbeddedToast(
+                            EmbeddedToast.Type.WARN,
+                            "Você não tem sonhos suficientes para comprar este item!",
+                            null
+                        )
+                    )
+                }
             }
             Result.YouAlreadyHaveThisItem -> {
-                call.respondHtml(
-                    createHTML(false)
-                        .body {
-                            blissCloseModal()
-                            blissShowToast(
-                                createEmbeddedToast(
-                                    EmbeddedToast.Type.WARN,
-                                    "Você já tem este item!",
-                                    null
-                                )
-                            )
-                        },
-                    status = HttpStatusCode.Conflict
-                )
+                call.respondHtmlFragment(status = HttpStatusCode.Conflict) {
+                    blissCloseModal()
+                    blissShowToast(
+                        createEmbeddedToast(
+                            EmbeddedToast.Type.WARN,
+                            "Você já tem este item!",
+                            null
+                        )
+                    )
+                }
             }
             is Result.Success -> {
-                call.respondHtml(
-                    createHTML(false)
-                        .body {
-                            blissCloseModal()
-                            blissShowToast(
-                                createEmbeddedToast(
-                                    EmbeddedToast.Type.SUCCESS,
-                                    "Item comprado!",
-                                    null
-                                )
-                            )
+                call.respondHtmlFragment(status = HttpStatusCode.OK) {
+                    blissCloseModal()
+                    blissShowToast(
+                        createEmbeddedToast(
+                            EmbeddedToast.Type.SUCCESS,
+                            "Item comprado!",
+                            null
+                        )
+                    )
 
-                            dailyShopItems(i18nContext, locale, result.dailyShopResult, galleryOfDreamsResponse)
-                        },
-                    status = HttpStatusCode.OK
-                )
+                    dailyShopItems(i18nContext, locale, result.dailyShopResult, galleryOfDreamsResponse)
+                }
             }
         }
     }

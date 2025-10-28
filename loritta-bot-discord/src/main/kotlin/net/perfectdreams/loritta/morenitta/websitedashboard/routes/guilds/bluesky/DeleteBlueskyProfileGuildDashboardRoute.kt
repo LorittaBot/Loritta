@@ -27,6 +27,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuild
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -71,50 +72,42 @@ class DeleteBlueskyProfileGuildDashboardRoute(website: LorittaDashboardWebServer
                     blueskyProfiles.putAll(profiles.profiles.associateBy { it.did })
                 }
 
-                call.respondHtml(
-                    createHTML()
-                        .body {
-                            trackedBlueskyProfilesSection(
-                                i18nContext,
-                                guild,
-                                result.trackedProfiles.map {
-                                    val profileInfo = blueskyProfiles[it[TrackedBlueskyAccounts.repo]]
+                call.respondHtmlFragment(status = HttpStatusCode.OK) {
+                    trackedBlueskyProfilesSection(
+                        i18nContext,
+                        guild,
+                        result.trackedProfiles.map {
+                            val profileInfo = blueskyProfiles[it[TrackedBlueskyAccounts.repo]]
 
-                                    TrackedProfile(
-                                        profileInfo?.handle,
-                                        profileInfo?.avatar,
-                                        it[TrackedBlueskyAccounts.repo],
-                                        it[TrackedBlueskyAccounts.id].value,
-                                        it[TrackedBlueskyAccounts.channelId]
-                                    )
-                                }
+                            TrackedProfile(
+                                profileInfo?.handle,
+                                profileInfo?.avatar,
+                                it[TrackedBlueskyAccounts.repo],
+                                it[TrackedBlueskyAccounts.id].value,
+                                it[TrackedBlueskyAccounts.channelId]
                             )
+                        }
+                    )
 
-                            blissCloseModal()
+                    blissCloseModal()
 
-                            blissShowToast(
-                                createEmbeddedToast(
-                                    EmbeddedToast.Type.SUCCESS,
-                                    "Conta deletada!"
-                                )
-                            )
-                        },
-                    status = HttpStatusCode.OK
-                )
+                    blissShowToast(
+                        createEmbeddedToast(
+                            EmbeddedToast.Type.SUCCESS,
+                            "Conta deletada!"
+                        )
+                    )
+                }
             }
             Result.EntryNotFound -> {
-                call.respondHtml(
-                    createHTML(false)
-                        .body {
-                            blissShowToast(
-                                createEmbeddedToast(
-                                    EmbeddedToast.Type.WARN,
-                                    "Você não pode deletar um canal que não existe!"
-                                )
-                            )
-                        },
-                    status = HttpStatusCode.NotFound
-                )
+                call.respondHtmlFragment(status = HttpStatusCode.NotFound) {
+                    blissShowToast(
+                        createEmbeddedToast(
+                            EmbeddedToast.Type.WARN,
+                            "Você não pode deletar um canal que não existe!"
+                        )
+                    )
+                }
             }
         }
     }

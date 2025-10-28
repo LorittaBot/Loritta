@@ -34,6 +34,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuild
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissEvent
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jetbrains.exposed.sql.selectAll
 import java.awt.Color
@@ -57,157 +58,154 @@ class CommandsGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
             Pair(config, commandConfigs)
         }
 
-        call.respondHtml(
-            createHTML()
-                .html {
-                    dashboardBase(
-                        i18nContext,
-                        i18nContext.get(DashboardI18nKeysData.CustomCommands.Title),
-                        session,
-                        theme,
-                        shimejiSettings,
-                        userPremiumPlan,
+        call.respondHtml {
+            dashboardBase(
+                i18nContext,
+                i18nContext.get(DashboardI18nKeysData.CustomCommands.Title),
+                session,
+                theme,
+                shimejiSettings,
+                userPremiumPlan,
+                {
+                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.COMMANDS)
+                },
+                {
+                    rightSidebarContentAndSaveBarWrapper(
                         {
-                            guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.COMMANDS)
+                            if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
+                                blissEvent("resyncState", "[bliss-component='save-bar']")
+                                blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Configuração redefinida!"))
+                            }
+
+                            div(classes = "hero-wrapper") {
+                                div(classes = "hero-text") {
+                                    h1 {
+                                        text(i18nContext.get(I18nKeysData.Website.Dashboard.Commands.Title))
+                                    }
+
+                                    for (str in i18nContext.language
+                                        .textBundle
+                                        .lists
+                                        .getValue(I18nKeys.Website.Dashboard.Commands.DescriptionWithoutLegacyCommands.key)
+                                    ) {
+                                        p {
+                                            handleI18nString(
+                                                str,
+                                                appendAsFormattedText(i18nContext, mapOf()),
+                                            ) {
+                                                when (it) {
+                                                    "pocketLoritta" -> {
+                                                        TextReplaceControls.ComposableFunctionResult {
+                                                            a("/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/user-app") {
+                                                                attributes["bliss-get"] = "[href]"
+                                                                attributes["bliss-swap:200"] = "#right-sidebar-contents (innerHTML) -> #right-sidebar-contents (innerHTML), #left-sidebar (innerHTML) -> #left-sidebar (innerHTML)"
+                                                                attributes["bliss-push-url:200"] = "true"
+                                                                attributes["bliss-replace-load"] = "#loading"
+                                                                attributes["bliss-sync"] = "#left-sidebar"
+                                                                attributes["bliss-indicator"] = "#right-sidebar-wrapper"
+
+                                                                text(i18nContext.get(I18nKeysData.Website.Dashboard.PocketLoritta.Title))
+                                                            }
+                                                        }
+                                                    }
+
+                                                    "useExternalApplications" -> {
+                                                        TextReplaceControls.ComposableFunctionResult {
+                                                            text(i18nContext.get(I18nKeysData.Permissions.UseExternalApplications))
+                                                        }
+                                                    }
+
+                                                    else -> TextReplaceControls.AppendControlAsIsResult
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            hr {}
+
+                            div {
+                                id = "section-config"
+
+                                val groupedByCategories = website.loritta.interactionsListener.manager
+                                    .applicationCommands
+                                    .groupBy {
+                                        it.category
+                                    }
+
+                                h3 {
+                                    text(i18nContext.get(I18nKeysData.Website.Dashboard.Commands.SummaryTitle))
+                                }
+
+                                ul {
+                                    for ((category, _) in groupedByCategories) {
+                                        li {
+                                            a(href = "#${category.name}") {
+                                                text(i18nContext.get(category.localizedName))
+                                            }
+                                        }
+                                    }
+                                }
+
+                                fieldWrappers {
+                                    for ((category, commands) in groupedByCategories) {
+                                        fieldWrapper {
+                                            id = category.name
+                                            val color = getCategoryColor(category)
+                                            style = "--loritta-blue: ${
+                                                String.format(
+                                                    "#%02x%02x%02x",
+                                                    color.red,
+                                                    color.green,
+                                                    color.blue
+                                                )
+                                            }"
+
+                                            h2 {
+                                                text(i18nContext.get(category.localizedName))
+                                            }
+
+                                            fieldWrappers {
+                                                for (command in commands) {
+                                                    generateCommand(i18nContext, config.commandPrefix, commandConfigs, command, listOf(command))
+
+                                                    if (command is SlashCommandDeclaration) {
+                                                        for (subcommand in command.subcommands) {
+                                                            generateCommand(i18nContext, config.commandPrefix, commandConfigs, subcommand, listOf(command, subcommand))
+                                                        }
+
+                                                        for (subcommandGroup in command.subcommandGroups) {
+                                                            for (subcommand in subcommandGroup.subcommands) {
+                                                                generateCommand(
+                                                                    i18nContext,
+                                                                    config.commandPrefix,
+                                                                    commandConfigs,
+                                                                    subcommand,
+                                                                    listOf(command, subcommandGroup, subcommand)
+                                                                )
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         },
                         {
-                            rightSidebarContentAndSaveBarWrapper(
-                                {
-                                    if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
-                                        blissEvent("resyncState", "[bliss-component='save-bar']")
-                                        blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Configuração redefinida!"))
-                                    }
-
-                                    div(classes = "hero-wrapper") {
-                                        div(classes = "hero-text") {
-                                            h1 {
-                                                text(i18nContext.get(I18nKeysData.Website.Dashboard.Commands.Title))
-                                            }
-
-                                            for (str in i18nContext.language
-                                                .textBundle
-                                                .lists
-                                                .getValue(I18nKeys.Website.Dashboard.Commands.DescriptionWithoutLegacyCommands.key)
-                                            ) {
-                                                p {
-                                                    handleI18nString(
-                                                        str,
-                                                        appendAsFormattedText(i18nContext, mapOf()),
-                                                    ) {
-                                                        when (it) {
-                                                            "pocketLoritta" -> {
-                                                                TextReplaceControls.ComposableFunctionResult {
-                                                                    a("/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/user-app") {
-                                                                        attributes["bliss-get"] = "[href]"
-                                                                        attributes["bliss-swap:200"] = "#right-sidebar-contents (innerHTML) -> #right-sidebar-contents (innerHTML), #left-sidebar (innerHTML) -> #left-sidebar (innerHTML)"
-                                                                        attributes["bliss-push-url:200"] = "true"
-                                                                        attributes["bliss-replace-load"] = "#loading"
-                                                                        attributes["bliss-sync"] = "#left-sidebar"
-                                                                        attributes["bliss-indicator"] = "#right-sidebar-wrapper"
-
-                                                                        text(i18nContext.get(I18nKeysData.Website.Dashboard.PocketLoritta.Title))
-                                                                    }
-                                                                }
-                                                            }
-
-                                                            "useExternalApplications" -> {
-                                                                TextReplaceControls.ComposableFunctionResult {
-                                                                    text(i18nContext.get(I18nKeysData.Permissions.UseExternalApplications))
-                                                                }
-                                                            }
-
-                                                            else -> TextReplaceControls.AppendControlAsIsResult
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    hr {}
-
-                                    div {
-                                        id = "section-config"
-
-                                        val groupedByCategories = website.loritta.interactionsListener.manager
-                                            .applicationCommands
-                                            .groupBy {
-                                                it.category
-                                            }
-
-                                        h3 {
-                                            text(i18nContext.get(I18nKeysData.Website.Dashboard.Commands.SummaryTitle))
-                                        }
-
-                                        ul {
-                                            for ((category, _) in groupedByCategories) {
-                                                li {
-                                                    a(href = "#${category.name}") {
-                                                        text(i18nContext.get(category.localizedName))
-                                                    }
-                                                }
-                                            }
-                                        }
-
-                                        fieldWrappers {
-                                            for ((category, commands) in groupedByCategories) {
-                                                fieldWrapper {
-                                                    id = category.name
-                                                    val color = getCategoryColor(category)
-                                                    style = "--loritta-blue: ${
-                                                        String.format(
-                                                            "#%02x%02x%02x",
-                                                            color.red,
-                                                            color.green,
-                                                            color.blue
-                                                        )
-                                                    }"
-
-                                                    h2 {
-                                                        text(i18nContext.get(category.localizedName))
-                                                    }
-
-                                                    fieldWrappers {
-                                                        for (command in commands) {
-                                                            generateCommand(i18nContext, config.commandPrefix, commandConfigs, command, listOf(command))
-
-                                                            if (command is SlashCommandDeclaration) {
-                                                                for (subcommand in command.subcommands) {
-                                                                    generateCommand(i18nContext, config.commandPrefix, commandConfigs, subcommand, listOf(command, subcommand))
-                                                                }
-
-                                                                for (subcommandGroup in command.subcommandGroups) {
-                                                                    for (subcommand in subcommandGroup.subcommands) {
-                                                                        generateCommand(
-                                                                            i18nContext,
-                                                                            config.commandPrefix,
-                                                                            commandConfigs,
-                                                                            subcommand,
-                                                                            listOf(command, subcommandGroup, subcommand)
-                                                                        )
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                },
-                                {
-                                    genericSaveBar(
-                                        i18nContext,
-                                        false,
-                                        guild,
-                                        "/commands"
-                                    )
-                                }
+                            genericSaveBar(
+                                i18nContext,
+                                false,
+                                guild,
+                                "/commands"
                             )
                         }
                     )
                 }
-        )
+            )
+        }
     }
 
     private fun FlowContent.generateCommand(

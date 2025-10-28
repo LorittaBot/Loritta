@@ -18,6 +18,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.profileDe
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresUserAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.Background
 import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jetbrains.exposed.sql.update
@@ -42,14 +43,11 @@ class PostApplyProfileLayoutUserDashboardRoute(website: LorittaDashboardWebServe
             )
         }
 
-        call.respondHtml(
-            createHTML()
-                .body {
-                    blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Layout de Perfil aplicado!"))
+        call.respondHtmlFragment {
+            blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Layout de Perfil aplicado!"))
 
-                    profileDesignItemInfo(i18nContext, locale, result.activeProfileDesignId, result.activeProfileDesignId, result.activeBackgroundId)
-                }
-        )
+            profileDesignItemInfo(i18nContext, locale, result.activeProfileDesignId, result.activeProfileDesignId, result.activeBackgroundId)
+        }
     }
 
     data class Result(

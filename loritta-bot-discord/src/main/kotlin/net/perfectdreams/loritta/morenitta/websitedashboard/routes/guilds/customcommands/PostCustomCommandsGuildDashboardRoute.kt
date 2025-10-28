@@ -23,6 +23,8 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.customGui
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.saveBar
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.configSaved
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.serializable.CustomCommandCodeType
 import org.jetbrains.exposed.sql.insertAndGetId
@@ -50,40 +52,37 @@ class PostCustomCommandsGuildDashboardRoute(website: LorittaDashboardWebServer) 
         }
 
         call.response.header("Bliss-Push-Url", "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/custom-commands/${commandId.value}")
-        call.respondHtml(
-            createHTML(false)
-                .body {
-                    configSaved(i18nContext)
+        call.respondHtmlFragment {
+            configSaved(i18nContext)
 
-                    div {
-                        id = "section-config"
+            div {
+                id = "section-config"
 
-                        customGuildCommandTextEditor(
-                            i18nContext,
-                            guild,
-                            session,
-                            request.label,
-                            request.message,
-                        )
-                    }
+                customGuildCommandTextEditor(
+                    i18nContext,
+                    guild,
+                    session,
+                    request.label,
+                    request.message,
+                )
+            }
 
-                    hr {}
+            hr {}
 
-                    saveBar(
-                        i18nContext,
-                        false,
-                        {
-                            attributes["bliss-get"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/custom-commands/${commandId}"
-                            attributes["bliss-swap:200"] = "#section-config (innerHTML) -> #section-config (innerHTML)"
-                            attributes["bliss-headers"] = buildJsonObject {
-                                put("Loritta-Configuration-Reset", "true")
-                            }.toString()
-                        }
-                    ) {
-                        attributes["bliss-put"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/custom-commands/${commandId}"
-                        attributes["bliss-include-json"] = "#section-config"
-                    }
+            saveBar(
+                i18nContext,
+                false,
+                {
+                    attributes["bliss-get"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/custom-commands/${commandId}"
+                    attributes["bliss-swap:200"] = "#section-config (innerHTML) -> #section-config (innerHTML)"
+                    attributes["bliss-headers"] = buildJsonObject {
+                        put("Loritta-Configuration-Reset", "true")
+                    }.toString()
                 }
-        )
+            ) {
+                attributes["bliss-put"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/custom-commands/${commandId}"
+                attributes["bliss-include-json"] = "#section-config"
+            }
+        }
     }
 }

@@ -18,6 +18,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseModa
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissSoundEffect
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jetbrains.exposed.sql.update
 
@@ -29,18 +30,15 @@ class PostResetXPGuildDashboardRoute(website: LorittaDashboardWebServer) : Requi
             }
         }
 
-        call.respondHtml(
-            createHTML(false)
-                .body {
-                    blissCloseModal()
-                    blissSoundEffect("configSaved")
-                    blissShowToast(
-                        createEmbeddedToast(
-                            EmbeddedToast.Type.SUCCESS,
-                            "XP resetado com sucesso!"
-                        )
-                    )
-                }
-        )
+        call.respondHtmlFragment {
+            blissCloseModal()
+            blissSoundEffect("configSaved")
+            blissShowToast(
+                createEmbeddedToast(
+                    EmbeddedToast.Type.SUCCESS,
+                    "XP resetado com sucesso!"
+                )
+            )
+        }
     }
 }

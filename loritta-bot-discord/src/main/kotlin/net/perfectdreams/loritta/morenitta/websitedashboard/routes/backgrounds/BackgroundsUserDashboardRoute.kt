@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.common.utils.Rarity
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserDashboardSection
@@ -56,58 +56,55 @@ class BackgroundsUserDashboardRoute(website: LorittaDashboardWebServer) : Requir
             )
         }
 
-        call.respondHtml(
-            createHTML()
-                .html {
-                    dashboardBase(
-                        i18nContext,
-                        i18nContext.get(DashboardI18nKeysData.Backgrounds.Title),
-                        session,
-                        theme,
-                        shimejiSettings,
-                        userPremiumPlan,
-                        {
-                            userDashLeftSidebarEntries(website.loritta, i18nContext, UserDashboardSection.PROFILE_BACKGROUND)
-                        },
-                        {
-                            div {
-                                id = "bundles-content"
+        call.respondHtml {
+            dashboardBase(
+                i18nContext,
+                i18nContext.get(DashboardI18nKeysData.Backgrounds.Title),
+                session,
+                theme,
+                shimejiSettings,
+                userPremiumPlan,
+                {
+                    userDashLeftSidebarEntries(website.loritta, i18nContext, UserDashboardSection.PROFILE_BACKGROUND)
+                },
+                {
+                    div {
+                        id = "bundles-content"
 
-                                div(classes = "bought-shop-items-list") {
-                                    div(classes = "loritta-items-wrapper") {
-                                        for (profileDesign in result.backgrounds.sortedWith(compareByDescending<BackgroundsUserDashboardRoute.Background> { it.rarity }.thenBy { locale["backgrounds.${it.internalName}.title"] })) {
-                                            div(classes = "shop-item-entry rarity-${profileDesign.rarity.name.lowercase()}") {
-                                                attributes["bliss-get"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/backgrounds/${profileDesign.internalName}"
-                                                attributes["bliss-swap:200"] = "body (innerHTML) -> #trinket-info-content (innerHTML)"
-                                                attributes["bliss-indicator"] = "#trinket-info"
+                        div(classes = "bought-shop-items-list") {
+                            div(classes = "loritta-items-wrapper") {
+                                for (profileDesign in result.backgrounds.sortedWith(compareByDescending<BackgroundsUserDashboardRoute.Background> { it.rarity }.thenBy { locale["backgrounds.${it.internalName}.title"] })) {
+                                    div(classes = "shop-item-entry rarity-${profileDesign.rarity.name.lowercase()}") {
+                                        attributes["bliss-get"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/backgrounds/${profileDesign.internalName}"
+                                        attributes["bliss-swap:200"] = "body (innerHTML) -> #trinket-info-content (innerHTML)"
+                                        attributes["bliss-indicator"] = "#trinket-info"
 
-                                                div {
-                                                    style = "position: relative;"
+                                        div {
+                                            style = "position: relative;"
 
-                                                    div {
-                                                        style = "overflow: hidden; line-height: 0;"
+                                            div {
+                                                style = "overflow: hidden; line-height: 0;"
 
-                                                        img {
-                                                            src = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/background-preview/${profileDesign.internalName}"
+                                                img {
+                                                    src = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/background-preview/${profileDesign.internalName}"
 
-                                                            // The aspect ratio makes the design not be wonky when the image is not loaded
-                                                            style = "width: 100%; height: auto; aspect-ratio: 4/3;"
-                                                        }
-                                                    }
+                                                    // The aspect ratio makes the design not be wonky when the image is not loaded
+                                                    style = "width: 100%; height: auto; aspect-ratio: 4/3;"
                                                 }
                                             }
                                         }
                                     }
                                 }
-
-                                trinketInfo {
-                                    backgroundItemInfo(i18nContext, locale, result.activeBackgroundId, result.activeProfileDesignId, result.activeBackgroundId)
-                                }
                             }
                         }
-                    )
+
+                        trinketInfo {
+                            backgroundItemInfo(i18nContext, locale, result.activeBackgroundId, result.activeProfileDesignId, result.activeBackgroundId)
+                        }
+                    }
                 }
-        )
+            )
+        }
     }
 
     private data class Background(

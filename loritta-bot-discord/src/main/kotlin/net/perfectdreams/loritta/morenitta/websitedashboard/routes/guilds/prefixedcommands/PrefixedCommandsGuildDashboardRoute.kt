@@ -33,6 +33,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuild
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissEvent
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.serializable.ColorTheme
 
 class PrefixedCommandsGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/prefixed-commands") {
@@ -41,138 +42,135 @@ class PrefixedCommandsGuildDashboardRoute(website: LorittaDashboardWebServer) : 
             website.loritta.getOrCreateServerConfig(guild.idLong)
         }
 
-        call.respondHtml(
-            createHTML()
-                .html {
-                    dashboardBase(
-                        i18nContext,
-                        i18nContext.get(DashboardI18nKeysData.PrefixedCommands.Title),
-                        session,
-                        theme,
-                        shimejiSettings,
-                        userPremiumPlan,
+        call.respondHtml {
+            dashboardBase(
+                i18nContext,
+                i18nContext.get(DashboardI18nKeysData.PrefixedCommands.Title),
+                session,
+                theme,
+                shimejiSettings,
+                userPremiumPlan,
+                {
+                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.PREFIXED_COMMANDS)
+                },
+                {
+                    rightSidebarContentAndSaveBarWrapper(
                         {
-                            guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.PREFIXED_COMMANDS)
+                            if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
+                                blissEvent("resyncState", "[bliss-component='save-bar']")
+                                blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Configuração redefinida!"))
+                            }
+
+                            div(classes = "hero-wrapper") {
+                                div(classes = "hero-text") {
+                                    h1 {
+                                        text(i18nContext.get(I18nKeysData.Website.Dashboard.PrefixedCommands.Title))
+                                    }
+
+                                    for (str in i18nContext.language
+                                        .textBundle
+                                        .lists
+                                        .getValue(I18nKeys.Website.Dashboard.PrefixedCommands.Description.key)
+                                    ) {
+                                        p {
+                                            handleI18nString(
+                                                str,
+                                                appendAsFormattedText(i18nContext, mapOf()),
+                                            ) {
+                                                when (it) {
+                                                    else -> TextReplaceControls.AppendControlAsIsResult
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            hr {}
+
+                            div {
+                                id = "section-config"
+
+                                fieldWrappers {
+                                    fieldWrapper {
+                                        fieldTitle {
+                                            text("Prefixo da Loritta")
+                                        }
+
+                                        fieldDescription {
+                                            text("Prefixo é o texto que vem antes de um comando. Por padrão eu venho com o caractere +, mas você pode alterá-lo nesta opção.")
+                                        }
+
+                                        textInput {
+                                            attributes["bliss-post"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/prefixed-commands/prefix-preview"
+                                            attributes["bliss-swap:200"] = "body (innerHTML) -> #prefix-preview (innerHTML)"
+                                            attributes["bliss-include-json"] = "[name='prefix']"
+                                            attributes["bliss-trigger"] = "input"
+                                            attributes["bliss-transform-text"] = "trim, no-spaces"
+                                            attributes["loritta-config"] = "prefix"
+                                            name = "prefix"
+
+                                            value = serverConfig.commandPrefix
+                                        }
+
+                                        div(classes = "message-preview-section") {
+                                            div(classes = "message-preview-wrapper") {
+                                                div(classes = "message-preview") {
+                                                    div(classes = "discord-style") {
+                                                        id = "prefix-preview"
+
+                                                        prefixPreview(
+                                                            session,
+                                                            serverConfig.commandPrefix,
+                                                            website.loritta.lorittaShards.shardManager.shards.first().selfUser
+                                                        )
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    fieldWrapper {
+                                        toggle(
+                                            serverConfig.deleteMessageAfterCommand,
+                                            "deleteMessageAfterCommand",
+                                            true,
+                                            {
+                                                text(i18nContext.get(DashboardI18nKeysData.PrefixedCommands.DeleteMessageAfterCommand.Title))
+                                            },
+                                            {
+                                                text(i18nContext.get(DashboardI18nKeysData.PrefixedCommands.DeleteMessageAfterCommand.Description))
+                                            }
+                                        )
+                                    }
+
+                                    fieldWrapper {
+                                        toggle(
+                                            serverConfig.warnOnUnknownCommand,
+                                            "warnOnUnknownCommand",
+                                            true,
+                                            {
+                                                text(i18nContext.get(DashboardI18nKeysData.PrefixedCommands.WarnOnUnknownCommand.Title))
+                                            },
+                                            {
+                                                text(i18nContext.get(DashboardI18nKeysData.PrefixedCommands.WarnOnUnknownCommand.Description))
+                                            }
+                                        )
+                                    }
+                                }
+                            }
                         },
                         {
-                            rightSidebarContentAndSaveBarWrapper(
-                                {
-                                    if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
-                                        blissEvent("resyncState", "[bliss-component='save-bar']")
-                                        blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Configuração redefinida!"))
-                                    }
-
-                                    div(classes = "hero-wrapper") {
-                                        div(classes = "hero-text") {
-                                            h1 {
-                                                text(i18nContext.get(I18nKeysData.Website.Dashboard.PrefixedCommands.Title))
-                                            }
-
-                                            for (str in i18nContext.language
-                                                .textBundle
-                                                .lists
-                                                .getValue(I18nKeys.Website.Dashboard.PrefixedCommands.Description.key)
-                                            ) {
-                                                p {
-                                                    handleI18nString(
-                                                        str,
-                                                        appendAsFormattedText(i18nContext, mapOf()),
-                                                    ) {
-                                                        when (it) {
-                                                            else -> TextReplaceControls.AppendControlAsIsResult
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    hr {}
-
-                                    div {
-                                        id = "section-config"
-
-                                        fieldWrappers {
-                                            fieldWrapper {
-                                                fieldTitle {
-                                                    text("Prefixo da Loritta")
-                                                }
-
-                                                fieldDescription {
-                                                    text("Prefixo é o texto que vem antes de um comando. Por padrão eu venho com o caractere +, mas você pode alterá-lo nesta opção.")
-                                                }
-
-                                                textInput {
-                                                    attributes["bliss-post"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/prefixed-commands/prefix-preview"
-                                                    attributes["bliss-swap:200"] = "body (innerHTML) -> #prefix-preview (innerHTML)"
-                                                    attributes["bliss-include-json"] = "[name='prefix']"
-                                                    attributes["bliss-trigger"] = "input"
-                                                    attributes["bliss-transform-text"] = "trim, no-spaces"
-                                                    attributes["loritta-config"] = "prefix"
-                                                    name = "prefix"
-
-                                                    value = serverConfig.commandPrefix
-                                                }
-
-                                                div(classes = "message-preview-section") {
-                                                    div(classes = "message-preview-wrapper") {
-                                                        div(classes = "message-preview") {
-                                                            div(classes = "discord-style") {
-                                                                id = "prefix-preview"
-
-                                                                prefixPreview(
-                                                                    session,
-                                                                    serverConfig.commandPrefix,
-                                                                    website.loritta.lorittaShards.shardManager.shards.first().selfUser
-                                                                )
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-
-                                            fieldWrapper {
-                                                toggle(
-                                                    serverConfig.deleteMessageAfterCommand,
-                                                    "deleteMessageAfterCommand",
-                                                    true,
-                                                    {
-                                                        text(i18nContext.get(DashboardI18nKeysData.PrefixedCommands.DeleteMessageAfterCommand.Title))
-                                                    },
-                                                    {
-                                                        text(i18nContext.get(DashboardI18nKeysData.PrefixedCommands.DeleteMessageAfterCommand.Description))
-                                                    }
-                                                )
-                                            }
-
-                                            fieldWrapper {
-                                                toggle(
-                                                    serverConfig.warnOnUnknownCommand,
-                                                    "warnOnUnknownCommand",
-                                                    true,
-                                                    {
-                                                        text(i18nContext.get(DashboardI18nKeysData.PrefixedCommands.WarnOnUnknownCommand.Title))
-                                                    },
-                                                    {
-                                                        text(i18nContext.get(DashboardI18nKeysData.PrefixedCommands.WarnOnUnknownCommand.Description))
-                                                    }
-                                                )
-                                            }
-                                        }
-                                    }
-                                },
-                                {
-                                    genericSaveBar(
-                                        i18nContext,
-                                        false,
-                                        guild,
-                                        "/prefixed-commands"
-                                    )
-                                }
+                            genericSaveBar(
+                                i18nContext,
+                                false,
+                                guild,
+                                "/prefixed-commands"
                             )
                         }
                     )
                 }
-        )
+            )
+        }
     }
 }

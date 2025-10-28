@@ -18,6 +18,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.dashboard
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.guildDashLeftSidebarEntries
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.guildPremiumKeysAndPremiumInfoPlan
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.selectAll
@@ -42,49 +43,46 @@ class PremiumKeysGuildDashboardRoute(website: LorittaDashboardWebServer) : Requi
 
         val plan = ServerPremiumPlans.getPlanFromValue(guildPremiumKeys.sumOf { it[DonationKeys.value] })
 
-        call.respondHtml(
-            createHTML()
-                .html {
-                    dashboardBase(
-                        i18nContext,
-                        i18nContext.get(DashboardI18nKeysData.PremiumKeys.Title),
-                        session,
-                        theme,
-                        shimejiSettings,
-                        userPremiumPlan,
-                        {
-                            guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.PREMIUM_KEYS)
-                        },
-                        {
-                            div(classes = "hero-wrapper") {
-                                div(classes = "hero-text") {
-                                    h1 {
-                                        text("Premium Keys")
-                                    }
-
-                                    p {
-                                        text("Premium Keys")
-                                    }
-                                }
+        call.respondHtml {
+            dashboardBase(
+                i18nContext,
+                i18nContext.get(DashboardI18nKeysData.PremiumKeys.Title),
+                session,
+                theme,
+                shimejiSettings,
+                userPremiumPlan,
+                {
+                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.PREMIUM_KEYS)
+                },
+                {
+                    div(classes = "hero-wrapper") {
+                        div(classes = "hero-text") {
+                            h1 {
+                                text("Premium Keys")
                             }
 
-                            hr {}
-
-                            div {
-                                id = "section-config"
-
-                                guildPremiumKeysAndPremiumInfoPlan(
-                                    i18nContext,
-                                    guild,
-                                    session,
-                                    plan,
-                                    guildPremiumKeys,
-                                    userPremiumKeys
-                                )
+                            p {
+                                text("Premium Keys")
                             }
                         }
-                    )
+                    }
+
+                    hr {}
+
+                    div {
+                        id = "section-config"
+
+                        guildPremiumKeysAndPremiumInfoPlan(
+                            i18nContext,
+                            guild,
+                            session,
+                            plan,
+                            guildPremiumKeys,
+                            userPremiumKeys
+                        )
+                    }
                 }
-        )
+            )
+        }
     }
 }

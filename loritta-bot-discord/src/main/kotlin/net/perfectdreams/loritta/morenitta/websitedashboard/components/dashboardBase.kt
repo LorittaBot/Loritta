@@ -8,6 +8,7 @@ import kotlinx.html.canvas
 import kotlinx.html.div
 import kotlinx.html.head
 import kotlinx.html.id
+import kotlinx.html.lang
 import kotlinx.html.link
 import kotlinx.html.meta
 import kotlinx.html.nav
@@ -18,6 +19,7 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.dashboard.BlissHex
 import net.perfectdreams.loritta.dashboard.EmbeddedToast
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
@@ -36,7 +38,13 @@ fun HTML.dashboardBase(
     leftSidebarEntries: FlowContent.() -> Unit,
     rightSidebarContent: FlowContent.() -> Unit,
 ) {
+    // See these HTML tags! https://blog.jim-nielsen.com/2025/dont-forget-these-html-tags/
+    lang = i18nContext.get(I18nKeysData.Website.Bcp47Locale)
+
     head {
+        meta(charset = "utf-8")
+
+        // Necessary for responsive design on phones: If not set, the browsers uses the "Use Desktop Design"
         meta(name = "viewport", content = "width=device-width, initial-scale=1, viewport-fit=cover")
 
         title(dashboardTitle(i18nContext, title))

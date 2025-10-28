@@ -22,6 +22,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuild
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.switchtwitch.data.TwitchUser
 import org.jetbrains.exposed.sql.ResultRow
@@ -72,51 +73,43 @@ class DeleteTwitchChannelGuildDashboardRoute(website: LorittaDashboardWebServer)
                     profilesInfo.putAll(accountsInfo.associateBy { it.id })
                 }
 
-                call.respondHtml(
-                    createHTML(false)
-                        .body {
-                            trackedTwitchChannelsSection(
-                                website.loritta,
-                                i18nContext,
-                                guild,
-                                trackedProfiles.map {
-                                    val profileInfo = profilesInfo[it[TrackedTwitchAccounts.id].value]
+                call.respondHtmlFragment(status = HttpStatusCode.OK) {
+                    trackedTwitchChannelsSection(
+                        website.loritta,
+                        i18nContext,
+                        guild,
+                        trackedProfiles.map {
+                            val profileInfo = profilesInfo[it[TrackedTwitchAccounts.id].value]
 
-                                    TrackedProfile(
-                                        profileInfo?.login,
-                                        profileInfo?.profileImageUrl,
-                                        it[TrackedTwitchAccounts.twitchUserId].toString(),
-                                        it[TrackedTwitchAccounts.id].value,
-                                        it[TrackedTwitchAccounts.channelId]
-                                    )
-                                }
+                            TrackedProfile(
+                                profileInfo?.login,
+                                profileInfo?.profileImageUrl,
+                                it[TrackedTwitchAccounts.twitchUserId].toString(),
+                                it[TrackedTwitchAccounts.id].value,
+                                it[TrackedTwitchAccounts.channelId]
                             )
+                        }
+                    )
 
-                            blissCloseModal()
+                    blissCloseModal()
 
-                            blissShowToast(
-                                createEmbeddedToast(
-                                    EmbeddedToast.Type.SUCCESS,
-                                    "Canal deletado!"
-                                )
-                            )
-                        },
-                    status = HttpStatusCode.OK
-                )
+                    blissShowToast(
+                        createEmbeddedToast(
+                            EmbeddedToast.Type.SUCCESS,
+                            "Canal deletado!"
+                        )
+                    )
+                }
             }
             Result.ChannelNotFound -> {
-                call.respondHtml(
-                    createHTML(false)
-                        .body {
-                            blissShowToast(
-                                createEmbeddedToast(
-                                    EmbeddedToast.Type.WARN,
-                                    "Você não pode deletar um canal que não existe!"
-                                )
-                            )
-                        },
-                    status = HttpStatusCode.NotFound
-                )
+                call.respondHtmlFragment(status = HttpStatusCode.NotFound) {
+                    blissShowToast(
+                        createEmbeddedToast(
+                            EmbeddedToast.Type.WARN,
+                            "Você não pode deletar um canal que não existe!"
+                        )
+                    )
+                }
             }
         }
     }

@@ -19,6 +19,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.sonhosBun
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresUserAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.serializable.SonhosBundle
 import org.jetbrains.exposed.sql.and
@@ -47,14 +48,11 @@ class PostSonhosShopApplyCouponUserDashboardRoute(website: LorittaDashboardWebSe
                     }
             }
 
-            call.respondHtml(
-                createHTML(false)
-                    .body {
-                        blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Cupom removido!"))
+            call.respondHtmlFragment {
+                blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Cupom removido!"))
 
-                        sonhosBundlesWithCouponInput(i18nContext, sonhosBundles, null)
-                    }
-            )
+                sonhosBundlesWithCouponInput(i18nContext, sonhosBundles, null)
+            }
             return
         }
 
@@ -108,32 +106,21 @@ class PostSonhosShopApplyCouponUserDashboardRoute(website: LorittaDashboardWebSe
 
         when (result) {
             is Result.Success -> {
-                call.respondHtml(
-                    createHTML()
-                        .body {
-                            blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Cupom ativado!"))
+                call.respondHtmlFragment {
+                    blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Cupom ativado!"))
 
-                            sonhosBundlesWithCouponInput(i18nContext, result.sonhosBundles, result.websiteCoupon)
-                        }
-                )
+                    sonhosBundlesWithCouponInput(i18nContext, result.sonhosBundles, result.websiteCoupon)
+                }
             }
             is Result.CouponNotFound -> {
-                call.respondHtml(
-                    createHTML()
-                        .body {
-                            blissShowToast(createEmbeddedToast(EmbeddedToast.Type.WARN, "Cupom não existe ou ele expirou!"))
-                        },
-                    status = HttpStatusCode.NotFound
-                )
+                call.respondHtmlFragment(status = HttpStatusCode.NotFound) {
+                    blissShowToast(createEmbeddedToast(EmbeddedToast.Type.WARN, "Cupom não existe ou ele expirou!"))
+                }
             }
             is Result.TooManyCouponUses -> {
-                call.respondHtml(
-                    createHTML()
-                        .body {
-                            blissShowToast(createEmbeddedToast(EmbeddedToast.Type.WARN, "O cupom chegou no limite de usos!"))
-                        },
-                    status = HttpStatusCode.BadRequest
-                )
+                call.respondHtmlFragment(status = HttpStatusCode.BadRequest) {
+                    blissShowToast(createEmbeddedToast(EmbeddedToast.Type.WARN, "O cupom chegou no limite de usos!"))
+                }
             }
         }
     }

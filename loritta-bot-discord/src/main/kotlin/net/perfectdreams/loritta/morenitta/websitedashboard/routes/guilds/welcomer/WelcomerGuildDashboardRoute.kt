@@ -25,6 +25,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuild
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissEvent
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.placeholders.sections.JoinMessagePlaceholders
 import net.perfectdreams.loritta.placeholders.sections.LeaveMessagePlaceholders
 import net.perfectdreams.loritta.serializable.ColorTheme
@@ -120,252 +121,249 @@ class WelcomerGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
             }
         }
 
-        call.respondHtml(
-            createHTML()
-                .html {
-                    dashboardBase(
-                        i18nContext,
-                        i18nContext.get(DashboardI18nKeysData.Welcomer.Title),
-                        session,
-                        theme,
-                        shimejiSettings,
-                        userPremiumPlan,
+        call.respondHtml {
+            dashboardBase(
+                i18nContext,
+                i18nContext.get(DashboardI18nKeysData.Welcomer.Title),
+                session,
+                theme,
+                shimejiSettings,
+                userPremiumPlan,
+                {
+                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.WELCOMER)
+                },
+                {
+                    rightSidebarContentAndSaveBarWrapper(
                         {
-                            guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.WELCOMER)
-                        },
-                        {
-                            rightSidebarContentAndSaveBarWrapper(
-                                {
-                                    if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
-                                        blissEvent("resyncState", "[bliss-component='save-bar']")
-                                        blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Configuração redefinida!"))
-                                    }
+                            if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
+                                blissEvent("resyncState", "[bliss-component='save-bar']")
+                                blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Configuração redefinida!"))
+                            }
 
-                                    heroWrapper {
-                                        div(classes = "hero-image") {
-                                            div(classes = "welcomer-web-animation") {
-                                                etherealGambiImg(src = "https://stuff.loritta.website/loritta-welcomer-heathecliff.png", sizes = "350px") {
-                                                    style = "height: 100%; width: 100%;"
-                                                }
-
-                                                span(classes = "welcome-wumpus-message") {
-                                                    text("Welcome, ")
-                                                    span(classes = "discord-mention") {
-                                                        text("@Wumpus")
-                                                    }
-                                                    text("!")
-
-                                                    img(src = "https://cdn.discordapp.com/emojis/417813932380520448.png?v=1", classes = "discord-inline-emoji")
-                                                }
-                                            }
+                            heroWrapper {
+                                div(classes = "hero-image") {
+                                    div(classes = "welcomer-web-animation") {
+                                        etherealGambiImg(src = "https://stuff.loritta.website/loritta-welcomer-heathecliff.png", sizes = "350px") {
+                                            style = "height: 100%; width: 100%;"
                                         }
 
-                                        heroText {
-                                            h1 {
-                                                text(i18nContext.get(I18nKeysData.Website.Dashboard.Welcomer.Title))
+                                        span(classes = "welcome-wumpus-message") {
+                                            text("Welcome, ")
+                                            span(classes = "discord-mention") {
+                                                text("@Wumpus")
                                             }
+                                            text("!")
 
-                                            p {
-                                                text("Anuncie quem está entrando e saindo do seu servidor da maneira que você queria! Envie mensagens para novatos via mensagem direta com informações sobre o seu servidor para não encher o chat com informações repetidas e muito mais!")
-                                            }
+                                            img(src = "https://cdn.discordapp.com/emojis/417813932380520448.png?v=1", classes = "discord-inline-emoji")
                                         }
                                     }
+                                }
 
-                                    hr {}
+                                heroText {
+                                    h1 {
+                                        text(i18nContext.get(I18nKeysData.Website.Dashboard.Welcomer.Title))
+                                    }
 
-                                    sectionConfig {
+                                    p {
+                                        text("Anuncie quem está entrando e saindo do seu servidor da maneira que você queria! Envie mensagens para novatos via mensagem direta com informações sobre o seu servidor para não encher o chat com informações repetidas e muito mais!")
+                                    }
+                                }
+                            }
+
+                            hr {}
+
+                            sectionConfig {
+                                fieldWrappers {
+                                    toggleableSection(
+                                        {
+                                            text("Ativar as mensagens quando alguém entrar")
+                                        },
+                                        null,
+                                        welcomerConfig?.tellOnJoin ?: false,
+                                        "tellOnJoin",
+                                        true
+                                    ) {
                                         fieldWrappers {
-                                            toggleableSection(
-                                                {
-                                                    text("Ativar as mensagens quando alguém entrar")
-                                                },
-                                                null,
-                                                welcomerConfig?.tellOnJoin ?: false,
-                                                "tellOnJoin",
-                                                true
-                                            ) {
-                                                fieldWrappers {
-                                                    fieldWrapper {
-                                                        fieldTitle {
-                                                            text("Canal onde será enviado as mensagens")
-                                                        }
+                                            fieldWrapper {
+                                                fieldTitle {
+                                                    text("Canal onde será enviado as mensagens")
+                                                }
 
-                                                        channelSelectMenu(
-                                                            guild,
-                                                            welcomerConfig?.channelJoinId
-                                                        ) {
-                                                            attributes["loritta-config"] = "channelJoinId"
-                                                            name = "channelJoinId"
-                                                        }
-                                                    }
-
-                                                    fieldWrapper {
-                                                        fieldTitle {
-                                                            text("Segundos para deletar a mensagem (Deixe em 0 para nunca deletar)")
-                                                        }
-
-                                                        numberInput {
-                                                            name = "deleteJoinMessagesAfter"
-                                                            attributes["loritta-config"] = "deleteJoinMessagesAfter"
-                                                            value = welcomerConfig?.deleteJoinMessagesAfter?.toString() ?: "0"
-                                                            min = "0"
-                                                            max = "60"
-                                                            step = "1"
-                                                        }
-                                                    }
-
-                                                    fieldWrapper {
-                                                        fieldTitle {
-                                                            text("Mensagem quando alguém entrar")
-                                                        }
-
-                                                        discordMessageEditor(
-                                                            guild,
-                                                            MessageEditorBootstrap.TestMessageTarget.QuerySelector("[loritta-config='channelJoinId']"),
-                                                            listOf(defaultJoinMessage),
-                                                            joinMessagePlaceholders,
-                                                            welcomerConfig?.joinMessage ?: defaultJoinMessage.content
-                                                        ) {
-                                                            attributes["loritta-config"] = "joinMessage"
-                                                            name = "joinMessage"
-                                                        }
-                                                    }
+                                                channelSelectMenu(
+                                                    guild,
+                                                    welcomerConfig?.channelJoinId
+                                                ) {
+                                                    attributes["loritta-config"] = "channelJoinId"
+                                                    name = "channelJoinId"
                                                 }
                                             }
 
-                                            toggleableSection(
-                                                {
-                                                    text("Ativar as mensagens quando alguém sair")
-                                                },
-                                                null,
-                                                welcomerConfig?.tellOnRemove ?: false,
-                                                "tellOnRemove",
-                                                true
-                                            ) {
-                                                fieldWrappers {
-                                                    fieldWrapper {
-                                                        fieldTitle {
-                                                            text("Canal onde será enviado as mensagens")
-                                                        }
+                                            fieldWrapper {
+                                                fieldTitle {
+                                                    text("Segundos para deletar a mensagem (Deixe em 0 para nunca deletar)")
+                                                }
 
-                                                        channelSelectMenu(
-                                                            guild,
-                                                            welcomerConfig?.channelRemoveId
-                                                        ) {
-                                                            attributes["loritta-config"] = "channelRemoveId"
-                                                            name = "channelRemoveId"
-                                                        }
-                                                    }
+                                                numberInput {
+                                                    name = "deleteJoinMessagesAfter"
+                                                    attributes["loritta-config"] = "deleteJoinMessagesAfter"
+                                                    value = welcomerConfig?.deleteJoinMessagesAfter?.toString() ?: "0"
+                                                    min = "0"
+                                                    max = "60"
+                                                    step = "1"
+                                                }
+                                            }
 
-                                                    fieldWrapper {
-                                                        fieldTitle {
-                                                            text("Segundos para deletar a mensagem (Deixe em 0 para nunca deletar)")
-                                                        }
+                                            fieldWrapper {
+                                                fieldTitle {
+                                                    text("Mensagem quando alguém entrar")
+                                                }
 
-                                                        numberInput {
-                                                            name = "deleteRemoveMessagesAfter"
-                                                            attributes["loritta-config"] = "deleteRemoveMessagesAfter"
-                                                            value = welcomerConfig?.deleteRemoveMessagesAfter?.toString() ?: "0"
-                                                            min = "0"
-                                                            max = "60"
-                                                            step = "1"
-                                                        }
-                                                    }
+                                                discordMessageEditor(
+                                                    guild,
+                                                    MessageEditorBootstrap.TestMessageTarget.QuerySelector("[loritta-config='channelJoinId']"),
+                                                    listOf(defaultJoinMessage),
+                                                    joinMessagePlaceholders,
+                                                    welcomerConfig?.joinMessage ?: defaultJoinMessage.content
+                                                ) {
+                                                    attributes["loritta-config"] = "joinMessage"
+                                                    name = "joinMessage"
+                                                }
+                                            }
+                                        }
+                                    }
 
-                                                    fieldWrapper {
-                                                        fieldTitle {
-                                                            text("Mensagem quando alguém sair")
-                                                        }
+                                    toggleableSection(
+                                        {
+                                            text("Ativar as mensagens quando alguém sair")
+                                        },
+                                        null,
+                                        welcomerConfig?.tellOnRemove ?: false,
+                                        "tellOnRemove",
+                                        true
+                                    ) {
+                                        fieldWrappers {
+                                            fieldWrapper {
+                                                fieldTitle {
+                                                    text("Canal onde será enviado as mensagens")
+                                                }
 
-                                                        discordMessageEditor(
-                                                            guild,
-                                                            MessageEditorBootstrap.TestMessageTarget.QuerySelector("[loritta-config='channelRemoveId']"),
-                                                            listOf(defaultLeaveMessage),
-                                                            leaveMessagePlaceholders,
-                                                            welcomerConfig?.removeMessage ?: defaultLeaveMessage.content
-                                                        ) {
-                                                            attributes["name"] = "removeMessage"
-                                                            attributes["loritta-config"] = "removeMessage"
-                                                        }
-                                                    }
+                                                channelSelectMenu(
+                                                    guild,
+                                                    welcomerConfig?.channelRemoveId
+                                                ) {
+                                                    attributes["loritta-config"] = "channelRemoveId"
+                                                    name = "channelRemoveId"
+                                                }
+                                            }
 
-                                                    fieldWrapper {
-                                                        toggleableSection(
-                                                            {
-                                                                text("Ativar as mensagens quando alguém sair")
-                                                            },
-                                                            null,
-                                                            welcomerConfig?.tellOnBan ?: false,
-                                                            "tellOnBan",
-                                                            true
-                                                        ) {
-                                                            fieldWrappers {
-                                                                fieldWrapper {
-                                                                    fieldTitle {
-                                                                        text("Mensagem quando alguém for banido")
-                                                                    }
+                                            fieldWrapper {
+                                                fieldTitle {
+                                                    text("Segundos para deletar a mensagem (Deixe em 0 para nunca deletar)")
+                                                }
 
-                                                                    discordMessageEditor(
-                                                                        guild,
-                                                                        MessageEditorBootstrap.TestMessageTarget.QuerySelector("[loritta-config='channelRemoveId']"),
-                                                                        listOf(),
-                                                                        leaveMessagePlaceholders,
-                                                                        welcomerConfig?.bannedMessage ?: ""
-                                                                    ) {
-                                                                        attributes["name"] = "bannedMessage"
-                                                                        attributes["loritta-config"] = "bannedMessage"
-                                                                    }
-                                                                }
+                                                numberInput {
+                                                    name = "deleteRemoveMessagesAfter"
+                                                    attributes["loritta-config"] = "deleteRemoveMessagesAfter"
+                                                    value = welcomerConfig?.deleteRemoveMessagesAfter?.toString() ?: "0"
+                                                    min = "0"
+                                                    max = "60"
+                                                    step = "1"
+                                                }
+                                            }
+
+                                            fieldWrapper {
+                                                fieldTitle {
+                                                    text("Mensagem quando alguém sair")
+                                                }
+
+                                                discordMessageEditor(
+                                                    guild,
+                                                    MessageEditorBootstrap.TestMessageTarget.QuerySelector("[loritta-config='channelRemoveId']"),
+                                                    listOf(defaultLeaveMessage),
+                                                    leaveMessagePlaceholders,
+                                                    welcomerConfig?.removeMessage ?: defaultLeaveMessage.content
+                                                ) {
+                                                    attributes["name"] = "removeMessage"
+                                                    attributes["loritta-config"] = "removeMessage"
+                                                }
+                                            }
+
+                                            fieldWrapper {
+                                                toggleableSection(
+                                                    {
+                                                        text("Ativar as mensagens quando alguém sair")
+                                                    },
+                                                    null,
+                                                    welcomerConfig?.tellOnBan ?: false,
+                                                    "tellOnBan",
+                                                    true
+                                                ) {
+                                                    fieldWrappers {
+                                                        fieldWrapper {
+                                                            fieldTitle {
+                                                                text("Mensagem quando alguém for banido")
+                                                            }
+
+                                                            discordMessageEditor(
+                                                                guild,
+                                                                MessageEditorBootstrap.TestMessageTarget.QuerySelector("[loritta-config='channelRemoveId']"),
+                                                                listOf(),
+                                                                leaveMessagePlaceholders,
+                                                                welcomerConfig?.bannedMessage ?: ""
+                                                            ) {
+                                                                attributes["name"] = "bannedMessage"
+                                                                attributes["loritta-config"] = "bannedMessage"
                                                             }
                                                         }
                                                     }
                                                 }
                                             }
+                                        }
+                                    }
 
-                                            toggleableSection(
-                                                {
-                                                    text("Ativar as mensagens enviadas nas mensagens diretas do usuário quando alguém entrar")
-                                                },
-                                                {
-                                                    text("Útil caso você queria mostrar informações básicas sobre o servidor para um usuário mas não quer que fique cheio de mensagens inúteis toda hora que alguém entra.")
-                                                },
-                                                welcomerConfig?.tellOnPrivateJoin ?: false,
-                                                "tellOnPrivateJoin",
-                                                true
-                                            ) {
-                                                fieldWrappers {
-                                                    fieldWrapper {
-                                                        fieldTitle {
-                                                            text("Mensagem quando alguém entrar (via mensagem direta)")
-                                                        }
+                                    toggleableSection(
+                                        {
+                                            text("Ativar as mensagens enviadas nas mensagens diretas do usuário quando alguém entrar")
+                                        },
+                                        {
+                                            text("Útil caso você queria mostrar informações básicas sobre o servidor para um usuário mas não quer que fique cheio de mensagens inúteis toda hora que alguém entra.")
+                                        },
+                                        welcomerConfig?.tellOnPrivateJoin ?: false,
+                                        "tellOnPrivateJoin",
+                                        true
+                                    ) {
+                                        fieldWrappers {
+                                            fieldWrapper {
+                                                fieldTitle {
+                                                    text("Mensagem quando alguém entrar (via mensagem direta)")
+                                                }
 
-                                                        discordMessageEditor(
-                                                            guild,
-                                                            MessageEditorBootstrap.TestMessageTarget.SendDirectMessage,
-                                                            listOf(),
-                                                            joinMessagePlaceholders,
-                                                            welcomerConfig?.joinPrivateMessage ?: ""
-                                                        ) {
-                                                            attributes["name"] = "joinPrivateMessage"
-                                                            attributes["loritta-config"] = "joinPrivateMessage"
-                                                        }
-                                                    }
+                                                discordMessageEditor(
+                                                    guild,
+                                                    MessageEditorBootstrap.TestMessageTarget.SendDirectMessage,
+                                                    listOf(),
+                                                    joinMessagePlaceholders,
+                                                    welcomerConfig?.joinPrivateMessage ?: ""
+                                                ) {
+                                                    attributes["name"] = "joinPrivateMessage"
+                                                    attributes["loritta-config"] = "joinPrivateMessage"
                                                 }
                                             }
                                         }
                                     }
                                 }
-                            ) {
-                                genericSaveBar(
-                                    i18nContext,
-                                    false,
-                                    guild,
-                                    "/welcomer"
-                                )
                             }
                         }
-                    )
+                    ) {
+                        genericSaveBar(
+                            i18nContext,
+                            false,
+                            guild,
+                            "/welcomer"
+                        )
+                    }
                 }
-        )
+            )
+        }
     }
 }

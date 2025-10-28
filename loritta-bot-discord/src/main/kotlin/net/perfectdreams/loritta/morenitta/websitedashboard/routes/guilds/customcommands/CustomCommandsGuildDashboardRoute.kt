@@ -22,6 +22,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.customGui
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.dashboardBase
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.guildDashLeftSidebarEntries
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.selectAll
@@ -36,59 +37,56 @@ class CustomCommandsGuildDashboardRoute(website: LorittaDashboardWebServer) : Re
                 .toList()
         }
 
-        call.respondHtml(
-            createHTML()
-                .html {
-                    dashboardBase(
-                        i18nContext,
-                        i18nContext.get(DashboardI18nKeysData.CustomCommands.Title),
-                        session,
-                        theme,
-                        shimejiSettings,
-                        userPremiumPlan,
-                        {
-                            guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.CUSTOM_COMMANDS)
-                        },
-                        {
-                            div(classes = "hero-wrapper") {
-                                div(classes = "hero-image") {
-                                    img(classes = "custom-commands-web-animation", src = "https://stuff.loritta.website/loritta-utilities-sortros.png")
-                                }
+        call.respondHtml {
+            dashboardBase(
+                i18nContext,
+                i18nContext.get(DashboardI18nKeysData.CustomCommands.Title),
+                session,
+                theme,
+                shimejiSettings,
+                userPremiumPlan,
+                {
+                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.CUSTOM_COMMANDS)
+                },
+                {
+                    div(classes = "hero-wrapper") {
+                        div(classes = "hero-image") {
+                            img(classes = "custom-commands-web-animation", src = "https://stuff.loritta.website/loritta-utilities-sortros.png")
+                        }
 
-                                div(classes = "hero-text") {
-                                    h1 {
-                                        text(i18nContext.get(DashboardI18nKeysData.CustomCommands.Title))
-                                    }
+                        div(classes = "hero-text") {
+                            h1 {
+                                text(i18nContext.get(DashboardI18nKeysData.CustomCommands.Title))
+                            }
 
-                                    for (str in i18nContext.language
-                                        .textBundle
-                                        .lists
-                                        .getValue(I18nKeys.Website.Dashboard.CustomCommands.Description.key)
+                            for (str in i18nContext.language
+                                .textBundle
+                                .lists
+                                .getValue(I18nKeys.Website.Dashboard.CustomCommands.Description.key)
+                            ) {
+                                p {
+                                    handleI18nString(
+                                        str,
+                                        appendAsFormattedText(i18nContext, emptyMap()),
                                     ) {
-                                        p {
-                                            handleI18nString(
-                                                str,
-                                                appendAsFormattedText(i18nContext, emptyMap()),
-                                            ) {
-                                                when (it) {
-                                                    else -> TextReplaceControls.AppendControlAsIsResult
-                                                }
-                                            }
+                                        when (it) {
+                                            else -> TextReplaceControls.AppendControlAsIsResult
                                         }
                                     }
                                 }
                             }
-
-                            hr {}
-
-                            div {
-                                id = "section-config"
-
-                                customGuildCommands(i18nContext, guild, customCommands)
-                            }
                         }
-                    )
+                    }
+
+                    hr {}
+
+                    div {
+                        id = "section-config"
+
+                        customGuildCommands(i18nContext, guild, customCommands)
+                    }
                 }
-        )
+            )
+        }
     }
 }

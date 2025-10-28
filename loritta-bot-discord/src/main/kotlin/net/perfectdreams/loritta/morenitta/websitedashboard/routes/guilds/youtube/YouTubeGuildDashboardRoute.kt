@@ -24,6 +24,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.guildDash
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.sectionConfig
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.trackedYouTubeChannelsSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jetbrains.exposed.sql.selectAll
 import kotlin.collections.map
@@ -45,54 +46,51 @@ class YouTubeGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresG
         }.awaitAll().mapNotNull { (it as? YouTubeWebUtils.YouTubeChannelInfoResult.Success)?.channel }
             .associateBy { it.channelId }
 
-        call.respondHtml(
-            createHTML()
-                .html {
-                    dashboardBase(
-                        i18nContext,
-                        i18nContext.get(DashboardI18nKeysData.Youtube.Title),
-                        session,
-                        theme,
-                        shimejiSettings,
-                        userPremiumPlan,
-                        {
-                            guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.YOUTUBE)
-                        },
-                        {
-                            div(classes = "hero-wrapper") {
-                                div(classes = "hero-text") {
-                                    h1 {
-                                        text(i18nContext.get(DashboardI18nKeysData.Youtube.Title))
-                                    }
-
-                                    p {
-                                        text("Anuncie para seus membros quando você posta um novo vídeo no YouTube! Assim, seus fãs não irão perder seus novos vídeos.")
-                                    }
-                                }
+        call.respondHtml {
+            dashboardBase(
+                i18nContext,
+                i18nContext.get(DashboardI18nKeysData.Youtube.Title),
+                session,
+                theme,
+                shimejiSettings,
+                userPremiumPlan,
+                {
+                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.YOUTUBE)
+                },
+                {
+                    div(classes = "hero-wrapper") {
+                        div(classes = "hero-text") {
+                            h1 {
+                                text(i18nContext.get(DashboardI18nKeysData.Youtube.Title))
                             }
 
-                            hr {}
-
-                            sectionConfig {
-                                trackedYouTubeChannelsSection(
-                                    i18nContext,
-                                    guild,
-                                    trackedYouTubeAccounts.map {
-                                        val youtubeChannelInfo = youtubeChannelsInfo[it[TrackedYouTubeAccounts.youTubeChannelId]]
-
-                                        TrackedProfile(
-                                            youtubeChannelInfo?.name,
-                                            youtubeChannelInfo?.avatarUrl,
-                                            it[TrackedYouTubeAccounts.youTubeChannelId],
-                                            it[TrackedYouTubeAccounts.id].value,
-                                            it[TrackedYouTubeAccounts.channelId]
-                                        )
-                                    }
-                                )
+                            p {
+                                text("Anuncie para seus membros quando você posta um novo vídeo no YouTube! Assim, seus fãs não irão perder seus novos vídeos.")
                             }
                         }
-                    )
+                    }
+
+                    hr {}
+
+                    sectionConfig {
+                        trackedYouTubeChannelsSection(
+                            i18nContext,
+                            guild,
+                            trackedYouTubeAccounts.map {
+                                val youtubeChannelInfo = youtubeChannelsInfo[it[TrackedYouTubeAccounts.youTubeChannelId]]
+
+                                TrackedProfile(
+                                    youtubeChannelInfo?.name,
+                                    youtubeChannelInfo?.avatarUrl,
+                                    it[TrackedYouTubeAccounts.youTubeChannelId],
+                                    it[TrackedYouTubeAccounts.id].value,
+                                    it[TrackedYouTubeAccounts.channelId]
+                                )
+                            }
+                        )
+                    }
                 }
-        )
+            )
+        }
     }
 }

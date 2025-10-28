@@ -31,6 +31,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuild
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.configSaved
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
@@ -86,45 +87,38 @@ class PostBlueskyProfileGuildDashboardRoute(website: LorittaDashboardWebServer) 
         }
 
         if (insertedRow == null) {
-            call.respondHtml(
-                createHTML(false)
-                    .body {
-                        blissShowToast(
-                            createEmbeddedToast(
-                                EmbeddedToast.Type.WARN,
-                                "Você está no limite de contas!"
-                            )
-                        )
-                    },
-                status = HttpStatusCode.BadRequest
-            )
+            call.respondHtmlFragment(status = HttpStatusCode.BadRequest) {
+                blissShowToast(
+                    createEmbeddedToast(
+                        EmbeddedToast.Type.WARN,
+                        "Você está no limite de contas!"
+                    )
+                )
+            }
             return
         }
 
         call.response.header("Bliss-Push-Url", "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/bluesky/${insertedRow[TrackedBlueskyAccounts.id]}")
-        call.respondHtml(
-            createHTML(false)
-                .body {
-                    configSaved(i18nContext)
+        call.respondHtmlFragment {
+            configSaved(i18nContext)
 
-                    sectionConfig {
-                        trackedBlueskyProfileEditor(
-                            i18nContext,
-                            guild,
-                            insertedRow[TrackedBlueskyAccounts.channelId],
-                            insertedRow[TrackedBlueskyAccounts.message]
-                        )
-                    }
+            sectionConfig {
+                trackedBlueskyProfileEditor(
+                    i18nContext,
+                    guild,
+                    insertedRow[TrackedBlueskyAccounts.channelId],
+                    insertedRow[TrackedBlueskyAccounts.message]
+                )
+            }
 
-                    hr {}
+            hr {}
 
-                    trackedProfileEditorSaveBar(
-                        i18nContext,
-                        guild,
-                        "bluesky",
-                        insertedRow[TrackedBlueskyAccounts.id].value
-                    )
-                }
-        )
+            trackedProfileEditorSaveBar(
+                i18nContext,
+                guild,
+                "bluesky",
+                insertedRow[TrackedBlueskyAccounts.id].value
+            )
+        }
     }
 }

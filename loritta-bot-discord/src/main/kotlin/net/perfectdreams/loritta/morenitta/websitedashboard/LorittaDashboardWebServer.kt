@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.websitedashboard
 
+import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
 import io.ktor.server.application.*
 import io.ktor.server.cio.*
@@ -451,11 +452,17 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
                 }
 
                 get("/assets/css/style.css") {
-                    call.respondText(assets.cssBundle.content)
+                    call.respondText(
+                        assets.cssBundle.content,
+                        contentType = ContentType.Text.CSS
+                    )
                 }
 
                 get("/assets/js/frontend.js") {
-                    call.respondText(assets.jsBundle.content)
+                    call.respondText(
+                        assets.jsBundle.content,
+                        contentType = ContentType.Application.JavaScript
+                    )
                 }
 
                 staticResources("/assets", "/dashboard/static/assets")

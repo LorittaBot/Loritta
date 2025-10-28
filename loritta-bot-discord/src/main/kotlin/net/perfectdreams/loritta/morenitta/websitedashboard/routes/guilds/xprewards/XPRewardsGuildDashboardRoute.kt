@@ -38,6 +38,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuild
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissEvent
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.serializable.levels.RoleGiveType
 import org.jetbrains.exposed.sql.selectAll
@@ -54,172 +55,169 @@ class XPRewardsGuildDashboardRoute(website: LorittaDashboardWebServer) : Require
             Pair(serverConfig.levelConfig, rolesByExperience)
         }
 
-        call.respondHtml(
-            createHTML()
-                .html {
-                    dashboardBase(
-                        i18nContext,
-                        i18nContext.get(DashboardI18nKeysData.XpRewards.Title),
-                        session,
-                        theme,
-                        shimejiSettings,
-                        userPremiumPlan,
+        call.respondHtml {
+            dashboardBase(
+                i18nContext,
+                i18nContext.get(DashboardI18nKeysData.XpRewards.Title),
+                session,
+                theme,
+                shimejiSettings,
+                userPremiumPlan,
+                {
+                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.XP_REWARDS)
+                },
+                {
+                    rightSidebarContentAndSaveBarWrapper(
                         {
-                            guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.XP_REWARDS)
+                            if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
+                                blissEvent("resyncState", "[bliss-component='save-bar']")
+                                blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Configuração redefinida!"))
+                            }
+
+                            heroWrapper {
+                                heroText {
+                                    h1 {
+                                        text(i18nContext.get(DashboardI18nKeysData.XpRewards.Title))
+                                    }
+
+                                    p {
+                                        text("Recompense usuários ativos do seu servidor com cargos únicos e exclusivos.")
+                                    }
+                                }
+                            }
+
+                            hr {}
+
+                            sectionConfig {
+                                fieldWrappers {
+                                    fieldWrapper {
+                                        fieldTitle {
+                                            text("Estilo de Recompensas por Cargo")
+                                        }
+
+                                        fancyRadioInput({
+                                            name = "roleGiveType"
+                                            attributes["loritta-config"] = "roleGiveType"
+                                            value = RoleGiveType.STACK.name
+
+                                            checked = levelConfig?.roleGiveType == RoleGiveType.STACK || levelConfig?.roleGiveType == null
+                                        }) {
+                                            div(classes = "radio-option-info") {
+                                                div(classes = "radio-option-title") {
+                                                    text("Empilhar recompensas anteriores")
+                                                }
+
+                                                div(classes = "radio-option-description") {
+                                                    text("Ao executar um comando, eu irei deletar a mensagem do usuário.")
+                                                }
+                                            }
+                                        }
+
+                                        fancyRadioInput({
+                                            name = "roleGiveType"
+                                            attributes["loritta-config"] = "roleGiveType"
+                                            value = RoleGiveType.REMOVE.name
+                                            checked = levelConfig?.roleGiveType == RoleGiveType.REMOVE
+                                        }) {
+                                            div(classes = "radio-option-info") {
+                                                div(classes = "radio-option-title") {
+                                                    text("Remover recompensas anteriores")
+                                                }
+
+                                                div(classes = "radio-option-description") {
+                                                    text("Ao subir de nível, todas as recompensas que o usuário recebeu são removidas")
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    fieldWrapper {
+                                        div {
+                                            fieldTitle {
+                                                text("Recompensas ao Subir de Nível")
+                                            }
+
+                                            controlsWithButton {
+                                                inlinedControls {
+                                                    span {
+                                                        text("Ao chegar em ")
+                                                    }
+
+                                                    numberInput {
+                                                        name = "xp"
+                                                        placeholder = "1000"
+                                                        style = "width: 100px;"
+                                                        value = "1000"
+                                                        min = "0"
+                                                        step = "1000"
+
+                                                        attributes["bliss-post"] = "/${i18nContext.get(I18nKeys.Website.LocalePathId)}/guilds/${guild.idLong}/xp-rewards/xp2level"
+                                                        attributes["bliss-swap:200"] = "body (innerHTML) -> #calculated-level (innerHTML)"
+                                                        attributes["bliss-include-json"] = "[name='xp']"
+                                                        attributes["bliss-trigger"] = "input"
+                                                        attributes["xp-action-add-element"] = "true"
+                                                    }
+
+                                                    span {
+                                                        text(" XP ")
+
+                                                        text("(")
+                                                        span {
+                                                            id = "calculated-level"
+                                                            text("Nível 1")
+                                                        }
+                                                        text(")")
+                                                        text(", dar o cargo ")
+                                                    }
+
+                                                    growInputWrapper {
+                                                        roleSelectMenu(guild, null) {
+                                                            name = "roleId"
+                                                            attributes["xp-action-add-element"] = "true"
+                                                        }
+                                                    }
+                                                }
+
+                                                discordButton(ButtonStyle.SUCCESS) {
+                                                    attributes["bliss-post"] = "/${i18nContext.get(I18nKeys.Website.LocalePathId)}/guilds/${guild.idLong}/xp-rewards/add"
+                                                    attributes["bliss-include-json"] = "[xp-action-add-element]"
+                                                    attributes["bliss-swap:200"] = "body (innerHTML) -> #role-rewards (innerHTML)"
+                                                    text("Adicionar")
+                                                }
+                                            }
+                                        }
+
+                                        div {
+                                            id = "role-rewards"
+
+                                            configurableRoleRewards(
+                                                i18nContext,
+                                                guild,
+                                                rolesByExperience.flatMap {
+                                                    it[RolesByExperience.roles].map { roleId ->
+                                                        RoleReward(
+                                                            roleId,
+                                                            it[RolesByExperience.requiredExperience]
+                                                        )
+                                                    }
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
+                            }
                         },
                         {
-                            rightSidebarContentAndSaveBarWrapper(
-                                {
-                                    if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
-                                        blissEvent("resyncState", "[bliss-component='save-bar']")
-                                        blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Configuração redefinida!"))
-                                    }
-
-                                    heroWrapper {
-                                        heroText {
-                                            h1 {
-                                                text(i18nContext.get(DashboardI18nKeysData.XpRewards.Title))
-                                            }
-
-                                            p {
-                                                text("Recompense usuários ativos do seu servidor com cargos únicos e exclusivos.")
-                                            }
-                                        }
-                                    }
-
-                                    hr {}
-
-                                    sectionConfig {
-                                        fieldWrappers {
-                                            fieldWrapper {
-                                                fieldTitle {
-                                                    text("Estilo de Recompensas por Cargo")
-                                                }
-
-                                                fancyRadioInput({
-                                                    name = "roleGiveType"
-                                                    attributes["loritta-config"] = "roleGiveType"
-                                                    value = RoleGiveType.STACK.name
-
-                                                    checked = levelConfig?.roleGiveType == RoleGiveType.STACK || levelConfig?.roleGiveType == null
-                                                }) {
-                                                    div(classes = "radio-option-info") {
-                                                        div(classes = "radio-option-title") {
-                                                            text("Empilhar recompensas anteriores")
-                                                        }
-
-                                                        div(classes = "radio-option-description") {
-                                                            text("Ao executar um comando, eu irei deletar a mensagem do usuário.")
-                                                        }
-                                                    }
-                                                }
-
-                                                fancyRadioInput({
-                                                    name = "roleGiveType"
-                                                    attributes["loritta-config"] = "roleGiveType"
-                                                    value = RoleGiveType.REMOVE.name
-                                                    checked = levelConfig?.roleGiveType == RoleGiveType.REMOVE
-                                                }) {
-                                                    div(classes = "radio-option-info") {
-                                                        div(classes = "radio-option-title") {
-                                                            text("Remover recompensas anteriores")
-                                                        }
-
-                                                        div(classes = "radio-option-description") {
-                                                            text("Ao subir de nível, todas as recompensas que o usuário recebeu são removidas")
-                                                        }
-                                                    }
-                                                }
-                                            }
-
-                                            fieldWrapper {
-                                                div {
-                                                    fieldTitle {
-                                                        text("Recompensas ao Subir de Nível")
-                                                    }
-
-                                                    controlsWithButton {
-                                                        inlinedControls {
-                                                            span {
-                                                                text("Ao chegar em ")
-                                                            }
-
-                                                            numberInput {
-                                                                name = "xp"
-                                                                placeholder = "1000"
-                                                                style = "width: 100px;"
-                                                                value = "1000"
-                                                                min = "0"
-                                                                step = "1000"
-
-                                                                attributes["bliss-post"] = "/${i18nContext.get(I18nKeys.Website.LocalePathId)}/guilds/${guild.idLong}/xp-rewards/xp2level"
-                                                                attributes["bliss-swap:200"] = "body (innerHTML) -> #calculated-level (innerHTML)"
-                                                                attributes["bliss-include-json"] = "[name='xp']"
-                                                                attributes["bliss-trigger"] = "input"
-                                                                attributes["xp-action-add-element"] = "true"
-                                                            }
-
-                                                            span {
-                                                                text(" XP ")
-
-                                                                text("(")
-                                                                span {
-                                                                    id = "calculated-level"
-                                                                    text("Nível 1")
-                                                                }
-                                                                text(")")
-                                                                text(", dar o cargo ")
-                                                            }
-
-                                                            growInputWrapper {
-                                                                roleSelectMenu(guild, null) {
-                                                                    name = "roleId"
-                                                                    attributes["xp-action-add-element"] = "true"
-                                                                }
-                                                            }
-                                                        }
-
-                                                        discordButton(ButtonStyle.SUCCESS) {
-                                                            attributes["bliss-post"] = "/${i18nContext.get(I18nKeys.Website.LocalePathId)}/guilds/${guild.idLong}/xp-rewards/add"
-                                                            attributes["bliss-include-json"] = "[xp-action-add-element]"
-                                                            attributes["bliss-swap:200"] = "body (innerHTML) -> #role-rewards (innerHTML)"
-                                                            text("Adicionar")
-                                                        }
-                                                    }
-                                                }
-
-                                                div {
-                                                    id = "role-rewards"
-
-                                                    configurableRoleRewards(
-                                                        i18nContext,
-                                                        guild,
-                                                        rolesByExperience.flatMap {
-                                                            it[RolesByExperience.roles].map { roleId ->
-                                                                RoleReward(
-                                                                    roleId,
-                                                                    it[RolesByExperience.requiredExperience]
-                                                                )
-                                                            }
-                                                        }
-                                                    )
-                                                }
-                                            }
-                                        }
-                                    }
-                                },
-                                {
-                                    genericSaveBar(
-                                        i18nContext,
-                                        false,
-                                        guild,
-                                        "/xp-rewards"
-                                    )
-                                }
+                            genericSaveBar(
+                                i18nContext,
+                                false,
+                                guild,
+                                "/xp-rewards"
                             )
                         }
                     )
                 }
-        )
+            )
+        }
     }
 }

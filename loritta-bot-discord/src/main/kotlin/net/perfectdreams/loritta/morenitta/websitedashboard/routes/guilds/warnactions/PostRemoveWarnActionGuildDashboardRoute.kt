@@ -16,6 +16,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebS
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.*
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.ColorTheme
 
 class PostRemoveWarnActionGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/warn-actions/remove") {
@@ -31,15 +32,12 @@ class PostRemoveWarnActionGuildDashboardRoute(website: LorittaDashboardWebServer
         val newWarns = request.actions.toMutableList()
         newWarns.removeAt(request.index)
 
-        call.respondHtml(
-            createHTML(false)
-                .body {
-                    configurableWarnList(
-                        i18nContext,
-                        guild,
-                        newWarns
-                    )
-                }
-        )
+        call.respondHtmlFragment {
+            configurableWarnList(
+                i18nContext,
+                guild,
+                newWarns
+            )
+        }
     }
 }

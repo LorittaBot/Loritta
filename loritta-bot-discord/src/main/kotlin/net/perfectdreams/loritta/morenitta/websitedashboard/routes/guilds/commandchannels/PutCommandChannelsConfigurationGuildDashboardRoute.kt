@@ -17,6 +17,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebS
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.configSaved
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondConfigSaved
 import net.perfectdreams.loritta.serializable.ColorTheme
 
 class PutCommandChannelsConfigurationGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/command-channels") {
@@ -42,11 +43,6 @@ class PutCommandChannelsConfigurationGuildDashboardRoute(website: LorittaDashboa
             }
         }
 
-        call.respondHtml(
-            createHTML(false)
-                .body {
-                    configSaved(i18nContext)
-                }
-        )
+        call.respondConfigSaved(i18nContext)
     }
 }

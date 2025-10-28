@@ -16,6 +16,7 @@ import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.ColorTheme
 
 class PostXP2LevelGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/xp-rewards/xp2level") {
@@ -27,11 +28,8 @@ class PostXP2LevelGuildDashboardRoute(website: LorittaDashboardWebServer) : Requ
     override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans) {
         val request = Json.decodeFromString<XP2LevelRequest>(call.receiveText())
 
-        call.respondHtml(
-            createHTML(false)
-                .body {
-                    text("Nível ${ExperienceUtils.getCurrentLevelForXp(request.xp)}")
-                }
-        )
+        call.respondHtmlFragment {
+            text("Nível ${ExperienceUtils.getCurrentLevelForXp(request.xp)}")
+        }
     }
 }

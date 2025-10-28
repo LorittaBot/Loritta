@@ -31,6 +31,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrap
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.goBackToPreviousSectionButton
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.userDashLeftSidebarEntries
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresUserAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.serializable.Background
 import net.perfectdreams.loritta.serializable.ColorTheme
 
@@ -44,74 +45,71 @@ class CreateProfilePresetsUserDashboardRoute(website: LorittaDashboardWebServer)
             return@transaction Result(activeProfileDesignId, activeBackgroundId)
         }
 
-        call.respondHtml(
-            createHTML()
-                .html {
-                    dashboardBase(
-                        i18nContext,
-                        i18nContext.get(DashboardI18nKeysData.ProfilePresets.Title),
-                        session,
-                        theme,
-                        shimejiSettings,
-                        userPremiumPlan,
-                        {
-                            userDashLeftSidebarEntries(website.loritta, i18nContext, UserDashboardSection.PROFILE_PRESETS)
-                        },
-                        {
-                            goBackToPreviousSectionButton(
-                                href = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/profile-presets",
-                            ) {
-                                text(i18nContext.get(DashboardI18nKeysData.ProfilePresets.PresetCreation.GoBack))
+        call.respondHtml {
+            dashboardBase(
+                i18nContext,
+                i18nContext.get(DashboardI18nKeysData.ProfilePresets.Title),
+                session,
+                theme,
+                shimejiSettings,
+                userPremiumPlan,
+                {
+                    userDashLeftSidebarEntries(website.loritta, i18nContext, UserDashboardSection.PROFILE_PRESETS)
+                },
+                {
+                    goBackToPreviousSectionButton(
+                        href = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/profile-presets",
+                    ) {
+                        text(i18nContext.get(DashboardI18nKeysData.ProfilePresets.PresetCreation.GoBack))
+                    }
+
+                    hr {}
+
+                    div {
+                        style = "text-align: center;"
+
+                        img(classes = "canvas-preview-profile-design", src = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/profile-preview?type=${result.activeProfileDesignId}&background=${result.activeBackgroundId}") {
+                            style = "width: 400px; aspect-ratio: 4/3;"
+                        }
+                    }
+
+                    fieldWrappers {
+                        fieldWrapper {
+                            fieldTitle {
+                                text(i18nContext.get(DashboardI18nKeysData.ProfilePresets.PresetCreation.ProfilePresetName))
                             }
 
-                            hr {}
-
-                            div {
-                                style = "text-align: center;"
-
-                                img(classes = "canvas-preview-profile-design", src = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/profile-preview?type=${result.activeProfileDesignId}&background=${result.activeBackgroundId}") {
-                                    style = "width: 400px; aspect-ratio: 4/3;"
-                                }
+                            fieldDescription {
+                                text(i18nContext.get(DashboardI18nKeysData.ProfilePresets.PresetCreation.ProfilePresetDescription))
                             }
 
-                            fieldWrappers {
-                                fieldWrapper {
-                                    fieldTitle {
-                                        text(i18nContext.get(DashboardI18nKeysData.ProfilePresets.PresetCreation.ProfilePresetName))
-                                    }
+                            textInput {
+                                maxLength = "50"
+                                name = "presetName"
+                            }
 
-                                    fieldDescription {
-                                        text(i18nContext.get(DashboardI18nKeysData.ProfilePresets.PresetCreation.ProfilePresetDescription))
-                                    }
+                            characterCounter("[name=presetName]")
+                        }
 
-                                    textInput {
-                                        maxLength = "50"
-                                        name = "presetName"
-                                    }
+                        fieldWrapper {
+                            discordButton(ButtonStyle.SUCCESS) {
+                                attributes["bliss-post"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/profile-presets/create"
+                                attributes["bliss-include-json"] = "[name=presetName]"
+                                attributes["bliss-vals-json"] = buildJsonObject {
+                                    put("activeProfileDesignId", result.activeProfileDesignId)
+                                    put("activeBackgroundId", result.activeBackgroundId)
+                                }.toString()
+                                attributes["bliss-disable-when"] = "[name=presetName] == blank"
+                                attributes["bliss-swap:201"] = "body (innerHTML) -> #right-sidebar-contents (innerHTML)"
+                                attributes["bliss-push-url:201"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/profile-presets"
 
-                                    characterCounter("[name=presetName]")
-                                }
-
-                                fieldWrapper {
-                                    discordButton(ButtonStyle.SUCCESS) {
-                                        attributes["bliss-post"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/profile-presets/create"
-                                        attributes["bliss-include-json"] = "[name=presetName]"
-                                        attributes["bliss-vals-json"] = buildJsonObject {
-                                            put("activeProfileDesignId", result.activeProfileDesignId)
-                                            put("activeBackgroundId", result.activeBackgroundId)
-                                        }.toString()
-                                        attributes["bliss-disable-when"] = "[name=presetName] == blank"
-                                        attributes["bliss-swap:201"] = "body (innerHTML) -> #right-sidebar-contents (innerHTML)"
-                                        attributes["bliss-push-url:201"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/profile-presets"
-
-                                        text(i18nContext.get(DashboardI18nKeysData.ProfilePresets.CreatePreset))
-                                    }
-                                }
+                                text(i18nContext.get(DashboardI18nKeysData.ProfilePresets.CreatePreset))
                             }
                         }
-                    )
+                    }
                 }
-        )
+            )
+        }
     }
 
     private data class Result(

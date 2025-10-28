@@ -27,6 +27,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbedded
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.defaultModalCloseButton
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.openModalOnClick
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.serializable.ColorTheme
 
 class BadgeGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/badge") {
@@ -35,125 +36,122 @@ class BadgeGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGui
             website.loritta.getOrCreateServerConfig(guild.idLong).donationConfig
         }
 
-        call.respondHtml(
-            createHTML()
-                .html {
-                    dashboardBase(
-                        i18nContext,
-                        i18nContext.get(DashboardI18nKeysData.Badge.Title),
-                        session,
-                        theme,
-                        shimejiSettings,
-                        userPremiumPlan,
+        call.respondHtml {
+            dashboardBase(
+                i18nContext,
+                i18nContext.get(DashboardI18nKeysData.Badge.Title),
+                session,
+                theme,
+                shimejiSettings,
+                userPremiumPlan,
+                {
+                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.CUSTOM_BADGE)
+                },
+                {
+                    rightSidebarContentAndSaveBarWrapper(
                         {
-                            guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.CUSTOM_BADGE)
+                            if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
+                                blissEvent("resyncState", "[bliss-component='save-bar']")
+                                blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Configuração redefinida!"))
+                            }
+
+                            heroWrapper {
+                                heroText {
+                                    h1 {
+                                        text(i18nContext.get(DashboardI18nKeysData.Badge.Title))
+                                    }
+
+                                    for (str in i18nContext.language
+                                        .textBundle
+                                        .lists
+                                        .getValue(I18nKeys.Website.Dashboard.Badge.Description.key)
+                                    ) {
+                                        p {
+                                            handleI18nString(
+                                                str,
+                                                appendAsFormattedText(i18nContext, emptyMap()),
+                                            ) {
+                                                when (it) {
+                                                    "profileCommand" -> {
+                                                        TextReplaceControls.ComposableFunctionResult(
+                                                            {
+                                                                span(classes = "discord-mention") {
+                                                                    text("/perfil")
+                                                                }
+                                                            }
+                                                        )
+                                                    }
+
+                                                    else -> TextReplaceControls.AppendControlAsIsResult
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            hr {}
+
+                            sectionConfig {
+                                toggleableSection(
+                                    {
+                                        text(i18nContext.get(DashboardI18nKeysData.Badge.EnableCustomBadge))
+                                    },
+                                    null,
+                                    donationConfig?.customBadge ?: false,
+                                    "enabled",
+                                    true
+                                ) {
+                                    fieldWrappers {
+                                        fieldWrapper {
+                                            fieldTitle {
+                                                text("Imagem da Insígnia")
+                                            }
+
+                                            discordButton(ButtonStyle.PRIMARY) {
+                                                openModalOnClick(
+                                                    createEmbeddedModal(
+                                                        "Imagem da Insígnia",
+                                                        true,
+                                                        {
+                                                            fileInput {
+                                                                name = "file"
+                                                            }
+                                                        },
+                                                        listOf(
+                                                            {
+                                                                defaultModalCloseButton(i18nContext)
+                                                            },
+                                                            {
+                                                                discordButton(ButtonStyle.PRIMARY) {
+                                                                    attributes["bliss-post"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/badge/upload"
+                                                                    attributes["bliss-include-json"] = "[name='file']"
+
+                                                                    text("Enviar")
+                                                                }
+                                                            }
+                                                        )
+                                                    )
+                                                )
+
+                                                text("Alterar Imagem")
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         },
                         {
-                            rightSidebarContentAndSaveBarWrapper(
-                                {
-                                    if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
-                                        blissEvent("resyncState", "[bliss-component='save-bar']")
-                                        blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Configuração redefinida!"))
-                                    }
-
-                                    heroWrapper {
-                                        heroText {
-                                            h1 {
-                                                text(i18nContext.get(DashboardI18nKeysData.Badge.Title))
-                                            }
-
-                                            for (str in i18nContext.language
-                                                .textBundle
-                                                .lists
-                                                .getValue(I18nKeys.Website.Dashboard.Badge.Description.key)
-                                            ) {
-                                                p {
-                                                    handleI18nString(
-                                                        str,
-                                                        appendAsFormattedText(i18nContext, emptyMap()),
-                                                    ) {
-                                                        when (it) {
-                                                            "profileCommand" -> {
-                                                                TextReplaceControls.ComposableFunctionResult(
-                                                                    {
-                                                                        span(classes = "discord-mention") {
-                                                                            text("/perfil")
-                                                                        }
-                                                                    }
-                                                                )
-                                                            }
-
-                                                            else -> TextReplaceControls.AppendControlAsIsResult
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    hr {}
-
-                                    sectionConfig {
-                                        toggleableSection(
-                                            {
-                                                text(i18nContext.get(DashboardI18nKeysData.Badge.EnableCustomBadge))
-                                            },
-                                            null,
-                                            donationConfig?.customBadge ?: false,
-                                            "enabled",
-                                            true
-                                        ) {
-                                            fieldWrappers {
-                                                fieldWrapper {
-                                                    fieldTitle {
-                                                        text("Imagem da Insígnia")
-                                                    }
-
-                                                    discordButton(ButtonStyle.PRIMARY) {
-                                                        openModalOnClick(
-                                                            createEmbeddedModal(
-                                                                "Imagem da Insígnia",
-                                                                true,
-                                                                {
-                                                                    fileInput {
-                                                                        name = "file"
-                                                                    }
-                                                                },
-                                                                listOf(
-                                                                    {
-                                                                        defaultModalCloseButton(i18nContext)
-                                                                    },
-                                                                    {
-                                                                        discordButton(ButtonStyle.PRIMARY) {
-                                                                            attributes["bliss-post"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/badge/upload"
-                                                                            attributes["bliss-include-json"] = "[name='file']"
-
-                                                                            text("Enviar")
-                                                                        }
-                                                                    }
-                                                                )
-                                                            )
-                                                        )
-
-                                                        text("Alterar Imagem")
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                },
-                                {
-                                    genericSaveBar(
-                                        i18nContext,
-                                        false,
-                                        guild,
-                                        "/badge"
-                                    )
-                                }
+                            genericSaveBar(
+                                i18nContext,
+                                false,
+                                guild,
+                                "/badge"
                             )
                         }
                     )
                 }
-        )
+            )
+        }
     }
 }

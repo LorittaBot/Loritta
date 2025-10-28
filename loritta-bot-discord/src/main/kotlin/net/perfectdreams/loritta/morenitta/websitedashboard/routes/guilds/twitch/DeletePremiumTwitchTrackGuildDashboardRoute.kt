@@ -20,6 +20,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuild
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -50,34 +51,26 @@ class DeletePremiumTwitchTrackGuildDashboardRoute(website: LorittaDashboardWebSe
 
         when (result) {
             is Result.Success -> {
-                call.respondHtml(
-                    createHTML(false)
-                        .body {
-                            blissCloseModal()
+                call.respondHtmlFragment(status = HttpStatusCode.OK) {
+                    blissCloseModal()
 
-                            blissShowToast(
-                                createEmbeddedToast(
-                                    EmbeddedToast.Type.SUCCESS,
-                                    "Acompanhamento premium deletado!"
-                                )
-                            )
-                        },
-                    status = HttpStatusCode.OK
-                )
+                    blissShowToast(
+                        createEmbeddedToast(
+                            EmbeddedToast.Type.SUCCESS,
+                            "Acompanhamento premium deletado!"
+                        )
+                    )
+                }
             }
             Result.ChannelNotFound -> {
-                call.respondHtml(
-                    createHTML(false)
-                        .body {
-                            blissShowToast(
-                                createEmbeddedToast(
-                                    EmbeddedToast.Type.WARN,
-                                    "Você não pode deletar um acompanhamento premium que não existe!"
-                                )
-                            )
-                        },
-                    status = HttpStatusCode.NotFound
-                )
+                call.respondHtmlFragment(status = HttpStatusCode.NotFound) {
+                    blissShowToast(
+                        createEmbeddedToast(
+                            EmbeddedToast.Type.WARN,
+                            "Você não pode deletar um acompanhamento premium que não existe!"
+                        )
+                    )
+                }
             }
         }
     }

@@ -16,6 +16,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebS
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.configSaved
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jetbrains.exposed.sql.upsert
 import java.time.Instant
@@ -43,13 +44,10 @@ class PutLorittaSpawnerSettingsUserDashboardRoute(website: LorittaDashboardWebSe
             }
         }
 
-        call.respondHtml(
-            createHTML(false)
-                .body {
-                    blissCloseModal()
+        call.respondHtmlFragment {
+            blissCloseModal()
 
-                    configSaved(i18nContext)
-                }
-        )
+            configSaved(i18nContext)
+        }
     }
 }

@@ -19,6 +19,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.backgroun
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresUserAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.Background
 import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jetbrains.exposed.sql.update
@@ -28,18 +29,14 @@ class PostApplyBackgroundUserDashboardRoute(website: LorittaDashboardWebServer) 
         val backgroundId = call.parameters["backgroundId"]
 
         if (backgroundId == "custom" && !userPremiumPlan.customBackground) {
-            call.respondHtml(
-                createHTML(false)
-                    .body {
-                        blissShowToast(
-                            createEmbeddedToast(
-                                EmbeddedToast.Type.WARN,
-                                "Você precisa ter premium para fazer isto!"
-                            )
-                        )
-                    },
-                status = HttpStatusCode.BadRequest
-            )
+            call.respondHtmlFragment(status = HttpStatusCode.BadRequest) {
+                blissShowToast(
+                    createEmbeddedToast(
+                        EmbeddedToast.Type.WARN,
+                        "Você precisa ter premium para fazer isto!"
+                    )
+                )
+            }
             return
         }
 
@@ -59,14 +56,11 @@ class PostApplyBackgroundUserDashboardRoute(website: LorittaDashboardWebServer) 
             )
         }
 
-        call.respondHtml(
-            createHTML()
-                .body {
-                    blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Background aplicado!"))
+        call.respondHtmlFragment {
+            blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Background aplicado!"))
 
-                    backgroundItemInfo(i18nContext, locale, result.activeBackgroundId, result.activeProfileDesignId, result.activeBackgroundId)
-                }
-        )
+            backgroundItemInfo(i18nContext, locale, result.activeBackgroundId, result.activeProfileDesignId, result.activeBackgroundId)
+        }
     }
 
     data class Result(

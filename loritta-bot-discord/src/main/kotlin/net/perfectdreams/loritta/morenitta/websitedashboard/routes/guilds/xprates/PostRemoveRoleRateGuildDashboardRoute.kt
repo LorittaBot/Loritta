@@ -17,6 +17,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.*
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.xprates.RoleRate
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.ColorTheme
 
 class PostRemoveRoleRateGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/xp-rates/remove") {
@@ -32,15 +33,12 @@ class PostRemoveRoleRateGuildDashboardRoute(website: LorittaDashboardWebServer) 
         val newRoles = request.roles.toMutableList()
         newRoles.removeAt(request.index)
 
-        call.respondHtml(
-            createHTML(false)
-                .body {
-                    configurableRoleRates(
-                        i18nContext,
-                        guild,
-                        newRoles
-                    )
-                }
-        )
+        call.respondHtmlFragment {
+            configurableRoleRates(
+                i18nContext,
+                guild,
+                newRoles
+            )
+        }
     }
 }

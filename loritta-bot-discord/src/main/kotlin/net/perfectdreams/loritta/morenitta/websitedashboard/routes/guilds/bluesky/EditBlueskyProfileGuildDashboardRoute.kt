@@ -25,6 +25,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebS
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.*
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.selectAll
@@ -58,50 +59,47 @@ class EditBlueskyProfileGuildDashboardRoute(website: LorittaDashboardWebServer) 
         val textStuff = http.bodyAsText(Charsets.UTF_8)
         val profile = JsonIgnoreUnknownKeys.decodeFromString<BlueskyProfile>(textStuff)
 
-        call.respondHtml(
-            createHTML()
-                .html {
-                    dashboardBase(
-                        i18nContext,
-                        i18nContext.get(DashboardI18nKeysData.Bluesky.Title),
-                        session,
-                        theme,
-                        shimejiSettings,
-                        userPremiumPlan,
+        call.respondHtml {
+            dashboardBase(
+                i18nContext,
+                i18nContext.get(DashboardI18nKeysData.Bluesky.Title),
+                session,
+                theme,
+                shimejiSettings,
+                userPremiumPlan,
+                {
+                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.BLUESKY)
+                },
+                {
+                    goBackToPreviousSectionButton(
+                        href = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/bluesky",
+                    ) {
+                        text("Voltar para a lista de canais do Bluesky")
+                    }
+
+                    hr {}
+
+                    rightSidebarContentAndSaveBarWrapper(
                         {
-                            guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.BLUESKY)
+                            trackedBlueskyChannelEditorWithProfile(
+                                i18nContext,
+                                guild,
+                                profile,
+                                data[TrackedBlueskyAccounts.channelId],
+                                data[TrackedBlueskyAccounts.message]
+                            )
                         },
                         {
-                            goBackToPreviousSectionButton(
-                                href = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/bluesky",
-                            ) {
-                                text("Voltar para a lista de canais do Bluesky")
-                            }
-
-                            hr {}
-
-                            rightSidebarContentAndSaveBarWrapper(
-                                {
-                                    trackedBlueskyChannelEditorWithProfile(
-                                        i18nContext,
-                                        guild,
-                                        profile,
-                                        data[TrackedBlueskyAccounts.channelId],
-                                        data[TrackedBlueskyAccounts.message]
-                                    )
-                                },
-                                {
-                                    trackedProfileEditorSaveBar(
-                                        i18nContext,
-                                        guild,
-                                        "bluesky",
-                                        data[TrackedBlueskyAccounts.id].value
-                                    )
-                                }
+                            trackedProfileEditorSaveBar(
+                                i18nContext,
+                                guild,
+                                "bluesky",
+                                data[TrackedBlueskyAccounts.id].value
                             )
                         }
                     )
                 }
-        )
+            )
+        }
     }
 }

@@ -43,6 +43,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuild
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissEvent
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.placeholders.sections.BlockedCommandChannelPlaceholders
 import net.perfectdreams.loritta.placeholders.sections.InviteBlockedPlaceholders
 import net.perfectdreams.loritta.serializable.ColorTheme
@@ -73,127 +74,124 @@ class InviteBlockerGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
             "{@user} você não pode enviar convites aqui!"
         )
 
-        call.respondHtml(
-            createHTML()
-                .html {
-                    dashboardBase(
-                        i18nContext,
-                        i18nContext.get(DashboardI18nKeysData.InviteBlocker.Title),
-                        session,
-                        theme,
-                        shimejiSettings,
-                        userPremiumPlan,
+        call.respondHtml {
+            dashboardBase(
+                i18nContext,
+                i18nContext.get(DashboardI18nKeysData.InviteBlocker.Title),
+                session,
+                theme,
+                shimejiSettings,
+                userPremiumPlan,
+                {
+                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.INVITE_BLOCKER)
+                },
+                {
+                    rightSidebarContentAndSaveBarWrapper(
                         {
-                            guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.INVITE_BLOCKER)
-                        },
-                        {
-                            rightSidebarContentAndSaveBarWrapper(
-                                {
-                                    if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
-                                        blissEvent("resyncState", "[bliss-component='save-bar']")
-                                        blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Configuração redefinida!"))
+                            if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
+                                blissEvent("resyncState", "[bliss-component='save-bar']")
+                                blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Configuração redefinida!"))
+                            }
+
+                            heroWrapper {
+                                heroText {
+                                    h1 {
+                                        text("Bloqueador de Convites")
                                     }
 
-                                    heroWrapper {
-                                        heroText {
-                                            h1 {
-                                                text("Bloqueador de Convites")
-                                            }
+                                    p {
+                                        text("Bloqueador de Convites")
+                                    }
+                                }
+                            }
 
-                                            p {
-                                                text("Bloqueador de Convites")
-                                            }
+                            hr {}
+
+                            div {
+                                id = "section-config"
+
+                                toggleableSection(
+                                    {
+                                        text("Ativar Bloqueador de Convites")
+                                    },
+                                    null,
+                                    inviteBlockerConfig?.enabled ?: false,
+                                    "enabled",
+                                    true
+                                ) {
+                                    fieldWrappers {
+                                        fieldWrapper {
+                                            toggle(
+                                                inviteBlockerConfig?.whitelistServerInvites ?: false,
+                                                "allowServerInvites",
+                                                true,
+                                                {
+                                                    text("Permitir compartilhar convites do servidor atual")
+                                                }
+                                            )
                                         }
-                                    }
 
-                                    hr {}
+                                        fieldWrapper {
+                                            toggle(
+                                                inviteBlockerConfig?.deleteMessage ?: false,
+                                                "deleteMessageOnInvite",
+                                                true,
+                                                {
+                                                    text("Deletar a mensagem do usuário quando um invite for detectado")
+                                                }
+                                            )
+                                        }
 
-                                    div {
-                                        id = "section-config"
+                                        fieldWrapper {
+                                            fieldTitle {
+                                                text("Canais aonde são permitidos enviar convites")
+                                            }
+
+                                            configurableChannelListInput(
+                                                i18nContext,
+                                                guild,
+                                                "channels",
+                                                "channels",
+                                                "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/invite-blocker/channels/add",
+                                                "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/invite-blocker/channels/remove",
+                                                inviteBlockerConfig?.whitelistedChannels?.toSet() ?: setOf()
+                                            )
+                                        }
 
                                         toggleableSection(
                                             {
-                                                text("Ativar Bloqueador de Convites")
+                                                text("Enviar uma mensagem ao usuário quando ele enviar um invite")
                                             },
                                             null,
-                                            inviteBlockerConfig?.enabled ?: false,
-                                            "enabled",
-                                            true
+                                            inviteBlockerConfig?.tellUser ?: false,
+                                            "sendMessageOnInvite",
+                                            true,
                                         ) {
-                                            fieldWrappers {
-                                                fieldWrapper {
-                                                    toggle(
-                                                        inviteBlockerConfig?.whitelistServerInvites ?: false,
-                                                        "allowServerInvites",
-                                                        true,
-                                                        {
-                                                            text("Permitir compartilhar convites do servidor atual")
-                                                        }
-                                                    )
-                                                }
-
-                                                fieldWrapper {
-                                                    toggle(
-                                                        inviteBlockerConfig?.deleteMessage ?: false,
-                                                        "deleteMessageOnInvite",
-                                                        true,
-                                                        {
-                                                            text("Deletar a mensagem do usuário quando um invite for detectado")
-                                                        }
-                                                    )
-                                                }
-
-                                                fieldWrapper {
-                                                    fieldTitle {
-                                                        text("Canais aonde são permitidos enviar convites")
-                                                    }
-
-                                                    configurableChannelListInput(
-                                                        i18nContext,
-                                                        guild,
-                                                        "channels",
-                                                        "channels",
-                                                        "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/invite-blocker/channels/add",
-                                                        "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/invite-blocker/channels/remove",
-                                                        inviteBlockerConfig?.whitelistedChannels?.toSet() ?: setOf()
-                                                    )
-                                                }
-
-                                                toggleableSection(
-                                                    {
-                                                        text("Enviar uma mensagem ao usuário quando ele enviar um invite")
-                                                    },
-                                                    null,
-                                                    inviteBlockerConfig?.tellUser ?: false,
-                                                    "sendMessageOnInvite",
-                                                    true,
-                                                ) {
-                                                    discordMessageEditor(
-                                                        guild,
-                                                        MessageEditorBootstrap.TestMessageTarget.Unavailable,
-                                                        listOf(defaultDenyMessage),
-                                                        inviteBlockedPlaceholders,
-                                                        inviteBlockerConfig?.warnMessage ?: defaultDenyMessage.content
-                                                    ) {
-                                                        name = "message"
-                                                        attributes["loritta-config"] = "message"
-                                                    }
-                                                }
+                                            discordMessageEditor(
+                                                guild,
+                                                MessageEditorBootstrap.TestMessageTarget.Unavailable,
+                                                listOf(defaultDenyMessage),
+                                                inviteBlockedPlaceholders,
+                                                inviteBlockerConfig?.warnMessage ?: defaultDenyMessage.content
+                                            ) {
+                                                name = "message"
+                                                attributes["loritta-config"] = "message"
                                             }
                                         }
                                     }
                                 }
-                            ) {
-                                genericSaveBar(
-                                    i18nContext,
-                                    false,
-                                    guild,
-                                    "/invite-blocker"
-                                )
                             }
                         }
-                    )
+                    ) {
+                        genericSaveBar(
+                            i18nContext,
+                            false,
+                            guild,
+                            "/invite-blocker"
+                        )
+                    }
                 }
-        )
+            )
+        }
     }
 }

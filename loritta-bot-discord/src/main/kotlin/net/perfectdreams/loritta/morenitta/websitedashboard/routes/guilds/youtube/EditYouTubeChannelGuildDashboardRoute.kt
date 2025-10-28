@@ -26,6 +26,8 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.*
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.selectAll
@@ -52,93 +54,78 @@ class EditYouTubeChannelGuildDashboardRoute(website: LorittaDashboardWebServer) 
 
         when (result) {
             is YouTubeWebUtils.YouTubeChannelInfoResult.Success -> {
-                call.respondHtml(
-                    createHTML()
-                        .html {
-                            dashboardBase(
-                                i18nContext,
-                                i18nContext.get(DashboardI18nKeysData.CustomCommands.Title),
-                                session,
-                                theme,
-                                shimejiSettings,
-                                userPremiumPlan,
+                call.respondHtml {
+                    dashboardBase(
+                        i18nContext,
+                        i18nContext.get(DashboardI18nKeysData.CustomCommands.Title),
+                        session,
+                        theme,
+                        shimejiSettings,
+                        userPremiumPlan,
+                        {
+                            guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.YOUTUBE)
+                        },
+                        {
+                            goBackToPreviousSectionButton(
+                                href = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/youtube",
+                            ) {
+                                text("Voltar para a lista de canais do YouTube")
+                            }
+
+                            hr {}
+
+                            rightSidebarContentAndSaveBarWrapper(
                                 {
-                                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.YOUTUBE)
+                                    trackedYouTubeChannelEditorWithProfile(
+                                        i18nContext,
+                                        guild,
+                                        result.channel,
+                                        data[TrackedYouTubeAccounts.channelId],
+                                        data[TrackedYouTubeAccounts.message]
+                                    )
                                 },
                                 {
-                                    goBackToPreviousSectionButton(
-                                        href = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/youtube",
-                                    ) {
-                                        text("Voltar para a lista de canais do YouTube")
-                                    }
-
-                                    hr {}
-
-                                    rightSidebarContentAndSaveBarWrapper(
-                                        {
-                                            trackedYouTubeChannelEditorWithProfile(
-                                                i18nContext,
-                                                guild,
-                                                result.channel,
-                                                data[TrackedYouTubeAccounts.channelId],
-                                                data[TrackedYouTubeAccounts.message]
-                                            )
-                                        },
-                                        {
-                                            trackedProfileEditorSaveBar(
-                                                i18nContext,
-                                                guild,
-                                                "youtube",
-                                                data[TrackedYouTubeAccounts.id].value
-                                            )
-                                        }
+                                    trackedProfileEditorSaveBar(
+                                        i18nContext,
+                                        guild,
+                                        "youtube",
+                                        data[TrackedYouTubeAccounts.id].value
                                     )
                                 }
                             )
                         }
-                )
+                    )
+                }
             }
             is YouTubeWebUtils.YouTubeChannelInfoResult.Error -> {
-                call.respondHtml(
-                    createHTML(false)
-                        .body {
-                            blissShowToast(
-                                createEmbeddedToast(
-                                    EmbeddedToast.Type.WARN,
-                                    "Algo deu errado ao tentar pegar as informações do canal!"
-                                )
-                            )
-                        },
-                    status = HttpStatusCode.BadRequest
-                )
+                call.respondHtmlFragment(status = HttpStatusCode.BadRequest) {
+                    blissShowToast(
+                        createEmbeddedToast(
+                            EmbeddedToast.Type.WARN,
+                            "Algo deu errado ao tentar pegar as informações do canal!"
+                        )
+                    )
+                }
             }
             YouTubeWebUtils.YouTubeChannelInfoResult.InvalidUrl -> {
-                call.respondHtml(
-                    createHTML(false)
-                        .body {
-                            blissShowToast(
-                                createEmbeddedToast(
-                                    EmbeddedToast.Type.WARN,
-                                    "URL inválida!"
-                                )
-                            )
-                        },
-                    status = HttpStatusCode.BadRequest
-                )
+                call.respondHtmlFragment(status = HttpStatusCode.BadRequest) {
+                    blissShowToast(
+                        createEmbeddedToast(
+                            EmbeddedToast.Type.WARN,
+                            "URL inválida!"
+                        )
+                    )
+                }
             }
             YouTubeWebUtils.YouTubeChannelInfoResult.UnknownChannel -> {
-                call.respondHtml(
-                    createHTML(false)
-                        .body {
-                            blissShowToast(
-                                createEmbeddedToast(
-                                    EmbeddedToast.Type.WARN,
-                                    "Canal não existe!"
-                                )
-                            )
-                        },
-                    status = HttpStatusCode.BadRequest
-                )
+                call.respondHtmlFragment(status = HttpStatusCode.BadRequest) {
+                    blissShowToast(
+                        createEmbeddedToast(
+                            EmbeddedToast.Type.WARN,
+                            "Canal não existe!"
+                        )
+                    )
+                }
             }
         }
     }

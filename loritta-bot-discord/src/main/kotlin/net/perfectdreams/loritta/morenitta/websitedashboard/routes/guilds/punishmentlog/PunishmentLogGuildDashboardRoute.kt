@@ -27,6 +27,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuild
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissEvent
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.placeholders.Placeholders
 import net.perfectdreams.loritta.placeholders.sections.JoinMessagePlaceholders
 import net.perfectdreams.loritta.placeholders.sections.PunishmentMessagePlaceholders
@@ -113,152 +114,148 @@ class PunishmentLogGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
             }
         }
 
-        call.respondHtml(
-            createHTML(false)
-                .html {
-                    dashboardBase(
-                        i18nContext,
-                        i18nContext.get(DashboardI18nKeysData.PunishmentLog.Title),
-                        session,
-                        theme,
-                        shimejiSettings,
-                        userPremiumPlan,
+        call.respondHtml {
+            dashboardBase(
+                i18nContext,
+                i18nContext.get(DashboardI18nKeysData.PunishmentLog.Title),
+                session,
+                theme,
+                shimejiSettings,
+                userPremiumPlan,
+                {
+                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.PUNISHMENT_LOG)
+                },
+                {
+                    rightSidebarContentAndSaveBarWrapper(
                         {
-                            guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.PUNISHMENT_LOG)
-                        },
-                        {
-                            rightSidebarContentAndSaveBarWrapper(
-                                {
-                                    if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
-                                        blissEvent("resyncState", "[bliss-component='save-bar']")
-                                        blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Configuração redefinida!"))
+                            if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
+                                blissEvent("resyncState", "[bliss-component='save-bar']")
+                                blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Configuração redefinida!"))
+                            }
+
+                            heroWrapper {
+                                heroText {
+                                    h1 {
+                                        text(i18nContext.get(DashboardI18nKeysData.PunishmentLog.Title))
                                     }
 
-                                    heroWrapper {
-                                        heroText {
-                                            h1 {
-                                                text(i18nContext.get(DashboardI18nKeysData.PunishmentLog.Title))
-                                            }
-
-                                            for (str in i18nContext.language
-                                                .textBundle
-                                                .lists
-                                                .getValue(I18nKeys.Website.Dashboard.PunishmentLog.Description.key)
+                                    for (str in i18nContext.language
+                                        .textBundle
+                                        .lists
+                                        .getValue(I18nKeys.Website.Dashboard.PunishmentLog.Description.key)
+                                    ) {
+                                        p {
+                                            handleI18nString(
+                                                str,
+                                                appendAsFormattedText(i18nContext, emptyMap()),
                                             ) {
-                                                p {
-                                                    handleI18nString(
-                                                        str,
-                                                        appendAsFormattedText(i18nContext, emptyMap()),
-                                                    ) {
-                                                        when (it) {
-                                                            else -> TextReplaceControls.AppendControlAsIsResult
-                                                        }
-                                                    }
+                                                when (it) {
+                                                    else -> TextReplaceControls.AppendControlAsIsResult
                                                 }
                                             }
                                         }
                                     }
+                                }
+                            }
 
-                                    hr {}
+                            hr {}
 
-                                    sectionConfig {
-                                        fieldWrappers {
-                                            fieldWrapper {
-                                                toggleableSection(
-                                                    {
-                                                        text("Enviar punição via mensagem direta para quem foi punido")
-                                                    },
-                                                    null,
-                                                    moderationLogConfig?.sendPunishmentViaDm ?: false,
-                                                    "sendPunishmentViaDirectMessage",
-                                                    true,
-                                                    null
-                                                )
-                                            }
+                            sectionConfig {
+                                fieldWrappers {
+                                    fieldWrapper {
+                                        toggleableSection(
+                                            {
+                                                text("Enviar punição via mensagem direta para quem foi punido")
+                                            },
+                                            null,
+                                            moderationLogConfig?.sendPunishmentViaDm ?: false,
+                                            "sendPunishmentViaDirectMessage",
+                                            true,
+                                            null
+                                        )
+                                    }
 
-                                            fieldWrapper {
-                                                toggleableSection(
-                                                    {
-                                                        text("Enviar punições para um canal de punições")
-                                                    },
-                                                    null,
-                                                    moderationLogConfig?.sendPunishmentToPunishLog ?: false,
-                                                    "sendPunishmentToPunishLog",
-                                                    true
-                                                ) {
+                                    fieldWrapper {
+                                        toggleableSection(
+                                            {
+                                                text("Enviar punições para um canal de punições")
+                                            },
+                                            null,
+                                            moderationLogConfig?.sendPunishmentToPunishLog ?: false,
+                                            "sendPunishmentToPunishLog",
+                                            true
+                                        ) {
+                                            fieldWrappers {
+                                                fieldWrapper {
+                                                    fieldTitle {
+                                                        text("Canal de punições")
+                                                    }
+
+                                                    channelSelectMenu(
+                                                        guild,
+                                                        moderationLogConfig?.punishLogChannelId
+                                                    ) {
+                                                        attributes["loritta-config"] = "punishLogChannelId"
+                                                        name = "punishLogChannelId"
+                                                    }
+                                                }
+
+                                                fieldWrapper {
+                                                    fieldTitle {
+                                                        text("Mensagem que será mostrada quando alguém for punido")
+                                                    }
+
+                                                    discordMessageEditor(
+                                                        guild,
+                                                        MessageEditorBootstrap.TestMessageTarget.Unavailable,
+                                                        listOf(),
+                                                        placeholders,
+                                                        moderationLogConfig?.punishLogMessage ?: ""
+                                                    ) {
+                                                        attributes["loritta-config"] = "punishLogMessage"
+                                                        name = "punishLogMessage"
+                                                    }
+                                                }
+
+                                                fieldWrapper {
+                                                    fieldTitle {
+                                                        text("Mensagem específicas para cada punição")
+                                                    }
+
+                                                    fieldDescription {
+                                                        text("Você pode escolher mensagens diferentes para cada tipo de punição, assim colocando o seu charme em cada uma delas!")
+                                                    }
+
                                                     fieldWrappers {
-                                                        fieldWrapper {
-                                                            fieldTitle {
-                                                                text("Canal de punições")
+                                                        for (punishmentAction in PunishmentAction.entries) {
+                                                            val partName = punishmentAction.name
+                                                                .replace("_", "")
+                                                                .lowercase()
+                                                                .replaceFirstChar { it.uppercase() }
+
+                                                            val punishmentMessage = punishmentMessages.firstOrNull {
+                                                                it[ModerationPunishmentMessagesConfig.punishmentAction] == punishmentAction
                                                             }
 
-                                                            channelSelectMenu(
-                                                                guild,
-                                                                moderationLogConfig?.punishLogChannelId
-                                                            ) {
-                                                                attributes["loritta-config"] = "punishLogChannelId"
-                                                                name = "punishLogChannelId"
-                                                            }
-                                                        }
-
-                                                        fieldWrapper {
-                                                            fieldTitle {
-                                                                text("Mensagem que será mostrada quando alguém for punido")
-                                                            }
-
-                                                            discordMessageEditor(
-                                                                guild,
-                                                                MessageEditorBootstrap.TestMessageTarget.Unavailable,
-                                                                listOf(),
-                                                                placeholders,
-                                                                moderationLogConfig?.punishLogMessage ?: ""
-                                                            ) {
-                                                                attributes["loritta-config"] = "punishLogMessage"
-                                                                name = "punishLogMessage"
-                                                            }
-                                                        }
-
-                                                        fieldWrapper {
-                                                            fieldTitle {
-                                                                text("Mensagem específicas para cada punição")
-                                                            }
-
-                                                            fieldDescription {
-                                                                text("Você pode escolher mensagens diferentes para cada tipo de punição, assim colocando o seu charme em cada uma delas!")
-                                                            }
-
-                                                            fieldWrappers {
-                                                                for (punishmentAction in PunishmentAction.entries) {
-                                                                    val partName = punishmentAction.name
-                                                                        .replace("_", "")
-                                                                        .lowercase()
-                                                                        .replaceFirstChar { it.uppercase() }
-
-                                                                    val punishmentMessage = punishmentMessages.firstOrNull {
-                                                                        it[ModerationPunishmentMessagesConfig.punishmentAction] == punishmentAction
-                                                                    }
-
-                                                                    fieldWrapper {
-                                                                        toggleableSection(
-                                                                            {
-                                                                                text(punishmentAction.name)
-                                                                            },
-                                                                            null,
-                                                                            punishmentMessage != null,
-                                                                            "enableMessageOverride$partName",
-                                                                            true
-                                                                        ) {
-                                                                            discordMessageEditor(
-                                                                                guild,
-                                                                                MessageEditorBootstrap.TestMessageTarget.Unavailable,
-                                                                                listOf(),
-                                                                                placeholders,
-                                                                                punishmentMessage?.get(ModerationPunishmentMessagesConfig.punishLogMessage) ?: ""
-                                                                            ) {
-                                                                                attributes["loritta-config"] = "punishLogMessage$partName"
-                                                                                name = "punishLogMessage$partName"
-                                                                            }
-                                                                        }
+                                                            fieldWrapper {
+                                                                toggleableSection(
+                                                                    {
+                                                                        text(punishmentAction.name)
+                                                                    },
+                                                                    null,
+                                                                    punishmentMessage != null,
+                                                                    "enableMessageOverride$partName",
+                                                                    true
+                                                                ) {
+                                                                    discordMessageEditor(
+                                                                        guild,
+                                                                        MessageEditorBootstrap.TestMessageTarget.Unavailable,
+                                                                        listOf(),
+                                                                        placeholders,
+                                                                        punishmentMessage?.get(ModerationPunishmentMessagesConfig.punishLogMessage) ?: ""
+                                                                    ) {
+                                                                        attributes["loritta-config"] = "punishLogMessage$partName"
+                                                                        name = "punishLogMessage$partName"
                                                                     }
                                                                 }
                                                             }
@@ -268,19 +265,20 @@ class PunishmentLogGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
                                             }
                                         }
                                     }
-                                },
-                                {
-                                    genericSaveBar(
-                                        i18nContext,
-                                        false,
-                                        guild,
-                                        "/punishment-log"
-                                    )
                                 }
+                            }
+                        },
+                        {
+                            genericSaveBar(
+                                i18nContext,
+                                false,
+                                guild,
+                                "/punishment-log"
                             )
                         }
                     )
                 }
-        )
+            )
+        }
     }
 }

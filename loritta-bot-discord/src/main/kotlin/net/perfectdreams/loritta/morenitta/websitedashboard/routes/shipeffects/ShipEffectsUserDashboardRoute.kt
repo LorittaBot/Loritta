@@ -36,6 +36,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.shipBuyBu
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.shipEffectsBribes
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.userDashLeftSidebarEntries
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresUserAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.serializable.ShipEffect
 import net.perfectdreams.loritta.serializable.UserId
@@ -64,123 +65,120 @@ class ShipEffectsUserDashboardRoute(website: LorittaDashboardWebServer) : Requir
             .distinct()
             .mapNotNull { website.loritta.pudding.users.getCachedUserInfoById(it) }
 
-        call.respondHtml(
-            createHTML()
-                .html {
-                    dashboardBase(
-                        i18nContext,
-                        i18nContext.get(DashboardI18nKeysData.ShipEffects.Title),
-                        session,
-                        theme,
-                        shimejiSettings,
-                        userPremiumPlan,
-                        {
-                            userDashLeftSidebarEntries(website.loritta, i18nContext, UserDashboardSection.SHIP_EFFECTS)
-                        },
-                        {
-                            div(classes = "hero-wrapper") {
-                                etherealGambiImg(
-                                    "https://stuff.loritta.website/ship/loritta.png",
-                                    classes = "hero-image",
-                                    sizes = "(max-width: 900px) 100vw, 360px"
-                                ) {}
+        call.respondHtml {
+            dashboardBase(
+                i18nContext,
+                i18nContext.get(DashboardI18nKeysData.ShipEffects.Title),
+                session,
+                theme,
+                shimejiSettings,
+                userPremiumPlan,
+                {
+                    userDashLeftSidebarEntries(website.loritta, i18nContext, UserDashboardSection.SHIP_EFFECTS)
+                },
+                {
+                    div(classes = "hero-wrapper") {
+                        etherealGambiImg(
+                            "https://stuff.loritta.website/ship/loritta.png",
+                            classes = "hero-image",
+                            sizes = "(max-width: 900px) 100vw, 360px"
+                        ) {}
 
-                                div(classes = "hero-text") {
-                                    h1 {
-                                        text(i18nContext.get(I18nKeysData.Website.Dashboard.ShipEffects.Title))
-                                    }
-
-                                    for (str in i18nContext.language
-                                        .textBundle
-                                        .lists
-                                        .getValue(I18nKeys.Website.Dashboard.ShipEffects.Description.key)
-                                    ) {
-                                        p {
-                                            handleI18nString(
-                                                str,
-                                                appendAsFormattedText(i18nContext, mapOf("sonhos" to 3_000)),
-                                            ) {
-                                                when (it) {
-                                                    "shipCommand" -> {
-                                                        TextReplaceControls.ComposableFunctionResult {
-                                                            span(classes = "discord-mention") {
-                                                                text("/ship")
-                                                            }
-                                                        }
-                                                    }
-
-                                                    else -> TextReplaceControls.AppendControlAsIsResult
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
+                        div(classes = "hero-text") {
+                            h1 {
+                                text(i18nContext.get(I18nKeysData.Website.Dashboard.ShipEffects.Title))
                             }
 
-                            hr {}
+                            for (str in i18nContext.language
+                                .textBundle
+                                .lists
+                                .getValue(I18nKeys.Website.Dashboard.ShipEffects.Description.key)
+                            ) {
+                                p {
+                                    handleI18nString(
+                                        str,
+                                        appendAsFormattedText(i18nContext, mapOf("sonhos" to 3_000)),
+                                    ) {
+                                        when (it) {
+                                            "shipCommand" -> {
+                                                TextReplaceControls.ComposableFunctionResult {
+                                                    span(classes = "discord-mention") {
+                                                        text("/ship")
+                                                    }
+                                                }
+                                            }
 
-                            h2 { text(i18nContext.get(DashboardI18nKeysData.ShipEffects.Bribe.Title)) }
-
-                            fieldWrappers {
-                                fieldWrapper {
-                                    fieldTitle {
-                                        text(i18nContext.get(DashboardI18nKeysData.ShipEffects.Bribe.UserThatWillReceiveTheEffect))
-                                    }
-
-                                    div {
-                                        textInput {
-                                            id = "user-input"
-                                            name = "userQuery"
-
-                                            attributes["bliss-post"] = "/br/ship-effects"
-                                            attributes["bliss-trigger"] = "input"
-                                            attributes["bliss-include-query"] = "#user-input"
-                                            attributes["bliss-swap:200"] = ".input-result -> #message (innerHTML), #buy-button (outerHTML) -> #buy-button (outerHTML)"
-                                        }
-
-                                        div {
-                                            id = "message"
+                                            else -> TextReplaceControls.AppendControlAsIsResult
                                         }
                                     }
-                                }
-
-                                fieldWrapper {
-                                    fieldTitle {
-                                        text(i18nContext.get(DashboardI18nKeysData.ShipEffects.Bribe.NewShipPercentage))
-                                    }
-
-                                    div {
-                                        numberInput {
-                                            id = "ship-percentage"
-                                            name = "shipPercentage"
-                                            min = "0"
-                                            max = "100"
-                                            step = "1"
-                                            value = "100"
-                                        }
-                                    }
-                                }
-
-                                fieldWrapper {
-                                    shipBuyButton(i18nContext, false)
-                                }
-
-                                hr {}
-
-                                div {
-                                    id = "active-bribes"
-
-                                    shipEffectsBribes(
-                                        i18nContext,
-                                        session,
-                                        activeShipEffects,
-                                        resolvedUsers
-                                    )
                                 }
                             }
                         }
-                    )
+                    }
+
+                    hr {}
+
+                    h2 { text(i18nContext.get(DashboardI18nKeysData.ShipEffects.Bribe.Title)) }
+
+                    fieldWrappers {
+                        fieldWrapper {
+                            fieldTitle {
+                                text(i18nContext.get(DashboardI18nKeysData.ShipEffects.Bribe.UserThatWillReceiveTheEffect))
+                            }
+
+                            div {
+                                textInput {
+                                    id = "user-input"
+                                    name = "userQuery"
+
+                                    attributes["bliss-post"] = "/br/ship-effects"
+                                    attributes["bliss-trigger"] = "input"
+                                    attributes["bliss-include-query"] = "#user-input"
+                                    attributes["bliss-swap:200"] = ".input-result -> #message (innerHTML), #buy-button (outerHTML) -> #buy-button (outerHTML)"
+                                }
+
+                                div {
+                                    id = "message"
+                                }
+                            }
+                        }
+
+                        fieldWrapper {
+                            fieldTitle {
+                                text(i18nContext.get(DashboardI18nKeysData.ShipEffects.Bribe.NewShipPercentage))
+                            }
+
+                            div {
+                                numberInput {
+                                    id = "ship-percentage"
+                                    name = "shipPercentage"
+                                    min = "0"
+                                    max = "100"
+                                    step = "1"
+                                    value = "100"
+                                }
+                            }
+                        }
+
+                        fieldWrapper {
+                            shipBuyButton(i18nContext, false)
+                        }
+
+                        hr {}
+
+                        div {
+                            id = "active-bribes"
+
+                            shipEffectsBribes(
+                                i18nContext,
+                                session,
+                                activeShipEffects,
+                                resolvedUsers
+                            )
+                        }
+                    }
                 }
-        )
+            )
+        }
     }
 }

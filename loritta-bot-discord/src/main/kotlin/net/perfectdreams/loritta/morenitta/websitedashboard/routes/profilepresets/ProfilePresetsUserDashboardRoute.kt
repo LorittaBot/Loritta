@@ -16,6 +16,8 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.dashboard
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.profilePresetsSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.userDashLeftSidebarEntries
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresUserAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jetbrains.exposed.sql.selectAll
 
@@ -29,24 +31,21 @@ class ProfilePresetsUserDashboardRoute(website: LorittaDashboardWebServer) : Req
                 .toList()
         }
 
-        call.respondHtml(
-            createHTML()
-                .html {
-                    dashboardBase(
-                        i18nContext,
-                        i18nContext.get(DashboardI18nKeysData.ProfilePresets.Title),
-                        session,
-                        theme,
-                        shimejiSettings,
-                        userPremiumPlan,
-                        {
-                            userDashLeftSidebarEntries(website.loritta, i18nContext, UserDashboardSection.PROFILE_PRESETS)
-                        },
-                        {
-                            profilePresetsSection(i18nContext, profilePresets)
-                        }
-                    )
+        call.respondHtml {
+            dashboardBase(
+                i18nContext,
+                i18nContext.get(DashboardI18nKeysData.ProfilePresets.Title),
+                session,
+                theme,
+                shimejiSettings,
+                userPremiumPlan,
+                {
+                    userDashLeftSidebarEntries(website.loritta, i18nContext, UserDashboardSection.PROFILE_PRESETS)
+                },
+                {
+                    profilePresetsSection(i18nContext, profilePresets)
                 }
-        )
+            )
+        }
     }
 }

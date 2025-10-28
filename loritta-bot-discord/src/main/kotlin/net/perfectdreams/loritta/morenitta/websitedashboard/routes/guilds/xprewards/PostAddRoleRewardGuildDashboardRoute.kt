@@ -16,6 +16,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebS
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.configurableRoleRewards
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.ColorTheme
 
 class PostAddRoleRewardGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/xp-rewards/add") {
@@ -37,15 +38,12 @@ class PostAddRoleRewardGuildDashboardRoute(website: LorittaDashboardWebServer) :
             )
         )
 
-        call.respondHtml(
-            createHTML(false)
-                .body {
-                    configurableRoleRewards(
-                        i18nContext,
-                        guild,
-                        newRoles
-                    )
-                }
-        )
+        call.respondHtmlFragment {
+            configurableRoleRewards(
+                i18nContext,
+                guild,
+                newRoles
+            )
+        }
     }
 }

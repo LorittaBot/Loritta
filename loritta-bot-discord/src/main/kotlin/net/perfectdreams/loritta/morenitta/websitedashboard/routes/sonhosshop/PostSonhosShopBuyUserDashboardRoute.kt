@@ -26,6 +26,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresUserAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.ResultRow
@@ -131,30 +132,21 @@ class PostSonhosShopBuyUserDashboardRoute(website: LorittaDashboardWebServer) : 
             }
 
             Result.UnknownBundle -> {
-                call.respondHtml(
-                    createHTML()
-                        .body {
-                            blissShowToast(createEmbeddedToast(EmbeddedToast.Type.WARN, "Bundle não existe!"))
-                        }
-                )
+                call.respondHtmlFragment {
+                    blissShowToast(createEmbeddedToast(EmbeddedToast.Type.WARN, "Bundle não existe!"))
+                }
             }
 
             Result.UnknownCoupon -> {
-                call.respondHtml(
-                    createHTML()
-                        .body {
-                            blissShowToast(createEmbeddedToast(EmbeddedToast.Type.WARN, "Cupom não existe ou ele está expirado!"))
-                        }
-                )
+                call.respondHtmlFragment {
+                    blissShowToast(createEmbeddedToast(EmbeddedToast.Type.WARN, "Cupom não existe ou ele está expirado!"))
+                }
             }
 
             Result.TooManyCouponUses -> {
-                call.respondHtml(
-                    createHTML()
-                        .body {
-                            blissShowToast(createEmbeddedToast(EmbeddedToast.Type.WARN, "O cupom chegou no limite de usos!"))
-                        }
-                )
+                call.respondHtmlFragment {
+                    blissShowToast(createEmbeddedToast(EmbeddedToast.Type.WARN, "O cupom chegou no limite de usos!"))
+                }
             }
         }
     }

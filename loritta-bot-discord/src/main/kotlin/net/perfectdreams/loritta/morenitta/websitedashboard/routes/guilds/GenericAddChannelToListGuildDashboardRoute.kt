@@ -21,6 +21,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.configura
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.ColorTheme
 
 open class GenericAddChannelToListGuildDashboardRoute(
@@ -38,41 +39,34 @@ open class GenericAddChannelToListGuildDashboardRoute(
         val request = Json.decodeFromString<AddChannelRequest>(call.receiveText())
 
         if (request.channelId in request.channels) {
-            call.respondHtml(
-                createHTML(false)
-                    .body {
-                        blissShowToast(
-                            createEmbeddedToast(
-                                EmbeddedToast.Type.WARN,
-                                "Você já tem este canal adicionado!"
-                            )
-                        )
-                    },
-                status = HttpStatusCode.Conflict
-            )
+            call.respondHtmlFragment(status = HttpStatusCode.Conflict) {
+                blissShowToast(
+                    createEmbeddedToast(
+                        EmbeddedToast.Type.WARN,
+                        "Você já tem este canal adicionado!"
+                    )
+                )
+            }
             return
         }
 
         val newList = request.channels.toMutableSet()
         newList.add(request.channelId)
 
-        call.respondHtml(
-            createHTML(false)
-                .body {
-                    blissShowToast(
-                        createEmbeddedToast(
-                            EmbeddedToast.Type.SUCCESS,
-                            "Canal adicionado!"
-                        )
-                    )
+        call.respondHtmlFragment {
+            blissShowToast(
+                createEmbeddedToast(
+                    EmbeddedToast.Type.SUCCESS,
+                    "Canal adicionado!"
+                )
+            )
 
-                    configurableChannelList(
-                        i18nContext,
-                        guild,
-                        "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}$removeEndpoint",
-                        newList
-                    )
-                }
-        )
+            configurableChannelList(
+                i18nContext,
+                guild,
+                "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}$removeEndpoint",
+                newList
+            )
+        }
     }
 }

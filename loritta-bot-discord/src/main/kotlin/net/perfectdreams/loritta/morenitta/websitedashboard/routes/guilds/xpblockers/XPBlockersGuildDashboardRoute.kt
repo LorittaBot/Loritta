@@ -32,6 +32,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuild
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissEvent
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.serializable.ColorTheme
 
 class XPBlockersGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/xp-blockers") {
@@ -41,97 +42,94 @@ class XPBlockersGuildDashboardRoute(website: LorittaDashboardWebServer) : Requir
             serverConfig.levelConfig
         }
 
-        call.respondHtml(
-            createHTML()
-                .html {
-                    dashboardBase(
-                        i18nContext,
-                        i18nContext.get(DashboardI18nKeysData.XpBlockers.Title),
-                        session,
-                        theme,
-                        shimejiSettings,
-                        userPremiumPlan,
+        call.respondHtml {
+            dashboardBase(
+                i18nContext,
+                i18nContext.get(DashboardI18nKeysData.XpBlockers.Title),
+                session,
+                theme,
+                shimejiSettings,
+                userPremiumPlan,
+                {
+                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.XP_BLOCKERS)
+                },
+                {
+                    rightSidebarContentAndSaveBarWrapper(
                         {
-                            guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.XP_BLOCKERS)
+                            if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
+                                blissEvent("resyncState", "[bliss-component='save-bar']")
+                                blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Configuração redefinida!"))
+                            }
+
+                            heroWrapper {
+                                heroText {
+                                    h1 {
+                                        text(i18nContext.get(DashboardI18nKeysData.XpBlockers.Title))
+                                    }
+
+                                    p {
+                                        text("Bloqueie cargos ou canais específicos para não ganharem XP!")
+                                    }
+                                }
+                            }
+
+                            hr {}
+
+                            sectionConfig {
+                                fieldWrappers {
+                                    fieldWrapper {
+                                        fieldTitle {
+                                            text("Cargos que não irão receber experiência")
+                                        }
+
+                                        fieldDescription {
+                                            text("Cargos que estão na lista não irão ganhar experiência. Perfeito para usuários que acham engraçado \"spammar\" e \"floodar\" seu servidor com mensagens aleatórias toscas só para ganhar mais experiência.")
+                                        }
+
+                                        configurableRoleListInput(
+                                            i18nContext,
+                                            guild,
+                                            "roles",
+                                            "roles",
+                                            "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/xp-blockers/roles/add",
+                                            "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/xp-blockers/roles/remove",
+                                            levelConfig?.noXpRoles?.toSet() ?: setOf()
+                                        )
+                                    }
+
+                                    fieldWrapper {
+                                        fieldTitle {
+                                            text("Canais que não irão dar experiência")
+                                        }
+
+                                        fieldDescription {
+                                            text("Canais que estão nesta lista não irão dar experência para usuários que falarem neles. Útil para bloquear canais criados para \"spam\" ou \"flood\", assim evitando que usuários ganhem experiência no seu servidor apenas mandando mensagens aleatórias toscas sem realmente conversar.")
+                                        }
+
+                                        configurableChannelListInput(
+                                            i18nContext,
+                                            guild,
+                                            "channels",
+                                            "channels",
+                                            "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/xp-blockers/channels/add",
+                                            "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/xp-blockers/channels/remove",
+                                            levelConfig?.noXpChannels?.toSet() ?: setOf()
+                                        )
+                                    }
+                                }
+                            }
                         },
                         {
-                            rightSidebarContentAndSaveBarWrapper(
-                                {
-                                    if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
-                                        blissEvent("resyncState", "[bliss-component='save-bar']")
-                                        blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Configuração redefinida!"))
-                                    }
-
-                                    heroWrapper {
-                                        heroText {
-                                            h1 {
-                                                text(i18nContext.get(DashboardI18nKeysData.XpBlockers.Title))
-                                            }
-
-                                            p {
-                                                text("Bloqueie cargos ou canais específicos para não ganharem XP!")
-                                            }
-                                        }
-                                    }
-
-                                    hr {}
-
-                                    sectionConfig {
-                                        fieldWrappers {
-                                            fieldWrapper {
-                                                fieldTitle {
-                                                    text("Cargos que não irão receber experiência")
-                                                }
-
-                                                fieldDescription {
-                                                    text("Cargos que estão na lista não irão ganhar experiência. Perfeito para usuários que acham engraçado \"spammar\" e \"floodar\" seu servidor com mensagens aleatórias toscas só para ganhar mais experiência.")
-                                                }
-
-                                                configurableRoleListInput(
-                                                    i18nContext,
-                                                    guild,
-                                                    "roles",
-                                                    "roles",
-                                                    "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/xp-blockers/roles/add",
-                                                    "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/xp-blockers/roles/remove",
-                                                    levelConfig?.noXpRoles?.toSet() ?: setOf()
-                                                )
-                                            }
-
-                                            fieldWrapper {
-                                                fieldTitle {
-                                                    text("Canais que não irão dar experiência")
-                                                }
-
-                                                fieldDescription {
-                                                    text("Canais que estão nesta lista não irão dar experência para usuários que falarem neles. Útil para bloquear canais criados para \"spam\" ou \"flood\", assim evitando que usuários ganhem experiência no seu servidor apenas mandando mensagens aleatórias toscas sem realmente conversar.")
-                                                }
-
-                                                configurableChannelListInput(
-                                                    i18nContext,
-                                                    guild,
-                                                    "channels",
-                                                    "channels",
-                                                    "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/xp-blockers/channels/add",
-                                                    "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/xp-blockers/channels/remove",
-                                                    levelConfig?.noXpChannels?.toSet() ?: setOf()
-                                                )
-                                            }
-                                        }
-                                    }
-                                },
-                                {
-                                    genericSaveBar(
-                                        i18nContext,
-                                        false,
-                                        guild,
-                                        "/xp-blockers"
-                                    )
-                                }
+                            genericSaveBar(
+                                i18nContext,
+                                false,
+                                guild,
+                                "/xp-blockers"
                             )
                         }
                     )
                 }
-        )
+            )
+        }
     }
 }

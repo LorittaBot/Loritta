@@ -24,6 +24,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.svgIcon
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.userDashLeftSidebarEntries
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresUserAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.SVGIcons
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.serializable.ColorTheme
 
 class DailyShopUserDashboardRoute(website: LorittaDashboardWebServer) : RequiresUserAuthDashboardLocalizedRoute(website, "/daily-shop") {
@@ -43,70 +44,67 @@ class DailyShopUserDashboardRoute(website: LorittaDashboardWebServer) : Requires
         // A bit hacky but hey, there's nothing a lot we can do rn
         val galleryOfDreamsResponse = website.loritta.cachedGalleryOfDreamsDataResponse!!
 
-        call.respondHtml(
-            createHTML()
-                .html {
-                    dashboardBase(
-                        i18nContext,
-                        i18nContext.get(DashboardI18nKeysData.DailyShop.Title),
-                        session,
-                        theme,
-                        shimejiSettings,
-                        userPremiumPlan,
-                        {
-                            userDashLeftSidebarEntries(website.loritta, i18nContext, UserDashboardSection.TRINKETS_SHOP)
-                        },
-                        {
-                            div(classes = "hero-wrapper") {
-                                etherealGambiImg("https://stuff.loritta.website/loritta-daily-shop-allouette.png", classes = "hero-image", sizes = "(max-width: 900px) 100vw, 360px") {}
+        call.respondHtml {
+            dashboardBase(
+                i18nContext,
+                i18nContext.get(DashboardI18nKeysData.DailyShop.Title),
+                session,
+                theme,
+                shimejiSettings,
+                userPremiumPlan,
+                {
+                    userDashLeftSidebarEntries(website.loritta, i18nContext, UserDashboardSection.TRINKETS_SHOP)
+                },
+                {
+                    div(classes = "hero-wrapper") {
+                        etherealGambiImg("https://stuff.loritta.website/loritta-daily-shop-allouette.png", classes = "hero-image", sizes = "(max-width: 900px) 100vw, 360px") {}
 
-                                div(classes = "hero-text") {
-                                    h1 {
-                                        text(i18nContext.get(DashboardI18nKeysData.DailyShop.Title))
-                                    }
-
-                                    p {
-                                        +"Bem-vind@ a loja diária de itens! O lugar para comprar itens para o seu \"+perfil\" da Loritta!"
-                                    }
-                                    p {
-                                        +"Todo o dia as 00:00 UTC (21:00 no horário do Brasil) a loja é atualizada com novos itens! Então volte todo o dia para verificar ^-^"
-                                    }
-                                }
+                        div(classes = "hero-text") {
+                            h1 {
+                                text(i18nContext.get(DashboardI18nKeysData.DailyShop.Title))
                             }
 
-                            div(classes = "shop-reset-timer") {
-                                div(classes = "horizontal-line") {}
-
-                                svgIcon(SVGIcons.TimerAnimatedHand) {
-                                    classNames(setOf("stopwatch"))
-                                }
-
-                                div(classes = "shop-timer") {
-                                    attributes["bliss-sse"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/daily-shop/timer"
-
-                                    div(classes = "shop-timer-date") {
-                                        text(DateUtils.formatDateDiff(i18nContext, System.currentTimeMillis(), DashboardDailyShopUtils.getShopResetsEpochMilli(), maxParts = 1))
-                                    }
-
-                                    div(classes = "shop-timer-subtitle") {
-                                        text("até a loja atualizar")
-                                    }
-                                }
+                            p {
+                                +"Bem-vind@ a loja diária de itens! O lugar para comprar itens para o seu \"+perfil\" da Loritta!"
                             }
-
-                            div {
-                                id = "loritta-items-wrapper"
-
-                                dailyShopItems(
-                                    i18nContext,
-                                    locale,
-                                    dailyShop,
-                                    galleryOfDreamsResponse
-                                )
+                            p {
+                                +"Todo o dia as 00:00 UTC (21:00 no horário do Brasil) a loja é atualizada com novos itens! Então volte todo o dia para verificar ^-^"
                             }
                         }
-                    )
+                    }
+
+                    div(classes = "shop-reset-timer") {
+                        div(classes = "horizontal-line") {}
+
+                        svgIcon(SVGIcons.TimerAnimatedHand) {
+                            classNames(setOf("stopwatch"))
+                        }
+
+                        div(classes = "shop-timer") {
+                            attributes["bliss-sse"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/daily-shop/timer"
+
+                            div(classes = "shop-timer-date") {
+                                text(DateUtils.formatDateDiff(i18nContext, System.currentTimeMillis(), DashboardDailyShopUtils.getShopResetsEpochMilli(), maxParts = 1))
+                            }
+
+                            div(classes = "shop-timer-subtitle") {
+                                text("até a loja atualizar")
+                            }
+                        }
+                    }
+
+                    div {
+                        id = "loritta-items-wrapper"
+
+                        dailyShopItems(
+                            i18nContext,
+                            locale,
+                            dailyShop,
+                            galleryOfDreamsResponse
+                        )
+                    }
                 }
-        )
+            )
+        }
     }
 }

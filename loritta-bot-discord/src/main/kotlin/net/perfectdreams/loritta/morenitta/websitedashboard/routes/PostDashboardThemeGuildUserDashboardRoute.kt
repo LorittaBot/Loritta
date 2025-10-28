@@ -22,6 +22,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseModa
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissSoundEffect
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jetbrains.exposed.sql.upsert
 import java.time.Instant
@@ -43,27 +44,24 @@ class PostDashboardThemeGuildUserDashboardRoute(website: LorittaDashboardWebServ
             }
         }
 
-        call.respondHtml(
-            createHTML(false)
-                .body {
-                    blissCloseModal()
+        call.respondHtmlFragment {
+            blissCloseModal()
 
-                    blissShowToast(
-                        createEmbeddedToast(
-                            EmbeddedToast.Type.SUCCESS,
-                            i18nContext.get(DashboardI18nKeysData.ThemeSelector.ThemeChanged)
-                        )
-                    )
+            blissShowToast(
+                createEmbeddedToast(
+                    EmbeddedToast.Type.SUCCESS,
+                    i18nContext.get(DashboardI18nKeysData.ThemeSelector.ThemeChanged)
+                )
+            )
 
-                    blissSoundEffect("configSaved")
+            blissSoundEffect("configSaved")
 
-                    script(type = "application/json") {
-                        attributes["bliss-set-attributes"] = "#app-wrapper"
-                        attributes["bliss-attributes"] = buildJsonObject {
-                            put("class", request.theme.className)
-                        }.toString()
-                    }
-                }
-        )
+            script(type = "application/json") {
+                attributes["bliss-set-attributes"] = "#app-wrapper"
+                attributes["bliss-attributes"] = buildJsonObject {
+                    put("class", request.theme.className)
+                }.toString()
+            }
+        }
     }
 }

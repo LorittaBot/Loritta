@@ -20,6 +20,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.favoriteG
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissSoundEffect
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
@@ -41,34 +42,27 @@ class PostUnfavoriteGuildUserDashboardRoute(website: LorittaDashboardWebServer) 
         }
 
         if (count >= 1) {
-            call.respondHtml(
-                createHTML(false)
-                    .body {
-                        favoriteGuildButton(i18nContext, request.guildId)
+            call.respondHtmlFragment {
+                favoriteGuildButton(i18nContext, request.guildId)
 
-                        blissShowToast(
-                            createEmbeddedToast(
-                                EmbeddedToast.Type.SUCCESS,
-                                i18nContext.get(I18nKeysData.Website.Dashboard.ChooseAServer.FavoriteServer.Toast.ServerUnfavorited)
-                            )
-                        )
+                blissShowToast(
+                    createEmbeddedToast(
+                        EmbeddedToast.Type.SUCCESS,
+                        i18nContext.get(I18nKeysData.Website.Dashboard.ChooseAServer.FavoriteServer.Toast.ServerUnfavorited)
+                    )
+                )
 
-                        blissSoundEffect("configSaved")
-                    }
-            )
+                blissSoundEffect("configSaved")
+            }
         } else {
-            call.respondHtml(
-                createHTML(false)
-                    .body {
-                        blissShowToast(
-                            createEmbeddedToast(
-                                EmbeddedToast.Type.WARN,
-                                i18nContext.get(I18nKeysData.Website.Dashboard.ChooseAServer.FavoriteServer.Toast.ServerNotFavorited)
-                            )
-                        )
-                    },
-                status = HttpStatusCode.BadRequest
-            )
+            call.respondHtmlFragment(status = HttpStatusCode.BadRequest) {
+                blissShowToast(
+                    createEmbeddedToast(
+                        EmbeddedToast.Type.WARN,
+                        i18nContext.get(I18nKeysData.Website.Dashboard.ChooseAServer.FavoriteServer.Toast.ServerNotFavorited)
+                    )
+                )
+            }
         }
     }
 }

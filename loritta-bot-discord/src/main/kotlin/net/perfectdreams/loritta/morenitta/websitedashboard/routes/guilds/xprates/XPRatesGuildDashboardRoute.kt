@@ -37,6 +37,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuild
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissEvent
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jetbrains.exposed.sql.selectAll
 
@@ -52,120 +53,117 @@ class XPRatesGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresG
             Pair(serverConfig.levelConfig, roleRates)
         }
 
-        call.respondHtml(
-            createHTML()
-                .html {
-                    dashboardBase(
-                        i18nContext,
-                        i18nContext.get(DashboardI18nKeysData.XpRates.Title),
-                        session,
-                        theme,
-                        shimejiSettings,
-                        userPremiumPlan,
+        call.respondHtml {
+            dashboardBase(
+                i18nContext,
+                i18nContext.get(DashboardI18nKeysData.XpRates.Title),
+                session,
+                theme,
+                shimejiSettings,
+                userPremiumPlan,
+                {
+                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.XP_RATES)
+                },
+                {
+                    rightSidebarContentAndSaveBarWrapper(
                         {
-                            guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.XP_RATES)
-                        },
-                        {
-                            rightSidebarContentAndSaveBarWrapper(
-                                {
-                                    if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
-                                        blissEvent("resyncState", "[bliss-component='save-bar']")
-                                        blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Configuração redefinida!"))
+                            if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
+                                blissEvent("resyncState", "[bliss-component='save-bar']")
+                                blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Configuração redefinida!"))
+                            }
+
+                            heroWrapper {
+                                heroText {
+                                    h1 {
+                                        text(i18nContext.get(DashboardI18nKeysData.XpRates.Title))
                                     }
 
-                                    heroWrapper {
-                                        heroText {
-                                            h1 {
-                                                text(i18nContext.get(DashboardI18nKeysData.XpRates.Title))
-                                            }
-
-                                            p {
-                                                text("Você pode configurar que cargos específicos ganhem mais/menos experiência que outros membros. Ótimo para recompensar membros ativos do seu servidor com um bônus de experiência a cada mensagem que eles enviam!")
-                                            }
-                                        }
+                                    p {
+                                        text("Você pode configurar que cargos específicos ganhem mais/menos experiência que outros membros. Ótimo para recompensar membros ativos do seu servidor com um bônus de experiência a cada mensagem que eles enviam!")
                                     }
+                                }
+                            }
 
-                                    hr {}
+                            hr {}
 
-                                    sectionConfig {
-                                        fieldWrappers {
-                                            fieldWrapper {
-                                                div {
-                                                    fieldTitle {
-                                                        text("Taxa de XP para Cargos")
+                            sectionConfig {
+                                fieldWrappers {
+                                    fieldWrapper {
+                                        div {
+                                            fieldTitle {
+                                                text("Taxa de XP para Cargos")
+                                            }
+
+                                            controlsWithButton {
+                                                inlinedControls {
+                                                    span {
+                                                        text("Usuários com o cargo ")
                                                     }
 
-                                                    controlsWithButton {
-                                                        inlinedControls {
-                                                            span {
-                                                                text("Usuários com o cargo ")
-                                                            }
-
-                                                            growInputWrapper {
-                                                                roleSelectMenu(guild, null) {
-                                                                    name = "roleId"
-                                                                    attributes["xp-action-add-element"] = "true"
-                                                                }
-                                                            }
-
-                                                            span {
-                                                                text(" irão ganhar ")
-                                                            }
-
-                                                            numberInput {
-                                                                name = "rate"
-                                                                placeholder = "2.0"
-                                                                style = "width: 100px;"
-                                                                value = "1"
-                                                                min = "0"
-                                                                step = "0.05"
-                                                                attributes["xp-action-add-element"] = "true"
-                                                            }
-
-                                                            span {
-                                                                text("x mais XP")
-                                                            }
+                                                    growInputWrapper {
+                                                        roleSelectMenu(guild, null) {
+                                                            name = "roleId"
+                                                            attributes["xp-action-add-element"] = "true"
                                                         }
+                                                    }
 
-                                                        discordButton(ButtonStyle.SUCCESS) {
-                                                            attributes["bliss-post"] = "/${i18nContext.get(I18nKeys.Website.LocalePathId)}/guilds/${guild.idLong}/xp-rates/add"
-                                                            attributes["bliss-include-json"] = "[xp-action-add-element]"
-                                                            attributes["bliss-swap:200"] = "body (innerHTML) -> #role-rates (innerHTML)"
-                                                            text("Adicionar")
-                                                        }
+                                                    span {
+                                                        text(" irão ganhar ")
+                                                    }
+
+                                                    numberInput {
+                                                        name = "rate"
+                                                        placeholder = "2.0"
+                                                        style = "width: 100px;"
+                                                        value = "1"
+                                                        min = "0"
+                                                        step = "0.05"
+                                                        attributes["xp-action-add-element"] = "true"
+                                                    }
+
+                                                    span {
+                                                        text("x mais XP")
                                                     }
                                                 }
 
-                                                div {
-                                                    id = "role-rates"
+                                                discordButton(ButtonStyle.SUCCESS) {
+                                                    attributes["bliss-post"] = "/${i18nContext.get(I18nKeys.Website.LocalePathId)}/guilds/${guild.idLong}/xp-rates/add"
+                                                    attributes["bliss-include-json"] = "[xp-action-add-element]"
+                                                    attributes["bliss-swap:200"] = "body (innerHTML) -> #role-rates (innerHTML)"
+                                                    text("Adicionar")
+                                                }
+                                            }
+                                        }
 
-                                                    configurableRoleRates(
-                                                        i18nContext,
-                                                        guild,
-                                                        roleRates.map {
-                                                            RoleRate(
-                                                                it[ExperienceRoleRates.role],
-                                                                it[ExperienceRoleRates.rate]
-                                                            )
-                                                        }
+                                        div {
+                                            id = "role-rates"
+
+                                            configurableRoleRates(
+                                                i18nContext,
+                                                guild,
+                                                roleRates.map {
+                                                    RoleRate(
+                                                        it[ExperienceRoleRates.role],
+                                                        it[ExperienceRoleRates.rate]
                                                     )
                                                 }
-                                            }
+                                            )
                                         }
                                     }
-                                },
-                                {
-                                    genericSaveBar(
-                                        i18nContext,
-                                        false,
-                                        guild,
-                                        "/xp-rates"
-                                    )
                                 }
+                            }
+                        },
+                        {
+                            genericSaveBar(
+                                i18nContext,
+                                false,
+                                guild,
+                                "/xp-rates"
                             )
                         }
                     )
                 }
-        )
+            )
+        }
     }
 }

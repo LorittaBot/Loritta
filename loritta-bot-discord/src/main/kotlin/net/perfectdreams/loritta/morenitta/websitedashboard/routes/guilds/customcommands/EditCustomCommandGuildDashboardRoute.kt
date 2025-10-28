@@ -27,6 +27,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.guildDash
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.rightSidebarContentAndSaveBarWrapper
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.saveBar
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.selectAll
@@ -49,62 +50,59 @@ class EditCustomCommandGuildDashboardRoute(website: LorittaDashboardWebServer) :
             return
         }
 
-        call.respondHtml(
-            createHTML()
-                .html {
-                    dashboardBase(
-                        i18nContext,
-                        i18nContext.get(DashboardI18nKeysData.CustomCommands.Title),
-                        session,
-                        theme,
-                        shimejiSettings,
-                        userPremiumPlan,
+        call.respondHtml {
+            dashboardBase(
+                i18nContext,
+                i18nContext.get(DashboardI18nKeysData.CustomCommands.Title),
+                session,
+                theme,
+                shimejiSettings,
+                userPremiumPlan,
+                {
+                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.CUSTOM_COMMANDS)
+                },
+                {
+                    goBackToPreviousSectionButton(
+                        href = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/custom-commands",
+                    ) {
+                        text("Voltar para a lista de comandos personalizados")
+                    }
+
+                    hr {}
+
+                    rightSidebarContentAndSaveBarWrapper(
                         {
-                            guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.CUSTOM_COMMANDS)
+                            div {
+                                id = "section-config"
+
+                                customGuildCommandTextEditor(
+                                    i18nContext,
+                                    guild,
+                                    session,
+                                    command[CustomGuildCommands.label],
+                                    command[CustomGuildCommands.code],
+                                )
+                            }
                         },
                         {
-                            goBackToPreviousSectionButton(
-                                href = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/custom-commands",
-                            ) {
-                                text("Voltar para a lista de comandos personalizados")
-                            }
-
-                            hr {}
-
-                            rightSidebarContentAndSaveBarWrapper(
+                            saveBar(
+                                i18nContext,
+                                false,
                                 {
-                                    div {
-                                        id = "section-config"
-
-                                        customGuildCommandTextEditor(
-                                            i18nContext,
-                                            guild,
-                                            session,
-                                            command[CustomGuildCommands.label],
-                                            command[CustomGuildCommands.code],
-                                        )
-                                    }
-                                },
-                                {
-                                    saveBar(
-                                        i18nContext,
-                                        false,
-                                        {
-                                            attributes["bliss-get"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/custom-commands/${entryId}"
-                                            attributes["bliss-swap:200"] = "#section-config (innerHTML) -> #section-config (innerHTML)"
-                                            attributes["bliss-headers"] = buildJsonObject {
-                                                put("Loritta-Configuration-Reset", "true")
-                                            }.toString()
-                                        }
-                                    ) {
-                                        attributes["bliss-put"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/custom-commands/${entryId}"
-                                        attributes["bliss-include-json"] = "#section-config"
-                                    }
+                                    attributes["bliss-get"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/custom-commands/${entryId}"
+                                    attributes["bliss-swap:200"] = "#section-config (innerHTML) -> #section-config (innerHTML)"
+                                    attributes["bliss-headers"] = buildJsonObject {
+                                        put("Loritta-Configuration-Reset", "true")
+                                    }.toString()
                                 }
-                            )
+                            ) {
+                                attributes["bliss-put"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/custom-commands/${entryId}"
+                                attributes["bliss-include-json"] = "#section-config"
+                            }
                         }
                     )
                 }
-        )
+            )
+        }
     }
 }

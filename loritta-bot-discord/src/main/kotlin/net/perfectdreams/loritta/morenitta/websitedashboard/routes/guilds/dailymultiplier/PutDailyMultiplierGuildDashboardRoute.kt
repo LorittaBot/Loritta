@@ -21,6 +21,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuild
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondConfigSaved
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.ColorTheme
 
 class PutDailyMultiplierGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/daily-multiplier") {
@@ -33,18 +34,14 @@ class PutDailyMultiplierGuildDashboardRoute(website: LorittaDashboardWebServer) 
         val request = Json.decodeFromString<SaveDailyMultiplierRequest>(call.receiveText())
 
         if (request.enabled && guildPremiumPlan.dailyMultiplier == 1.0) {
-            call.respondHtml(
-                createHTML(false)
-                    .body {
-                        blissShowToast(
-                            createEmbeddedToast(
-                                EmbeddedToast.Type.WARN,
-                                "O servidor precisa ter premium para fazer isto!"
-                            )
-                        )
-                    },
-                status = HttpStatusCode.BadRequest
-            )
+            call.respondHtmlFragment(status = HttpStatusCode.BadRequest) {
+                blissShowToast(
+                    createEmbeddedToast(
+                        EmbeddedToast.Type.WARN,
+                        "O servidor precisa ter premium para fazer isto!"
+                    )
+                )
+            }
             return
         }
 

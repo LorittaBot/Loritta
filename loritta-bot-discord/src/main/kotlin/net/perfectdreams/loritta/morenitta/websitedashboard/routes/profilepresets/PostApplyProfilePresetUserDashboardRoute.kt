@@ -17,6 +17,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresUserA
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.selectAll
@@ -49,34 +50,26 @@ class PostApplyProfilePresetUserDashboardRoute(website: LorittaDashboardWebServe
 
         when (result) {
             is Result.Success -> {
-                call.respondHtml(
-                    createHTML()
-                        .body {
-                            blissShowToast(
-                                createEmbeddedToast(
-                                    EmbeddedToast.Type.SUCCESS,
-                                    "Predefinição aplicada!"
-                                )
-                            )
+                call.respondHtmlFragment(status = HttpStatusCode.OK) {
+                    blissShowToast(
+                        createEmbeddedToast(
+                            EmbeddedToast.Type.SUCCESS,
+                            "Predefinição aplicada!"
+                        )
+                    )
 
-                            blissCloseModal()
-                        },
-                    status = HttpStatusCode.OK
-                )
+                    blissCloseModal()
+                }
             }
             Result.PresetNotFound -> {
-                call.respondHtml(
-                    createHTML(false)
-                        .body {
-                            blissShowToast(
-                                createEmbeddedToast(
-                                    EmbeddedToast.Type.WARN,
-                                    "Você não pode aplicar uma predefinição que não existe!"
-                                )
-                            )
-                        },
-                    status = HttpStatusCode.NotFound
-                )
+                call.respondHtmlFragment(status = HttpStatusCode.NotFound) {
+                    blissShowToast(
+                        createEmbeddedToast(
+                            EmbeddedToast.Type.WARN,
+                            "Você não pode aplicar uma predefinição que não existe!"
+                        )
+                    )
+                }
             }
         }
     }

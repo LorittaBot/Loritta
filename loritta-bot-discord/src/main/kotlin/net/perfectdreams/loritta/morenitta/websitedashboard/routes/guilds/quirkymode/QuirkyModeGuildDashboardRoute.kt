@@ -28,6 +28,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuild
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissEvent
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.serializable.ColorTheme
 
 class QuirkyModeGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/quirky-mode") {
@@ -36,80 +37,77 @@ class QuirkyModeGuildDashboardRoute(website: LorittaDashboardWebServer) : Requir
             website.loritta.getOrCreateServerConfig(guild.idLong).miscellaneousConfig
         }
 
-        call.respondHtml(
-            createHTML()
-                .html {
-                    dashboardBase(
-                        i18nContext,
-                        i18nContext.get(DashboardI18nKeysData.QuirkyMode.Title),
-                        session,
-                        theme,
-                        shimejiSettings,
-                        userPremiumPlan,
-                        {
-                            guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.QUIRKY_MODE)
-                        },
-                        {
-                            rightSidebarContentAndSaveBarWrapper({
-                                if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
-                                    blissEvent("resyncState", "[bliss-component='save-bar']")
-                                    blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Configuração redefinida!"))
+        call.respondHtml {
+            dashboardBase(
+                i18nContext,
+                i18nContext.get(DashboardI18nKeysData.QuirkyMode.Title),
+                session,
+                theme,
+                shimejiSettings,
+                userPremiumPlan,
+                {
+                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.QUIRKY_MODE)
+                },
+                {
+                    rightSidebarContentAndSaveBarWrapper({
+                        if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
+                            blissEvent("resyncState", "[bliss-component='save-bar']")
+                            blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Configuração redefinida!"))
+                        }
+
+                        div(classes = "hero-wrapper") {
+                            div(classes = "hero-text") {
+                                h1 {
+                                    text(i18nContext.get(I18nKeysData.Website.Dashboard.QuirkyMode.Title))
                                 }
 
-                                div(classes = "hero-wrapper") {
-                                    div(classes = "hero-text") {
-                                        h1 {
-                                            text(i18nContext.get(I18nKeysData.Website.Dashboard.QuirkyMode.Title))
-                                        }
-
-                                        for (str in i18nContext.language
-                                            .textBundle
-                                            .lists
-                                            .getValue(I18nKeys.Website.Dashboard.QuirkyMode.Description.key)
+                                for (str in i18nContext.language
+                                    .textBundle
+                                    .lists
+                                    .getValue(I18nKeys.Website.Dashboard.QuirkyMode.Description.key)
+                                ) {
+                                    p {
+                                        handleI18nString(
+                                            str,
+                                            appendAsFormattedText(i18nContext, mapOf()),
                                         ) {
-                                            p {
-                                                handleI18nString(
-                                                    str,
-                                                    appendAsFormattedText(i18nContext, mapOf()),
-                                                ) {
-                                                    when (it) {
-                                                        else -> TextReplaceControls.AppendControlAsIsResult
-                                                    }
-                                                }
+                                            when (it) {
+                                                else -> TextReplaceControls.AppendControlAsIsResult
                                             }
                                         }
                                     }
                                 }
-
-                                hr {}
-
-                                div {
-                                    id = "section-config"
-
-                                    toggleableSection(
-                                        {
-                                            text(i18nContext.get(DashboardI18nKeysData.QuirkyMode.EnableQuirkyMode.Title))
-                                        },
-                                        {
-                                            text(i18nContext.get(DashboardI18nKeysData.QuirkyMode.EnableQuirkyMode.Description))
-                                        },
-                                        miscellaneousConfig?.enableQuirky ?: false,
-                                        "enableQuirky",
-                                        true,
-                                        null
-                                    )
-                                }
-                            }) {
-                                genericSaveBar(
-                                    i18nContext,
-                                    false,
-                                    guild,
-                                    "/quirky-mode"
-                                )
                             }
                         }
-                    )
+
+                        hr {}
+
+                        div {
+                            id = "section-config"
+
+                            toggleableSection(
+                                {
+                                    text(i18nContext.get(DashboardI18nKeysData.QuirkyMode.EnableQuirkyMode.Title))
+                                },
+                                {
+                                    text(i18nContext.get(DashboardI18nKeysData.QuirkyMode.EnableQuirkyMode.Description))
+                                },
+                                miscellaneousConfig?.enableQuirky ?: false,
+                                "enableQuirky",
+                                true,
+                                null
+                            )
+                        }
+                    }) {
+                        genericSaveBar(
+                            i18nContext,
+                            false,
+                            guild,
+                            "/quirky-mode"
+                        )
+                    }
                 }
-        )
+            )
+        }
     }
 }

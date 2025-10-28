@@ -20,6 +20,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebS
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.memberCounterPreview
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import kotlin.RuntimeException
@@ -39,14 +40,11 @@ class PostMemberCounterPreviewGuildDashboardRoute(website: LorittaDashboardWebSe
         if (request.padding !in 1..10)
             error("Too much padding! Padding must be between 1 and 10, but was ${request.padding}")
 
-        call.respondHtml(
-            createHTML(false)
-                .body {
-                    val counts = setOf(5, 10, 250, guild.memberCount, 1234567890).sorted()
-                    for (count in counts) {
-                        memberCounterPreview(count, request.theme, request.padding)
-                    }
-                }
-        )
+        call.respondHtmlFragment {
+            val counts = setOf(5, 10, 250, guild.memberCount, 1234567890).sorted()
+            for (count in counts) {
+                memberCounterPreview(count, request.theme, request.padding)
+            }
+        }
     }
 }

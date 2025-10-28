@@ -30,6 +30,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuild
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.configSaved
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
@@ -75,88 +76,69 @@ class PostYouTubeChannelGuildDashboardRoute(website: LorittaDashboardWebServer) 
                 }
 
                 if (insertedRow == null) {
-                    call.respondHtml(
-                        createHTML(false)
-                            .body {
-                                blissShowToast(
-                                    createEmbeddedToast(
-                                        EmbeddedToast.Type.WARN,
-                                        "Você está no limite de canais!"
-                                    )
-                                )
-                            },
-                        status = HttpStatusCode.BadRequest
-                    )
+                    call.respondHtmlFragment(status = HttpStatusCode.BadRequest) {
+                        blissShowToast(
+                            createEmbeddedToast(
+                                EmbeddedToast.Type.WARN,
+                                "Você está no limite de canais!"
+                            )
+                        )
+                    }
                     return
                 }
 
                 call.response.header("Bliss-Push-Url", "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/youtube/${insertedRow[TrackedYouTubeAccounts.id]}")
-                call.respondHtml(
-                    createHTML(false)
-                        .body {
-                            configSaved(i18nContext)
+                call.respondHtmlFragment {
+                    configSaved(i18nContext)
 
-                            sectionConfig {
-                                trackedYouTubeChannelEditor(
-                                    i18nContext,
-                                    guild,
-                                    insertedRow[TrackedYouTubeAccounts.channelId],
-                                    insertedRow[TrackedYouTubeAccounts.message]
-                                )
-                            }
+                    sectionConfig {
+                        trackedYouTubeChannelEditor(
+                            i18nContext,
+                            guild,
+                            insertedRow[TrackedYouTubeAccounts.channelId],
+                            insertedRow[TrackedYouTubeAccounts.message]
+                        )
+                    }
 
-                            hr {}
+                    hr {}
 
-                            trackedProfileEditorSaveBar(
-                                i18nContext,
-                                guild,
-                                "youtube",
-                                insertedRow[TrackedYouTubeAccounts.id].value
-                            )
-                        }
-                )
+                    trackedProfileEditorSaveBar(
+                        i18nContext,
+                        guild,
+                        "youtube",
+                        insertedRow[TrackedYouTubeAccounts.id].value
+                    )
+                }
             }
             is YouTubeWebUtils.YouTubeChannelInfoResult.Error -> {
-                call.respondHtml(
-                    createHTML(false)
-                        .body {
-                            blissShowToast(
-                                createEmbeddedToast(
-                                    EmbeddedToast.Type.WARN,
-                                    "Algo deu errado ao tentar pegar as informações do canal!"
-                                )
-                            )
-                        },
-                    status = HttpStatusCode.BadRequest
-                )
+                call.respondHtmlFragment(status = HttpStatusCode.BadRequest) {
+                    blissShowToast(
+                        createEmbeddedToast(
+                            EmbeddedToast.Type.WARN,
+                            "Algo deu errado ao tentar pegar as informações do canal!"
+                        )
+                    )
+                }
             }
             YouTubeWebUtils.YouTubeChannelInfoResult.InvalidUrl -> {
-                call.respondHtml(
-                    createHTML(false)
-                        .body {
-                            blissShowToast(
-                                createEmbeddedToast(
-                                    EmbeddedToast.Type.WARN,
-                                    "URL inválida!"
-                                )
-                            )
-                        },
-                    status = HttpStatusCode.BadRequest
-                )
+                call.respondHtmlFragment(status = HttpStatusCode.BadRequest) {
+                    blissShowToast(
+                        createEmbeddedToast(
+                            EmbeddedToast.Type.WARN,
+                            "URL inválida!"
+                        )
+                    )
+                }
             }
             YouTubeWebUtils.YouTubeChannelInfoResult.UnknownChannel -> {
-                call.respondHtml(
-                    createHTML(false)
-                        .body {
-                            blissShowToast(
-                                createEmbeddedToast(
-                                    EmbeddedToast.Type.WARN,
-                                    "Canal não existe!"
-                                )
-                            )
-                        },
-                    status = HttpStatusCode.BadRequest
-                )
+                call.respondHtmlFragment(status = HttpStatusCode.BadRequest) {
+                    blissShowToast(
+                        createEmbeddedToast(
+                            EmbeddedToast.Type.WARN,
+                            "Canal não existe!"
+                        )
+                    )
+                }
             }
         }
     }

@@ -19,6 +19,8 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.paymentHe
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.sonhosBundlesWithCouponInput
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.userDashLeftSidebarEntries
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresUserAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.serializable.SonhosBundle
 import org.jetbrains.exposed.sql.selectAll
@@ -39,112 +41,109 @@ class SonhosShopUserDashboardRoute(website: LorittaDashboardWebServer) : Require
             )
         }
 
-        call.respondHtml(
-            createHTML()
-                .html {
-                    dashboardBase(
-                        i18nContext,
-                        i18nContext.get(DashboardI18nKeysData.SonhosShop.Title),
-                        session,
-                        theme,
-                        shimejiSettings,
-                        userPremiumPlan,
-                        {
-                            userDashLeftSidebarEntries(website.loritta, i18nContext, UserDashboardSection.SONHOS_SHOP)
-                        },
-                        {
-                            div {
-                                style = "text-align: center;"
+        call.respondHtml {
+            dashboardBase(
+                i18nContext,
+                i18nContext.get(DashboardI18nKeysData.SonhosShop.Title),
+                session,
+                theme,
+                shimejiSettings,
+                userPremiumPlan,
+                {
+                    userDashLeftSidebarEntries(website.loritta, i18nContext, UserDashboardSection.SONHOS_SHOP)
+                },
+                {
+                    div {
+                        style = "text-align: center;"
 
-                                paymentHeroWrapper(i18nContext)
+                        paymentHeroWrapper(i18nContext)
 
-                                hr {}
+                        hr {}
 
-                                h1 {
-                                    text(i18nContext.get(DashboardI18nKeysData.SonhosShop.Title))
+                        h1 {
+                            text(i18nContext.get(DashboardI18nKeysData.SonhosShop.Title))
+                        }
+                    }
+
+                    div {
+                        id = "sonhos-bundles-with-coupon-wrapper"
+                        style = "gap: 1em; display: flex; flex-direction: column; justify-content: left; gap: 1em;"
+
+                        sonhosBundlesWithCouponInput(i18nContext, sonhosBundles, null)
+                    }
+
+                    hr {}
+
+                    h2 { text(i18nContext.get(DashboardI18nKeysData.FrequentlyAskedQuestions)) }
+
+                    div(classes = "fancy-details-wrapper") {
+                        fancyDetails(
+                            {
+                                text(i18nContext.get(I18nKeysData.Website.Dashboard.SonhosShop.Faq.WhyCanIBuySonhos.Title))
+                            },
+                            {
+                                for (line in i18nContext.get(I18nKeysData.Website.Dashboard.SonhosShop.Faq.WhyCanIBuySonhos.Description)) {
+                                    p {
+                                        text(line)
+                                    }
                                 }
                             }
+                        )
 
-                            div {
-                                id = "sonhos-bundles-with-coupon-wrapper"
-                                style = "gap: 1em; display: flex; flex-direction: column; justify-content: left; gap: 1em;"
-
-                                sonhosBundlesWithCouponInput(i18nContext, sonhosBundles, null)
+                        fancyDetails(
+                            {
+                                text(i18nContext.get(I18nKeysData.Website.Dashboard.SonhosShop.Faq.HowMuchTimeItTakesToReceiveTheSonhos.Title))
+                            },
+                            {
+                                for (line in i18nContext.get(I18nKeysData.Website.Dashboard.SonhosShop.Faq.HowMuchTimeItTakesToReceiveTheSonhos.Description)) {
+                                    p {
+                                        text(line)
+                                    }
+                                }
                             }
+                        )
 
-                            hr {}
-
-                            h2 { text(i18nContext.get(DashboardI18nKeysData.FrequentlyAskedQuestions)) }
-
-                            div(classes = "fancy-details-wrapper") {
-                                fancyDetails(
-                                    {
-                                        text(i18nContext.get(I18nKeysData.Website.Dashboard.SonhosShop.Faq.WhyCanIBuySonhos.Title))
-                                    },
-                                    {
-                                        for (line in i18nContext.get(I18nKeysData.Website.Dashboard.SonhosShop.Faq.WhyCanIBuySonhos.Description)) {
-                                            p {
-                                                text(line)
-                                            }
-                                        }
+                        fancyDetails(
+                            {
+                                text(i18nContext.get(I18nKeysData.Website.Dashboard.SonhosShop.Faq.WhyNotBuyWithThirdParties.Title))
+                            },
+                            {
+                                for (line in i18nContext.get(I18nKeysData.Website.Dashboard.SonhosShop.Faq.WhyNotBuyWithThirdParties.Description)) {
+                                    p {
+                                        text(line)
                                     }
-                                )
-
-                                fancyDetails(
-                                    {
-                                        text(i18nContext.get(I18nKeysData.Website.Dashboard.SonhosShop.Faq.HowMuchTimeItTakesToReceiveTheSonhos.Title))
-                                    },
-                                    {
-                                        for (line in i18nContext.get(I18nKeysData.Website.Dashboard.SonhosShop.Faq.HowMuchTimeItTakesToReceiveTheSonhos.Description)) {
-                                            p {
-                                                text(line)
-                                            }
-                                        }
-                                    }
-                                )
-
-                                fancyDetails(
-                                    {
-                                        text(i18nContext.get(I18nKeysData.Website.Dashboard.SonhosShop.Faq.WhyNotBuyWithThirdParties.Title))
-                                    },
-                                    {
-                                        for (line in i18nContext.get(I18nKeysData.Website.Dashboard.SonhosShop.Faq.WhyNotBuyWithThirdParties.Description)) {
-                                            p {
-                                                text(line)
-                                            }
-                                        }
-                                    }
-                                )
-
-                                fancyDetails(
-                                    {
-                                        text(i18nContext.get(I18nKeysData.Website.Dashboard.SonhosShop.Faq.CanIUseMyParentsCard.Title))
-                                    },
-                                    {
-                                        for (line in i18nContext.get(I18nKeysData.Website.Dashboard.SonhosShop.Faq.CanIUseMyParentsCard.Description)) {
-                                            p {
-                                                text(line)
-                                            }
-                                        }
-                                    }
-                                )
-
-                                fancyDetails(
-                                    {
-                                        text(i18nContext.get(I18nKeysData.Website.Dashboard.SonhosShop.Faq.CanIGetARefund.Title))
-                                    },
-                                    {
-                                        for (line in i18nContext.get(I18nKeysData.Website.Dashboard.SonhosShop.Faq.CanIGetARefund.Description)) {
-                                            p {
-                                                text(line)
-                                            }
-                                        }
-                                    }
-                                )
+                                }
                             }
-                        }
-                    )
+                        )
+
+                        fancyDetails(
+                            {
+                                text(i18nContext.get(I18nKeysData.Website.Dashboard.SonhosShop.Faq.CanIUseMyParentsCard.Title))
+                            },
+                            {
+                                for (line in i18nContext.get(I18nKeysData.Website.Dashboard.SonhosShop.Faq.CanIUseMyParentsCard.Description)) {
+                                    p {
+                                        text(line)
+                                    }
+                                }
+                            }
+                        )
+
+                        fancyDetails(
+                            {
+                                text(i18nContext.get(I18nKeysData.Website.Dashboard.SonhosShop.Faq.CanIGetARefund.Title))
+                            },
+                            {
+                                for (line in i18nContext.get(I18nKeysData.Website.Dashboard.SonhosShop.Faq.CanIGetARefund.Description)) {
+                                    p {
+                                        text(line)
+                                    }
+                                }
+                            }
+                        )
+                    }
                 }
-        )
+            )
+        }
     }
 }

@@ -21,6 +21,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.profileDe
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.trinketInfo
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.userDashLeftSidebarEntries
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresUserAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.serializable.Background
 import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jetbrains.exposed.sql.selectAll
@@ -51,58 +52,55 @@ class ProfilesUserDashboardRoute(website: LorittaDashboardWebServer) : RequiresU
             )
         }
 
-        call.respondHtml(
-            createHTML()
-                .html {
-                    dashboardBase(
-                        i18nContext,
-                        i18nContext.get(DashboardI18nKeysData.ProfileDesigns.Title),
-                        session,
-                        theme,
-                        shimejiSettings,
-                        userPremiumPlan,
-                        {
-                            userDashLeftSidebarEntries(website.loritta, i18nContext, UserDashboardSection.PROFILE_DESIGNS)
-                        },
-                        {
-                            div {
-                                id = "bundles-content"
+        call.respondHtml {
+            dashboardBase(
+                i18nContext,
+                i18nContext.get(DashboardI18nKeysData.ProfileDesigns.Title),
+                session,
+                theme,
+                shimejiSettings,
+                userPremiumPlan,
+                {
+                    userDashLeftSidebarEntries(website.loritta, i18nContext, UserDashboardSection.PROFILE_DESIGNS)
+                },
+                {
+                    div {
+                        id = "bundles-content"
 
-                                div(classes = "bought-shop-items-list") {
-                                    div(classes = "loritta-items-wrapper") {
-                                        for (profileDesign in result.profileDesigns.sortedWith(compareByDescending<ProfileDesign> { it.rarity }.thenBy { locale["profileDesigns.${it.internalName}.title"] })) {
-                                            div(classes = "shop-item-entry rarity-${profileDesign.rarity.name.lowercase()}") {
-                                                attributes["bliss-get"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/profiles/${profileDesign.internalName}"
-                                                attributes["bliss-swap:200"] = "body (innerHTML) -> #trinket-info-content (innerHTML)"
-                                                attributes["bliss-indicator"] = "#trinket-info"
+                        div(classes = "bought-shop-items-list") {
+                            div(classes = "loritta-items-wrapper") {
+                                for (profileDesign in result.profileDesigns.sortedWith(compareByDescending<ProfileDesign> { it.rarity }.thenBy { locale["profileDesigns.${it.internalName}.title"] })) {
+                                    div(classes = "shop-item-entry rarity-${profileDesign.rarity.name.lowercase()}") {
+                                        attributes["bliss-get"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/profiles/${profileDesign.internalName}"
+                                        attributes["bliss-swap:200"] = "body (innerHTML) -> #trinket-info-content (innerHTML)"
+                                        attributes["bliss-indicator"] = "#trinket-info"
 
-                                                div {
-                                                    style = "position: relative;"
+                                        div {
+                                            style = "position: relative;"
 
-                                                    div {
-                                                        style = "overflow: hidden; line-height: 0;"
+                                            div {
+                                                style = "overflow: hidden; line-height: 0;"
 
-                                                        img {
-                                                            src = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/profile-preview?type=${profileDesign.internalName}"
+                                                img {
+                                                    src = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/profile-preview?type=${profileDesign.internalName}"
 
-                                                            // The aspect ratio makes the design not be wonky when the image is not loaded
-                                                            style = "width: 100%; height: auto; aspect-ratio: 4/3;"
-                                                        }
-                                                    }
+                                                    // The aspect ratio makes the design not be wonky when the image is not loaded
+                                                    style = "width: 100%; height: auto; aspect-ratio: 4/3;"
                                                 }
                                             }
                                         }
                                     }
                                 }
-
-                                trinketInfo {
-                                    profileDesignItemInfo(i18nContext, locale, result.activeProfileDesignId, result.activeProfileDesignId, result.activeBackgroundId)
-                                }
                             }
                         }
-                    )
+
+                        trinketInfo {
+                            profileDesignItemInfo(i18nContext, locale, result.activeProfileDesignId, result.activeProfileDesignId, result.activeBackgroundId)
+                        }
+                    }
                 }
-        )
+            )
+        }
     }
 
     private data class ProfileDesign(

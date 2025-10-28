@@ -26,6 +26,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuild
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissEvent
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.selectAll
@@ -46,89 +47,86 @@ class RolePermissionsGuildDashboardRoute(website: LorittaDashboardWebServer) : R
             }.map { it[ServerRolePermissions.permission] }.toSet()
         }
 
-        call.respondHtml(
-            createHTML()
-                .html {
-                    dashboardBase(
-                        i18nContext,
-                        i18nContext.get(DashboardI18nKeysData.Permissions.Title),
-                        session,
-                        theme,
-                        shimejiSettings,
-                        userPremiumPlan,
+        call.respondHtml {
+            dashboardBase(
+                i18nContext,
+                i18nContext.get(DashboardI18nKeysData.Permissions.Title),
+                session,
+                theme,
+                shimejiSettings,
+                userPremiumPlan,
+                {
+                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.PERMISSIONS)
+                },
+                {
+                    rightSidebarContentAndSaveBarWrapper(
                         {
-                            guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.PERMISSIONS)
-                        },
-                        {
-                            rightSidebarContentAndSaveBarWrapper(
-                                {
-                                    goBackToPreviousSectionButton(
-                                        href = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/permissions",
-                                    ) {
-                                        text("Voltar para a lista de cargos")
+                            goBackToPreviousSectionButton(
+                                href = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/permissions",
+                            ) {
+                                text("Voltar para a lista de cargos")
+                            }
+
+                            hr {}
+
+                            if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
+                                blissEvent("resyncState", "[bliss-component='save-bar']")
+                                blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Configuração redefinida!"))
+                            }
+
+                            sectionConfig {
+                                fieldWrappers {
+                                    fieldWrapper {
+                                        toggle(
+                                            LorittaPermission.ALLOW_INVITES in permissions,
+                                            "allowInvites",
+                                            true,
+                                            {
+                                                text("Permitir enviar convites")
+                                            }
+                                        )
                                     }
 
-                                    hr {}
-
-                                    if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
-                                        blissEvent("resyncState", "[bliss-component='save-bar']")
-                                        blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Configuração redefinida!"))
+                                    fieldWrapper {
+                                        toggle(
+                                            LorittaPermission.IGNORE_COMMANDS !in permissions,
+                                            "allowCommands",
+                                            true,
+                                            {
+                                                text("Permitir usar comandos")
+                                            },
+                                            {
+                                                text("Caso esteja ativado, eu irei processar comandos enviados por este usuário.")
+                                            }
+                                        )
                                     }
 
-                                    sectionConfig {
-                                        fieldWrappers {
-                                            fieldWrapper {
-                                                toggle(
-                                                    LorittaPermission.ALLOW_INVITES in permissions,
-                                                    "allowInvites",
-                                                    true,
-                                                    {
-                                                        text("Permitir enviar convites")
-                                                    }
-                                                )
+                                    fieldWrapper {
+                                        toggle(
+                                            LorittaPermission.BYPASS_COMMAND_BLACKLIST in permissions,
+                                            "bypassCommandBlacklist",
+                                            true,
+                                            {
+                                                text("Permitir usar comandos em qualquer canal")
+                                            },
+                                            {
+                                                text("Caso esteja ativado, eu irei permitir usar comandos em canais que foram adicionados para eu ignorar.")
                                             }
-
-                                            fieldWrapper {
-                                                toggle(
-                                                    LorittaPermission.IGNORE_COMMANDS !in permissions,
-                                                    "allowCommands",
-                                                    true,
-                                                    {
-                                                        text("Permitir usar comandos")
-                                                    },
-                                                    {
-                                                        text("Caso esteja ativado, eu irei processar comandos enviados por este usuário.")
-                                                    }
-                                                )
-                                            }
-
-                                            fieldWrapper {
-                                                toggle(
-                                                    LorittaPermission.BYPASS_COMMAND_BLACKLIST in permissions,
-                                                    "bypassCommandBlacklist",
-                                                    true,
-                                                    {
-                                                        text("Permitir usar comandos em qualquer canal")
-                                                    },
-                                                    {
-                                                        text("Caso esteja ativado, eu irei permitir usar comandos em canais que foram adicionados para eu ignorar.")
-                                                    }
-                                                )
-                                            }
-                                        }
+                                        )
                                     }
                                 }
-                            ) {
-                                genericSaveBar(
-                                    i18nContext,
-                                    false,
-                                    guild,
-                                    "/permissions/${role.idLong}"
-                                )
                             }
                         }
-                    )
+                    ) {
+                        genericSaveBar(
+                            i18nContext,
+                            false,
+                            guild,
+                            "/permissions/${role.idLong}"
+                        )
+                    }
                 }
-        )
+            )
+        }
     }
 }

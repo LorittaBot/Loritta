@@ -36,6 +36,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuild
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissEvent
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.selectAll
@@ -69,117 +70,113 @@ class MemberCounterChannelGuildDashboardRoute(website: LorittaDashboardWebServer
             attributes["counter-preview-parameter"] = "true"
         }
 
-        call.respondHtml(
-            createHTML()
-                .html {
-                    dashboardBase(
-                        i18nContext,
-                        i18nContext.get(DashboardI18nKeysData.MemberCounter.Title),
-                        session,
-                        theme,
-                        shimejiSettings,
-                        userPremiumPlan,
+        call.respondHtml {
+            dashboardBase(
+                i18nContext,
+                i18nContext.get(DashboardI18nKeysData.MemberCounter.Title),
+                session,
+                theme,
+                shimejiSettings,
+                userPremiumPlan,
+                {
+                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.MEMBER_COUNTER)
+                },
+                {
+                    rightSidebarContentAndSaveBarWrapper(
                         {
-                            guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.MEMBER_COUNTER)
-                        },
-                        {
-                            rightSidebarContentAndSaveBarWrapper(
-                                {
-                                    goBackToPreviousSectionButton(
-                                        href = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/member-counter",
-                                    ) {
-                                        text("Voltar para a lista de canais")
-                                    }
+                            goBackToPreviousSectionButton(
+                                href = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/member-counter",
+                            ) {
+                                text("Voltar para a lista de canais")
+                            }
 
-                                    hr {}
+                            hr {}
 
-                                    if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
-                                        blissEvent("resyncState", "[bliss-component='save-bar']")
-                                        blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Configuração redefinida!"))
-                                    }
+                            if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
+                                blissEvent("resyncState", "[bliss-component='save-bar']")
+                                blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Configuração redefinida!"))
+                            }
 
-                                    sectionConfig {
-                                        fieldWrappers {
-                                            fieldWrapper {
-                                                toggleableSection(
-                                                    {
-                                                        text("Ativar contador de membros")
-                                                    },
-                                                    {
-                                                        text("Após ativar, utilize {counter} no texto do seu tópico para ativar o contador!")
-                                                    },
-                                                    channelMemberCounter != null,
-                                                    "enabled",
-                                                    true,
-                                                ) {
-                                                    fieldWrappers {
-                                                        fieldWrapper {
-                                                            fieldTitle {
-                                                                text("Tópico do Canal (Será utilizado após alguém entrar/sair)")
-                                                            }
+                            sectionConfig {
+                                fieldWrappers {
+                                    fieldWrapper {
+                                        toggleableSection(
+                                            {
+                                                text("Ativar contador de membros")
+                                            },
+                                            {
+                                                text("Após ativar, utilize {counter} no texto do seu tópico para ativar o contador!")
+                                            },
+                                            channelMemberCounter != null,
+                                            "enabled",
+                                            true,
+                                        ) {
+                                            fieldWrappers {
+                                                fieldWrapper {
+                                                    fieldTitle {
+                                                        text("Tópico do Canal (Será utilizado após alguém entrar/sair)")
+                                                    }
 
-                                                            textArea {
-                                                                name = "topic"
-                                                                attributes["loritta-config"] = "topic"
-                                                                text(channelMemberCounter?.get(MemberCounterChannelConfigs.topic) ?: channel.topic ?: "")
-                                                            }
-                                                        }
+                                                    textArea {
+                                                        name = "topic"
+                                                        attributes["loritta-config"] = "topic"
+                                                        text(channelMemberCounter?.get(MemberCounterChannelConfigs.topic) ?: channel.topic ?: "")
+                                                    }
+                                                }
 
-                                                        fieldWrapper {
-                                                            fieldTitle {
-                                                                text("Tema do Contador de Membros")
-                                                            }
+                                                fieldWrapper {
+                                                    fieldTitle {
+                                                        text("Tema do Contador de Membros")
+                                                    }
 
-                                                            fancySelectMenu {
-                                                                name = "theme"
-                                                                attributes["loritta-config"] = "theme"
-                                                                attributes["bliss-trigger"] = "input"
-                                                                setupPreviewAttributes()
+                                                    fancySelectMenu {
+                                                        name = "theme"
+                                                        attributes["loritta-config"] = "theme"
+                                                        attributes["bliss-trigger"] = "input"
+                                                        setupPreviewAttributes()
 
-                                                                for (counterTheme in CounterThemes.entries) {
-                                                                    option {
-                                                                        label = locale[counterTheme.localizedName]
-                                                                        value = counterTheme.name
-                                                                        if (counterTheme == channelMemberCounter?.get(MemberCounterChannelConfigs.theme))
-                                                                            selected = true
-                                                                        text(counterTheme.name)
-                                                                    }
-                                                                }
+                                                        for (counterTheme in CounterThemes.entries) {
+                                                            option {
+                                                                label = locale[counterTheme.localizedName]
+                                                                value = counterTheme.name
+                                                                if (counterTheme == channelMemberCounter?.get(MemberCounterChannelConfigs.theme))
+                                                                    selected = true
+                                                                text(counterTheme.name)
                                                             }
                                                         }
+                                                    }
+                                                }
 
-                                                        fieldWrapper {
-                                                            fieldTitle {
-                                                                text("Preenchimento com Zeros")
-                                                            }
+                                                fieldWrapper {
+                                                    fieldTitle {
+                                                        text("Preenchimento com Zeros")
+                                                    }
 
-                                                            numberInput {
-                                                                name = "padding"
-                                                                attributes["loritta-config"] = "padding"
-                                                                attributes["bliss-trigger"] = "input"
-                                                                setupPreviewAttributes()
+                                                    numberInput {
+                                                        name = "padding"
+                                                        attributes["loritta-config"] = "padding"
+                                                        attributes["bliss-trigger"] = "input"
+                                                        setupPreviewAttributes()
 
-                                                                value = "5"
-                                                                min = "1"
-                                                                max = "10"
-                                                                if (channelMemberCounter != null)
-                                                                    value = channelMemberCounter[MemberCounterChannelConfigs.padding].toString()
-                                                            }
-                                                        }
+                                                        value = "5"
+                                                        min = "1"
+                                                        max = "10"
+                                                        if (channelMemberCounter != null)
+                                                            value = channelMemberCounter[MemberCounterChannelConfigs.padding].toString()
+                                                    }
+                                                }
 
-                                                        fieldWrapper {
-                                                            fieldTitle {
-                                                                text("Pré-visualização")
-                                                            }
+                                                fieldWrapper {
+                                                    fieldTitle {
+                                                        text("Pré-visualização")
+                                                    }
 
-                                                            div {
-                                                                id = "counter-preview"
+                                                    div {
+                                                        id = "counter-preview"
 
-                                                                val counts = setOf(5, 10, 250, guild.memberCount, 1234567890).sorted()
-                                                                for (count in counts) {
-                                                                    memberCounterPreview(count, channelMemberCounter?.get(MemberCounterChannelConfigs.theme) ?: CounterThemes.DEFAULT, channelMemberCounter?.get(MemberCounterChannelConfigs.padding) ?: 5)
-                                                                }
-                                                            }
+                                                        val counts = setOf(5, 10, 250, guild.memberCount, 1234567890).sorted()
+                                                        for (count in counts) {
+                                                            memberCounterPreview(count, channelMemberCounter?.get(MemberCounterChannelConfigs.theme) ?: CounterThemes.DEFAULT, channelMemberCounter?.get(MemberCounterChannelConfigs.padding) ?: 5)
                                                         }
                                                     }
                                                 }
@@ -187,17 +184,18 @@ class MemberCounterChannelGuildDashboardRoute(website: LorittaDashboardWebServer
                                         }
                                     }
                                 }
-                            ) {
-                                genericSaveBar(
-                                    i18nContext,
-                                    false,
-                                    guild,
-                                    "/member-counter/${channel.idLong}"
-                                )
                             }
                         }
-                    )
+                    ) {
+                        genericSaveBar(
+                            i18nContext,
+                            false,
+                            guild,
+                            "/member-counter/${channel.idLong}"
+                        )
+                    }
                 }
-        )
+            )
+        }
     }
 }

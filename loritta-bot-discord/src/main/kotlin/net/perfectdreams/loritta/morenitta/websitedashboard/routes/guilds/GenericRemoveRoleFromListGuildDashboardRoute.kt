@@ -20,6 +20,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.configura
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.ColorTheme
 
 open class GenericRemoveRoleFromListGuildDashboardRoute(
@@ -40,23 +41,20 @@ open class GenericRemoveRoleFromListGuildDashboardRoute(
         val newList = request.roles.toMutableSet()
         newList.remove(request.roleId)
 
-        call.respondHtml(
-            createHTML(false)
-                .body {
-                    blissShowToast(
-                        createEmbeddedToast(
-                            EmbeddedToast.Type.SUCCESS,
-                            "Cargo removido!"
-                        )
-                    )
+        call.respondHtmlFragment {
+            blissShowToast(
+                createEmbeddedToast(
+                    EmbeddedToast.Type.SUCCESS,
+                    "Cargo removido!"
+                )
+            )
 
-                    configurableRoleList(
-                        i18nContext,
-                        guild,
-                        "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}$removeEndpoint",
-                        newList
-                    )
-                }
-        )
+            configurableRoleList(
+                i18nContext,
+                guild,
+                "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}$removeEndpoint",
+                newList
+            )
+        }
     }
 }

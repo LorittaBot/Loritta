@@ -14,6 +14,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebS
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.backgroundItemInfo
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresUserAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.Background
 import net.perfectdreams.loritta.serializable.ColorTheme
 
@@ -33,12 +34,9 @@ class GetBackgroundUserDashboardRoute(website: LorittaDashboardWebServer) : Requ
         // Hacky!
         val locale = website.loritta.localeManager.getLocaleById(LocaleManager.DEFAULT_LOCALE_ID)
 
-        call.respondHtml(
-            createHTML()
-                .body {
-                    backgroundItemInfo(i18nContext, locale, backgroundId, result.activeProfileDesignId, result.activeBackgroundId)
-                }
-        )
+        call.respondHtmlFragment {
+            backgroundItemInfo(i18nContext, locale, backgroundId, result.activeProfileDesignId, result.activeBackgroundId)
+        }
     }
 
     private data class Result(

@@ -21,6 +21,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.configura
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.ColorTheme
 
 open class GenericAddRoleToListGuildDashboardRoute(
@@ -38,41 +39,34 @@ open class GenericAddRoleToListGuildDashboardRoute(
         val request = Json.decodeFromString<AddRoleRequest>(call.receiveText())
 
         if (request.roleId in request.roles) {
-            call.respondHtml(
-                createHTML(false)
-                    .body {
-                        blissShowToast(
-                            createEmbeddedToast(
-                                EmbeddedToast.Type.WARN,
-                                "Você já tem este cargo adicionado!"
-                            )
-                        )
-                    },
-                status = HttpStatusCode.Conflict
-            )
+            call.respondHtmlFragment(status = HttpStatusCode.Conflict) {
+                blissShowToast(
+                    createEmbeddedToast(
+                        EmbeddedToast.Type.WARN,
+                        "Você já tem este cargo adicionado!"
+                    )
+                )
+            }
             return
         }
 
         val newList = request.roles.toMutableSet()
         newList.add(request.roleId)
 
-        call.respondHtml(
-            createHTML(false)
-                .body {
-                    blissShowToast(
-                        createEmbeddedToast(
-                            EmbeddedToast.Type.SUCCESS,
-                            "Cargo adicionado!"
-                        )
-                    )
+        call.respondHtmlFragment {
+            blissShowToast(
+                createEmbeddedToast(
+                    EmbeddedToast.Type.SUCCESS,
+                    "Cargo adicionado!"
+                )
+            )
 
-                    configurableRoleList(
-                        i18nContext,
-                        guild,
-                        "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}$removeEndpoint",
-                        newList
-                    )
-                }
-        )
+            configurableRoleList(
+                i18nContext,
+                guild,
+                "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}$removeEndpoint",
+                newList
+            )
+        }
     }
 }

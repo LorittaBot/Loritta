@@ -21,6 +21,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuild
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.configSaved
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.ColorTheme
 
 abstract class GenericUpdateProfileGuildDashboardRoute(
@@ -44,26 +45,19 @@ abstract class GenericUpdateProfileGuildDashboardRoute(
 
         when (result) {
             Result.Success -> {
-                call.respondHtml(
-                    createHTML(false)
-                        .body {
-                            configSaved(i18nContext)
-                        }
-                )
+                call.respondHtmlFragment {
+                    configSaved(i18nContext)
+                }
             }
             Result.EntryNotFound -> {
-                call.respondHtml(
-                    createHTML(false)
-                        .body {
-                            blissShowToast(
-                                createEmbeddedToast(
-                                    EmbeddedToast.Type.WARN,
-                                    "Você não pode editar uma conta que não existe!"
-                                )
-                            )
-                        },
-                    status = HttpStatusCode.NotFound
-                )
+                call.respondHtmlFragment(status = HttpStatusCode.NotFound) {
+                    blissShowToast(
+                        createEmbeddedToast(
+                            EmbeddedToast.Type.WARN,
+                            "Você não pode editar uma conta que não existe!"
+                        )
+                    )
+                }
             }
         }
     }

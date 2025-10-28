@@ -24,6 +24,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuild
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissEvent
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jetbrains.exposed.sql.selectAll
 
@@ -53,119 +54,116 @@ class WarnActionsGuildDashboardRoute(website: LorittaDashboardWebServer) : Requi
             )
         }
 
-        call.respondHtml(
-            createHTML(false)
-                .html {
-                    dashboardBase(
-                        i18nContext,
-                        i18nContext.get(DashboardI18nKeysData.WarnActions.Title),
-                        session,
-                        theme,
-                        shimejiSettings,
-                        userPremiumPlan,
+        call.respondHtml {
+            dashboardBase(
+                i18nContext,
+                i18nContext.get(DashboardI18nKeysData.WarnActions.Title),
+                session,
+                theme,
+                shimejiSettings,
+                userPremiumPlan,
+                {
+                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.WARN_ACTIONS)
+                },
+                {
+                    rightSidebarContentAndSaveBarWrapper(
                         {
-                            guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.WARN_ACTIONS)
+                            if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
+                                blissEvent("resyncState", "[bliss-component='save-bar']")
+                                blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Configuração redefinida!"))
+                            }
+
+                            heroWrapper {
+                                heroText {
+                                    h1 {
+                                        text(i18nContext.get(DashboardI18nKeysData.WarnActions.Title))
+                                    }
+
+                                    p {
+                                        text("Punições e etc")
+                                    }
+                                }
+                            }
+
+                            hr {}
+
+                            sectionConfig {
+                                fieldWrappers {
+                                    fieldWrapper {
+                                        controlsWithButton {
+                                            inlinedControls {
+                                                text("Ao chegar em ")
+                                                numberInput {
+                                                    attributes["warn-action-add-element"] = "true"
+                                                    name = "count"
+                                                    style = "width: 100px;"
+                                                    value = "1"
+                                                    min = "1"
+                                                }
+                                                text(" avisos, ")
+
+                                                fancySelectMenu {
+                                                    attributes["warn-action-add-element"] = "true"
+                                                    name = "action"
+                                                    option {
+                                                        label = "KICK"
+                                                        value = "KICK"
+                                                    }
+                                                    option {
+                                                        label = "BAN"
+                                                        value = "BAN"
+                                                    }
+                                                    option {
+                                                        label = "MUTE"
+                                                        value = "MUTE"
+                                                    }
+                                                }
+
+                                                text(" o usuário por ")
+
+                                                growInputWrapper {
+                                                    textInput {
+                                                        attributes["warn-action-add-element"] = "true"
+                                                        attributes["bliss-disable-when"] = "[name='action'] != \"MUTE\""
+                                                        attributes["bliss-coerce-to-null-if-blank"] = "true"
+                                                        name = "time"
+                                                        placeholder = i18nContext.get(DashboardI18nKeysData.WarnActions.TimePlaceholder)
+                                                    }
+                                                }
+                                            }
+
+                                            discordButton(ButtonStyle.SUCCESS) {
+                                                attributes["bliss-post"] = "/${i18nContext.get(I18nKeys.Website.LocalePathId)}/guilds/${guild.idLong}/warn-actions/add"
+                                                attributes["bliss-include-json"] = "[warn-action-add-element]"
+                                                attributes["bliss-swap:200"] = "body (innerHTML) -> #warn-actions (innerHTML)"
+                                                text("Adicionar")
+                                            }
+                                        }
+
+                                        div {
+                                            id = "warn-actions"
+
+                                            configurableWarnList(
+                                                i18nContext,
+                                                guild,
+                                                actions
+                                            )
+                                        }
+                                    }
+                                }
+                            }
                         },
                         {
-                            rightSidebarContentAndSaveBarWrapper(
-                                {
-                                    if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
-                                        blissEvent("resyncState", "[bliss-component='save-bar']")
-                                        blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Configuração redefinida!"))
-                                    }
-
-                                    heroWrapper {
-                                        heroText {
-                                            h1 {
-                                                text(i18nContext.get(DashboardI18nKeysData.WarnActions.Title))
-                                            }
-
-                                            p {
-                                                text("Punições e etc")
-                                            }
-                                        }
-                                    }
-
-                                    hr {}
-
-                                    sectionConfig {
-                                        fieldWrappers {
-                                            fieldWrapper {
-                                                controlsWithButton {
-                                                    inlinedControls {
-                                                        text("Ao chegar em ")
-                                                        numberInput {
-                                                            attributes["warn-action-add-element"] = "true"
-                                                            name = "count"
-                                                            style = "width: 100px;"
-                                                            value = "1"
-                                                            min = "1"
-                                                        }
-                                                        text(" avisos, ")
-
-                                                        fancySelectMenu {
-                                                            attributes["warn-action-add-element"] = "true"
-                                                            name = "action"
-                                                            option {
-                                                                label = "KICK"
-                                                                value = "KICK"
-                                                            }
-                                                            option {
-                                                                label = "BAN"
-                                                                value = "BAN"
-                                                            }
-                                                            option {
-                                                                label = "MUTE"
-                                                                value = "MUTE"
-                                                            }
-                                                        }
-
-                                                        text(" o usuário por ")
-
-                                                        growInputWrapper {
-                                                            textInput {
-                                                                attributes["warn-action-add-element"] = "true"
-                                                                attributes["bliss-disable-when"] = "[name='action'] != \"MUTE\""
-                                                                attributes["bliss-coerce-to-null-if-blank"] = "true"
-                                                                name = "time"
-                                                                placeholder = i18nContext.get(DashboardI18nKeysData.WarnActions.TimePlaceholder)
-                                                            }
-                                                        }
-                                                    }
-
-                                                    discordButton(ButtonStyle.SUCCESS) {
-                                                        attributes["bliss-post"] = "/${i18nContext.get(I18nKeys.Website.LocalePathId)}/guilds/${guild.idLong}/warn-actions/add"
-                                                        attributes["bliss-include-json"] = "[warn-action-add-element]"
-                                                        attributes["bliss-swap:200"] = "body (innerHTML) -> #warn-actions (innerHTML)"
-                                                        text("Adicionar")
-                                                    }
-                                                }
-
-                                                div {
-                                                    id = "warn-actions"
-
-                                                    configurableWarnList(
-                                                        i18nContext,
-                                                        guild,
-                                                        actions
-                                                    )
-                                                }
-                                            }
-                                        }
-                                    }
-                                },
-                                {
-                                    genericSaveBar(
-                                        i18nContext,
-                                        false,
-                                        guild,
-                                        "/warn-actions"
-                                    )
-                                }
+                            genericSaveBar(
+                                i18nContext,
+                                false,
+                                guild,
+                                "/warn-actions"
                             )
                         }
                     )
                 }
-        )
+            )
+        }
     }
 }

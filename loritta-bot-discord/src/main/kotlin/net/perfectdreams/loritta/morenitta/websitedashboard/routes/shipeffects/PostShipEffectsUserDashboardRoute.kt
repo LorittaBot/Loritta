@@ -14,6 +14,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebS
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.shipBuyButton
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresUserAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.serializable.UserId
 
@@ -23,62 +24,53 @@ class PostShipEffectsUserDashboardRoute(website: LorittaDashboardWebServer) : Re
 
         if (userSearch is DiscordUserInputResult.DiscordParseFailure) {
             when (userSearch) {
-                DiscordUserInputResult.InvalidDiscriminator -> call.respondHtml(
-                    createHTML()
-                        .body {
-                            div(classes = "input-result") {
-                                div(classes = "validation error") {
-                                    div(classes = "icon") {
-                                        i("fa-solid fa-triangle-exclamation")
-                                    }
-
-                                    div {
-                                        text(i18nContext.get(I18nKeysData.Website.Dashboard.DiscordUserInput.InvalidDiscriminator))
-                                    }
-                                }
+                DiscordUserInputResult.InvalidDiscriminator -> call.respondHtmlFragment {
+                    div(classes = "input-result") {
+                        div(classes = "validation error") {
+                            div(classes = "icon") {
+                                i("fa-solid fa-triangle-exclamation")
                             }
 
-                            shipBuyButton(i18nContext, false)
+                            div {
+                                text(i18nContext.get(I18nKeysData.Website.Dashboard.DiscordUserInput.InvalidDiscriminator))
+                            }
                         }
-                )
+                    }
 
-                DiscordUserInputResult.MissingDiscriminator -> call.respondHtml(
-                    createHTML()
-                        .body {
-                            div(classes = "input-result") {
-                                div(classes = "validation error") {
-                                    div(classes = "icon") {
-                                        i("fa-solid fa-triangle-exclamation")
-                                    }
+                    shipBuyButton(i18nContext, false)
+                }
 
-                                    div {
-                                        text(i18nContext.get(I18nKeysData.Website.Dashboard.DiscordUserInput.MissingDiscriminator))
-                                    }
-                                }
+                DiscordUserInputResult.MissingDiscriminator -> call.respondHtmlFragment {
+                    div(classes = "input-result") {
+                        div(classes = "validation error") {
+                            div(classes = "icon") {
+                                i("fa-solid fa-triangle-exclamation")
                             }
 
-                            shipBuyButton(i18nContext, false)
+                            div {
+                                text(i18nContext.get(I18nKeysData.Website.Dashboard.DiscordUserInput.MissingDiscriminator))
+                            }
                         }
-                )
+                    }
 
-                DiscordUserInputResult.Empty -> call.respondHtml(
-                    createHTML()
-                        .body {
-                            div(classes = "input-result") {
-                                div(classes = "validation error") {
-                                    div(classes = "icon") {
-                                        i("fa-solid fa-triangle-exclamation")
-                                    }
+                    shipBuyButton(i18nContext, false)
+                }
 
-                                    div {
-                                        text(i18nContext.get(I18nKeysData.Website.Dashboard.DiscordUserInput.Tip))
-                                    }
-                                }
+                DiscordUserInputResult.Empty -> call.respondHtmlFragment {
+                    div(classes = "input-result") {
+                        div(classes = "validation error") {
+                            div(classes = "icon") {
+                                i("fa-solid fa-triangle-exclamation")
                             }
 
-                            shipBuyButton(i18nContext, false)
+                            div {
+                                text(i18nContext.get(I18nKeysData.Website.Dashboard.DiscordUserInput.Tip))
+                            }
                         }
-                )
+                    }
+
+                    shipBuyButton(i18nContext, false)
+                }
             }
             return
         }
@@ -101,45 +93,38 @@ class PostShipEffectsUserDashboardRoute(website: LorittaDashboardWebServer) : Re
             }
 
             if (cachedUserInfo != null) {
-                call.respondHtml(
-                    createHTML()
-                        .body {
-                            div(classes = "input-result") {
-                                div(classes = "validation success") {
-                                    inlineNullableUserDisplay(cachedUserInfo.id.value.toLong(), cachedUserInfo)
+                call.respondHtmlFragment {
+                    div(classes = "input-result") {
+                        div(classes = "validation success") {
+                            inlineNullableUserDisplay(cachedUserInfo.id.value.toLong(), cachedUserInfo)
 
-                                    input {
-                                        this.type = InputType.hidden
-                                        this.name = "receivingEffectUserId"
-                                        this.value = cachedUserInfo.id.value.toString()
-                                    }
-                                }
+                            input {
+                                this.type = InputType.hidden
+                                this.name = "receivingEffectUserId"
+                                this.value = cachedUserInfo.id.value.toString()
                             }
-
-                            shipBuyButton(i18nContext, true)
                         }
-                )
+                    }
+
+                    shipBuyButton(i18nContext, true)
+                }
             } else {
                 // TODO: Query via Discord's API too
-                call.respondHtml(
-                    createHTML()
-                        .body {
-                            div(classes = "input-result") {
-                                div(classes = "validation error") {
-                                    div(classes = "icon") {
-                                        i("fa-solid fa-triangle-exclamation")
-                                    }
-
-                                    div {
-                                        text(i18nContext.get(I18nKeysData.Website.Dashboard.DiscordUserInput.UnknownUser))
-                                    }
-                                }
+                call.respondHtmlFragment {
+                    div(classes = "input-result") {
+                        div(classes = "validation error") {
+                            div(classes = "icon") {
+                                i("fa-solid fa-triangle-exclamation")
                             }
 
-                            shipBuyButton(i18nContext, false)
+                            div {
+                                text(i18nContext.get(I18nKeysData.Website.Dashboard.DiscordUserInput.UnknownUser))
+                            }
                         }
+                    }
 
-                )
+                    shipBuyButton(i18nContext, false)
+                }
             }
         }
     }

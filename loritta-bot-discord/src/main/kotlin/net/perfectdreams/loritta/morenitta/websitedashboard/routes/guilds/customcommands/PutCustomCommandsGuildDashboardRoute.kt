@@ -22,6 +22,8 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuild
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.configSaved
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondConfigSaved
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.serializable.CustomCommandCodeType
 import org.jetbrains.exposed.sql.and
@@ -58,26 +60,17 @@ class PutCustomCommandsGuildDashboardRoute(website: LorittaDashboardWebServer) :
 
         when (result) {
             Result.Success -> {
-                call.respondHtml(
-                    createHTML(false)
-                        .body {
-                            configSaved(i18nContext)
-                        }
-                )
+                call.respondConfigSaved(i18nContext)
             }
             Result.CommandNotFound -> {
-                call.respondHtml(
-                    createHTML(false)
-                        .body {
-                            blissShowToast(
-                                createEmbeddedToast(
-                                    EmbeddedToast.Type.WARN,
-                                    "Você não pode editar um comando que não existe!"
-                                )
-                            )
-                        },
-                    status = HttpStatusCode.NotFound
-                )
+                call.respondHtmlFragment(status = HttpStatusCode.NotFound) {
+                    blissShowToast(
+                        createEmbeddedToast(
+                            EmbeddedToast.Type.WARN,
+                            "Você não pode editar um comando que não existe!"
+                        )
+                    )
+                }
             }
         }
     }

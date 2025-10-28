@@ -16,6 +16,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebS
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.prefixPreview
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.ColorTheme
 
 class PostPrefixedCommandsPrefixPreviewGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/prefixed-commands/prefix-preview") {
@@ -25,15 +26,12 @@ class PostPrefixedCommandsPrefixPreviewGuildDashboardRoute(website: LorittaDashb
     override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans) {
         val request = Json.decodeFromString<PrefixPreviewRequest>(call.receiveText())
 
-        call.respondHtml(
-            createHTML()
-                .body {
-                    prefixPreview(
-                        session,
-                        request.prefix,
-                        website.loritta.lorittaShards.shardManager.shards.first().selfUser
-                    )
-                }
-        )
+        call.respondHtmlFragment {
+            prefixPreview(
+                session,
+                request.prefix,
+                website.loritta.lorittaShards.shardManager.shards.first().selfUser
+            )
+        }
     }
 }

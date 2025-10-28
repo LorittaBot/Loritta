@@ -23,6 +23,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbedded
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.defaultModalCloseButton
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.openModalOnClick
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.serializable.ShipEffect
 import net.perfectdreams.loritta.serializable.UserId
@@ -66,40 +67,34 @@ class PostPreBuyShipEffectsUserDashboardRoute(website: LorittaDashboardWebServer
         }
 
         if (showWarningModal) {
-            call.respondHtml(
-                createHTML(false)
-                    .body {
-                        blissShowModal(
-                            createEmbeddedModal(
-                                i18nContext.get(I18nKeysData.Website.Dashboard.ShipEffects.SimilarActiveEffect.Title),
-                                true,
-                                {
-                                    p {
-                                        text(i18nContext.get(I18nKeysData.Website.Dashboard.ShipEffects.SimilarActiveEffect.Description))
-                                    }
-                                },
-                                listOf(
-                                    {
-                                        defaultModalCloseButton(i18nContext)
-                                    },
-                                    {
-                                        discordButton(ButtonStyle.PRIMARY) {
-                                            openModalOnClick(confirmPurchaseModal)
-                                            text(i18nContext.get(I18nKeysData.Website.Dashboard.ShipEffects.SimilarActiveEffect.Continue))
-                                        }
-                                    }
-                                )
-                            )
+            call.respondHtmlFragment {
+                blissShowModal(
+                    createEmbeddedModal(
+                        i18nContext.get(I18nKeysData.Website.Dashboard.ShipEffects.SimilarActiveEffect.Title),
+                        true,
+                        {
+                            p {
+                                text(i18nContext.get(I18nKeysData.Website.Dashboard.ShipEffects.SimilarActiveEffect.Description))
+                            }
+                        },
+                        listOf(
+                            {
+                                defaultModalCloseButton(i18nContext)
+                            },
+                            {
+                                discordButton(ButtonStyle.PRIMARY) {
+                                    openModalOnClick(confirmPurchaseModal)
+                                    text(i18nContext.get(I18nKeysData.Website.Dashboard.ShipEffects.SimilarActiveEffect.Continue))
+                                }
+                            }
                         )
-                    }
-            )
+                    )
+                )
+            }
         } else {
-            call.respondHtml(
-                createHTML(false)
-                    .body {
-                        blissShowModal(confirmPurchaseModal)
-                    }
-            )
+            call.respondHtmlFragment {
+                blissShowModal(confirmPurchaseModal)
+            }
         }
     }
 }

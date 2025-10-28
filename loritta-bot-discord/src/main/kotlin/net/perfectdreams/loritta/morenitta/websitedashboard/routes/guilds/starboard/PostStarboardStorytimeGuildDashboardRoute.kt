@@ -16,6 +16,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebS
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.starboardStorytime
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.ColorTheme
 
 class PostStarboardStorytimeGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/starboard/storytime") {
@@ -24,11 +25,8 @@ class PostStarboardStorytimeGuildDashboardRoute(website: LorittaDashboardWebServ
 
         val starboardChannel = guild.getChannel(request.starboardChannelId)
 
-        call.respondHtml(
-            createHTML()
-                .body {
-                    starboardStorytime(i18nContext, starboardChannel, request.requiredStars, website.loritta.lorittaShards.shardManager.shards.first().selfUser)
-                }
-        )
+        call.respondHtmlFragment {
+            starboardStorytime(i18nContext, starboardChannel, request.requiredStars, website.loritta.lorittaShards.shardManager.shards.first().selfUser)
+        }
     }
 }

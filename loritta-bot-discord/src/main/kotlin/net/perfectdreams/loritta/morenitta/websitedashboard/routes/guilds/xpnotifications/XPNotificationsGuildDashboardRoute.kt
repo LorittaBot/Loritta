@@ -47,6 +47,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuild
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissEvent
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.placeholders.sections.LevelUpPlaceholders
 import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.serializable.levels.LevelUpAnnouncementType
@@ -130,147 +131,144 @@ class XPNotificationsGuildDashboardRoute(website: LorittaDashboardWebServer) : R
             "Parabéns {@user}, você passou para o nível **{level}** (*{xp} XP*)!"
         )
 
-        call.respondHtml(
-            createHTML()
-                .html {
-                    dashboardBase(
-                        i18nContext,
-                        i18nContext.get(DashboardI18nKeysData.XpNotifications.Title),
-                        session,
-                        theme,
-                        shimejiSettings,
-                        userPremiumPlan,
+        call.respondHtml {
+            dashboardBase(
+                i18nContext,
+                i18nContext.get(DashboardI18nKeysData.XpNotifications.Title),
+                session,
+                theme,
+                shimejiSettings,
+                userPremiumPlan,
+                {
+                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.XP_NOTIFICATIONS)
+                },
+                {
+                    rightSidebarContentAndSaveBarWrapper(
                         {
-                            guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.XP_NOTIFICATIONS)
-                        },
-                        {
-                            rightSidebarContentAndSaveBarWrapper(
-                                {
-                                    if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
-                                        blissEvent("resyncState", "[bliss-component='save-bar']")
-                                        blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Configuração redefinida!"))
+                            if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
+                                blissEvent("resyncState", "[bliss-component='save-bar']")
+                                blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Configuração redefinida!"))
+                            }
+
+                            heroWrapper {
+                                heroText {
+                                    h1 {
+                                        text(i18nContext.get(DashboardI18nKeysData.XpNotifications.Title))
                                     }
 
-                                    heroWrapper {
-                                        heroText {
-                                            h1 {
-                                                text(i18nContext.get(DashboardI18nKeysData.XpNotifications.Title))
-                                            }
-
-                                            p {
-                                                text("Notificações ao subir de nível")
-                                            }
-                                        }
+                                    p {
+                                        text("Notificações ao subir de nível")
                                     }
+                                }
+                            }
 
-                                    hr {}
+                            hr {}
 
-                                    sectionConfig {
-                                        fieldWrappers {
-                                            fieldWrapper {
-                                                toggleableSection(
-                                                    {
-                                                        text("Ativar mensagem ao subir de nível")
-                                                    },
-                                                    null,
-                                                    announcement != null,
-                                                    "enabled",
-                                                    true
-                                                ) {
-                                                    fieldWrappers {
-                                                        fieldWrapper {
-                                                            fieldTitle {
-                                                                text("Onde a mensagem será enviada")
-                                                            }
+                            sectionConfig {
+                                fieldWrappers {
+                                    fieldWrapper {
+                                        toggleableSection(
+                                            {
+                                                text("Ativar mensagem ao subir de nível")
+                                            },
+                                            null,
+                                            announcement != null,
+                                            "enabled",
+                                            true
+                                        ) {
+                                            fieldWrappers {
+                                                fieldWrapper {
+                                                    fieldTitle {
+                                                        text("Onde a mensagem será enviada")
+                                                    }
 
-                                                            fancySelectMenu {
-                                                                name = "type"
-                                                                attributes["loritta-config"] = "type"
+                                                    fancySelectMenu {
+                                                        name = "type"
+                                                        attributes["loritta-config"] = "type"
 
-                                                                option {
-                                                                    value = LevelUpAnnouncementType.SAME_CHANNEL.name
-                                                                    selected = announcement?.get(LevelAnnouncementConfigs.type) == LevelUpAnnouncementType.SAME_CHANNEL
-                                                                    text("Canal Atual")
-                                                                }
-
-                                                                option {
-                                                                    value = LevelUpAnnouncementType.DIRECT_MESSAGE.name
-                                                                    selected = announcement?.get(LevelAnnouncementConfigs.type) == LevelUpAnnouncementType.DIRECT_MESSAGE
-                                                                    text("Mensagem Direta")
-                                                                }
-
-                                                                option {
-                                                                    value = LevelUpAnnouncementType.DIFFERENT_CHANNEL.name
-                                                                    selected = announcement?.get(LevelAnnouncementConfigs.type) == LevelUpAnnouncementType.DIFFERENT_CHANNEL
-                                                                    text("Canal Personalizado")
-                                                                }
-                                                            }
+                                                        option {
+                                                            value = LevelUpAnnouncementType.SAME_CHANNEL.name
+                                                            selected = announcement?.get(LevelAnnouncementConfigs.type) == LevelUpAnnouncementType.SAME_CHANNEL
+                                                            text("Canal Atual")
                                                         }
 
-                                                        fieldWrapper {
-                                                            fieldTitle {
-                                                                text("Canal onde a mensagem será enviada")
-                                                            }
-
-                                                            channelSelectMenu(
-                                                                guild,
-                                                                announcement?.get(LevelAnnouncementConfigs.channelId),
-                                                                {
-                                                                    attributes["bliss-disable-when"] = "[name='type'] != \"${LevelUpAnnouncementType.DIFFERENT_CHANNEL.name}\""
-                                                                    attributes["loritta-config"] = "customChannelId"
-                                                                    name = "customChannelId"
-                                                                }
-                                                            )
+                                                        option {
+                                                            value = LevelUpAnnouncementType.DIRECT_MESSAGE.name
+                                                            selected = announcement?.get(LevelAnnouncementConfigs.type) == LevelUpAnnouncementType.DIRECT_MESSAGE
+                                                            text("Mensagem Direta")
                                                         }
 
-                                                        fieldWrapper {
-                                                            toggle(
-                                                                false,
-                                                                "onlyIfUserReceivedRoles",
-                                                                true,
-                                                                {
-                                                                    text("Apenas notificar caso o usuário receba alguma recompensa")
-                                                                },
-                                                                {
-                                                                    text("Caso você tenha configurado recompensas ao subir de nível, eu posso notificar apenas se o usuário recebeu alguma recompensa")
-                                                                }
-                                                            )
+                                                        option {
+                                                            value = LevelUpAnnouncementType.DIFFERENT_CHANNEL.name
+                                                            selected = announcement?.get(LevelAnnouncementConfigs.type) == LevelUpAnnouncementType.DIFFERENT_CHANNEL
+                                                            text("Canal Personalizado")
                                                         }
+                                                    }
+                                                }
 
-                                                        fieldWrapper {
-                                                            fieldTitle {
-                                                                text("Mensagem ao subir de nível")
-                                                            }
+                                                fieldWrapper {
+                                                    fieldTitle {
+                                                        text("Canal onde a mensagem será enviada")
+                                                    }
 
-                                                            discordMessageEditor(
-                                                                guild,
-                                                                MessageEditorBootstrap.TestMessageTarget.Unavailable,
-                                                                listOf(defaultLevelUpMessage),
-                                                                xpRewardsPlaceholders,
-                                                                announcement?.get(LevelAnnouncementConfigs.message) ?: defaultLevelUpMessage.content
-                                                            ) {
-                                                                name = "message"
-                                                                attributes["loritta-config"] = "message"
-                                                            }
+                                                    channelSelectMenu(
+                                                        guild,
+                                                        announcement?.get(LevelAnnouncementConfigs.channelId),
+                                                        {
+                                                            attributes["bliss-disable-when"] = "[name='type'] != \"${LevelUpAnnouncementType.DIFFERENT_CHANNEL.name}\""
+                                                            attributes["loritta-config"] = "customChannelId"
+                                                            name = "customChannelId"
                                                         }
+                                                    )
+                                                }
+
+                                                fieldWrapper {
+                                                    toggle(
+                                                        false,
+                                                        "onlyIfUserReceivedRoles",
+                                                        true,
+                                                        {
+                                                            text("Apenas notificar caso o usuário receba alguma recompensa")
+                                                        },
+                                                        {
+                                                            text("Caso você tenha configurado recompensas ao subir de nível, eu posso notificar apenas se o usuário recebeu alguma recompensa")
+                                                        }
+                                                    )
+                                                }
+
+                                                fieldWrapper {
+                                                    fieldTitle {
+                                                        text("Mensagem ao subir de nível")
+                                                    }
+
+                                                    discordMessageEditor(
+                                                        guild,
+                                                        MessageEditorBootstrap.TestMessageTarget.Unavailable,
+                                                        listOf(defaultLevelUpMessage),
+                                                        xpRewardsPlaceholders,
+                                                        announcement?.get(LevelAnnouncementConfigs.message) ?: defaultLevelUpMessage.content
+                                                    ) {
+                                                        name = "message"
+                                                        attributes["loritta-config"] = "message"
                                                     }
                                                 }
                                             }
                                         }
                                     }
-                                },
-                                {
-                                    genericSaveBar(
-                                        i18nContext,
-                                        false,
-                                        guild,
-                                        "/xp-notifications"
-                                    )
                                 }
+                            }
+                        },
+                        {
+                            genericSaveBar(
+                                i18nContext,
+                                false,
+                                guild,
+                                "/xp-notifications"
                             )
                         }
                     )
                 }
-        )
+            )
+        }
     }
 }

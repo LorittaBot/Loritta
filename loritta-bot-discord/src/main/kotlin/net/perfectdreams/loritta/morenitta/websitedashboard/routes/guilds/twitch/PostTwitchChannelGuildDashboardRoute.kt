@@ -28,6 +28,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.configSaved
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondConfigSaved
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import org.jetbrains.exposed.sql.*
@@ -110,34 +111,28 @@ class PostTwitchChannelGuildDashboardRoute(website: LorittaDashboardWebServer) :
         when (result) {
             is AddGuildTwitchChannelResult.Success -> {
                 call.response.header("Bliss-Push-Url", "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/twitch/${result.trackId}")
-                call.respondHtml(
-                    createHTML(false)
-                        .body {
-                            configSaved(i18nContext)
+                call.respondHtmlFragment {
+                    configSaved(i18nContext)
 
-                            trackedProfileEditorSaveBar(
-                                i18nContext,
-                                guild,
-                                "twitch",
-                                result.trackId
-                            )
-                        }
-                )
+                    trackedProfileEditorSaveBar(
+                        i18nContext,
+                        guild,
+                        "twitch",
+                        result.trackId
+                    )
+                }
 
                 call.respondConfigSaved(i18nContext)
             }
             AddGuildTwitchChannelResult.TooManyPremiumTracks -> {
-                call.respondHtml(
-                    createHTML(false)
-                        .body {
-                            blissShowToast(
-                                createEmbeddedToast(
-                                    EmbeddedToast.Type.WARN,
-                                    "Você está no limite de acompanhamentos premium!"
-                                )
-                            )
-                        }
-                )
+                call.respondHtmlFragment {
+                    blissShowToast(
+                        createEmbeddedToast(
+                            EmbeddedToast.Type.WARN,
+                            "Você está no limite de acompanhamentos premium!"
+                        )
+                    )
+                }
             }
         }
     }

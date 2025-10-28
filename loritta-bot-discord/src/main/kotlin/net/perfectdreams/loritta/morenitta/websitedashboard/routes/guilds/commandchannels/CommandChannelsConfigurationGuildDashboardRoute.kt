@@ -43,6 +43,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.rightSide
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.saveBar
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.toggleableSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.placeholders.sections.BlockedCommandChannelPlaceholders
 import net.perfectdreams.loritta.serializable.ColorTheme
 
@@ -103,95 +104,92 @@ class CommandChannelsConfigurationGuildDashboardRoute(website: LorittaDashboardW
             "{@user} você não pode enviar comandos aqui!"
         )
 
-        call.respondHtml(
-            createHTML()
-                .html {
-                    dashboardBase(
-                        i18nContext,
-                        i18nContext.get(DashboardI18nKeysData.CommandChannels.Title),
-                        session,
-                        theme,
-                        shimejiSettings,
-                        userPremiumPlan,
+        call.respondHtml {
+            dashboardBase(
+                i18nContext,
+                i18nContext.get(DashboardI18nKeysData.CommandChannels.Title),
+                session,
+                theme,
+                shimejiSettings,
+                userPremiumPlan,
+                {
+                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.COMMAND_CHANNELS)
+                },
+                {
+                    rightSidebarContentAndSaveBarWrapper(
                         {
-                            guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.COMMAND_CHANNELS)
-                        },
-                        {
-                            rightSidebarContentAndSaveBarWrapper(
-                                {
-                                    div {
-                                        id = "section-config"
+                            div {
+                                id = "section-config"
 
-                                        fieldWrappers {
-                                            fieldWrapper {
-                                                fieldTitle {
-                                                    text("Canais que serão proibidos usar comandos")
-                                                }
-
-                                                fieldDescription {
-                                                    text("Nestes canais eu irei ignorar comandos de usuários, como se eu nem estivesse lá! (Mesmo que eu esteja observando as suas mensagens para dar XP, hihi~) Caso você queira configurar que cargos específicos possam burlar a restrição, configure na seção de permissões.")
-                                                }
-
-                                                configurableChannelListInput(
-                                                    i18nContext,
-                                                    guild,
-                                                    "channels",
-                                                    "channels",
-                                                    "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/command-channels/channels/add",
-                                                    "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/command-channels/channels/remove",
-                                                    serverConfig.blacklistedChannels.toSet()
-                                                )
-                                            }
-
-                                            fieldWrapper {
-                                                val blockedWarning = serverConfig.blacklistedWarning
-
-                                                toggleableSection(
-                                                    {
-                                                        text("Enviar mensagem para o usuário quando ele executar comandos em canais proibidos")
-                                                    },
-                                                    {
-                                                        text("Caso você tenha configurado canais que sejam proibidos de usar comandos, você pode ativar esta opção para que, quando um usuário tente executar um comando em canais proibidos, eu avise que não é possível executar comandos no canal.")
-                                                    },
-                                                    serverConfig.warnIfBlacklisted,
-                                                    "warnIfBlacklisted",
-                                                    true
-                                                ) {
-                                                    discordMessageEditor(
-                                                        guild,
-                                                        MessageEditorBootstrap.TestMessageTarget.Unavailable,
-                                                        listOf(defaultDenyMessage),
-                                                        blockedCommandsPlaceholders,
-                                                        blockedWarning ?: defaultDenyMessage.content
-                                                    ) {
-                                                        name = "blockedWarning"
-                                                        attributes["loritta-config"] = "blockedWarning"
-                                                    }
-                                                }
-                                            }
+                                fieldWrappers {
+                                    fieldWrapper {
+                                        fieldTitle {
+                                            text("Canais que serão proibidos usar comandos")
                                         }
+
+                                        fieldDescription {
+                                            text("Nestes canais eu irei ignorar comandos de usuários, como se eu nem estivesse lá! (Mesmo que eu esteja observando as suas mensagens para dar XP, hihi~) Caso você queira configurar que cargos específicos possam burlar a restrição, configure na seção de permissões.")
+                                        }
+
+                                        configurableChannelListInput(
+                                            i18nContext,
+                                            guild,
+                                            "channels",
+                                            "channels",
+                                            "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/command-channels/channels/add",
+                                            "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/command-channels/channels/remove",
+                                            serverConfig.blacklistedChannels.toSet()
+                                        )
                                     }
-                                },
-                                {
-                                    saveBar(
-                                        i18nContext,
-                                        false,
-                                        {
-                                            attributes["bliss-get"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/command-channels"
-                                            attributes["bliss-swap:200"] = "#section-config (innerHTML) -> #section-config (innerHTML)"
-                                            attributes["bliss-headers"] = buildJsonObject {
-                                                put("Loritta-Configuration-Reset", "true")
-                                            }.toString()
+
+                                    fieldWrapper {
+                                        val blockedWarning = serverConfig.blacklistedWarning
+
+                                        toggleableSection(
+                                            {
+                                                text("Enviar mensagem para o usuário quando ele executar comandos em canais proibidos")
+                                            },
+                                            {
+                                                text("Caso você tenha configurado canais que sejam proibidos de usar comandos, você pode ativar esta opção para que, quando um usuário tente executar um comando em canais proibidos, eu avise que não é possível executar comandos no canal.")
+                                            },
+                                            serverConfig.warnIfBlacklisted,
+                                            "warnIfBlacklisted",
+                                            true
+                                        ) {
+                                            discordMessageEditor(
+                                                guild,
+                                                MessageEditorBootstrap.TestMessageTarget.Unavailable,
+                                                listOf(defaultDenyMessage),
+                                                blockedCommandsPlaceholders,
+                                                blockedWarning ?: defaultDenyMessage.content
+                                            ) {
+                                                name = "blockedWarning"
+                                                attributes["loritta-config"] = "blockedWarning"
+                                            }
                                         }
-                                    ) {
-                                        attributes["bliss-put"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/command-channels"
-                                        attributes["bliss-include-json"] = "[loritta-config]"
                                     }
                                 }
-                            )
+                            }
+                        },
+                        {
+                            saveBar(
+                                i18nContext,
+                                false,
+                                {
+                                    attributes["bliss-get"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/command-channels"
+                                    attributes["bliss-swap:200"] = "#section-config (innerHTML) -> #section-config (innerHTML)"
+                                    attributes["bliss-headers"] = buildJsonObject {
+                                        put("Loritta-Configuration-Reset", "true")
+                                    }.toString()
+                                }
+                            ) {
+                                attributes["bliss-put"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/command-channels"
+                                attributes["bliss-include-json"] = "[loritta-config]"
+                            }
                         }
                     )
                 }
-        )
+            )
+        }
     }
 }

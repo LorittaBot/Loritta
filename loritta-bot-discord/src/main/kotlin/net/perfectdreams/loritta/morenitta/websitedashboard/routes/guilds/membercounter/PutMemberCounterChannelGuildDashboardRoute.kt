@@ -23,6 +23,8 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebS
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.configSaved
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondConfigSaved
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
@@ -75,11 +77,6 @@ class PutMemberCounterChannelGuildDashboardRoute(website: LorittaDashboardWebSer
         if (request.enabled)
             DiscordListener.queueTextChannelTopicUpdates(website.loritta, guild, serverConfig)
 
-        call.respondHtml(
-            createHTML(false)
-                .body {
-                    configSaved(i18nContext)
-                }
-        )
+        call.respondConfigSaved(i18nContext)
     }
 }

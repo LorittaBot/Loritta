@@ -28,6 +28,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresUserA
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.upsert
@@ -51,18 +52,14 @@ class PostUploadBackgroundUserDashboardRoute(website: LorittaDashboardWebServer)
 
     override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
         if (!userPremiumPlan.customBackground) {
-            call.respondHtml(
-                createHTML(false)
-                    .body {
-                        blissShowToast(
-                            createEmbeddedToast(
-                                EmbeddedToast.Type.WARN,
-                                "Você precisa ter premium para fazer isto!"
-                            )
-                        )
-                    },
-                status = HttpStatusCode.BadRequest
-            )
+            call.respondHtmlFragment(status = HttpStatusCode.BadRequest) {
+                blissShowToast(
+                    createEmbeddedToast(
+                        EmbeddedToast.Type.WARN,
+                        "Você precisa ter premium para fazer isto!"
+                    )
+                )
+            }
             return
         }
 
@@ -140,21 +137,14 @@ class PostUploadBackgroundUserDashboardRoute(website: LorittaDashboardWebServer)
                 )
             }
 
-            call.respondHtml(
-                createHTML(false)
-                    .body {
-                        blissCloseModal()
-                        blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Background personalizado enviado!"))
-                    }
-            )
+            call.respondHtmlFragment {
+                blissCloseModal()
+                blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Background personalizado enviado!"))
+            }
         } else {
-            call.respondHtml(
-                createHTML(false)
-                    .body {
-                        blissShowToast(createEmbeddedToast(EmbeddedToast.Type.WARN, "Imagem inválida!"))
-                    },
-                status = HttpStatusCode.BadRequest
-            )
+            call.respondHtmlFragment(status = HttpStatusCode.BadRequest) {
+                blissShowToast(createEmbeddedToast(EmbeddedToast.Type.WARN, "Imagem inválida!"))
+            }
         }
     }
 }

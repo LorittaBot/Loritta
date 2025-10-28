@@ -33,6 +33,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuild
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.serializable.ColorTheme
 
 class AddBlueskyProfileGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/bluesky/add") {
@@ -55,65 +56,62 @@ class AddBlueskyProfileGuildDashboardRoute(website: LorittaDashboardWebServer) :
         val textStuff = http.bodyAsText(Charsets.UTF_8)
         val profile = JsonIgnoreUnknownKeys.decodeFromString<BlueskyProfile>(textStuff)
 
-        call.respondHtml(
-            createHTML()
-                .html {
-                    dashboardBase(
-                        i18nContext,
-                        i18nContext.get(DashboardI18nKeysData.Bluesky.Title),
-                        session,
-                        theme,
-                        shimejiSettings,
-                        userPremiumPlan,
+        call.respondHtml {
+            dashboardBase(
+                i18nContext,
+                i18nContext.get(DashboardI18nKeysData.Bluesky.Title),
+                session,
+                theme,
+                shimejiSettings,
+                userPremiumPlan,
+                {
+                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.BLUESKY)
+                },
+                {
+                    if (call.request.headers["Bliss-Trigger-Element-Id"] == "add-profile") {
+                        blissCloseModal()
+                        blissShowToast(
+                            createEmbeddedToast(
+                                EmbeddedToast.Type.SUCCESS,
+                                "Conta encontrada!"
+                            )
+                        )
+                    }
+
+                    goBackToPreviousSectionButton(
+                        href = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/bluesky",
+                    ) {
+                        text("Voltar para a lista de contas do Bluesky")
+                    }
+
+                    hr {}
+
+                    rightSidebarContentAndSaveBarWrapper(
                         {
-                            guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.BLUESKY)
+                            trackedBlueskyChannelEditorWithProfile(
+                                i18nContext,
+                                guild,
+                                profile,
+                                null,
+                                null
+                            )
                         },
                         {
-                            if (call.request.headers["Bliss-Trigger-Element-Id"] == "add-profile") {
-                                blissCloseModal()
-                                blissShowToast(
-                                    createEmbeddedToast(
-                                        EmbeddedToast.Type.SUCCESS,
-                                        "Conta encontrada!"
-                                    )
-                                )
-                            }
-
-                            goBackToPreviousSectionButton(
-                                href = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/bluesky",
-                            ) {
-                                text("Voltar para a lista de contas do Bluesky")
-                            }
-
-                            hr {}
-
-                            rightSidebarContentAndSaveBarWrapper(
+                            trackedNewProfileEditorSaveBar(
+                                i18nContext,
+                                guild,
+                                "bluesky",
                                 {
-                                    trackedBlueskyChannelEditorWithProfile(
-                                        i18nContext,
-                                        guild,
-                                        profile,
-                                        null,
-                                        null
-                                    )
+                                    put("handle", "@${profile.handle}")
                                 },
                                 {
-                                    trackedNewProfileEditorSaveBar(
-                                        i18nContext,
-                                        guild,
-                                        "bluesky",
-                                        {
-                                            put("handle", "@${profile.handle}")
-                                        },
-                                        {
-                                            put("blueskyProfileId", profile.did)
-                                        }
-                                    )
+                                    put("blueskyProfileId", profile.did)
                                 }
                             )
                         }
                     )
                 }
-        )
+            )
+        }
     }
 }

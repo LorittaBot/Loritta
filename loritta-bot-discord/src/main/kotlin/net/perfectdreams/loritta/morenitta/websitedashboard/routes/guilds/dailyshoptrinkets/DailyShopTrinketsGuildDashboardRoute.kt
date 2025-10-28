@@ -40,6 +40,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuild
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissEvent
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.placeholders.sections.DailyShopTrinketsPlaceholders
 import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jetbrains.exposed.sql.selectAll
@@ -84,156 +85,153 @@ class DailyShopTrinketsGuildDashboardRoute(website: LorittaDashboardWebServer) :
             }
         }
 
-        call.respondHtml(
-            createHTML()
-                .html {
-                    dashboardBase(
-                        i18nContext,
-                        i18nContext.get(DashboardI18nKeysData.DailyShopTrinkets.Title),
-                        session,
-                        theme,
-                        shimejiSettings,
-                        userPremiumPlan,
+        call.respondHtml {
+            dashboardBase(
+                i18nContext,
+                i18nContext.get(DashboardI18nKeysData.DailyShopTrinkets.Title),
+                session,
+                theme,
+                shimejiSettings,
+                userPremiumPlan,
+                {
+                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.LORITTA_TRINKETS_SHOP)
+                },
+                {
+                    rightSidebarContentAndSaveBarWrapper(
                         {
-                            guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.LORITTA_TRINKETS_SHOP)
+                            if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
+                                blissEvent("resyncState", "[bliss-component='save-bar']")
+                                blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Configuração redefinida!"))
+                            }
+
+                            heroWrapper {
+                                simpleHeroImage("https://stuff.loritta.website/loritta-daily-shop-nicholas.png")
+
+                                heroText {
+                                    h1 {
+                                        text(i18nContext.get(DashboardI18nKeysData.DailyShopTrinkets.Title))
+                                    }
+
+                                    for (str in i18nContext.language
+                                        .textBundle
+                                        .lists
+                                        .getValue(I18nKeys.Website.Dashboard.DailyShopTrinkets.Description.key)
+                                    ) {
+                                        p {
+                                            handleI18nString(
+                                                str,
+                                                appendAsFormattedText(i18nContext, emptyMap()),
+                                            ) {
+                                                when (it) {
+                                                    else -> TextReplaceControls.AppendControlAsIsResult
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            hr {}
+
+                            div {
+                                id = "section-config"
+
+                                fieldWrappers {
+                                    toggleableSection(
+                                        {
+                                            text(i18nContext.get(DashboardI18nKeysData.DailyShopTrinkets.ShopRefresh.NotifyWhenRefresh))
+                                        },
+                                        {
+                                            text(i18nContext.get(DashboardI18nKeysData.DailyShopTrinkets.ShopRefresh.NotifyWhenRefreshDescription))
+                                        },
+                                        databaseConfig?.get(LorittaDailyShopNotificationsConfigs.notifyShopTrinkets) ?: false,
+                                        "notifyShopTrinkets",
+                                        true
+                                    ) {
+                                        fieldWrappers {
+                                            fieldWrapper {
+                                                fieldTitle { text(i18nContext.get(DashboardI18nKeysData.DailyShopTrinkets.ShopRefresh.ChannelWhereTheMessagesWillBeSent)) }
+
+                                                channelSelectMenu(
+                                                    guild,
+                                                    databaseConfig?.get(LorittaDailyShopNotificationsConfigs.shopTrinketsChannelId),
+                                                ) {
+                                                    attributes["loritta-config"] = "shopTrinketsChannelId"
+                                                    name = "shopTrinketsChannelId"
+                                                }
+                                            }
+
+                                            fieldWrapper {
+                                                fieldTitle { text(i18nContext.get(DashboardI18nKeysData.DailyShopTrinkets.ShopRefresh.MessageWhenTheShopUpdates)) }
+
+                                                discordMessageEditor(
+                                                    guild,
+                                                    MessageEditorBootstrap.TestMessageTarget.QuerySelector("[loritta-config='shopTrinketsChannelId']"),
+                                                    listOf(),
+                                                    placeholderGroups,
+                                                    databaseConfig?.get(LorittaDailyShopNotificationsConfigs.shopTrinketsMessage) ?: ""
+                                                ) {
+                                                    attributes["loritta-config"] = "shopTrinketsMessage"
+                                                    name = "shopTrinketsMessage"
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    toggleableSection(
+                                        {
+                                            text(i18nContext.get(DashboardI18nKeysData.DailyShopTrinkets.NewTrinkets.NotifyWhenNew))
+                                        },
+                                        {
+                                            text(i18nContext.get(DashboardI18nKeysData.DailyShopTrinkets.NewTrinkets.NotifyWhenNewDescription))
+                                        },
+                                        databaseConfig?.get(LorittaDailyShopNotificationsConfigs.notifyNewTrinkets) ?: false,
+                                        "notifyNewTrinkets",
+                                        true
+                                    ) {
+                                        fieldWrappers {
+                                            fieldWrapper {
+                                                fieldTitle { text(i18nContext.get(DashboardI18nKeysData.DailyShopTrinkets.NewTrinkets.ChannelWhereTheMessagesWillBeSent)) }
+
+                                                channelSelectMenu(
+                                                    guild,
+                                                    databaseConfig?.get(LorittaDailyShopNotificationsConfigs.shopTrinketsChannelId),
+                                                ) {
+                                                    attributes["loritta-config"] = "newTrinketsChannelId"
+                                                    name = "newTrinketsChannelId"
+                                                }
+                                            }
+
+                                            fieldWrapper {
+                                                fieldTitle { text(i18nContext.get(DashboardI18nKeysData.DailyShopTrinkets.NewTrinkets.MessageWhenNewTrinkets)) }
+
+                                                discordMessageEditor(
+                                                    guild,
+                                                    MessageEditorBootstrap.TestMessageTarget.QuerySelector("[loritta-config='newTrinketsChannelId']"),
+                                                    listOf(),
+                                                    placeholderGroups,
+                                                    databaseConfig?.get(LorittaDailyShopNotificationsConfigs.newTrinketsMessage) ?: ""
+                                                ) {
+                                                    attributes["loritta-config"] = "newTrinketsMessage"
+                                                    name = "newTrinketsMessage"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         },
                         {
-                            rightSidebarContentAndSaveBarWrapper(
-                                {
-                                    if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
-                                        blissEvent("resyncState", "[bliss-component='save-bar']")
-                                        blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Configuração redefinida!"))
-                                    }
-
-                                    heroWrapper {
-                                        simpleHeroImage("https://stuff.loritta.website/loritta-daily-shop-nicholas.png")
-
-                                        heroText {
-                                            h1 {
-                                                text(i18nContext.get(DashboardI18nKeysData.DailyShopTrinkets.Title))
-                                            }
-
-                                            for (str in i18nContext.language
-                                                .textBundle
-                                                .lists
-                                                .getValue(I18nKeys.Website.Dashboard.DailyShopTrinkets.Description.key)
-                                            ) {
-                                                p {
-                                                    handleI18nString(
-                                                        str,
-                                                        appendAsFormattedText(i18nContext, emptyMap()),
-                                                    ) {
-                                                        when (it) {
-                                                            else -> TextReplaceControls.AppendControlAsIsResult
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    hr {}
-
-                                    div {
-                                        id = "section-config"
-
-                                        fieldWrappers {
-                                            toggleableSection(
-                                                {
-                                                    text(i18nContext.get(DashboardI18nKeysData.DailyShopTrinkets.ShopRefresh.NotifyWhenRefresh))
-                                                },
-                                                {
-                                                    text(i18nContext.get(DashboardI18nKeysData.DailyShopTrinkets.ShopRefresh.NotifyWhenRefreshDescription))
-                                                },
-                                                databaseConfig?.get(LorittaDailyShopNotificationsConfigs.notifyShopTrinkets) ?: false,
-                                                "notifyShopTrinkets",
-                                                true
-                                            ) {
-                                                fieldWrappers {
-                                                    fieldWrapper {
-                                                        fieldTitle { text(i18nContext.get(DashboardI18nKeysData.DailyShopTrinkets.ShopRefresh.ChannelWhereTheMessagesWillBeSent)) }
-
-                                                        channelSelectMenu(
-                                                            guild,
-                                                            databaseConfig?.get(LorittaDailyShopNotificationsConfigs.shopTrinketsChannelId),
-                                                        ) {
-                                                            attributes["loritta-config"] = "shopTrinketsChannelId"
-                                                            name = "shopTrinketsChannelId"
-                                                        }
-                                                    }
-
-                                                    fieldWrapper {
-                                                        fieldTitle { text(i18nContext.get(DashboardI18nKeysData.DailyShopTrinkets.ShopRefresh.MessageWhenTheShopUpdates)) }
-
-                                                        discordMessageEditor(
-                                                            guild,
-                                                            MessageEditorBootstrap.TestMessageTarget.QuerySelector("[loritta-config='shopTrinketsChannelId']"),
-                                                            listOf(),
-                                                            placeholderGroups,
-                                                            databaseConfig?.get(LorittaDailyShopNotificationsConfigs.shopTrinketsMessage) ?: ""
-                                                        ) {
-                                                            attributes["loritta-config"] = "shopTrinketsMessage"
-                                                            name = "shopTrinketsMessage"
-                                                        }
-                                                    }
-                                                }
-                                            }
-
-                                            toggleableSection(
-                                                {
-                                                    text(i18nContext.get(DashboardI18nKeysData.DailyShopTrinkets.NewTrinkets.NotifyWhenNew))
-                                                },
-                                                {
-                                                    text(i18nContext.get(DashboardI18nKeysData.DailyShopTrinkets.NewTrinkets.NotifyWhenNewDescription))
-                                                },
-                                                databaseConfig?.get(LorittaDailyShopNotificationsConfigs.notifyNewTrinkets) ?: false,
-                                                "notifyNewTrinkets",
-                                                true
-                                            ) {
-                                                fieldWrappers {
-                                                    fieldWrapper {
-                                                        fieldTitle { text(i18nContext.get(DashboardI18nKeysData.DailyShopTrinkets.NewTrinkets.ChannelWhereTheMessagesWillBeSent)) }
-
-                                                        channelSelectMenu(
-                                                            guild,
-                                                            databaseConfig?.get(LorittaDailyShopNotificationsConfigs.shopTrinketsChannelId),
-                                                        ) {
-                                                            attributes["loritta-config"] = "newTrinketsChannelId"
-                                                            name = "newTrinketsChannelId"
-                                                        }
-                                                    }
-
-                                                    fieldWrapper {
-                                                        fieldTitle { text(i18nContext.get(DashboardI18nKeysData.DailyShopTrinkets.NewTrinkets.MessageWhenNewTrinkets)) }
-
-                                                        discordMessageEditor(
-                                                            guild,
-                                                            MessageEditorBootstrap.TestMessageTarget.QuerySelector("[loritta-config='newTrinketsChannelId']"),
-                                                            listOf(),
-                                                            placeholderGroups,
-                                                            databaseConfig?.get(LorittaDailyShopNotificationsConfigs.newTrinketsMessage) ?: ""
-                                                        ) {
-                                                            attributes["loritta-config"] = "newTrinketsMessage"
-                                                            name = "newTrinketsMessage"
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                },
-                                {
-                                    genericSaveBar(
-                                        i18nContext,
-                                        false,
-                                        guild,
-                                        "/daily-shop-trinkets"
-                                    )
-                                }
+                            genericSaveBar(
+                                i18nContext,
+                                false,
+                                guild,
+                                "/daily-shop-trinkets"
                             )
                         }
                     )
                 }
-        )
+            )
+        }
     }
 }

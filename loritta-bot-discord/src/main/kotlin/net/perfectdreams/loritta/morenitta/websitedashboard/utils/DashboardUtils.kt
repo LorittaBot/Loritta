@@ -33,12 +33,9 @@ suspend fun ApplicationCall.respondConfigSaved(
     i18nContext: I18nContext,
     block: FlowContent.() -> Unit = {}
 ) {
-    this.respondHtml(
-        createHTML(false)
-            .body {
-                configSaved(i18nContext)
+    this.respondHtmlFragment {
+        configSaved(i18nContext)
 
-                block()
-            }
-    )
+        block()
+    }
 }

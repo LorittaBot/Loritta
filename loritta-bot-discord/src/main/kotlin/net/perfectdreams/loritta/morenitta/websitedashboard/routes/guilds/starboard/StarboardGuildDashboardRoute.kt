@@ -38,6 +38,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuild
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissEvent
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.serializable.ColorTheme
 
 class StarboardGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/starboard") {
@@ -51,45 +52,95 @@ class StarboardGuildDashboardRoute(website: LorittaDashboardWebServer) : Require
 
         val starboardChannel = if (starboardChannelId != null) { guild.getChannel(starboardChannelId) } else null
 
-        call.respondHtml(
-            createHTML()
-                .html {
-                    dashboardBase(
-                        i18nContext,
-                        i18nContext.get(DashboardI18nKeysData.Starboard.Title),
-                        session,
-                        theme,
-                        shimejiSettings,
-                        userPremiumPlan,
+        call.respondHtml {
+            dashboardBase(
+                i18nContext,
+                i18nContext.get(DashboardI18nKeysData.Starboard.Title),
+                session,
+                theme,
+                shimejiSettings,
+                userPremiumPlan,
+                {
+                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.STARBOARD)
+                },
+                {
+                    rightSidebarContentAndSaveBarWrapper(
                         {
-                            guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.STARBOARD)
-                        },
-                        {
-                            rightSidebarContentAndSaveBarWrapper(
-                                {
-                                    if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
-                                        blissEvent("resyncState", "[bliss-component='save-bar']")
-                                        blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Configuração redefinida!"))
+                            if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
+                                blissEvent("resyncState", "[bliss-component='save-bar']")
+                                blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Configuração redefinida!"))
+                            }
+
+                            div(classes = "hero-wrapper") {
+                                etherealGambiImg(
+                                    "https://stuff.loritta.website/loritta-star-hug-yafyr.png",
+                                    classes = "hero-image",
+                                    sizes = "(max-width: 900px) 100vw, 360px"
+                                ) {
+                                    classes += "starboard-web-animation"
+                                }
+
+                                div(classes = "hero-text") {
+                                    h1 {
+                                        text(i18nContext.get(DashboardI18nKeysData.Starboard.Title))
                                     }
 
-                                    div(classes = "hero-wrapper") {
-                                        etherealGambiImg(
-                                            "https://stuff.loritta.website/loritta-star-hug-yafyr.png",
-                                            classes = "hero-image",
-                                            sizes = "(max-width: 900px) 100vw, 360px"
-                                        ) {
-                                            classes += "starboard-web-animation"
+                                    for (line in i18nContext.get(DashboardI18nKeysData.Starboard.Description)) {
+                                        p {
+                                            text(line)
                                         }
+                                    }
+                                }
+                            }
 
-                                        div(classes = "hero-text") {
-                                            h1 {
-                                                text(i18nContext.get(DashboardI18nKeysData.Starboard.Title))
+                            hr {}
+
+                            div {
+                                id = "section-config"
+
+                                toggleableSection(
+                                    {
+                                        text("Ativar Starboard")
+                                    },
+                                    description = null,
+                                    starboardConfig?.enabled ?: false,
+                                    "enabled",
+                                    true,
+                                ) {
+                                    fieldWrappers {
+                                        fieldWrapper {
+                                            fieldTitle {
+                                                text(i18nContext.get(DashboardI18nKeysData.Starboard.StarboardChannel))
                                             }
 
-                                            for (line in i18nContext.get(DashboardI18nKeysData.Starboard.Description)) {
-                                                p {
-                                                    text(line)
-                                                }
+                                            channelSelectMenu(guild, starboardChannelId) {
+                                                attributes["bliss-post"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/starboard/storytime"
+                                                attributes["bliss-swap:200"] = "body (innerHTML) -> #starboard-storytime (innerHTML)"
+                                                attributes["bliss-trigger"] = "input"
+                                                attributes["bliss-include-json"] = "[loritta-config]"
+                                                attributes["loritta-config"] = "starboardChannelId"
+                                                name = "starboardChannelId"
+                                            }
+                                        }
+
+                                        fieldWrapper {
+                                            fieldTitle {
+                                                text(i18nContext.get(DashboardI18nKeysData.Starboard.MinimumReactCount))
+                                            }
+
+                                            numberInput {
+                                                min = "1"
+                                                max = "1000"
+                                                step = "1"
+                                                value = (starboardConfig?.requiredStars ?: 1).toString()
+
+                                                attributes["save-bar-track"] = "true"
+                                                attributes["bliss-post"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/starboard/storytime"
+                                                attributes["bliss-swap:200"] = "body (innerHTML) -> #starboard-storytime (innerHTML)"
+                                                attributes["bliss-trigger"] = "input"
+                                                attributes["bliss-include-json"] = "[loritta-config]"
+                                                attributes["loritta-config"] = "requiredStars"
+                                                name = "requiredStars"
                                             }
                                         }
                                     }
@@ -97,77 +148,24 @@ class StarboardGuildDashboardRoute(website: LorittaDashboardWebServer) : Require
                                     hr {}
 
                                     div {
-                                        id = "section-config"
+                                        id = "starboard-storytime"
 
-                                        toggleableSection(
-                                            {
-                                                text("Ativar Starboard")
-                                            },
-                                            description = null,
-                                            starboardConfig?.enabled ?: false,
-                                            "enabled",
-                                            true,
-                                        ) {
-                                            fieldWrappers {
-                                                fieldWrapper {
-                                                    fieldTitle {
-                                                        text(i18nContext.get(DashboardI18nKeysData.Starboard.StarboardChannel))
-                                                    }
-
-                                                    channelSelectMenu(guild, starboardChannelId) {
-                                                        attributes["bliss-post"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/starboard/storytime"
-                                                        attributes["bliss-swap:200"] = "body (innerHTML) -> #starboard-storytime (innerHTML)"
-                                                        attributes["bliss-trigger"] = "input"
-                                                        attributes["bliss-include-json"] = "[loritta-config]"
-                                                        attributes["loritta-config"] = "starboardChannelId"
-                                                        name = "starboardChannelId"
-                                                    }
-                                                }
-
-                                                fieldWrapper {
-                                                    fieldTitle {
-                                                        text(i18nContext.get(DashboardI18nKeysData.Starboard.MinimumReactCount))
-                                                    }
-
-                                                    numberInput {
-                                                        min = "1"
-                                                        max = "1000"
-                                                        step = "1"
-                                                        value = (starboardConfig?.requiredStars ?: 1).toString()
-
-                                                        attributes["save-bar-track"] = "true"
-                                                        attributes["bliss-post"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/starboard/storytime"
-                                                        attributes["bliss-swap:200"] = "body (innerHTML) -> #starboard-storytime (innerHTML)"
-                                                        attributes["bliss-trigger"] = "input"
-                                                        attributes["bliss-include-json"] = "[loritta-config]"
-                                                        attributes["loritta-config"] = "requiredStars"
-                                                        name = "requiredStars"
-                                                    }
-                                                }
-                                            }
-
-                                            hr {}
-
-                                            div {
-                                                id = "starboard-storytime"
-
-                                                starboardStorytime(i18nContext, starboardChannel, starboardConfig?.requiredStars ?: 1, website.loritta.lorittaShards.shardManager.shards.first().selfUser)
-                                            }
-                                        }
+                                        starboardStorytime(i18nContext, starboardChannel, starboardConfig?.requiredStars ?: 1, website.loritta.lorittaShards.shardManager.shards.first().selfUser)
                                     }
-                                },
-                                {
-                                    genericSaveBar(
-                                        i18nContext,
-                                        false,
-                                        guild,
-                                        "/starboard"
-                                    )
                                 }
+                            }
+                        },
+                        {
+                            genericSaveBar(
+                                i18nContext,
+                                false,
+                                guild,
+                                "/starboard"
                             )
                         }
                     )
                 }
-        )
+            )
+        }
     }
 }

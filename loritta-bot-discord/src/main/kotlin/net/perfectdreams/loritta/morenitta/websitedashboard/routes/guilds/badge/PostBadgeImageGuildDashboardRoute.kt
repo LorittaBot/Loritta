@@ -33,6 +33,8 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.backgrounds.P
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.ColorTheme
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
@@ -57,18 +59,14 @@ class PostBadgeImageGuildDashboardRoute(website: LorittaDashboardWebServer) : Re
         val request = Json.decodeFromString<UploadBackgroundRequest>(call.receiveText()).file.first()
 
         if (!guildPremiumPlan.hasCustomBadge) {
-            call.respondHtml(
-                createHTML(false)
-                    .body {
-                        blissShowToast(
-                            createEmbeddedToast(
-                                EmbeddedToast.Type.WARN,
-                                "O servidor precisa ter premium para fazer isto!"
-                            )
-                        )
-                    },
-                status = HttpStatusCode.BadRequest
-            )
+            call.respondHtmlFragment(status = HttpStatusCode.BadRequest) {
+                blissShowToast(
+                    createEmbeddedToast(
+                        EmbeddedToast.Type.WARN,
+                        "O servidor precisa ter premium para fazer isto!"
+                    )
+                )
+            }
             return
         }
 
@@ -148,21 +146,15 @@ class PostBadgeImageGuildDashboardRoute(website: LorittaDashboardWebServer) : Re
 
                 serverConfig.donationConfig = donationConfig
             }
-            call.respondHtml(
-                createHTML(false)
-                    .body {
-                        blissCloseModal()
-                        blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Insígnia personalizada enviada!"))
-                    }
-            )
+
+            call.respondHtmlFragment {
+                blissCloseModal()
+                blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Insígnia personalizada enviada!"))
+            }
         } else {
-            call.respondHtml(
-                createHTML(false)
-                    .body {
-                        blissShowToast(createEmbeddedToast(EmbeddedToast.Type.WARN, "Imagem inválida!"))
-                    },
-                status = HttpStatusCode.BadRequest
-            )
+            call.respondHtmlFragment(status = HttpStatusCode.BadRequest) {
+                blissShowToast(createEmbeddedToast(EmbeddedToast.Type.WARN, "Imagem inválida!"))
+            }
         }
     }
 }
