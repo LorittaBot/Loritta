@@ -110,8 +110,8 @@ fun createUserMentionPlaceholderGroup(i18nContext: I18nContext, sectionPlacehold
     return createPlaceholderGroup(
         sectionPlaceholder.placeholders,
         null,
-        "<@$userId>",
         "@${globalName ?: username}",
+        "<@$userId>",
         RenderType.MENTION
     )
 }

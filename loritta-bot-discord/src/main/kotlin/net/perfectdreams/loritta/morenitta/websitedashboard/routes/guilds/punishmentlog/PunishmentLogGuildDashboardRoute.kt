@@ -95,8 +95,8 @@ class PunishmentLogGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
                 PunishmentMessagePlaceholders.StaffMentionPlaceholder -> createPlaceholderGroup(
                     it.placeholders,
                     null,
-                    "<@${session.userId}>",
                     "@${session.globalName ?: session.username}",
+                    "<@${session.userId}>",
                     RenderType.TEXT
                 )
                 PunishmentMessagePlaceholders.StaffNamePlaceholder -> createPlaceholderGroup(
