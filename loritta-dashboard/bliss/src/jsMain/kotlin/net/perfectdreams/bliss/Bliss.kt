@@ -80,6 +80,15 @@ object Bliss {
     private val elementProcessors = mutableListOf<(Element) -> (Unit)>()
 
     fun setupEvents() {
+        // We need this to make the pop state below work correctly on the first visited page!
+        history.replaceState(
+            unsafeJso<dynamic> {
+                this.blessed = true
+            },
+            "",
+            window.location.href
+        )
+
         window.addEventHandler(PopStateEvent.POP_STATE) {
             // We will only reload the page if the state has generated from our "blessed" links
             // This fixes an issue with hash "jump to" links causing a page refresh
