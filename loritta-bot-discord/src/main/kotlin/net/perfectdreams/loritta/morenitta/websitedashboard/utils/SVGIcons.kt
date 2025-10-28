@@ -47,6 +47,7 @@ object SVGIcons {
     val ChartDonut = register("chart-donut", "/svg_icons/phosphor/fill/chart-donut.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
     val SortDescending = register("sort-descending", "/svg_icons/phosphor/bold/sort-descending.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
     val EyeDropper = register("eyedropper", "/svg_icons/phosphor/fill/eyedropper.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
+    val SquaresFour = register("squares-four", "/svg_icons/phosphor/fill/squares-four.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
 
     val SlashCommand = register("slash-command", "/svg_icons/discord/slash-command.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
     val TextChannel = register("text-channel", "/svg_icons/discord/text-channel.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
