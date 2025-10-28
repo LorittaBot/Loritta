@@ -12,6 +12,7 @@ import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.dashboard.EmbeddedToast
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.dashboard.messageeditor.MessageEditorBootstrap
+import net.perfectdreams.loritta.dashboard.messageeditor.MessageEditorMessagePlaceholderGroup.RenderType
 import net.perfectdreams.loritta.i18n.I18nKeys
 import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls
 import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls.appendAsFormattedText
@@ -26,8 +27,12 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuild
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissEvent
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
+import net.perfectdreams.loritta.placeholders.Placeholders
+import net.perfectdreams.loritta.placeholders.sections.JoinMessagePlaceholders
+import net.perfectdreams.loritta.placeholders.sections.PunishmentMessagePlaceholders
 import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jetbrains.exposed.sql.selectAll
+import kotlin.collections.map
 
 class PunishmentLogGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/punishment-log") {
     override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans) {
@@ -41,6 +46,71 @@ class PunishmentLogGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
                 .toList()
 
             Pair(moderationLogConfig, punishmentMessages)
+        }
+
+        val placeholders = PunishmentMessagePlaceholders.placeholders.map {
+            when (it) {
+                PunishmentMessagePlaceholders.UserMentionPlaceholder -> createUserMentionPlaceholderGroup(i18nContext, it, session.userId, session.username, session.globalName)
+                PunishmentMessagePlaceholders.UserNamePlaceholder -> createUserNamePlaceholderGroup(i18nContext, it, session.username, session.globalName)
+                PunishmentMessagePlaceholders.UserDiscriminatorPlaceholder -> createUserDiscriminatorPlaceholderGroup(i18nContext, it, session.discriminator)
+                PunishmentMessagePlaceholders.UserTagPlaceholder -> createUserTagPlaceholderGroup(i18nContext, it, session.discriminator)
+
+                PunishmentMessagePlaceholders.GuildIconUrlPlaceholder -> createGuildIconUrlPlaceholderGroup(i18nContext, it, guild)
+                PunishmentMessagePlaceholders.GuildNamePlaceholder -> createGuildNamePlaceholderGroup(i18nContext, it, guild)
+                PunishmentMessagePlaceholders.GuildSizePlaceholder -> createGuildSizePlaceholderGroup(i18nContext, it, guild)
+                PunishmentMessagePlaceholders.UserAvatarUrlPlaceholder -> createUserAvatarUrlPlaceholderGroup(i18nContext, it, session)
+                PunishmentMessagePlaceholders.UserIdPlaceholder -> createUserIdPlaceholderGroup(i18nContext, it, session.userId)
+
+                PunishmentMessagePlaceholders.PunishmentReasonPlaceholder -> createPlaceholderGroup(
+                    it,
+                    null,
+                    "You're gonna have a bad time",
+                    RenderType.TEXT
+                )
+                PunishmentMessagePlaceholders.PunishmentTypePlaceholder -> createPlaceholderGroup(
+                    it,
+                    null,
+                    "Banido",
+                    RenderType.TEXT
+                )
+                PunishmentMessagePlaceholders.StaffAvatarUrlPlaceholder -> createPlaceholderGroup(
+                    it,
+                    null,
+                    session.getEffectiveAvatarUrl(),
+                    RenderType.TEXT
+                )
+                PunishmentMessagePlaceholders.StaffDiscriminatorPlaceholder -> createPlaceholderGroup(
+                    it,
+                    null,
+                    session.discriminator.padStart(4, '0'),
+                    RenderType.TEXT
+                )
+                PunishmentMessagePlaceholders.StaffIdPlaceholder -> createPlaceholderGroup(
+                    it,
+                    null,
+                    session.userId.toString(),
+                    RenderType.TEXT
+                )
+                PunishmentMessagePlaceholders.StaffMentionPlaceholder -> createPlaceholderGroup(
+                    it.placeholders,
+                    null,
+                    "<@${session.userId}>",
+                    "@${session.globalName ?: session.username}",
+                    RenderType.TEXT
+                )
+                PunishmentMessagePlaceholders.StaffNamePlaceholder -> createPlaceholderGroup(
+                    it,
+                    null,
+                    session.globalName ?: session.username,
+                    RenderType.TEXT
+                )
+                PunishmentMessagePlaceholders.StaffTagPlaceholder -> createPlaceholderGroup(
+                    it,
+                    null,
+                    "@${session.username}",
+                    RenderType.TEXT
+                )
+            }
         }
 
         call.respondHtml(
@@ -140,7 +210,7 @@ class PunishmentLogGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
                                                                 guild,
                                                                 MessageEditorBootstrap.TestMessageTarget.Unavailable,
                                                                 listOf(),
-                                                                listOf(),
+                                                                placeholders,
                                                                 moderationLogConfig?.punishLogMessage ?: ""
                                                             ) {
                                                                 attributes["loritta-config"] = "punishLogMessage"
@@ -182,7 +252,7 @@ class PunishmentLogGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
                                                                                 guild,
                                                                                 MessageEditorBootstrap.TestMessageTarget.Unavailable,
                                                                                 listOf(),
-                                                                                listOf(),
+                                                                                placeholders,
                                                                                 punishmentMessage?.get(ModerationPunishmentMessagesConfig.punishLogMessage) ?: ""
                                                                             ) {
                                                                                 attributes["loritta-config"] = "punishLogMessage$partName"

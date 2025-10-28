@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.dashboard.renderer
 
+import net.perfectdreams.loritta.dashboard.messageeditor.MessageEditorMessagePlaceholderGroup
 import kotlin.sequences.forEach
 
 object DiscordMessageUtils {
@@ -123,7 +124,7 @@ object DiscordMessageUtils {
     /**
      * Parses placeholders to a string
      */
-    fun parsePlaceholdersToString(input: String): String {
+    fun parsePlaceholdersToString(input: String, placeholderGroups: List<MessageEditorMessagePlaceholderGroup>): String {
         val drawableSections = parseStringToDrawableSections(
             input,
             listOf(
@@ -136,7 +137,21 @@ object DiscordMessageUtils {
             for (section in drawableSections) {
                 when (section) {
                     is DrawablePlaceholder -> {
-                        append("{${section.placeholderName}}")
+                        var matchedPlaceholderGroup: MessageEditorMessagePlaceholderGroup? = null
+
+                        for (placeholderGroup in placeholderGroups) {
+                            if (placeholderGroup.placeholders.any { it.name == section.placeholderName }) {
+                                matchedPlaceholderGroup = placeholderGroup
+                                break
+                            }
+                        }
+
+                        if (matchedPlaceholderGroup != null) {
+                            append(matchedPlaceholderGroup.replaceWithFrontend)
+                        } else {
+                            // Draw placeholder as is if it is an unknown placeholder
+                            append("{${section.placeholderName}}")
+                        }
                     }
                     is DrawableText -> append(section.text)
                     // This should NEVER happen since we are only requesting TEXT and PLACEHOLDER

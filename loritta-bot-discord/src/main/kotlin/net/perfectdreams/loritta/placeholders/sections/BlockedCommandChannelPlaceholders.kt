@@ -10,6 +10,8 @@ object BlockedCommandChannelPlaceholders : SectionPlaceholders<BlockedCommandCha
 
     data object UserMentionPlaceholder : BlockedCommandChannelPlaceholder(PlaceholderGroups.USER_MENTION)
     data object UserNamePlaceholder : BlockedCommandChannelPlaceholder(PlaceholderGroups.USER_NAME)
+    data object UserAvatarUrlPlaceholder : BlockedCommandChannelPlaceholder(PlaceholderGroups.USER_AVATAR_URL)
+    data object UserIdPlaceholder : BlockedCommandChannelPlaceholder(PlaceholderGroups.USER_ID)
     data object UserDiscriminatorPlaceholder : BlockedCommandChannelPlaceholder(PlaceholderGroups.USER_DISCRIMINATOR)
     data object UserTagPlaceholder : BlockedCommandChannelPlaceholder(PlaceholderGroups.USER_TAG)
     data object GuildNamePlaceholder : BlockedCommandChannelPlaceholder(PlaceholderGroups.GUILD_NAME)
@@ -19,6 +21,8 @@ object BlockedCommandChannelPlaceholders : SectionPlaceholders<BlockedCommandCha
     override val placeholders = listOf<BlockedCommandChannelPlaceholder>(
         UserMentionPlaceholder,
         UserNamePlaceholder,
+        UserAvatarUrlPlaceholder,
+        UserIdPlaceholder,
         UserDiscriminatorPlaceholder,
         UserTagPlaceholder,
         GuildNamePlaceholder,

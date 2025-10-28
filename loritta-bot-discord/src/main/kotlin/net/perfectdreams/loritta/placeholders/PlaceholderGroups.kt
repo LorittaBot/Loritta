@@ -5,6 +5,8 @@ object PlaceholderGroups {
     val USER_NAME = listOf(Placeholders.USER_NAME, Placeholders.USER_NAME_SHORT)
     val USER_DISCRIMINATOR = listOf(Placeholders.USER_DISCRIMINATOR, Placeholders.Deprecated.USER_DISCRIMINATOR)
     val USER_TAG = listOf(Placeholders.USER_TAG)
+    val USER_AVATAR_URL = listOf(Placeholders.USER_AVATAR_URL, Placeholders.Deprecated.USER_AVATAR_URL)
+    val USER_ID = listOf(Placeholders.USER_ID, Placeholders.Deprecated.USER_ID)
 
     val GUILD_NAME = listOf(Placeholders.GUILD_NAME, Placeholders.GUILD_NAME_SHORT)
     val GUILD_SIZE = listOf(Placeholders.GUILD_SIZE, Placeholders.Deprecated.GUILD_SIZE, Placeholders.Deprecated.GUILD_SIZE_JOINED)

@@ -3,12 +3,15 @@ package net.perfectdreams.loritta.placeholders.sections
 import net.perfectdreams.loritta.placeholders.LorittaPlaceholder
 import net.perfectdreams.loritta.placeholders.PlaceholderGroups
 import net.perfectdreams.loritta.placeholders.Placeholders
+import net.perfectdreams.loritta.placeholders.sections.InviteBlockedPlaceholders.InviteBlockedPlaceholder
 
 object JoinMessagePlaceholders : SectionPlaceholders<JoinMessagePlaceholders.JoinMessagePlaceholder> {
     sealed class JoinMessagePlaceholder(placeholders: List<LorittaPlaceholder>) : SectionPlaceholder(placeholders)
 
     data object UserMentionPlaceholder : JoinMessagePlaceholder(PlaceholderGroups.USER_MENTION)
     data object UserNamePlaceholder : JoinMessagePlaceholder(PlaceholderGroups.USER_NAME)
+    data object UserAvatarUrlPlaceholder : JoinMessagePlaceholder(PlaceholderGroups.USER_AVATAR_URL)
+    data object UserIdPlaceholder : JoinMessagePlaceholder(PlaceholderGroups.USER_ID)
     data object UserDiscriminatorPlaceholder : JoinMessagePlaceholder(PlaceholderGroups.USER_DISCRIMINATOR)
     data object UserTagPlaceholder : JoinMessagePlaceholder(PlaceholderGroups.USER_TAG)
     data object GuildNamePlaceholder : JoinMessagePlaceholder(PlaceholderGroups.GUILD_NAME)
@@ -18,6 +21,8 @@ object JoinMessagePlaceholders : SectionPlaceholders<JoinMessagePlaceholders.Joi
     override val placeholders = listOf<JoinMessagePlaceholder>(
         UserMentionPlaceholder,
         UserNamePlaceholder,
+        UserAvatarUrlPlaceholder,
+        UserIdPlaceholder,
         UserDiscriminatorPlaceholder,
         UserTagPlaceholder,
         GuildNamePlaceholder,

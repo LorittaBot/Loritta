@@ -23,7 +23,9 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.createGui
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.createGuildSizePlaceholderGroup
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.createMessageTemplate
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.createPlaceholderGroup
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.createUserAvatarUrlPlaceholderGroup
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.createUserDiscriminatorPlaceholderGroup
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.createUserIdPlaceholderGroup
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.createUserMentionPlaceholderGroup
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.createUserNamePlaceholderGroup
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.createUserTagPlaceholderGroup
@@ -117,6 +119,9 @@ class XPNotificationsGuildDashboardRoute(website: LorittaDashboardWebServer) : R
                     "1000",
                     RenderType.TEXT
                 )
+
+                LevelUpPlaceholders.UserAvatarUrlPlaceholder -> createUserAvatarUrlPlaceholderGroup(i18nContext, it, session)
+                LevelUpPlaceholders.UserIdPlaceholder -> createUserIdPlaceholderGroup(i18nContext, it, session.userId)
             }
         }
 

@@ -16,6 +16,7 @@ import net.perfectdreams.loritta.dashboard.messageeditor.LorittaMessageTemplate
 import net.perfectdreams.loritta.dashboard.messageeditor.MessageEditorBootstrap
 import net.perfectdreams.loritta.dashboard.messageeditor.MessageEditorMessagePlaceholderGroup
 import net.perfectdreams.loritta.dashboard.messageeditor.MessageEditorMessagePlaceholderGroup.RenderType
+import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.SVGIcons
 import net.perfectdreams.loritta.placeholders.LorittaPlaceholder
 import net.perfectdreams.loritta.placeholders.sections.SectionPlaceholder
@@ -120,6 +121,24 @@ fun createUserNamePlaceholderGroup(i18nContext: I18nContext, sectionPlaceholder:
         sectionPlaceholder.placeholders,
         null,
         globalName ?: username,
+        RenderType.TEXT
+    )
+}
+
+fun createUserIdPlaceholderGroup(i18nContext: I18nContext, sectionPlaceholder: SectionPlaceholder, userId: Long): MessageEditorMessagePlaceholderGroup {
+    return createPlaceholderGroup(
+        sectionPlaceholder.placeholders,
+        null,
+        userId.toString(),
+        RenderType.TEXT
+    )
+}
+
+fun createUserAvatarUrlPlaceholderGroup(i18nContext: I18nContext, sectionPlaceholder: SectionPlaceholder, session: UserSession): MessageEditorMessagePlaceholderGroup {
+    return createPlaceholderGroup(
+        sectionPlaceholder.placeholders,
+        null,
+        session.getEffectiveAvatarUrl(),
         RenderType.TEXT
     )
 }

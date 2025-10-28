@@ -475,13 +475,12 @@ fun DiscordMessageEditor(
                                 FieldWrapper {
                                     FieldLabel("URL do Título")
 
-                                    // TODO (bliss-dash): Fix this!
-                                    /* TextInput(embed.url ?: "") {
+                                    TextInput(embed.url ?: "") {
                                         onInput {
                                             embed.url = it.value.ifEmpty { null }
                                             mutableMessage.triggerUpdate()
                                         }
-                                    } */
+                                    }
                                 }
 
                                 FieldWrapper {
@@ -737,18 +736,6 @@ fun DiscordMessageEditor(
                             id("message-preview-$rId")
                             classes("message-preview")
                         }) {
-                            // TODO (bliss-dash): Fix this!
-                            /* for (message in messagesToBeRenderedBeforeTargetMessage) {
-                                DiscordMessageRenderer(
-                                    message.author,
-                                    message.message,
-                                    null,
-                                    targetGuild.channels,
-                                    targetGuild.roles,
-                                    placeholders,
-                                )
-                            } */
-
                             if (parsedMessage != null) {
                                 RawHtml(createHTML(false).div {
                                     discordMessageRenderer(
@@ -777,17 +764,6 @@ fun DiscordMessageEditor(
                                     )
                                 })
                             }
-
-                            /* for (message in messagesToBeRenderedAfterTargetMessage) {
-                                DiscordMessageRenderer(
-                                    message.author,
-                                    message.message,
-                                    null,
-                                    targetGuild.channels,
-                                    targetGuild.roles,
-                                    placeholders,
-                                )
-                            } */
                         }
                     }
                 }

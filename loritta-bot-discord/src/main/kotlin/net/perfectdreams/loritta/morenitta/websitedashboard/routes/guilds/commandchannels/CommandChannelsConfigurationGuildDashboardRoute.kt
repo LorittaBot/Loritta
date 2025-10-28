@@ -26,7 +26,9 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.createGui
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.createGuildSizePlaceholderGroup
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.createMessageTemplate
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.createPlaceholderGroup
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.createUserAvatarUrlPlaceholderGroup
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.createUserDiscriminatorPlaceholderGroup
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.createUserIdPlaceholderGroup
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.createUserMentionPlaceholderGroup
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.createUserNamePlaceholderGroup
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.createUserTagPlaceholderGroup
@@ -90,6 +92,9 @@ class CommandChannelsConfigurationGuildDashboardRoute(website: LorittaDashboardW
                     it,
                     session.username
                 )
+
+                BlockedCommandChannelPlaceholders.UserAvatarUrlPlaceholder -> createUserAvatarUrlPlaceholderGroup(i18nContext, it, session)
+                BlockedCommandChannelPlaceholders.UserIdPlaceholder -> createUserIdPlaceholderGroup(i18nContext, it, session.userId)
             }
         }
 

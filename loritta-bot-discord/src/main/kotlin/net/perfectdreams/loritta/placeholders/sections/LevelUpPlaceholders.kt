@@ -3,12 +3,15 @@ package net.perfectdreams.loritta.placeholders.sections
 import net.perfectdreams.loritta.placeholders.LorittaPlaceholder
 import net.perfectdreams.loritta.placeholders.PlaceholderGroups
 import net.perfectdreams.loritta.placeholders.Placeholders
+import net.perfectdreams.loritta.placeholders.sections.LeaveMessagePlaceholders.LeaveMessagePlaceholder
 
 object LevelUpPlaceholders : SectionPlaceholders<LevelUpPlaceholders.LevelUpPlaceholder> {
     sealed class LevelUpPlaceholder(placeholders: List<LorittaPlaceholder>) : SectionPlaceholder(placeholders)
 
     data object UserMentionPlaceholder : LevelUpPlaceholder(PlaceholderGroups.USER_MENTION)
     data object UserNamePlaceholder : LevelUpPlaceholder(PlaceholderGroups.USER_NAME)
+    data object UserAvatarUrlPlaceholder : LevelUpPlaceholder(PlaceholderGroups.USER_AVATAR_URL)
+    data object UserIdPlaceholder : LevelUpPlaceholder(PlaceholderGroups.USER_ID)
     data object UserDiscriminatorPlaceholder : LevelUpPlaceholder(PlaceholderGroups.USER_DISCRIMINATOR)
     data object UserTagPlaceholder : LevelUpPlaceholder(PlaceholderGroups.USER_TAG)
     data object GuildNamePlaceholder : LevelUpPlaceholder(PlaceholderGroups.GUILD_NAME)
@@ -26,6 +29,8 @@ object LevelUpPlaceholders : SectionPlaceholders<LevelUpPlaceholders.LevelUpPlac
     override val placeholders = listOf<LevelUpPlaceholder>(
         UserMentionPlaceholder,
         UserNamePlaceholder,
+        UserAvatarUrlPlaceholder,
+        UserIdPlaceholder,
         UserDiscriminatorPlaceholder,
         UserTagPlaceholder,
         GuildNamePlaceholder,

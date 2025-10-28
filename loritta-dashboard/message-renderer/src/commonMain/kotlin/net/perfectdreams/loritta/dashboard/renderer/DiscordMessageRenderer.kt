@@ -41,22 +41,18 @@ fun FlowContent.discordMessageRenderer(
                     discordMessageEmbed(
                         embed.color,
                         embed.thumbnail?.url?.let {
-                            DiscordMessageUtils.parsePlaceholdersToString(
-                                it
-                            )
+                            DiscordMessageUtils.parsePlaceholdersToString(it, placeholders)
                         }
                     ) {
                         // ===[ EMBED AUTHOR ]===
                         val embedAuthor = embed.author
                         if (embedAuthor != null) {
                             discordAuthor(
-                                embedAuthor.url?.let { DiscordMessageUtils.parsePlaceholdersToString(it) },
-                                embedAuthor.iconUrl?.let { DiscordMessageUtils.parsePlaceholdersToString(it) }
+                                embedAuthor.url?.let { DiscordMessageUtils.parsePlaceholdersToString(it, placeholders) },
+                                embedAuthor.iconUrl?.let { DiscordMessageUtils.parsePlaceholdersToString(it, placeholders) }
                             ) {
                                 text(
-                                    DiscordMessageUtils.parsePlaceholdersToString(
-                                        embedAuthor.name
-                                    )
+                                    DiscordMessageUtils.parsePlaceholdersToString(embedAuthor.name, placeholders)
                                 )
                             }
                         }
@@ -163,7 +159,7 @@ fun FlowContent.discordMessageRenderer(
                         // ===[ EMBED IMAGE ]===
                         val imageUrl = embed.image?.url
                         if (imageUrl != null)
-                            discordEmbedImage(imageUrl)
+                            discordEmbedImage(DiscordMessageUtils.parsePlaceholdersToString(imageUrl, placeholders))
 
                         val footer = embed.footer
                         if (footer != null) {
@@ -171,18 +167,14 @@ fun FlowContent.discordMessageRenderer(
                                 val footerIconUrl = footer.iconUrl
                                 if (footerIconUrl != null) {
                                     img(
-                                        src = DiscordMessageUtils.parsePlaceholdersToString(
-                                            footerIconUrl
-                                        ),
+                                        src = DiscordMessageUtils.parsePlaceholdersToString(footerIconUrl, placeholders),
                                         classes = "discord-embed-footer-icon"
                                     )
                                 }
 
                                 span(classes = "discord-embed-footer-text") {
                                     text(
-                                        DiscordMessageUtils.parsePlaceholdersToString(
-                                            footer.text
-                                        )
+                                        DiscordMessageUtils.parsePlaceholdersToString(footer.text, placeholders)
                                     )
                                 }
                             }

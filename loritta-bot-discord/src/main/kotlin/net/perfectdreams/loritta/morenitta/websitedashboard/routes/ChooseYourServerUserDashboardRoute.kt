@@ -36,18 +36,6 @@ class ChooseYourServerUserDashboardRoute(website: LorittaDashboardWebServer) : R
                             userDashLeftSidebarEntries(website.loritta, i18nContext, UserDashboardSection.CHOOSE_YOUR_SERVER)
                         },
                         {
-                            textInput {
-                                attributes["bliss-mirror-value-to-element"] = "#target-input"
-                            }
-
-                            textInput {
-                                id = "target-input"
-                            }
-
-                            div {
-                                attributes["bliss-component"] = "stardust-counter"
-                            }
-
                             div {
                                 id = "user-guilds"
                                 attributes["bliss-post"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds"
