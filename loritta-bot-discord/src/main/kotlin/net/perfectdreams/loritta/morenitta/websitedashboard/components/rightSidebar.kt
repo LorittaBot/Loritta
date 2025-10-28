@@ -42,7 +42,7 @@ fun FlowContent.rightSidebar(
         aside {
             id = "that-wasnt-very-cash-money-of-you"
 
-            if (false && !displayAds) {
+            if (!displayAds) {
                 // This is to have a random element to not fail the swap request
                 span {
                     id = "that-wasnt-very-cash-money-of-you-fnuy"
