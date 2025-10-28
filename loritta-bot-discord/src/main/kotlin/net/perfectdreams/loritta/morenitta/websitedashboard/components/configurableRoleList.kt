@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.morenitta.websitedashboard.components
 import kotlinx.html.FlowContent
 import kotlinx.html.div
 import kotlinx.html.hiddenInput
+import kotlinx.html.span
 import kotlinx.html.style
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
@@ -15,7 +16,7 @@ fun FlowContent.configurableRoleList(
     removeEndpoint: String,
     roleIds: Set<Long>
 ) {
-    div(classes = "configurable-role-list") {
+    div(classes = "simple-configurable-list-inset") {
         if (roleIds.isNotEmpty()) {
             for (roleId in roleIds) {
                 hiddenInput {
@@ -26,19 +27,17 @@ fun FlowContent.configurableRoleList(
 
                 val role = guild.getRoleById(roleId)
 
-                div {
-                    style = "display: flex; align-items: center;"
-
+                div(classes = "entry") {
                     div(classes = "discord-mention") {
                         val roleColor = role?.color
-                        style = if (roleColor != null) {
-                            "--mention-color: rgb(${roleColor.red}, ${roleColor.green}, ${roleColor.blue}); height: fit-content;"
-                        } else {
-                            "height: fit-content;"
+                        if (roleColor != null) {
+                            style = "--mention-color: rgb(${roleColor.red}, ${roleColor.green}, ${roleColor.blue});"
                         }
 
-                        text("@")
-                        text((role?.name ?: "???") + " (${roleId})")
+                        span(classes = "content") {
+                            text("@")
+                            text((role?.name ?: "???") + " (${roleId})")
+                        }
                     }
 
                     discordButton(ButtonStyle.NO_BACKGROUND_THEME_DEPENDENT_DARK_TEXT) {

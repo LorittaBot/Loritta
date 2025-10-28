@@ -18,7 +18,7 @@ fun FlowContent.configurableChannelList(
     removeEndpoint: String,
     channelIds: Set<Long>
 ) {
-    div(classes = "configurable-channel-list") {
+    div(classes = "simple-configurable-list-inset") {
         if (channelIds.isNotEmpty()) {
             for (channelId in channelIds) {
                 hiddenInput {
@@ -29,17 +29,13 @@ fun FlowContent.configurableChannelList(
 
                 val channel = guild.getChannel(channelId)
 
-                div {
-                    style = "display: flex; align-items: center;"
-
+                div(classes = "entry") {
                     val svgIcon = SVGIconUtils.getSVGIconForChannelFallbackIfNull(guild, channel)
 
                     div(classes = "discord-mention has-icon") {
-                        style = "height: fit-content;"
-
                         svgIcon(svgIcon)
 
-                        span {
+                        span(classes = "content") {
                             text((channel?.name ?: "???") + " (${channelId})")
                         }
                     }

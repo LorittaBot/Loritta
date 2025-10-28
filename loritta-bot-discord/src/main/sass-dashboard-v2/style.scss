@@ -969,7 +969,7 @@ aside#that-wasnt-very-cash-money-of-you-fixed-sidebar-reserved-space {
     border-radius: var(--nice-border-radius);
 }
 
-.configurable-role-list {
+.simple-configurable-list-inset {
     display: flex;
     flex-direction: column;
     gap: 0.5em;
@@ -978,6 +978,19 @@ aside#that-wasnt-very-cash-money-of-you-fixed-sidebar-reserved-space {
     border: 1px solid var(--card-border-color);
     border-top-color: var(--card-border-highlight-color);
     border-radius: var(--nice-border-radius);
+
+    .entry {
+        display: flex;
+        align-items: center;
+        gap: 1em;
+
+        .content {
+            overflow: hidden;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            display: -webkit-box;
+        }
+    }
 }
 
 .tracked-profile-header {

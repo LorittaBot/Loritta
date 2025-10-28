@@ -6,6 +6,7 @@
 	transition: background-color .05s,color .05s;
 	padding: 0 2px 0 2px;
 	border-radius: 3px;
+    word-wrap: anywhere;
 
     &.has-icon {
         display: inline-flex;
@@ -20,5 +21,9 @@
             // The icon NEVER bows down to ANYONE ELSE!!!
             flex-shrink: 0;
         }
+    }
+
+    .content {
+        display: inline;
     }
 }
