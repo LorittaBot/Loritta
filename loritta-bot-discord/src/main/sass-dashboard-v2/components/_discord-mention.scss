@@ -16,6 +16,9 @@
             align-self: center;
             width: 1em;
             height: 1em;
+            // We want the icon to NEVER shrink!
+            // The icon NEVER bows down to ANYONE ELSE!!!
+            flex-shrink: 0;
         }
     }
 }
