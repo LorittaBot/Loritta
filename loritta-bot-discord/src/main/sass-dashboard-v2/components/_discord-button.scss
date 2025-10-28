@@ -20,6 +20,8 @@ a:has(.discord-button) {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    // Useful if the screen is tiny enough that it causes a line break within the button
+    text-align: center;
 
     &.disabled {
         opacity: 0.5;
