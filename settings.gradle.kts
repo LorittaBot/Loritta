@@ -85,6 +85,7 @@ include(":loritta-website:loritta-website-frontend")
 // ===[ BLISS ]===
 include(":loritta-dashboard:bliss-common")
 include(":loritta-dashboard:bliss")
+include(":loritta-dashboard:bliss-standalone")
 
 // ===[ DASHBOARD ]===
 include(":loritta-dashboard:message-renderer")
