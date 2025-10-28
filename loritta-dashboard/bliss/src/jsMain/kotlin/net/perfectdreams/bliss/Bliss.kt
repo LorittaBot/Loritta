@@ -35,6 +35,7 @@ import web.history.PopStateEvent
 import web.history.history
 import web.html.HTMLInputElement
 import web.html.HTMLOptionElement
+import web.html.HTMLScriptElement
 import web.html.HTMLSelectElement
 import web.html.HTMLTextAreaElement
 import web.html.InputType
@@ -490,7 +491,7 @@ object Bliss {
                     else -> error("Unknown swap type: $sourceSwapType")
                 }
 
-                val clonedSourceElements = sourceElements.toMutableList().map { it.cloneNode(true) }
+                val clonedSourceElements = sourceElements.map { it.cloneNode(true) }
                 val clonedSourceElementsCopy = clonedSourceElements.toMutableList()
 
                 // We need to use child nodes here, to avoid responses that only have text nodes being "ignored"
@@ -498,6 +499,23 @@ object Bliss {
                     "outerHTML" -> targetElement.replaceWith(*clonedSourceElements.toTypedArray())
                     "innerHTML" -> targetElement.replaceChildren(*clonedSourceElements.toTypedArray())
                     else -> error("Unknown swap type: $targetSwapType")
+                }
+
+                // Execute any scripts that was swapped
+                for (swappedElement in clonedSourceElementsCopy) {
+                    if (swappedElement is Element) {
+                        val scriptElements = swappedElement.querySelectorAll("script").asList()
+
+                        for (element in scriptElements) {
+                            if (element is HTMLScriptElement) {
+                                if (element.type == "text/javascript" || element.type == "") {
+                                    // We use asDynamic to invoke the eval function due to this bug: https://kotlinlang.slack.com/archives/C0B8L3U69/p1715660256035359
+                                    // Last tested: 27/10/2025
+                                    window.asDynamic().eval(element.innerHTML)
+                                }
+                            }
+                        }
+                    }
                 }
 
                 val componentsInTheDOM = document.querySelectorAll("[bliss-component]").asList()
