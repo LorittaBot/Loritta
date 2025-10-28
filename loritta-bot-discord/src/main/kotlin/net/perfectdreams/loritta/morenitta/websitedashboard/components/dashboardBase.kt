@@ -50,15 +50,20 @@ fun HTML.dashboardBase(
         title(dashboardTitle(i18nContext, title))
 
         link(rel = "stylesheet", href = "/assets/css/style.css?v=${LorittaDashboardWebServer.assets.cssBundle.hash}", type = "text/css")
+
+        // Plausible Analytics
+        script(src = "https://web-analytics.perfectdreams.net/js/plausible.js", type = "text/javascript") {
+            attributes["data-domain"] = "loritta.website"
+            defer = true
+        }
+
+        // Loritta!
+        script(src = "/assets/js/frontend.js?v=${LorittaDashboardWebServer.assets.jsBundle.hash}", type = "text/javascript") {
+            defer = true
+        }
     }
 
     body {
-        /* div {
-            id = "loading"
-
-            text("Carregando... Espere um pouco!")
-        } */
-
         canvas(classes = "loritta-game-canvas") {
             attributes["bliss-component"] = "loritta-shimeji"
             attributes["loritta-shimeji-settings"] = BlissHex.encodeToHexString(Json.encodeToString(shimejiSettings))
@@ -112,7 +117,5 @@ fun HTML.dashboardBase(
                 rightSidebar(i18nContext, userPremiumPlan.displayAds, rightSidebarContent)
             }
         }
-
-        script(src = "/assets/js/frontend.js?v=${LorittaDashboardWebServer.assets.jsBundle.hash}", type = "text/javascript") {}
     }
 }
