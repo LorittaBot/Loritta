@@ -33,6 +33,20 @@ fun FlowContent.configureServerEntry(
 ) {
     val userPermissionLevel = LorittaDashboardWebServer.getUserPermissionLevel(guild)
 
+    fun FlowContent.configurateServerButton() {
+        discordButtonLink(ButtonStyle.PRIMARY, href = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.id}/overview") {
+            style = "flex-grow: 1"
+
+            attributes["bliss-get"] = "[href]"
+            attributes["bliss-swap:200"] = "#right-sidebar-contents (innerHTML) -> #right-sidebar-contents (innerHTML), #left-sidebar (innerHTML) -> #left-sidebar (innerHTML), #that-wasnt-very-cash-money-of-you-fnuy (innerHTML) -> #that-wasnt-very-cash-money-of-you-fnuy (innerHTML)"
+            attributes["bliss-push-url:200"] = "true"
+            attributes["bliss-sync"] = "#left-sidebar"
+            attributes["bliss-indicator"] = "#right-sidebar-wrapper"
+
+            text("Configurar")
+        }
+    }
+
     div(classes = "discord-invite-wrapper") {
         div(classes = "discord-server-details") {
             div(classes = "discord-server-icon") {
@@ -81,31 +95,13 @@ fun FlowContent.configureServerEntry(
                         favoriteGuildButton(i18nContext, guild.id)
                     }
 
-                    discordButtonLink(ButtonStyle.PRIMARY, href = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.id}/overview") {
-                        attributes["bliss-get"] = "[href]"
-                        attributes["bliss-swap:200"] = "#right-sidebar-contents (innerHTML) -> #right-sidebar-contents (innerHTML), #left-sidebar (innerHTML) -> #left-sidebar (innerHTML)"
-                        attributes["bliss-push-url:200"] = "true"
-                        attributes["bliss-sync"] = "#left-sidebar"
-                        attributes["bliss-indicator"] = "#right-sidebar-wrapper"
-
-                        text("Configurar")
-                    }
+                    configurateServerButton()
                 }
             }
         }
 
         div(classes = "invite-mobile-buttons") {
-            discordButtonLink(ButtonStyle.PRIMARY, href = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.id}/overview") {
-                style = "flex-grow: 1"
-
-                attributes["bliss-get"] = "[href]"
-                attributes["bliss-swap:200"] = "#right-sidebar-contents (innerHTML) -> #right-sidebar-contents (innerHTML), #left-sidebar (innerHTML) -> #left-sidebar (innerHTML)"
-                attributes["bliss-push-url:200"] = "true"
-                attributes["bliss-sync"] = "#left-sidebar"
-                attributes["bliss-indicator"] = "#right-sidebar-wrapper"
-
-                text("Configurar")
-            }
+            configurateServerButton()
         }
     }
 }

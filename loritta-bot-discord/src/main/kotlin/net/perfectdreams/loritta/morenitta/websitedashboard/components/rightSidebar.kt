@@ -10,6 +10,7 @@ import kotlinx.html.ins
 import kotlinx.html.p
 import kotlinx.html.script
 import kotlinx.html.section
+import kotlinx.html.span
 import kotlinx.html.style
 import kotlinx.html.unsafe
 import net.perfectdreams.i18nhelper.core.I18nContext
@@ -41,8 +42,13 @@ fun FlowContent.rightSidebar(
         aside {
             id = "that-wasnt-very-cash-money-of-you"
 
-            if (!displayAds) {
-                aside {
+            if (false && !displayAds) {
+                // This is to have a random element to not fail the swap request
+                span {
+                    id = "that-wasnt-very-cash-money-of-you-fnuy"
+                }
+
+                div {
                     id = "loritta-snug"
 
                     img(src = "https://stuff.loritta.website/loritta-snuggle.png") {
@@ -74,6 +80,8 @@ fun FlowContent.rightSidebar(
                 }
             } else {
                 div {
+                    id = "that-wasnt-very-cash-money-of-you-fnuy"
+
                     ins(classes = "adsbygoogle") {
                         style = "display:inline-block;width:160px;height:600px"
                         attributes["data-ad-client"] = "ca-pub-9989170954243288"
