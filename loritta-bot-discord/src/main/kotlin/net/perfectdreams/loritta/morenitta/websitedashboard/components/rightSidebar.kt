@@ -1,24 +1,11 @@
 package net.perfectdreams.loritta.morenitta.websitedashboard.components
 
-import kotlinx.html.FlowContent
-import kotlinx.html.article
-import kotlinx.html.aside
-import kotlinx.html.div
-import kotlinx.html.id
-import kotlinx.html.img
-import kotlinx.html.ins
-import kotlinx.html.p
-import kotlinx.html.script
-import kotlinx.html.section
-import kotlinx.html.span
-import kotlinx.html.style
-import kotlinx.html.unsafe
+import kotlinx.html.*
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.defaultModalCloseButton
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.openModalOnClick
-import java.util.UUID
 
 fun FlowContent.rightSidebar(
     i18nContext: I18nContext,
@@ -49,7 +36,7 @@ fun FlowContent.rightSidebar(
                     div {
                         id = "loritta-snug"
                         attributes["bliss-preserve"] = "true"
-                    
+
                         img(src = "https://stuff.loritta.website/loritta-snuggle.png") {
                             openModalOnClick(
                                 createEmbeddedModal(
