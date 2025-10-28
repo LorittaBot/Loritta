@@ -48,10 +48,11 @@ class AutoroleGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                 shimejiSettings,
                 userPremiumPlan,
                 {
-                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.AUTOROLE)
+                    guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.AUTOROLE)
                 },
                 {
                     rightSidebarContentAndSaveBarWrapper(
+                        userPremiumPlan,
                         {
                             if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
                                 blissEvent("resyncState", "[bliss-component='save-bar']")

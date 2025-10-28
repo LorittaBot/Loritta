@@ -65,7 +65,7 @@ class BackgroundsUserDashboardRoute(website: LorittaDashboardWebServer) : Requir
                 shimejiSettings,
                 userPremiumPlan,
                 {
-                    userDashLeftSidebarEntries(website.loritta, i18nContext, UserDashboardSection.PROFILE_BACKGROUND)
+                    userDashLeftSidebarEntries(website.loritta, i18nContext, userPremiumPlan, UserDashboardSection.PROFILE_BACKGROUND)
                 },
                 {
                     div {

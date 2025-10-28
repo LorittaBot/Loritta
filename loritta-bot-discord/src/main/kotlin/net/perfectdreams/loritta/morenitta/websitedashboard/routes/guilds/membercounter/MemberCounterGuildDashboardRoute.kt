@@ -33,7 +33,7 @@ class MemberCounterGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
                 shimejiSettings,
                 userPremiumPlan,
                 {
-                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.MEMBER_COUNTER)
+                    guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.MEMBER_COUNTER)
                 },
                 {
                     for (channel in guild.channels) {

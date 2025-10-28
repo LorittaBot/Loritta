@@ -33,7 +33,7 @@ class GamerSaferGuildDashboardRoute(website: LorittaDashboardWebServer) : Requir
                 shimejiSettings,
                 userPremiumPlan,
                 {
-                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.GAMERSAFER)
+                    guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.GAMERSAFER)
                 },
                 {
                     div {

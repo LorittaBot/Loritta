@@ -53,7 +53,7 @@ class DailyShopUserDashboardRoute(website: LorittaDashboardWebServer) : Requires
                 shimejiSettings,
                 userPremiumPlan,
                 {
-                    userDashLeftSidebarEntries(website.loritta, i18nContext, UserDashboardSection.TRINKETS_SHOP)
+                    userDashLeftSidebarEntries(website.loritta, i18nContext, userPremiumPlan, UserDashboardSection.TRINKETS_SHOP)
                 },
                 {
                     div(classes = "hero-wrapper") {

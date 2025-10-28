@@ -64,10 +64,11 @@ class XPRewardsGuildDashboardRoute(website: LorittaDashboardWebServer) : Require
                 shimejiSettings,
                 userPremiumPlan,
                 {
-                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.XP_REWARDS)
+                    guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.XP_REWARDS)
                 },
                 {
                     rightSidebarContentAndSaveBarWrapper(
+                        userPremiumPlan,
                         {
                             if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
                                 blissEvent("resyncState", "[bliss-component='save-bar']")

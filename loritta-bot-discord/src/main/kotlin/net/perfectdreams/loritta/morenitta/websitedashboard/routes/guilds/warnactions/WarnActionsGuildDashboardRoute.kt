@@ -63,10 +63,11 @@ class WarnActionsGuildDashboardRoute(website: LorittaDashboardWebServer) : Requi
                 shimejiSettings,
                 userPremiumPlan,
                 {
-                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.WARN_ACTIONS)
+                    guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.WARN_ACTIONS)
                 },
                 {
                     rightSidebarContentAndSaveBarWrapper(
+                        userPremiumPlan,
                         {
                             if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
                                 blissEvent("resyncState", "[bliss-component='save-bar']")

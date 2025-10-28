@@ -61,10 +61,11 @@ class StarboardGuildDashboardRoute(website: LorittaDashboardWebServer) : Require
                 shimejiSettings,
                 userPremiumPlan,
                 {
-                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.STARBOARD)
+                    guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.STARBOARD)
                 },
                 {
                     rightSidebarContentAndSaveBarWrapper(
+                        userPremiumPlan,
                         {
                             if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
                                 blissEvent("resyncState", "[bliss-component='save-bar']")

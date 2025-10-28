@@ -41,10 +41,11 @@ class DailyMultiplierGuildDashboardRoute(website: LorittaDashboardWebServer) : R
                 shimejiSettings,
                 userPremiumPlan,
                 {
-                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.DAILY_MULTIPLIER)
+                    guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.DAILY_MULTIPLIER)
                 },
                 {
                     rightSidebarContentAndSaveBarWrapper(
+                        userPremiumPlan,
                         {
                             if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
                                 blissEvent("resyncState", "[bliss-component='save-bar']")

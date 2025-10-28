@@ -74,7 +74,7 @@ class ShipEffectsUserDashboardRoute(website: LorittaDashboardWebServer) : Requir
                 shimejiSettings,
                 userPremiumPlan,
                 {
-                    userDashLeftSidebarEntries(website.loritta, i18nContext, UserDashboardSection.SHIP_EFFECTS)
+                    userDashLeftSidebarEntries(website.loritta, i18nContext, userPremiumPlan, UserDashboardSection.SHIP_EFFECTS)
                 },
                 {
                     div(classes = "hero-wrapper") {

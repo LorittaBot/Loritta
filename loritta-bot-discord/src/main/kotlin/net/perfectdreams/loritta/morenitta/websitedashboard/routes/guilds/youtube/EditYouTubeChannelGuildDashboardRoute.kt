@@ -63,7 +63,7 @@ class EditYouTubeChannelGuildDashboardRoute(website: LorittaDashboardWebServer) 
                         shimejiSettings,
                         userPremiumPlan,
                         {
-                            guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.YOUTUBE)
+                            guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.YOUTUBE)
                         },
                         {
                             goBackToPreviousSectionButton(
@@ -75,6 +75,7 @@ class EditYouTubeChannelGuildDashboardRoute(website: LorittaDashboardWebServer) 
                             hr {}
 
                             rightSidebarContentAndSaveBarWrapper(
+                                userPremiumPlan,
                                 {
                                     trackedYouTubeChannelEditorWithProfile(
                                         i18nContext,

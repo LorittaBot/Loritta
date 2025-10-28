@@ -32,7 +32,7 @@ class PocketLorittaUserDashboardRoute(website: LorittaDashboardWebServer) : Requ
                 shimejiSettings,
                 userPremiumPlan,
                 {
-                    userDashLeftSidebarEntries(website.loritta, i18nContext, UserDashboardSection.POCKET_LORITTA)
+                    userDashLeftSidebarEntries(website.loritta, i18nContext, userPremiumPlan, UserDashboardSection.POCKET_LORITTA)
                 },
                 {
                     div(classes = "hero-wrapper") {

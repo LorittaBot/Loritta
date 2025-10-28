@@ -50,7 +50,7 @@ class SonhosShopUserDashboardRoute(website: LorittaDashboardWebServer) : Require
                 shimejiSettings,
                 userPremiumPlan,
                 {
-                    userDashLeftSidebarEntries(website.loritta, i18nContext, UserDashboardSection.SONHOS_SHOP)
+                    userDashLeftSidebarEntries(website.loritta, i18nContext, userPremiumPlan, UserDashboardSection.SONHOS_SHOP)
                 },
                 {
                     div {

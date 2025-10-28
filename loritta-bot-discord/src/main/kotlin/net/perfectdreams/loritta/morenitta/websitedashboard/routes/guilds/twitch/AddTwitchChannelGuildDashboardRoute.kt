@@ -167,7 +167,7 @@ class AddTwitchChannelGuildDashboardRoute(website: LorittaDashboardWebServer) : 
                 shimejiSettings,
                 userPremiumPlan,
                 {
-                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.TWITCH)
+                    guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.TWITCH)
                 },
                 {
                     // TODO: This shouldn't be here i think
@@ -192,6 +192,7 @@ class AddTwitchChannelGuildDashboardRoute(website: LorittaDashboardWebServer) : 
                     hr {}
 
                     rightSidebarContentAndSaveBarWrapper(
+                        userPremiumPlan,
                         {
                             trackedTwitchChannelEditorWithProfile(
                                 i18nContext,

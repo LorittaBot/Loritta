@@ -708,7 +708,7 @@ section#right-sidebar {
     }
 }
 
-aside#that-wasnt-very-cash-money-of-you {
+aside#that-wasnt-very-cash-money-of-you-fixed-sidebar {
     width: var(--sidebar-ad-width);
     max-width: var(--sidebar-ad-width);
     min-width: var(--sidebar-ad-width);
@@ -747,7 +747,7 @@ aside#that-wasnt-very-cash-money-of-you {
 }
 
 // Used to reserve space on the layout
-aside#that-wasnt-very-cash-money-of-you-reserved-space {
+aside#that-wasnt-very-cash-money-of-you-fixed-sidebar-reserved-space {
     width: var(--sidebar-ad-width);
     max-width: var(--sidebar-ad-width);
     min-width: var(--sidebar-ad-width);
@@ -767,6 +767,14 @@ aside#that-wasnt-very-cash-money-of-you-reserved-space {
     }
     100% {
         transform: scaleX(100%) scaleY(100%);
+    }
+}
+
+.that-wasnt-very-cash-money-of-you-in-content {
+    height: 90px;
+
+    @media (500px >= width) {
+        height: 250px;
     }
 }
 

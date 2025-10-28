@@ -4,11 +4,13 @@ import kotlinx.html.FlowContent
 import kotlinx.html.a
 import kotlinx.html.div
 import kotlinx.html.img
+import kotlinx.html.ins
 import kotlinx.html.option
 import kotlinx.html.p
 import kotlinx.html.select
 import kotlinx.html.style
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
@@ -21,6 +23,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.utils.openModalOnCli
 fun FlowContent.userDashLeftSidebarEntries(
     lorittaBot: LorittaBot,
     i18nContext: I18nContext,
+    userPremiumPlans: UserPremiumPlans,
     selectedUserSection: UserDashboardSection
 ) {
     div(classes = "entry loritta-logo") {

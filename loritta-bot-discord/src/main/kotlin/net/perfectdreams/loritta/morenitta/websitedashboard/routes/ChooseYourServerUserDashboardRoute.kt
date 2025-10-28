@@ -37,7 +37,7 @@ class ChooseYourServerUserDashboardRoute(website: LorittaDashboardWebServer) : R
                 shimejiSettings,
                 userPremiumPlan,
                 {
-                    userDashLeftSidebarEntries(website.loritta, i18nContext, UserDashboardSection.CHOOSE_YOUR_SERVER)
+                    userDashLeftSidebarEntries(website.loritta, i18nContext, userPremiumPlan, UserDashboardSection.CHOOSE_YOUR_SERVER)
                 },
                 {
                     div {

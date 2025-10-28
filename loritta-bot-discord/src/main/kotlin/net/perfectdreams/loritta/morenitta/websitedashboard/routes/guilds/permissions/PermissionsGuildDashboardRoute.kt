@@ -32,7 +32,7 @@ class PermissionsGuildDashboardRoute(website: LorittaDashboardWebServer) : Requi
                 shimejiSettings,
                 userPremiumPlan,
                 {
-                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.PERMISSIONS)
+                    guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.PERMISSIONS)
                 },
                 {
                     for (role in guild.roles) {

@@ -68,7 +68,7 @@ class EditBlueskyProfileGuildDashboardRoute(website: LorittaDashboardWebServer) 
                 shimejiSettings,
                 userPremiumPlan,
                 {
-                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.BLUESKY)
+                    guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.BLUESKY)
                 },
                 {
                     goBackToPreviousSectionButton(
@@ -80,6 +80,7 @@ class EditBlueskyProfileGuildDashboardRoute(website: LorittaDashboardWebServer) 
                     hr {}
 
                     rightSidebarContentAndSaveBarWrapper(
+                        userPremiumPlan,
                         {
                             trackedBlueskyChannelEditorWithProfile(
                                 i18nContext,

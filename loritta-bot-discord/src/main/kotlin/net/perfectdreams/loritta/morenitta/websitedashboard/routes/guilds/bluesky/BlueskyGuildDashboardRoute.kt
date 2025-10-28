@@ -66,7 +66,7 @@ class BlueskyGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresG
                 shimejiSettings,
                 userPremiumPlan,
                 {
-                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.BLUESKY)
+                    guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.BLUESKY)
                 },
                 {
                     heroWrapper {

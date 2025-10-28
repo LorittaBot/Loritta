@@ -2,10 +2,13 @@ package net.perfectdreams.loritta.morenitta.websitedashboard.components
 
 import kotlinx.html.FlowContent
 import kotlinx.html.div
+import kotlinx.html.hr
 import kotlinx.html.img
+import kotlinx.html.ins
 import kotlinx.html.style
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.GuildDashboardSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.SVGIcons
@@ -13,6 +16,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.utils.SVGIcons
 fun FlowContent.guildDashLeftSidebarEntries(
     i18nContext: I18nContext,
     guild: Guild,
+    userPremiumPlans: UserPremiumPlans,
     selectedGuildSection: GuildDashboardSection
 ) {
     div(classes = "guild-icon-wrapper") {

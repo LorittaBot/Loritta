@@ -65,7 +65,7 @@ class AddBlueskyProfileGuildDashboardRoute(website: LorittaDashboardWebServer) :
                 shimejiSettings,
                 userPremiumPlan,
                 {
-                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.BLUESKY)
+                    guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.BLUESKY)
                 },
                 {
                     if (call.request.headers["Bliss-Trigger-Element-Id"] == "add-profile") {
@@ -87,6 +87,7 @@ class AddBlueskyProfileGuildDashboardRoute(website: LorittaDashboardWebServer) :
                     hr {}
 
                     rightSidebarContentAndSaveBarWrapper(
+                        userPremiumPlan,
                         {
                             trackedBlueskyChannelEditorWithProfile(
                                 i18nContext,

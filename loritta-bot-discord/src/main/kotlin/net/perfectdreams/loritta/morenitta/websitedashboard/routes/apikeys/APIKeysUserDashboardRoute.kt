@@ -36,7 +36,7 @@ class APIKeysUserDashboardRoute(website: LorittaDashboardWebServer) : RequiresUs
                 shimejiSettings,
                 userPremiumPlan,
                 {
-                    userDashLeftSidebarEntries(website.loritta, i18nContext, UserDashboardSection.API_KEYS)
+                    userDashLeftSidebarEntries(website.loritta, i18nContext, userPremiumPlan, UserDashboardSection.API_KEYS)
                 },
                 {
                     div(classes = "hero-wrapper") {

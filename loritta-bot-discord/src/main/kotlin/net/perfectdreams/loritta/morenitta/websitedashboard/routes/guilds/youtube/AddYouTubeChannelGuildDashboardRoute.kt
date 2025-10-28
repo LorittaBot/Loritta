@@ -49,7 +49,7 @@ class AddYouTubeChannelGuildDashboardRoute(website: LorittaDashboardWebServer) :
                         shimejiSettings,
                         userPremiumPlan,
                         {
-                            guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.YOUTUBE)
+                            guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.YOUTUBE)
                         },
                         {
                             if (call.request.headers["Bliss-Trigger-Element-Id"] == "add-profile") {
@@ -71,6 +71,7 @@ class AddYouTubeChannelGuildDashboardRoute(website: LorittaDashboardWebServer) :
                             hr {}
 
                             rightSidebarContentAndSaveBarWrapper(
+                                userPremiumPlan,
                                 {
                                     trackedYouTubeChannelEditorWithProfile(
                                         i18nContext,

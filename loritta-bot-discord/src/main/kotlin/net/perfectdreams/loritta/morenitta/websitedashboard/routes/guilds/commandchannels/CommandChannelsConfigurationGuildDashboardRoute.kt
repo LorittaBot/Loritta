@@ -113,10 +113,11 @@ class CommandChannelsConfigurationGuildDashboardRoute(website: LorittaDashboardW
                 shimejiSettings,
                 userPremiumPlan,
                 {
-                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.COMMAND_CHANNELS)
+                    guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.COMMAND_CHANNELS)
                 },
                 {
                     rightSidebarContentAndSaveBarWrapper(
+                        userPremiumPlan,
                         {
                             div {
                                 id = "section-config"

@@ -61,7 +61,7 @@ class EditTwitchChannelGuildDashboardRoute(website: LorittaDashboardWebServer) :
                 shimejiSettings,
                 userPremiumPlan,
                 {
-                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.TWITCH)
+                    guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.TWITCH)
                 },
                 {
                     goBackToPreviousSectionButton(
@@ -73,6 +73,7 @@ class EditTwitchChannelGuildDashboardRoute(website: LorittaDashboardWebServer) :
                     hr {}
 
                     rightSidebarContentAndSaveBarWrapper(
+                        userPremiumPlan,
                         {
                             trackedTwitchChannelEditorWithProfile(
                                 i18nContext,

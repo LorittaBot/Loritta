@@ -39,7 +39,7 @@ class ResetXPGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresG
                 shimejiSettings,
                 userPremiumPlan,
                 {
-                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.RESET_XP)
+                    guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.RESET_XP)
                 },
                 {
                     heroWrapper {

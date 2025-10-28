@@ -52,7 +52,7 @@ class PremiumKeysGuildDashboardRoute(website: LorittaDashboardWebServer) : Requi
                 shimejiSettings,
                 userPremiumPlan,
                 {
-                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.PREMIUM_KEYS)
+                    guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.PREMIUM_KEYS)
                 },
                 {
                     div(classes = "hero-wrapper") {

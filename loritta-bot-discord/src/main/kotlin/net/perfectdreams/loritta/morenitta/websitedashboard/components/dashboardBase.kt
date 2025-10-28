@@ -7,13 +7,17 @@ import kotlinx.html.button
 import kotlinx.html.canvas
 import kotlinx.html.div
 import kotlinx.html.head
+import kotlinx.html.hr
 import kotlinx.html.id
+import kotlinx.html.ins
 import kotlinx.html.lang
 import kotlinx.html.link
 import kotlinx.html.meta
 import kotlinx.html.nav
 import kotlinx.html.script
+import kotlinx.html.style
 import kotlinx.html.title
+import kotlinx.html.unsafe
 import kotlinx.serialization.json.Json
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
@@ -110,6 +114,23 @@ fun HTML.dashboardBase(
                 leftSidebar {
                     div(classes = "entries") {
                         leftSidebarEntries()
+
+                        if (userPremiumPlan.displayAds) {
+                            leftSidebarHr()
+
+                            div {
+                                style = "text-align: center;"
+
+                                // [Loritta] Dashboard Left Sidebar Bottom
+                                ins(classes = "adsbygoogle") {
+                                    style = "display:inline-block;width:320px;height:100px;"
+                                    attributes["data-ad-client"] = "ca-pub-9989170954243288"
+                                    attributes["data-ad-slot"] = "8915802761"
+                                }
+                            }
+
+                            pushAdSenseAdScript()
+                        }
                     }
 
                     userInfoWrapper(i18nContext, session)

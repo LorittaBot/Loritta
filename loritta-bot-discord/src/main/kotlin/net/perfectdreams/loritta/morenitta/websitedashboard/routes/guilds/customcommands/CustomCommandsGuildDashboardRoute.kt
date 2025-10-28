@@ -46,7 +46,7 @@ class CustomCommandsGuildDashboardRoute(website: LorittaDashboardWebServer) : Re
                 shimejiSettings,
                 userPremiumPlan,
                 {
-                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.CUSTOM_COMMANDS)
+                    guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.CUSTOM_COMMANDS)
                 },
                 {
                     div(classes = "hero-wrapper") {

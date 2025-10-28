@@ -61,7 +61,7 @@ class ProfilesUserDashboardRoute(website: LorittaDashboardWebServer) : RequiresU
                 shimejiSettings,
                 userPremiumPlan,
                 {
-                    userDashLeftSidebarEntries(website.loritta, i18nContext, UserDashboardSection.PROFILE_DESIGNS)
+                    userDashLeftSidebarEntries(website.loritta, i18nContext, userPremiumPlan, UserDashboardSection.PROFILE_DESIGNS)
                 },
                 {
                     div {

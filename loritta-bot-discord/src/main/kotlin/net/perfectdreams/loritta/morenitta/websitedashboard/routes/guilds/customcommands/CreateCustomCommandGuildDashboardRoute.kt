@@ -42,7 +42,7 @@ class CreateCustomCommandGuildDashboardRoute(website: LorittaDashboardWebServer)
                 shimejiSettings,
                 userPremiumPlan,
                 {
-                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.CUSTOM_COMMANDS)
+                    guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.CUSTOM_COMMANDS)
                 },
                 {
                     goBackToPreviousSectionButton(
@@ -54,6 +54,7 @@ class CreateCustomCommandGuildDashboardRoute(website: LorittaDashboardWebServer)
                     hr {}
 
                     rightSidebarContentAndSaveBarWrapper(
+                        userPremiumPlan,
                         {
                             div {
                                 id = "section-config"

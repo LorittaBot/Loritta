@@ -30,7 +30,7 @@ class OverviewConfigurationGuildDashboardRoute(website: LorittaDashboardWebServe
                 shimejiSettings,
                 userPremiumPlan,
                 {
-                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.OVERVIEW)
+                    guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.OVERVIEW)
                 },
                 {
                     text("Página vazia... por enquanto. (Eu ainda não decidi o que terá na visão geral, então acesse as outras seções na sidebar para configurar o seu servidor!)")

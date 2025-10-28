@@ -40,7 +40,7 @@ class ProfilePresetsUserDashboardRoute(website: LorittaDashboardWebServer) : Req
                 shimejiSettings,
                 userPremiumPlan,
                 {
-                    userDashLeftSidebarEntries(website.loritta, i18nContext, UserDashboardSection.PROFILE_PRESETS)
+                    userDashLeftSidebarEntries(website.loritta, i18nContext, userPremiumPlan, UserDashboardSection.PROFILE_PRESETS)
                 },
                 {
                     profilePresetsSection(i18nContext, profilePresets)

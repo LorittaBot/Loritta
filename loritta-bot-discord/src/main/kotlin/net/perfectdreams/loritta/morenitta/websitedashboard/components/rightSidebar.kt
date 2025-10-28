@@ -40,12 +40,12 @@ fun FlowContent.rightSidebar(
         }
 
         aside {
-            id = "that-wasnt-very-cash-money-of-you"
+            id = "that-wasnt-very-cash-money-of-you-fixed-sidebar"
 
             if (!displayAds) {
                 // This is to have a random element to not fail the swap request
                 span {
-                    id = "that-wasnt-very-cash-money-of-you-fnuy"
+                    id = "that-wasnt-very-cash-money-of-you-fixed-sidebar-fnuy"
                 }
 
                 div {
@@ -80,25 +80,22 @@ fun FlowContent.rightSidebar(
                 }
             } else {
                 div {
-                    id = "that-wasnt-very-cash-money-of-you-fnuy"
+                    id = "that-wasnt-very-cash-money-of-you-fixed-sidebar-fnuy"
 
+                    // [Loritta] Dashboard Desktop Right Sidebar
                     ins(classes = "adsbygoogle") {
                         style = "display:inline-block;width:160px;height:600px"
                         attributes["data-ad-client"] = "ca-pub-9989170954243288"
                         attributes["data-ad-slot"] = "6094198302"
                     }
 
-                    script {
-                        unsafe {
-                            raw("""(adsbygoogle = window.adsbygoogle || []).push({})""")
-                        }
-                    }
+                    pushAdSenseAdScript()
                 }
             }
         }
 
         aside {
-            id = "that-wasnt-very-cash-money-of-you-reserved-space"
+            id = "that-wasnt-very-cash-money-of-you-fixed-sidebar-reserved-space"
         }
     }
 }

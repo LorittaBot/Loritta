@@ -46,59 +46,61 @@ class QuirkyModeGuildDashboardRoute(website: LorittaDashboardWebServer) : Requir
                 shimejiSettings,
                 userPremiumPlan,
                 {
-                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.QUIRKY_MODE)
+                    guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.QUIRKY_MODE)
                 },
                 {
-                    rightSidebarContentAndSaveBarWrapper({
-                        if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
-                            blissEvent("resyncState", "[bliss-component='save-bar']")
-                            blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Configuração redefinida!"))
-                        }
+                    rightSidebarContentAndSaveBarWrapper(
+                        userPremiumPlan,
+                        {
+                            if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
+                                blissEvent("resyncState", "[bliss-component='save-bar']")
+                                blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Configuração redefinida!"))
+                            }
 
-                        div(classes = "hero-wrapper") {
-                            div(classes = "hero-text") {
-                                h1 {
-                                    text(i18nContext.get(I18nKeysData.Website.Dashboard.QuirkyMode.Title))
-                                }
+                            div(classes = "hero-wrapper") {
+                                div(classes = "hero-text") {
+                                    h1 {
+                                        text(i18nContext.get(I18nKeysData.Website.Dashboard.QuirkyMode.Title))
+                                    }
 
-                                for (str in i18nContext.language
-                                    .textBundle
-                                    .lists
-                                    .getValue(I18nKeys.Website.Dashboard.QuirkyMode.Description.key)
-                                ) {
-                                    p {
-                                        handleI18nString(
-                                            str,
-                                            appendAsFormattedText(i18nContext, mapOf()),
-                                        ) {
-                                            when (it) {
-                                                else -> TextReplaceControls.AppendControlAsIsResult
+                                    for (str in i18nContext.language
+                                        .textBundle
+                                        .lists
+                                        .getValue(I18nKeys.Website.Dashboard.QuirkyMode.Description.key)
+                                    ) {
+                                        p {
+                                            handleI18nString(
+                                                str,
+                                                appendAsFormattedText(i18nContext, mapOf()),
+                                            ) {
+                                                when (it) {
+                                                    else -> TextReplaceControls.AppendControlAsIsResult
+                                                }
                                             }
                                         }
                                     }
                                 }
                             }
-                        }
 
-                        hr {}
+                            hr {}
 
-                        div {
-                            id = "section-config"
+                            div {
+                                id = "section-config"
 
-                            toggleableSection(
-                                {
-                                    text(i18nContext.get(DashboardI18nKeysData.QuirkyMode.EnableQuirkyMode.Title))
-                                },
-                                {
-                                    text(i18nContext.get(DashboardI18nKeysData.QuirkyMode.EnableQuirkyMode.Description))
-                                },
-                                miscellaneousConfig?.enableQuirky ?: false,
-                                "enableQuirky",
-                                true,
-                                null
-                            )
-                        }
-                    }) {
+                                toggleableSection(
+                                    {
+                                        text(i18nContext.get(DashboardI18nKeysData.QuirkyMode.EnableQuirkyMode.Title))
+                                    },
+                                    {
+                                        text(i18nContext.get(DashboardI18nKeysData.QuirkyMode.EnableQuirkyMode.Description))
+                                    },
+                                    miscellaneousConfig?.enableQuirky ?: false,
+                                    "enableQuirky",
+                                    true,
+                                    null
+                                )
+                            }
+                        }) {
                         genericSaveBar(
                             i18nContext,
                             false,

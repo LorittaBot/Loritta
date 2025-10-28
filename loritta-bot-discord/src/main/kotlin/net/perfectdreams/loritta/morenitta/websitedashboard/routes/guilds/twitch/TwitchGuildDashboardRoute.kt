@@ -103,7 +103,7 @@ class TwitchGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGu
                 shimejiSettings,
                 userPremiumPlan,
                 {
-                    guildDashLeftSidebarEntries(i18nContext, guild, GuildDashboardSection.TWITCH)
+                    guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.TWITCH)
                 },
                 {
                     heroWrapper {
