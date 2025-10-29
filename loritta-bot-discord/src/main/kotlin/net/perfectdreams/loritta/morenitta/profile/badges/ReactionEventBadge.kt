@@ -132,7 +132,7 @@ sealed class ReactionEventBadge(
 
     class Halloween2025ReactionEventSuperBadge(pudding: Pudding) : ReactionEventBadge(
         pudding,
-        UUID.fromString("dc093396-e36d-4c34-bd5e-94ca04571f3c"),
+        UUID.fromString("9e1ee31a-35c5-476b-8051-80bb328209e9"),
         ProfileDesignManager.I18N_BADGES_PREFIX.SuperAnniversary2025.Title,
         ProfileDesignManager.I18N_BADGES_PREFIX.SuperAnniversary2025.TitlePlural,
         ProfileDesignManager.I18N_BADGES_PREFIX.SuperAnniversary2025.Description,
