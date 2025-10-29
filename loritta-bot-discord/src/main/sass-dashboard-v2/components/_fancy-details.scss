@@ -46,6 +46,9 @@ details.fancy-details > summary .chevron-icon {
     display: flex;
     width: 1em;
     height: 1em;
+    // We want the icon to NEVER shrink!
+    // The icon NEVER bows down to ANYONE ELSE!!!
+    flex-shrink: 0;
 }
 
 details.fancy-details[open] > summary .chevron-icon {
