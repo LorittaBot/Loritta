@@ -23,11 +23,6 @@ a:has(.discord-button) {
     // Useful if the screen is tiny enough that it causes a line break within the button
     text-align: center;
 
-    &.disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
-
     .loading-text-wrapper {
       display: none;
       img {
@@ -78,6 +73,13 @@ a:has(.discord-button) {
     }
 
     &:disabled {
+        --button-color: #757575;
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    // For anchor links that look like buttons
+    &[aria-disabled="true"] {
         --button-color: #757575;
         opacity: 0.5;
         cursor: not-allowed;

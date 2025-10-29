@@ -35,6 +35,7 @@ import web.events.addEventHandler
 import web.history.POP_STATE
 import web.history.PopStateEvent
 import web.history.history
+import web.html.HTMLAnchorElement
 import web.html.HTMLDivElement
 import web.html.HTMLInputElement
 import web.html.HTMLOptionElement
@@ -187,6 +188,10 @@ object Bliss {
                 }
 
                 fun prepareAndExecuteHttp(disableElement: Boolean) {
+                    // If the element is marked as aria-disabled, we'll ignore it (used for anchor links)
+                    if (element.getAttribute("aria-disabled") == "true")
+                        return
+
                     val detail = BlissBeforeBlissRequestPrepare(element)
 
                     val event = CustomEvent(
@@ -200,8 +205,13 @@ object Bliss {
                     if (event.defaultPrevented)
                         return
 
+                    println("Should we disable the element? $disableElement")
                     if (disableElement) {
-                        element.setAttribute("disabled", "")
+                        if (element is HTMLAnchorElement) {
+                            element.setAttribute("aria-disabled", "true")
+                        } else {
+                            element.setAttribute("disabled", "")
+                        }
                     }
 
                     val indicatorElements = mutableListOf<Element>()
@@ -236,7 +246,12 @@ object Bliss {
                         for (indicatorElement in indicatorElements) {
                             indicatorElement.classList.remove(ClassName("bliss-request"))
                         }
-                        element.removeAttribute("disabled")
+
+                        if (element is HTMLAnchorElement) {
+                            element.removeAttribute("aria-disabled")
+                        } else {
+                            element.removeAttribute("disabled")
+                        }
                     }
                 }
 
