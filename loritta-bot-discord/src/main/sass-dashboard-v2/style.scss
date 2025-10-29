@@ -315,12 +315,28 @@ nav#mobile-left-sidebar {
         display: flex;
         justify-content: center;
         align-items: center;
+        flex-shrink: 0;
 
         > svg {
             padding: 16px;
             width: 100%;
             height: 100%;
         }
+    }
+
+    > #mobile-left-sidebar-title {
+        font-weight: bolder;
+        overflow: hidden;
+        flex-shrink: 1;
+        flex-grow: 0;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    > #mobile-left-sidebar-reserved-space {
+        height: var(--navbar-height);
+        width: var(--navbar-height);
+        flex-shrink: 0;
     }
 
     > .small-ad {

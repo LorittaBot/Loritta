@@ -10,6 +10,8 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.SVGIcons
 
+val SWAP_EVERYTHING_DASHBOARD = "#right-sidebar-contents (innerHTML) -> #right-sidebar-contents (innerHTML), .entries (innerHTML) -> .entries (innerHTML), #mobile-left-sidebar-title (innerHTML) -> #mobile-left-sidebar-title (innerHTML), #that-wasnt-very-cash-money-of-you-fixed-sidebar (innerHTML) -> #that-wasnt-very-cash-money-of-you-fixed-sidebar (innerHTML)"
+
 fun FlowContent.sectionEntry(href: String? = null, selected: Boolean, block: A.() -> Unit) {
     a(classes = "entry section-entry", href = href) {
         if (selected)
@@ -48,7 +50,7 @@ fun FlowContent.aDashboardSidebarEntry(
 ) {
     sectionEntry("/${i18nContext.get(I18nKeysData.Website.LocalePathId)}$href", selected) {
         attributes["bliss-get"] = "[href]"
-        attributes["bliss-swap:200"] = "#right-sidebar-contents (innerHTML) -> #right-sidebar-contents (innerHTML), .entries (innerHTML) -> .entries (innerHTML), #that-wasnt-very-cash-money-of-you-fixed-sidebar (innerHTML) -> #that-wasnt-very-cash-money-of-you-fixed-sidebar (innerHTML)"
+        attributes["bliss-swap:200"] = SWAP_EVERYTHING_DASHBOARD
         attributes["bliss-push-url:200"] = "true"
         attributes["bliss-sync"] = "#left-sidebar"
         attributes["bliss-indicator"] = "this, #right-sidebar-wrapper, #left-sidebar .entry.selected"
@@ -70,7 +72,7 @@ fun FlowContent.aDashboardSidebarEntryButton(
 ) {
     a(classes = "entry discord-button ${style.className}", href = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}$href") {
         attributes["bliss-get"] = "[href]"
-        attributes["bliss-swap:200"] = "#right-sidebar-contents (innerHTML) -> #right-sidebar-contents (innerHTML), #left-sidebar (innerHTML) -> #left-sidebar (innerHTML), #that-wasnt-very-cash-money-of-you-fixed-sidebar (innerHTML) -> #that-wasnt-very-cash-money-of-you-fixed-sidebar (innerHTML)"
+        attributes["bliss-swap:200"] = SWAP_EVERYTHING_DASHBOARD
         attributes["bliss-push-url:200"] = "true"
         attributes["bliss-sync"] = "#left-sidebar"
         attributes["bliss-indicator"] = "#right-sidebar-wrapper"

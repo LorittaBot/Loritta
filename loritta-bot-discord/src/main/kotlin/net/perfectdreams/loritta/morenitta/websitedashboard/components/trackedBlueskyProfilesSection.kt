@@ -50,7 +50,7 @@ fun FlowContent.trackedBlueskyProfilesSection(
                                 id = "add-profile"
                                 attributes["bliss-get"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/bluesky/add"
                                 attributes["bliss-include-query"] = ".modal [name='handle']"
-                                attributes["bliss-swap:200"] = "#right-sidebar-contents (innerHTML) -> #right-sidebar-contents (innerHTML), #left-sidebar (innerHTML) -> #left-sidebar (innerHTML)"
+                                attributes["bliss-swap:200"] = SWAP_EVERYTHING_DASHBOARD
                                 attributes["bliss-push-url:200"] = "true"
 
                                 text("Continuar")

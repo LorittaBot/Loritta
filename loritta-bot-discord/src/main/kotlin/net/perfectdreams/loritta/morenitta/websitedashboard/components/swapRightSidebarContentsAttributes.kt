@@ -8,7 +8,7 @@ import kotlinx.html.FlowContent
 fun FlowContent.swapRightSidebarContentsAttributes() {
     attributes["bliss-get"] = "[href]"
     attributes["bliss-push-url:200"] = "true"
-    attributes["bliss-swap:200"] = "#right-sidebar-contents -> #right-sidebar-contents (innerHTML)"
+    attributes["bliss-swap:200"] = SWAP_EVERYTHING_DASHBOARD
     attributes["bliss-indicator"] = "#right-sidebar-wrapper"
     attributes["bliss-sync"] = "#left-sidebar"
 }

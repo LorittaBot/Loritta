@@ -58,7 +58,7 @@ fun FlowContent.trackedYouTubeChannelsSection(
                                 id = "add-profile"
                                 attributes["bliss-get"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/youtube/add"
                                 attributes["bliss-include-query"] = ".modal [name='channelLink']"
-                                attributes["bliss-swap:200"] = "#right-sidebar-contents (innerHTML) -> #right-sidebar-contents (innerHTML), #left-sidebar (innerHTML) -> #left-sidebar (innerHTML)"
+                                attributes["bliss-swap:200"] = SWAP_EVERYTHING_DASHBOARD
                                 attributes["bliss-push-url:200"] = "true"
 
                                 text("Continuar")

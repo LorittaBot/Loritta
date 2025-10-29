@@ -110,7 +110,7 @@ class AddTwitchChannelGuildDashboardRoute(website: LorittaDashboardWebServer) : 
                                 {
                                     discordButton(ButtonStyle.PRIMARY) {
                                         attributes["bliss-get"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/twitch/add"
-                                        attributes["bliss-swap:200"] = "#right-sidebar-contents -> #right-sidebar-contents (innerHTML)"
+                                        attributes["bliss-swap:200"] = SWAP_EVERYTHING_DASHBOARD
                                         attributes["bliss-vals-query"] = buildJsonObject {
                                             put("userId", twitchUser.id)
                                             put("enablePremiumTrack", true)

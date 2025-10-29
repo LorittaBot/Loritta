@@ -151,6 +151,15 @@ fun HTML.dashboardBase(
                         attributes["bliss-component"] = "sidebar-toggle"
                         svgIcon(SVGIcons.List)
                     }
+
+                    div {
+                        id = "mobile-left-sidebar-title"
+                        text(title)
+                    }
+
+                    div {
+                        id = "mobile-left-sidebar-reserved-space"
+                    }
                 }
 
                 rightSidebar(

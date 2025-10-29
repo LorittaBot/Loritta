@@ -23,6 +23,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysDat
 import net.perfectdreams.loritta.morenitta.websitedashboard.GuildDashboardSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.SWAP_EVERYTHING_DASHBOARD
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.dashboardBase
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrapper
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrappers
@@ -100,7 +101,7 @@ class CommandsGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                                                         TextReplaceControls.ComposableFunctionResult {
                                                             a("/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/user-app") {
                                                                 attributes["bliss-get"] = "[href]"
-                                                                attributes["bliss-swap:200"] = "#right-sidebar-contents (innerHTML) -> #right-sidebar-contents (innerHTML), #left-sidebar (innerHTML) -> #left-sidebar (innerHTML)"
+                                                                attributes["bliss-swap:200"] = SWAP_EVERYTHING_DASHBOARD
                                                                 attributes["bliss-push-url:200"] = "true"
                                                                 attributes["bliss-replace-load"] = "#loading"
                                                                 attributes["bliss-sync"] = "#left-sidebar"
