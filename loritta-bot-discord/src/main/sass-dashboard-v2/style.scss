@@ -438,11 +438,14 @@ nav#left-sidebar {
             display: flex;
             justify-content: center;
 
-            img {
-                border-radius: 25%;
-                width: 160px;
-                height: 160px;
-                background-color: #c8c8c8;
+            .discord-server-icon {
+                --icon-width: 160px;
+                --icon-height: 160px;
+
+                img {
+                    width: 100%;
+                    height: 100%;
+                }
             }
         }
 
@@ -1029,5 +1032,33 @@ aside#that-wasnt-very-cash-money-of-you-fixed-sidebar-reserved-space {
 
     .grow-input {
         flex-grow: 1;
+    }
+}
+
+.discord-server-icon {
+    // We set some text related things here because this is also used for guilds that do not have an icon
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #35353A;
+    border-radius: 25%;
+    overflow: hidden;
+    color: white;
+    width: var(--icon-width);
+    height: var(--icon-height);
+    position: relative;
+    font-size: calc(var(--icon-width) / 2.5);
+
+    &:after {
+        border-radius: 25%;
+        // A nice box-shadow for the icon to create a nice effect
+        // (See RefactoringUI's page 217)
+        box-shadow: inset 0 0 0 1px hsl(0, 0%, 0%, 0.1);
+        content: '';
+        display: block;
+        height: 100%;
+        width: var(--icon-height);
+        position: absolute;
+        top: 0;
     }
 }

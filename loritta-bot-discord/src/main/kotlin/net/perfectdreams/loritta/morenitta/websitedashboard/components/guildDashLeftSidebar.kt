@@ -12,6 +12,7 @@ import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.GuildDashboardSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.SVGIcons
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.calculateGuildIconShortName
 
 fun FlowContent.guildDashLeftSidebarEntries(
     i18nContext: I18nContext,
@@ -22,8 +23,12 @@ fun FlowContent.guildDashLeftSidebarEntries(
     div(classes = "guild-icon-wrapper") {
         style = "text-align: center;"
 
-        img(src = guild.iconUrl) {
-
+        div(classes = "discord-server-icon") {
+            if (guild.iconUrl != null) {
+                img(src = guild.iconUrl) {}
+            } else {
+                text(calculateGuildIconShortName(guild.name))
+            }
         }
     }
 

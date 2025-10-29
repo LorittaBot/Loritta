@@ -24,6 +24,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebS
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.DiscordLoginUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.SVGIcons
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.calculateGuildIconShortName
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 fun FlowContent.configureServerEntry(
@@ -50,9 +51,13 @@ fun FlowContent.configureServerEntry(
     div(classes = "discord-invite-wrapper") {
         div(classes = "discord-server-details") {
             div(classes = "discord-server-icon") {
-                img(src = "https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}") {
-                    // Avoid loading all icons when the user opens the dashboard
-                    loading = ImgLoading.lazy
+                if (guild.icon != null) {
+                    img(src = "https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}") {
+                        // Avoid loading all icons when the user opens the dashboard
+                        loading = ImgLoading.lazy
+                    }
+                } else {
+                    text(calculateGuildIconShortName(guild.name))
                 }
             }
 
