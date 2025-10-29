@@ -93,7 +93,7 @@ class XPRatesGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresG
                                     fieldWrapper {
                                         div {
                                             fieldTitle {
-                                                text("Taxa de XP para Cargos")
+                                                text("Bônus de XP para Cargos")
                                             }
 
                                             controlsWithButton {
