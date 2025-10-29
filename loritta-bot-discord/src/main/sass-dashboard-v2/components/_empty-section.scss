@@ -2,6 +2,7 @@
     text-align: center;
     opacity: 0.7;
     font-size: 2em;
+    overflow: hidden; // Avoids the text scrolling the page when the empty section is near the bottom of the page
 
     img {
         filter: grayscale(100%);
