@@ -159,7 +159,7 @@ fun FlowContent.guildPremiumKeyCard(
             style = "display: grid;grid-template-columns: 1fr;grid-column-gap: 0.5em;"
 
             if (enabledOnThisGuild) {
-                discordButton(ButtonStyle.DANGER) {
+                discordButton(ButtonStyle.NO_BACKGROUND_THEME_DEPENDENT_DARK_TEXT) {
                     attributes["bliss-post"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/premium-keys/${key[DonationKeys.id]}/deactivate"
                     attributes["bliss-swap:200"] = "body (innerHTML) -> #section-config (innerHTML)"
                     attributes["bliss-indicator"] = "this"
