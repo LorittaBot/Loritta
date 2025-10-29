@@ -26,7 +26,7 @@ fun FlowContent.userDashLeftSidebarEntries(
     userPremiumPlans: UserPremiumPlans,
     selectedUserSection: UserDashboardSection
 ) {
-    div(classes = "entry loritta-logo") {
+    a(classes = "entry loritta-logo", href = lorittaBot.config.loritta.website.url.removeSuffix("/") + "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/") {
         text("Loritta")
     }
 
