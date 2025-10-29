@@ -407,8 +407,7 @@ nav#left-sidebar {
     }
 
     > .entries {
-        padding-left: 1em;
-        padding-right: 1em;
+        padding: 8px 16px;
         height: 100%;
         overflow: auto;
         scrollbar-width: thin; // Firefox only for now
