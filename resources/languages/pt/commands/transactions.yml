@@ -103,6 +103,7 @@ types:
     halloween2024: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} após fazer {basketsCount} cestas de doces no Evento de Halloween da Loritta 2024"
     christmas2024: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} após fazer {basketsCount} presentes no Evento de Natal da Loritta 2024"
     anniversary2025: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} após fazer {basketsCount} presentes no Evento de Aniversário da Loritta 2025"
+    halloween2025: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} após fazer {basketsCount} cestas de doces no Evento de Halloween da Loritta 2025"
   raffle:
     title: "Rifas"
     description: "Transações relacionadas as rifas da Loritta"

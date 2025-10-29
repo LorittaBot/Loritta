@@ -14,6 +14,7 @@ import net.perfectdreams.loritta.morenitta.reactionevents.ReactionEvent
 import net.perfectdreams.loritta.morenitta.reactionevents.events.Anniversary2025ReactionEvent
 import net.perfectdreams.loritta.morenitta.reactionevents.events.Christmas2024ReactionEvent
 import net.perfectdreams.loritta.morenitta.reactionevents.events.Halloween2024ReactionEvent
+import net.perfectdreams.loritta.morenitta.reactionevents.events.Halloween2025ReactionEvent
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.selectAll
 import java.util.*
@@ -116,7 +117,34 @@ sealed class ReactionEventBadge(
 		500
 	)
 
-	private val eventInternalId = reactionEvent.internalId
+    class Halloween2025ReactionEventBadge(pudding: Pudding) : ReactionEventBadge(
+        pudding,
+        UUID.fromString("5053575b-ec21-4c70-96ad-2771120b2d79"),
+        ProfileDesignManager.I18N_BADGES_PREFIX.Anniversary2025.Title,
+        ProfileDesignManager.I18N_BADGES_PREFIX.Anniversary2025.TitlePlural,
+        ProfileDesignManager.I18N_BADGES_PREFIX.Anniversary2025.Description,
+        "anniversary2025.png",
+        LorittaEmojis.Anniversary2025ReactionEvent,
+        100,
+        Halloween2025ReactionEvent,
+        10
+    )
+
+    class Halloween2025ReactionEventSuperBadge(pudding: Pudding) : ReactionEventBadge(
+        pudding,
+        UUID.fromString("dc093396-e36d-4c34-bd5e-94ca04571f3c"),
+        ProfileDesignManager.I18N_BADGES_PREFIX.SuperAnniversary2025.Title,
+        ProfileDesignManager.I18N_BADGES_PREFIX.SuperAnniversary2025.TitlePlural,
+        ProfileDesignManager.I18N_BADGES_PREFIX.SuperAnniversary2025.Description,
+        "anniversary2025_super.png",
+        LorittaEmojis.Anniversary2025ReactionEventSuper,
+        100,
+        Halloween2025ReactionEvent,
+        500
+    )
+
+
+    private val eventInternalId = reactionEvent.internalId
 
 	override suspend fun checkIfUserDeservesBadge(user: ProfileUserInfoData, profile: Profile, mutualGuilds: Set<Long>): Boolean {
 		return pudding.transaction {
