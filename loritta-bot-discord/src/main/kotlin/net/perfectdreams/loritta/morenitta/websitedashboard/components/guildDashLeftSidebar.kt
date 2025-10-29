@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.morenitta.websitedashboard.components
 
 import kotlinx.html.FlowContent
+import kotlinx.html.classes
 import kotlinx.html.div
 import kotlinx.html.hr
 import kotlinx.html.img
@@ -27,6 +28,7 @@ fun FlowContent.guildDashLeftSidebarEntries(
             if (guild.iconUrl != null) {
                 img(src = guild.iconUrl) {}
             } else {
+                classes += "use-discord-background"
                 text(calculateGuildIconShortName(guild.name))
             }
         }

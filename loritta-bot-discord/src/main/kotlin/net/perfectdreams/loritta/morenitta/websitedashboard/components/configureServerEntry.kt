@@ -57,6 +57,7 @@ fun FlowContent.configureServerEntry(
                         loading = ImgLoading.lazy
                     }
                 } else {
+                    classes += "use-discord-background"
                     text(calculateGuildIconShortName(guild.name))
                 }
             }
