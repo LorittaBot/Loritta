@@ -1,6 +1,8 @@
 package net.perfectdreams.loritta.morenitta.websitedashboard.routes
 
+import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.*
+import io.ktor.server.request.header
 import io.ktor.server.response.respondText
 import io.ktor.server.util.getOrFail
 import net.dv8tion.jda.api.Permission
@@ -15,6 +17,10 @@ import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowModal
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedModal
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.defaultModalCloseButton
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.selectAll
@@ -26,7 +32,24 @@ abstract class RequiresGuildAuthDashboardLocalizedRoute(website: LorittaDashboar
         val guild = website.loritta.lorittaShards.getGuildById(guildId)
 
         if (guild == null) {
-            call.respondText("Unknown Guild!")
+            if (call.request.header("Bliss-Request") == "true") {
+                call.respondHtmlFragment(status = HttpStatusCode.NotFound) {
+                    blissShowModal(
+                        createEmbeddedModal(
+                            "Adicionar a Loritta",
+                            true,
+                            {
+                                text("Adicione a Loritta no servidor!")
+                            },
+                            listOf {
+                                defaultModalCloseButton(i18nContext)
+                            }
+                        )
+                    )
+                }
+            } else {
+                call.respondText("Unknown Guild!")
+            }
             return
         }
 
@@ -70,6 +93,23 @@ abstract class RequiresGuildAuthDashboardLocalizedRoute(website: LorittaDashboar
     )
 
     suspend fun onUnauthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, theme: ColorTheme) {
-        call.respondText("Requires Guild Login!")
+        if (call.request.header("Bliss-Request") == "true") {
+            call.respondHtmlFragment(status = HttpStatusCode.NotFound) {
+                blissShowModal(
+                    createEmbeddedModal(
+                        "Sem Permissão",
+                        true,
+                        {
+                            text("Você não tem permissão para acessar as configurações deste servidor!")
+                        },
+                        listOf {
+                            defaultModalCloseButton(i18nContext)
+                        }
+                    )
+                )
+            }
+        } else {
+            call.respondText("Requires Guild Login!")
+        }
     }
 }
