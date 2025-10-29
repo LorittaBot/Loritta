@@ -429,6 +429,8 @@ nav#left-sidebar {
         overflow: auto;
         scrollbar-width: thin; // Firefox only for now
         scrollbar-color: var(--loritta-blue) var(--left-sidebar-background-color); // Also only available in Firefox
+        // Required for the swipe actions to work on mobile devices
+        touch-action: pan-y;
 
         > .divider {
             width: 100%;
@@ -621,6 +623,8 @@ section#right-sidebar {
     // We don't use overflow here, to let the ad sidebar propagate scroll thru
     // The space used by the left sidebar, we NEED to do it that way because we cannot use overflow + sticky on the sidebar, because we want the sidebar ad to propagate scroll events thru
     margin-left: var(--left-sidebar-width);
+    // Required for the swipe actions to work on mobile devices
+    touch-action: pan-y;
 
     @include bp('medium') {
         width: calc(100% - 160px);

@@ -6,7 +6,9 @@ import kotlinx.html.id
 import kotlinx.html.nav
 
 fun FlowContent.leftSidebar(block: FlowContent.() -> (Unit)) {
-    nav(classes = "is-closed") {
+    // We *could* include "is-closed" here, but this causes issues when loading the page from scratch (without the CSS cached)
+    // Where the closing animation is played when it shouldn't
+    nav {
         id = "left-sidebar"
 
         block()
