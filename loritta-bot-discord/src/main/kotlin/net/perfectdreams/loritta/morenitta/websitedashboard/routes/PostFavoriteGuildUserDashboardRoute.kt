@@ -65,8 +65,10 @@ class PostFavoriteGuildUserDashboardRoute(website: LorittaDashboardWebServer) : 
                     blissShowToast(
                         createEmbeddedToast(
                             EmbeddedToast.Type.SUCCESS,
-                            i18nContext.get(I18nKeysData.Website.Dashboard.ChooseAServer.FavoriteServer.Toast.ServerFavorited)
-                        )
+                            i18nContext.get(I18nKeysData.Website.Dashboard.ChooseAServer.FavoriteServer.Toast.ServerFavorited),
+                        ) {
+                            text(i18nContext.get(I18nKeysData.Website.Dashboard.ChooseAServer.FavoriteServer.Toast.FavoritesDescription))
+                        }
                     )
 
                     blissSoundEffect("configSaved")
