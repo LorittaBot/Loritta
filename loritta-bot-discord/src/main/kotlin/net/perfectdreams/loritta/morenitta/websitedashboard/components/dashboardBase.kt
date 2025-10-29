@@ -20,6 +20,7 @@ import kotlinx.html.title
 import kotlinx.html.unsafe
 import kotlinx.serialization.json.Json
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.dashboard.BlissHex
 import net.perfectdreams.loritta.dashboard.EmbeddedToast
@@ -57,8 +58,9 @@ fun HTML.dashboardBase(
         meta(name = "viewport", content = "width=device-width, initial-scale=1, viewport-fit=cover")
 
         title(dashboardTitle(i18nContext, title))
-
+        link(rel = "icon", type = "image/png", href = "/assets/images/favicon-192x192.png?v=${LorittaDashboardWebServer.favicon192x192Hash}")
         link(rel = "stylesheet", href = "/assets/css/style.css?v=${LorittaDashboardWebServer.assets.cssBundle.hash}", type = "text/css")
+        meta(name = "theme-color") { this.content = LorittaColors.LorittaAqua.toHex() }
 
         // Plausible Analytics
         script(src = "https://web-analytics.perfectdreams.net/js/plausible.js") {
@@ -80,6 +82,7 @@ fun HTML.dashboardBase(
         script(src = "/assets/js/frontend.js?v=${LorittaDashboardWebServer.assets.jsBundle.hash}") {
             defer = true
         }
+
     }
 
     body {

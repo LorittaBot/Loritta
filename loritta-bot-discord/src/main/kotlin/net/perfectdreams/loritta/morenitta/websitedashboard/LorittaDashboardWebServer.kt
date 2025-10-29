@@ -155,6 +155,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.sonhosshop.Po
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.sonhosshop.PostSonhosShopApplyCouponUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.shipeffects.ShipEffectsUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.sonhosshop.SonhosShopUserDashboardRoute
+import org.apache.commons.codec.digest.DigestUtils
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.update
 import java.io.File
@@ -191,6 +192,8 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
                 else -> UserPermissionLevel.MEMBER
             }
         }
+
+        val favicon192x192Hash = DigestUtils.md5Hex(LorittaDashboardWebServer::class.java.getResourceAsStream("/dashboard/static/assets/images/favicon-192x192.png"))
     }
 
     val routes = listOf(
