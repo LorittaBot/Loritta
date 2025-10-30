@@ -120,11 +120,11 @@ sealed class ReactionEventBadge(
     class Halloween2025ReactionEventBadge(pudding: Pudding) : ReactionEventBadge(
         pudding,
         UUID.fromString("5053575b-ec21-4c70-96ad-2771120b2d79"),
-        ProfileDesignManager.I18N_BADGES_PREFIX.Anniversary2025.Title,
-        ProfileDesignManager.I18N_BADGES_PREFIX.Anniversary2025.TitlePlural,
-        ProfileDesignManager.I18N_BADGES_PREFIX.Anniversary2025.Description,
-        "anniversary2025.png",
-        LorittaEmojis.Anniversary2025ReactionEvent,
+        ProfileDesignManager.I18N_BADGES_PREFIX.Halloween2025.Title,
+        ProfileDesignManager.I18N_BADGES_PREFIX.Halloween2025.TitlePlural,
+        ProfileDesignManager.I18N_BADGES_PREFIX.Halloween2025.Description,
+        "halloween2019.png",
+        LorittaEmojis.Halloween2019,
         100,
         Halloween2025ReactionEvent,
         10
@@ -133,14 +133,14 @@ sealed class ReactionEventBadge(
     class Halloween2025ReactionEventSuperBadge(pudding: Pudding) : ReactionEventBadge(
         pudding,
         UUID.fromString("9e1ee31a-35c5-476b-8051-80bb328209e9"),
-        ProfileDesignManager.I18N_BADGES_PREFIX.SuperAnniversary2025.Title,
-        ProfileDesignManager.I18N_BADGES_PREFIX.SuperAnniversary2025.TitlePlural,
-        ProfileDesignManager.I18N_BADGES_PREFIX.SuperAnniversary2025.Description,
-        "anniversary2025_super.png",
-        LorittaEmojis.Anniversary2025ReactionEventSuper,
+        ProfileDesignManager.I18N_BADGES_PREFIX.SuperHalloween2025.Title,
+        ProfileDesignManager.I18N_BADGES_PREFIX.SuperHalloween2025.TitlePlural,
+        ProfileDesignManager.I18N_BADGES_PREFIX.SuperHalloween2025.Description,
+        "halloween2024_super.png",
+        LorittaEmojis.Halloween2024ReactionEventSuper,
         100,
         Halloween2025ReactionEvent,
-        500
+        300
     )
 
 
