@@ -580,17 +580,13 @@ object Bliss {
 
                 val componentsInTheDOM = document.querySelectorAll("[bliss-component]").asList()
                 for (component in componentsInTheDOM) {
-                    val blissComponent = component.asDynamic().blissComponent
-    
-                    if (blissComponent != null) {
-                        blissComponent as BlissComponent<*>
+                    val blissComponents = component.blissComponents
 
-                        for (sourceElement in clonedSourceElementsCopy) {
-                            if (sourceElement is Element) {
-                                println("Triggering onElementSwap for $blissComponent!")
+                    for (sourceElement in clonedSourceElementsCopy) {
+                        // The source element may be something like a TextNode, so we need to check if it is actually an element
+                        if (sourceElement is Element) {
+                            for (blissComponent in blissComponents) {
                                 blissComponent.onElementSwap(sourceElement)
-                            } else {
-                                println("Ignoring $sourceElement because it isn't an element")
                             }
                         }
                     }
@@ -695,12 +691,17 @@ object Bliss {
     }
 
     private fun processBlissComponents(element: Element) {
-        val componentId = element.getAttribute("bliss-component")
-        if (componentId != null) {
+        val componentIds = element.getAttribute("bliss-component")
+            ?.split(",")
+            ?.map { it.trim() } ?: emptyList()
+
+        for (componentId in componentIds) {
+            val createdComponents = mutableListOf<BlissComponent<*>>()
+
             try {
                 val componentConstructor = componentBuilders[componentId] ?: error("Could not find component $componentId!")
                 val component = componentConstructor.invoke()
-                element.asDynamic().blissComponent = component
+                createdComponents.add(component)
                 component.mount(element)
 
                 element.whenRemovedFromDOM {
@@ -709,6 +710,10 @@ object Bliss {
             } catch (e: Throwable) {
                 println("Something went wrong while trying to setup component \"$componentId\"! Skipping...")
                 e.printStackTrace()
+            }
+
+            if (createdComponents.isNotEmpty()) {
+                element.blissComponents = createdComponents
             }
         }
     }

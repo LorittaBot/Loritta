@@ -8,6 +8,7 @@ import kotlinx.serialization.json.JsonPrimitive
 import net.perfectdreams.bliss.Bliss
 import net.perfectdreams.bliss.BlissBeforeBlissRequestPrepare
 import net.perfectdreams.bliss.BlissProcessRequestJsonBody
+import net.perfectdreams.bliss.getBlissComponent
 import net.perfectdreams.loritta.dashboard.BlissHex
 import net.perfectdreams.loritta.dashboard.EmbeddedModal
 import net.perfectdreams.loritta.dashboard.EmbeddedToast
@@ -157,11 +158,12 @@ class LorittaDashboardFrontend {
         modalManager.render(document.querySelector("#modal-list") as HTMLElement)
 
         document.addEventHandler(EventType<CustomEvent<BlissProcessRequestJsonBody>>("bliss:processRequestJsonBody")) {
+
             val detail = it.detail
             val element = detail.element
             if (element != null) {
                 if (element.getAttribute("loritta-include-spawner-settings") == "true") {
-                    val gameState = (document.querySelector("[bliss-component='loritta-shimeji']").asDynamic().blissComponent as LorittaShimejiComponent).gameState
+                    val gameState = document.querySelector("[bliss-component='loritta-shimeji']")!!.getBlissComponent<LorittaShimejiComponent>().gameState
 
                     val lorittaPlayers = gameState.entities.filterIsInstance<LorittaPlayer>()
                     val lorittaCount = lorittaPlayers.count { it.playerType == LorittaPlayer.PlayerType.LORITTA }

@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.dashboard.frontend.components
 
 import net.perfectdreams.bliss.BlissComponent
+import net.perfectdreams.bliss.getBlissComponent
 import net.perfectdreams.loritta.dashboard.frontend.LorittaDashboardFrontend
 import net.perfectdreams.loritta.dashboard.frontend.shimeji.entities.LorittaPlayer
 import web.dom.document
@@ -15,7 +16,7 @@ class LorittaShimejiSpawnerComponent(val m: LorittaDashboardFrontend) : BlissCom
         val playerType = LorittaPlayer.PlayerType.valueOf(this.mountedElement.getAttribute("spawner-type")!!)
 
         this.registeredEvents += this.mountedElement.addEventHandler(PointerEvent.CLICK) {
-            val gameState = (document.querySelector("[bliss-component='loritta-shimeji']").asDynamic().blissComponent as LorittaShimejiComponent).gameState
+            val gameState = document.querySelector("[bliss-component='loritta-shimeji']")!!.getBlissComponent<LorittaShimejiComponent>().gameState
 
             gameState.spawnPlayer(playerType)
 

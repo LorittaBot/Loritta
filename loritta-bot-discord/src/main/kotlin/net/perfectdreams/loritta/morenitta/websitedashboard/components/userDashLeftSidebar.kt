@@ -136,7 +136,8 @@ fun FlowContent.userDashLeftSidebarEntries(
                             }
 
                             select {
-                                attributes["bliss-component"] = "loritta-shimeji-activity-level"
+                                attributes["bliss-component"] = "loritta-shimeji-activity-level, fancy-select-menu"
+                                attributes["fancy-select-menu-chevron-svg"] = SVGIcons.CaretDown.html.toString()
 
                                 option {
                                     label = i18nContext.get(DashboardI18nKeysData.LorittaSpawner.ActivityLevel.Types.Low)
