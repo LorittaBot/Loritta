@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.websitedashboard.components
 
+import io.ktor.http.Url
 import kotlinx.html.FlowContent
 import kotlinx.html.HTML
 import kotlinx.html.body
@@ -64,7 +65,9 @@ fun HTML.dashboardBase(
 
         // Plausible Analytics
         script(src = "https://web-analytics.perfectdreams.net/js/plausible.js") {
-            attributes["data-domain"] = "loritta.website"
+            // Nasty!
+            // But honestly? Do we even care about doing a bit of static abuse?
+            attributes["data-domain"] = Url(LorittaDashboardWebServer.INSTANCE.loritta.config.loritta.dashboard.url).host
             defer = true
         }
 

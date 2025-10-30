@@ -171,6 +171,7 @@ import kotlin.io.path.readText
  */
 class LorittaDashboardWebServer(val loritta: LorittaBot) {
     companion object {
+        lateinit var INSTANCE: LorittaDashboardWebServer
         lateinit var assets: DashboardAssets
 
         private val logger by HarmonyLoggerFactory.logger {}
@@ -413,6 +414,8 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     fun start() {
+        INSTANCE = this
+
         val jsPath = loritta.config.loritta.dashboard.jsPath
         val jsBundle = if (jsPath != null) {
             DashboardBundle.FileSystemBundle(File(jsPath))
