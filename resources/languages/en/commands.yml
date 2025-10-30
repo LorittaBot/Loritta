@@ -9,7 +9,6 @@ commands:
   youArentTheUserGeneric: "Wait a minute... This isn't for you! Shoo, shoo! Go away!" #Used in button/select menu reponses if the user tries to interact with a button/component that isn't for them
   youArentTheUserSingleUser: "Wait a minute... you aren't {user}! This isn't for you, go away!" #Used in button/select menu reponses if the user tries to interact with a button/component that isn't for them, used when the correct user is known
   invalidNumber: "Sorry, but I don't think `{number}` is a valid number... Or maybe it's just me being dumb, after all, I'm wasting my time on Discord instead of paying attention to my math class."
-  wantingMoreSonhosBundlesUpsell: "Hey, do wanna have more sonhos? Then buy more at my store! We accept payments via boleto, credit card and Pix and buying there you help me stay online while you have fun with more sonhos! But don't worry, the choice is yours and you can stay using Loritta without worrying about paying anything. Interested? Then [click here]({sonhosShopWebsiteLink})!"
   wantingMoreSonhosDaily: "Hey, you haven't redeemed your Daily Sonhos Reward today! Redeem it now and have fun! {dailyCommandMention}"
   checkOutNews: "I have updates for you! Find out everything that's new by [clicking here]({link})!"
   interactionDataIsMissingFromDatabaseGeneric: "Whoops, looks like the interaction data has vanished because you took too long to use it! Please use the command again... Sorry!"
