@@ -73,7 +73,7 @@ class WelcomerGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                 JoinMessagePlaceholders.UserTagPlaceholder -> createUserTagPlaceholderGroup(
                     i18nContext,
                     it,
-                    session.discriminator
+                    session.username
                 )
 
                 JoinMessagePlaceholders.GuildIconUrlPlaceholder -> createGuildIconUrlPlaceholderGroup(i18nContext, it, guild)
@@ -110,7 +110,7 @@ class WelcomerGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                 LeaveMessagePlaceholders.UserTagPlaceholder -> createUserTagPlaceholderGroup(
                     i18nContext,
                     it,
-                    session.discriminator
+                    session.username
                 )
 
                 LeaveMessagePlaceholders.GuildIconUrlPlaceholder -> createGuildIconUrlPlaceholderGroup(i18nContext, it, guild)
