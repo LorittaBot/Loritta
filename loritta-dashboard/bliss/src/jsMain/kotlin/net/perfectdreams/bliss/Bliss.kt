@@ -581,9 +581,7 @@ object Bliss {
                 val componentsInTheDOM = document.querySelectorAll("[bliss-component]").asList()
                 for (component in componentsInTheDOM) {
                     val blissComponent = component.asDynamic().blissComponent
-                    println("BlissComponent: $blissComponent (${blissComponent is BlissComponent<*>})")
-                    console.log(blissComponent)
-
+    
                     if (blissComponent != null) {
                         blissComponent as BlissComponent<*>
 
