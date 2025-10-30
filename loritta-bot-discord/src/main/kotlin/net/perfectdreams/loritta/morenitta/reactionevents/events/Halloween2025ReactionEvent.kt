@@ -30,7 +30,7 @@ object Halloween2025ReactionEvent : ReactionEvent() {
         UUID.fromString("67b638c8-804c-46ea-8017-75957519ca54"),
         null,
         LorittaEmojiReference.UnicodeEmoji("\uD83C\uDF6C"),
-        { 0.176 },
+        { 0.050 },
         1
     )
 
@@ -38,7 +38,7 @@ object Halloween2025ReactionEvent : ReactionEvent() {
         UUID.fromString("3fe5d5e3-f9d9-49a6-a8ce-35646047ef28"),
         null,
         LorittaEmojiReference.UnicodeEmoji("\uD83C\uDF6D"),
-        { 0.176 },
+        { 0.050 },
         1
     )
 
@@ -46,7 +46,7 @@ object Halloween2025ReactionEvent : ReactionEvent() {
         UUID.fromString("a80dbf2a-a564-470d-8525-c8ad5f1d287b"),
         null,
         LorittaEmojiReference.UnicodeEmoji("\uD83C\uDF6B"),
-        { 0.176 },
+        { 0.050 },
         1
     )
 
@@ -54,7 +54,7 @@ object Halloween2025ReactionEvent : ReactionEvent() {
         UUID.fromString("9337b800-3bc6-4173-b225-782ce4a41b6b"),
         null,
         LorittaEmojiReference.UnicodeEmoji("\uD83E\uDDC1"),
-        { 0.176 },
+        { 0.050 },
         1
     )
 
@@ -64,9 +64,9 @@ object Halloween2025ReactionEvent : ReactionEvent() {
         LorittaEmojis.LoriHead,
         {
             if (it?.idLong == Constants.PORTUGUESE_SUPPORT_GUILD_ID) {
-                0.050
-            } else {
                 0.025
+            } else {
+                0.010
             }
         },
         1
@@ -78,9 +78,9 @@ object Halloween2025ReactionEvent : ReactionEvent() {
         LorittaEmojis.PantufaHead,
         {
             if (it?.idLong == Constants.SPARKLYPOWER_GUILD_ID) {
-                0.050
-            } else {
                 0.025
+            } else {
+                0.010
             }
         },
         1
@@ -92,9 +92,9 @@ object Halloween2025ReactionEvent : ReactionEvent() {
         LorittaEmojis.GabrielaHead,
         {
             if (it?.idLong != Constants.PORTUGUESE_SUPPORT_GUILD_ID && it?.idLong != Constants.SPARKLYPOWER_GUILD_ID) {
-                0.050
-            } else {
                 0.025
+            } else {
+                0.010
             }
         },
         1
@@ -106,9 +106,9 @@ object Halloween2025ReactionEvent : ReactionEvent() {
         LorittaEmojis.GessyHead,
         {
             if (it?.idLong != Constants.PORTUGUESE_SUPPORT_GUILD_ID && it?.idLong != Constants.SPARKLYPOWER_GUILD_ID) {
-                0.050
-            } else {
                 0.025
+            } else {
+                0.010
             }
         },
         1
@@ -130,15 +130,15 @@ object Halloween2025ReactionEvent : ReactionEvent() {
     override val rewards = listOf(
         ReactionEventReward.BadgeReward(10, false),
         ReactionEventReward.SonhosReward(100, false, 50_000),
-        ReactionEventReward.SonhosReward(150, false, 150_000),
-        ReactionEventReward.SonhosReward(200, false, 300_000),
-        ReactionEventReward.SonhosReward(250, false, 500_000),
-        ReactionEventReward.SonhosReward(300, false, 600_000),
-        ReactionEventReward.SonhosReward(350, false, 700_000),
-        ReactionEventReward.SonhosReward(400, false, 800_000),
-        ReactionEventReward.SonhosReward(450, false, 900_000),
-        ReactionEventReward.SonhosReward(500, false, 1_000_000),
-        ReactionEventReward.BadgeReward(500, false),
+        ReactionEventReward.SonhosReward(125, false, 150_000),
+        ReactionEventReward.SonhosReward(150, false, 300_000),
+        ReactionEventReward.SonhosReward(175, false, 500_000),
+        ReactionEventReward.SonhosReward(200, false, 600_000),
+        ReactionEventReward.SonhosReward(225, false, 700_000),
+        ReactionEventReward.SonhosReward(250, false, 800_000),
+        ReactionEventReward.SonhosReward(275, false, 900_000),
+        ReactionEventReward.SonhosReward(300, false, 1_000_000),
+        ReactionEventReward.BadgeReward(300, false),
     )
 
     override fun createEventTitle(i18nContext: I18nContext) = i18nContext.get(I18nKeysData.ReactionEvents.Event.Halloween2025.EventName)
