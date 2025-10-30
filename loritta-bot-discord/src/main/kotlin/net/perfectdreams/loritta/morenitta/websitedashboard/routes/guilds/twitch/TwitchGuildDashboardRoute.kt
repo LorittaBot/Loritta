@@ -102,7 +102,7 @@ class TwitchGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGu
                 theme,
                 shimejiSettings,
                 userPremiumPlan,
-                null,
+                website.shouldDisplayAds(call, userPremiumPlan, null),
                 {
                     guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.TWITCH)
                 },

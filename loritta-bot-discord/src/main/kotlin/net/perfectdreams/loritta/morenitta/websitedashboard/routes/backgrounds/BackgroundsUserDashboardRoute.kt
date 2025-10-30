@@ -64,7 +64,7 @@ class BackgroundsUserDashboardRoute(website: LorittaDashboardWebServer) : Requir
                 theme,
                 shimejiSettings,
                 userPremiumPlan,
-                null,
+                website.shouldDisplayAds(call, userPremiumPlan, null),
                 {
                     userDashLeftSidebarEntries(website.loritta, i18nContext, userPremiumPlan, UserDashboardSection.PROFILE_BACKGROUND)
                 },

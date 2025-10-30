@@ -78,13 +78,13 @@ class MemberCounterChannelGuildDashboardRoute(website: LorittaDashboardWebServer
                 theme,
                 shimejiSettings,
                 userPremiumPlan,
-                null,
+                website.shouldDisplayAds(call, userPremiumPlan, null),
                 {
                     guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.MEMBER_COUNTER)
                 },
                 {
                     rightSidebarContentAndSaveBarWrapper(
-                        userPremiumPlan,
+                        website.shouldDisplayAds(call, userPremiumPlan, null),
                         {
                             goBackToPreviousSectionButton(
                                 href = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/member-counter",

@@ -122,13 +122,13 @@ class PunishmentLogGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
                 theme,
                 shimejiSettings,
                 userPremiumPlan,
-                null,
+                website.shouldDisplayAds(call, userPremiumPlan, null),
                 {
                     guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.PUNISHMENT_LOG)
                 },
                 {
                     rightSidebarContentAndSaveBarWrapper(
-                        userPremiumPlan,
+                        website.shouldDisplayAds(call, userPremiumPlan, null),
                         {
                             if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
                                 blissEvent("resyncState", "[bliss-component='save-bar']")

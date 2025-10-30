@@ -129,13 +129,13 @@ class WelcomerGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                 theme,
                 shimejiSettings,
                 userPremiumPlan,
-                null,
+                website.shouldDisplayAds(call, userPremiumPlan, null),
                 {
                     guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.WELCOMER)
                 },
                 {
                     rightSidebarContentAndSaveBarWrapper(
-                        userPremiumPlan,
+                        website.shouldDisplayAds(call, userPremiumPlan, null),
                         {
                             if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
                                 blissEvent("resyncState", "[bliss-component='save-bar']")

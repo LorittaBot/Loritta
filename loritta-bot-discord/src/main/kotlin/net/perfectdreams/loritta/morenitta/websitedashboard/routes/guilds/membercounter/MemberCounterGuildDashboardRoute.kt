@@ -32,7 +32,7 @@ class MemberCounterGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
                 theme,
                 shimejiSettings,
                 userPremiumPlan,
-                null,
+                website.shouldDisplayAds(call, userPremiumPlan, null),
                 {
                     guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.MEMBER_COUNTER)
                 },

@@ -64,7 +64,7 @@ class AddBlueskyProfileGuildDashboardRoute(website: LorittaDashboardWebServer) :
                 theme,
                 shimejiSettings,
                 userPremiumPlan,
-                null,
+                website.shouldDisplayAds(call, userPremiumPlan, null),
                 {
                     guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.BLUESKY)
                 },
@@ -88,7 +88,7 @@ class AddBlueskyProfileGuildDashboardRoute(website: LorittaDashboardWebServer) :
                     hr {}
 
                     rightSidebarContentAndSaveBarWrapper(
-                        userPremiumPlan,
+                        website.shouldDisplayAds(call, userPremiumPlan, null),
                         {
                             trackedBlueskyChannelEditorWithProfile(
                                 i18nContext,

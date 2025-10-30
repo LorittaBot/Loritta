@@ -60,7 +60,7 @@ class EditTwitchChannelGuildDashboardRoute(website: LorittaDashboardWebServer) :
                 theme,
                 shimejiSettings,
                 userPremiumPlan,
-                null,
+                website.shouldDisplayAds(call, userPremiumPlan, null),
                 {
                     guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.TWITCH)
                 },
@@ -74,7 +74,7 @@ class EditTwitchChannelGuildDashboardRoute(website: LorittaDashboardWebServer) :
                     hr {}
 
                     rightSidebarContentAndSaveBarWrapper(
-                        userPremiumPlan,
+                        website.shouldDisplayAds(call, userPremiumPlan, null),
                         {
                             trackedTwitchChannelEditorWithProfile(
                                 i18nContext,

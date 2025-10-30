@@ -45,7 +45,7 @@ class CustomCommandsGuildDashboardRoute(website: LorittaDashboardWebServer) : Re
                 theme,
                 shimejiSettings,
                 userPremiumPlan,
-                null,
+                website.shouldDisplayAds(call, userPremiumPlan, null),
                 {
                     guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.CUSTOM_COMMANDS)
                 },

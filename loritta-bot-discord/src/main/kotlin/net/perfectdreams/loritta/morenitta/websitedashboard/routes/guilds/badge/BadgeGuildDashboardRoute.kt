@@ -44,13 +44,13 @@ class BadgeGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGui
                 theme,
                 shimejiSettings,
                 userPremiumPlan,
-                null,
+                website.shouldDisplayAds(call, userPremiumPlan, null),
                 {
                     guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.CUSTOM_BADGE)
                 },
                 {
                     rightSidebarContentAndSaveBarWrapper(
-                        userPremiumPlan,
+                        website.shouldDisplayAds(call, userPremiumPlan, null),
                         {
                             if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
                                 blissEvent("resyncState", "[bliss-component='save-bar']")

@@ -58,7 +58,7 @@ class EditCustomCommandGuildDashboardRoute(website: LorittaDashboardWebServer) :
                 theme,
                 shimejiSettings,
                 userPremiumPlan,
-                null,
+                website.shouldDisplayAds(call, userPremiumPlan, null),
                 {
                     guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.CUSTOM_COMMANDS)
                 },
@@ -72,7 +72,7 @@ class EditCustomCommandGuildDashboardRoute(website: LorittaDashboardWebServer) :
                     hr {}
 
                     rightSidebarContentAndSaveBarWrapper(
-                        userPremiumPlan,
+                        website.shouldDisplayAds(call, userPremiumPlan, null),
                         {
                             div {
                                 id = "section-config"

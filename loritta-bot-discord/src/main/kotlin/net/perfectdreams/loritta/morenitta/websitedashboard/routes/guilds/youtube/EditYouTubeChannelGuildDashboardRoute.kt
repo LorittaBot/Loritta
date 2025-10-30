@@ -76,7 +76,7 @@ class EditYouTubeChannelGuildDashboardRoute(website: LorittaDashboardWebServer) 
                             hr {}
 
                             rightSidebarContentAndSaveBarWrapper(
-                                userPremiumPlan,
+                                website.shouldDisplayAds(call, userPremiumPlan, null),
                                 {
                                     trackedYouTubeChannelEditorWithProfile(
                                         i18nContext,

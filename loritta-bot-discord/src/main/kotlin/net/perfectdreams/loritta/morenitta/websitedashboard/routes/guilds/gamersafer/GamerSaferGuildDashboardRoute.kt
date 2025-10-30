@@ -32,7 +32,7 @@ class GamerSaferGuildDashboardRoute(website: LorittaDashboardWebServer) : Requir
                 theme,
                 shimejiSettings,
                 userPremiumPlan,
-                null,
+                website.shouldDisplayAds(call, userPremiumPlan, null),
                 {
                     guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.GAMERSAFER)
                 },

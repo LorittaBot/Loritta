@@ -52,7 +52,7 @@ class SonhosShopUserDashboardRoute(website: LorittaDashboardWebServer) : Require
                 // This may seem stupid, but hear me out:
                 // We don't want to distract users with ads when buying sonhos!
                 // So we hide all ads on the sonhos shop page :3
-                false,
+                website.shouldDisplayAds(call, userPremiumPlan, false),
                 {
                     userDashLeftSidebarEntries(website.loritta, i18nContext, userPremiumPlan, UserDashboardSection.SONHOS_SHOP)
                 },

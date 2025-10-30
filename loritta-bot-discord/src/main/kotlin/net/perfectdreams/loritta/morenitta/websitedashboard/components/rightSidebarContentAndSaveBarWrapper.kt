@@ -9,7 +9,7 @@ import kotlinx.html.style
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 
 fun FlowContent.rightSidebarContentAndSaveBarWrapper(
-    userPremiumPlans: UserPremiumPlans,
+    shouldDisplayAds: Boolean,
     content: FlowContent.() -> (Unit),
     saveBar: FlowContent.() -> (Unit)
 ) {
@@ -21,7 +21,7 @@ fun FlowContent.rightSidebarContentAndSaveBarWrapper(
 
             hr {}
 
-            if (userPremiumPlans.displayAds) {
+            if (shouldDisplayAds) {
                 div {
                     style = "text-align: center;"
 

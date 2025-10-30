@@ -15,6 +15,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserWebsiteSessions
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -537,5 +538,17 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
         }
 
         return loritta.languageManager.getI18nContextById(localeId)
+    }
+
+    fun shouldDisplayAds(call: ApplicationCall, userPremiumPlan: UserPremiumPlans, overrideAdsResult: Boolean?): Boolean {
+        if (overrideAdsResult != null)
+            return overrideAdsResult
+
+        // Used to force ads to be displayed (useful for debugging)
+        val ilovetvCookie = call.request.cookies["loritta_ilovetv"]
+        if (ilovetvCookie != null && ilovetvCookie == "true")
+            return true
+
+        return userPremiumPlan.displayAds
     }
 }

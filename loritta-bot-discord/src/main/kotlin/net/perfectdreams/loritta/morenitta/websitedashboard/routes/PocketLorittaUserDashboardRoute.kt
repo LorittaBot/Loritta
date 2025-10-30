@@ -31,7 +31,7 @@ class PocketLorittaUserDashboardRoute(website: LorittaDashboardWebServer) : Requ
                 theme,
                 shimejiSettings,
                 userPremiumPlan,
-                null,
+                website.shouldDisplayAds(call, userPremiumPlan, null),
                 {
                     userDashLeftSidebarEntries(website.loritta, i18nContext, userPremiumPlan, UserDashboardSection.POCKET_LORITTA)
                 },
