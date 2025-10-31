@@ -659,15 +659,14 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
 
                                         val template = Json.decodeFromString<StickerAlbumTemplate>(event[LoriCoolCardsEvents.template])
 
-                                        // When trading stickers for sonhos, the RECEIVER must have already finished the album,
-                                        // while the GIVER does not need to
+                                        // When trading stickers for sonhos, BOTH the receiver AND the giver must have already finished the album
                                         val giverBoughtPacks = LoriCoolCardsUserBoughtBoosterPacks.selectAll().where {
                                             LoriCoolCardsUserBoughtBoosterPacks.user eq context.user.idLong and (LoriCoolCardsUserBoughtBoosterPacks.event eq event[LoriCoolCardsEvents.id])
                                         }.count()
 
-                                        if (template.minimumBoosterPacksToTrade > giverBoughtPacks)
+                                        if (template.minimumBoosterPacksToTradeBySonhos > giverBoughtPacks)
                                             return@transaction SetSonhosResult.YouDidntBuyEnoughBoosterPacks(
-                                                template.minimumBoosterPacksToTrade,
+                                                template.minimumBoosterPacksToTradeBySonhos,
                                                 giverBoughtPacks
                                             )
 

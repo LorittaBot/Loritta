@@ -339,8 +339,7 @@ class InternalWebServer(val m: LorittaBot) {
                                     A arte do jogo é que você terá que falar com outras pessoas para conseguir trocar as suas figurinhas com as delas, para você, e ela, possa conseguir completar o álbum.
                                     
                                     Não se preocupe, se você for preguiçoso ou esquecer de pegar a recompensa diária, você ainda poderá comprar pacotinhos pelo comando ${m.commandMentions.loriCoolCardsBuy}, podendo comprar pacotinhos após ${template.boosterPacksPurchaseAvailableAfter?.let { DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(it.toJavaInstant()) } ?: "???"}. Cada pacotinho custa ${template.sonhosPrice} sonhos.
-                                    
-                                    Desta forma, você é incentivado a pegar a recompensa diária da Loritta para você ser um dos primeiros a acabar o evento de figurinhas. E cuidado! Você pode até dar uma de Louquinho da Silva e sair comprando vários pacotinhos até completar o seu álbum, mas você vai perceber que se você fizer isso você vai sair no prejuízo...
+
                                     ## ${Emotes.LoriKiss} Abrindo Pacotinhos de Figurinhas e Colando as Figurinhas
                                     
                                 """.trimIndent())
