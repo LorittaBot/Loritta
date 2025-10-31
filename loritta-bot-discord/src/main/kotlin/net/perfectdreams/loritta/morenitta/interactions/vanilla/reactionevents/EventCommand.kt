@@ -515,6 +515,8 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                                     it[CollectedReactionEventPoints.associatedWithCraft] = basket
                                 }
 
+                                val receivedRewards = mutableListOf<ReactionEventReward>()
+
                                 // How many baskets do they now have?
                                 val newBasketCount = (basketCount + 1).toInt()
                                 for (reward in activeEvent.rewards) {
@@ -545,6 +547,8 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                                         // No need to do anything for badges :3
                                         is ReactionEventReward.BadgeReward -> {}
                                     }
+
+                                    receivedRewards.add(reward)
                                 }
 
                                 val maxPoints = activeEvent.rewards.maxOf { it.requiredPoints }
@@ -556,7 +560,7 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                                     }
                                 }
 
-                                return@newSuspendedTransaction CraftCreationResult.Success
+                                return@newSuspendedTransaction CraftCreationResult.Success(receivedRewards)
                             }
 
                             when (basketCreationResult) {
@@ -569,7 +573,7 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                                     }
                                 }
 
-                                CraftCreationResult.Success -> {
+                                is CraftCreationResult.Success -> {
                                     val message = activeEvent.createYouCraftedAItemMessage(context.i18nContext, combo)
 
                                     context.reply(false) {
@@ -577,6 +581,23 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                                             message.text,
                                             loritta.emojiManager.get(message.emoji)
                                         )
+
+                                        for (receivedReward in basketCreationResult.receivedRewards) {
+                                            when (receivedReward) {
+                                                is ReactionEventReward.BadgeReward -> {
+                                                    styled(
+                                                        context.i18nContext.get(I18N_PREFIX.Inventory.Rewards.WonBadge(loritta.commandMentions.profileView)),
+                                                        Emotes.LoriWow
+                                                    )
+                                                }
+                                                is ReactionEventReward.SonhosReward -> {
+                                                    styled(
+                                                        context.i18nContext.get(I18N_PREFIX.Inventory.Rewards.WonSonhos(receivedReward.sonhos, loritta.commandMentions.sonhosAtm)),
+                                                        Emotes.LoriWow
+                                                    )
+                                                }
+                                            }
+                                        }
                                     }
 
                                     response(context, combo + 1) {
@@ -650,7 +671,9 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
         }
 
         sealed class CraftCreationResult {
-            data object Success : CraftCreationResult()
+            data class Success(
+                val receivedRewards: List<ReactionEventReward>
+            ) : CraftCreationResult()
             data object InsufficientItems : CraftCreationResult()
         }
     }

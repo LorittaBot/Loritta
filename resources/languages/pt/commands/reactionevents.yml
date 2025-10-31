@@ -15,6 +15,9 @@ stats:
 inventory:
   label: "inventário"
   description: "Veja seu inventário no Evento de Reações da Loritta"
+  rewards:
+    wonBadge: "Parabéns! Você ganhou uma badge para o seu {profileCommand} da Loritta!"
+    wonSonhos: "Parabéns! Você ganhou {sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}! Veja quantos sonhos você tem usando {sonhosAtmMention}."
 
 rank:
   label: "rank"
