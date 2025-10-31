@@ -124,16 +124,14 @@ fun FlowContent.guildPremiumKeyCard(
         div {
             style = "flex-grow: 1; display: flex; gap: 0.5em; align-items: center;"
 
-            div {
-                img {
-                    src = if (enabledOnThisGuild) {
-                        guild.iconUrl ?: ""
-                    } else {
-                        session.getEffectiveAvatarUrl()
-                    }
-
-                    style = "width: 64px; height: 64px; border-radius: 99999px;"
+            img {
+                src = if (enabledOnThisGuild) {
+                    guild.iconUrl ?: ""
+                } else {
+                    session.getEffectiveAvatarUrl()
                 }
+
+                style = "width: 48px; height: 48px; border-radius: 99999px;"
             }
 
             div {
