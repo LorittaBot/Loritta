@@ -11,6 +11,7 @@ import net.perfectdreams.loritta.dashboard.BlissHex
 import net.perfectdreams.loritta.dashboard.discord.DiscordEmoji
 import net.perfectdreams.loritta.dashboard.discord.DiscordGuild
 import net.perfectdreams.loritta.dashboard.discord.DiscordRole
+import net.perfectdreams.loritta.dashboard.discord.TextDiscordChannel
 import net.perfectdreams.loritta.dashboard.discordmessages.RenderableDiscordUser
 import net.perfectdreams.loritta.dashboard.messageeditor.LorittaMessageTemplate
 import net.perfectdreams.loritta.dashboard.messageeditor.MessageEditorBootstrap
@@ -78,7 +79,13 @@ fun FlowContent.discordMessageEditor(
                                     it.colorRaw
                                 )
                             },
-                            listOf(),
+                            guild.channels.map {
+                                TextDiscordChannel(
+                                    it.idLong,
+                                    it.name,
+                                    true
+                                )
+                            },
                             guild.emojis.map {
                                 DiscordEmoji(
                                     it.idLong,

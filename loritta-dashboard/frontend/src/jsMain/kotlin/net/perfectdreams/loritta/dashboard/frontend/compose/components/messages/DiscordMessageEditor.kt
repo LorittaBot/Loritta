@@ -301,7 +301,9 @@ fun DiscordMessageEditor(
                 EditorType.INTERACTIVE -> {
                     VerticalList {
                         FieldWrapper {
-                            FieldLabel("Conteúdo da Mensagem")
+                            FieldInformation {
+                                FieldLabel("Conteúdo da Mensagem")
+                            }
 
                             TextAreaWithEntityPickers(targetGuild, mutableMessage.content) {
                                 mutableMessage.content = it
@@ -366,12 +368,14 @@ fun DiscordMessageEditor(
                                     Color(embedColor).toHex()
                                 } else "#e3e5e8"
 
-                                attr("style", "border: 1px solid var(--input-border-color);\n" +
-                                        "  border-radius: var(--first-level-border-radius);\n" +
+                                attr("style", "border: 1px solid var(--card-border-color);\n" +
+                                        "  border-radius: var(--nice-border-radius);\n" +
                                         "  padding: 1em; border-left: 4px solid $hex;\n")
                             }) {
                                 FieldWrapper {
-                                    FieldLabel("Cor")
+                                    FieldInformation {
+                                        FieldLabel("Cor")
+                                    }
 
                                     ColorPicker(
                                         m,
@@ -391,7 +395,9 @@ fun DiscordMessageEditor(
                                 }
 
                                 FieldWrapper {
-                                    FieldLabel("Nome do Autor")
+                                    FieldInformation {
+                                        FieldLabel("Nome do Autor")
+                                    }
 
                                     TextInput(embed.author?.name ?: "") {
                                         onInput {
@@ -428,7 +434,9 @@ fun DiscordMessageEditor(
                                 }
 
                                 FieldWrapper {
-                                    FieldLabel("URL do Autor")
+                                    FieldInformation {
+                                        FieldLabel("URL do Autor")
+                                    }
 
                                     TextInput(embed.author?.url ?: "") {
                                         if (embed.author?.name == null)
@@ -446,7 +454,9 @@ fun DiscordMessageEditor(
                                 }
 
                                 FieldWrapper {
-                                    FieldLabel("URL do Ícone do Autor")
+                                    FieldInformation {
+                                        FieldLabel("URL do Ícone do Autor")
+                                    }
 
                                     TextInput(embed.author?.iconUrl ?: "") {
                                         if (embed.author?.name == null)
@@ -464,7 +474,9 @@ fun DiscordMessageEditor(
                                 }
 
                                 FieldWrapper {
+                                    FieldInformation {
                                     FieldLabel("Título")
+                                        }
 
                                     TextAreaWithEntityPickers(targetGuild, embed.title ?: "") {
                                         embed.title = it.ifEmpty { null }
@@ -473,7 +485,9 @@ fun DiscordMessageEditor(
                                 }
 
                                 FieldWrapper {
-                                    FieldLabel("URL do Título")
+                                    FieldInformation {
+                                        FieldLabel("URL do Título")
+                                    }
 
                                     TextInput(embed.url ?: "") {
                                         onInput {
@@ -484,7 +498,9 @@ fun DiscordMessageEditor(
                                 }
 
                                 FieldWrapper {
-                                    FieldLabel("Descrição")
+                                    FieldInformation {
+                                        FieldLabel("Descrição")
+                                    }
 
                                     TextAreaWithEntityPickers(targetGuild, embed.description ?: "") {
                                         embed.description = it.ifEmpty { null }
@@ -493,7 +509,9 @@ fun DiscordMessageEditor(
                                 }
 
                                 FieldWrapper {
-                                    FieldLabel("Fields")
+                                    FieldInformation {
+                                        FieldLabel("Fields")
+                                    }
 
                                     VerticalList(attrs = {
                                         attr(
@@ -510,9 +528,13 @@ fun DiscordMessageEditor(
                                                             "  padding: 1em;"
                                                 )
                                             }) {
-                                                FieldLabel("Field ${index + 1}")
+                                                FieldInformation {
+                                                    FieldLabel("Field ${index + 1}")
+                                                }
                                                 Div {
-                                                    FieldLabel("Nome")
+                                                    FieldInformation {
+                                                        FieldLabel("Nome")
+                                                    }
 
                                                     TextAreaWithEntityPickers(targetGuild, field.name) {
                                                         field.name = it
@@ -521,7 +543,9 @@ fun DiscordMessageEditor(
                                                 }
 
                                                 Div {
-                                                    FieldLabel("Valor")
+                                                    FieldInformation {
+                                                        FieldLabel("Valor")
+                                                    }
 
                                                     TextAreaWithEntityPickers(targetGuild, field.value) {
                                                         field.value = it
@@ -582,7 +606,9 @@ fun DiscordMessageEditor(
                                 }
 
                                 FieldWrapper {
-                                    FieldLabel("URL da Imagem")
+                                    FieldInformation {
+                                        FieldLabel("URL da Imagem")
+                                    }
 
                                     TextInput(embed.imageUrl ?: "") {
                                         onInput {
@@ -593,7 +619,9 @@ fun DiscordMessageEditor(
                                 }
 
                                 FieldWrapper {
-                                    FieldLabel("URL da Thumbnail")
+                                    FieldInformation {
+                                        FieldLabel("URL da Thumbnail")
+                                    }
 
                                     TextInput(embed.thumbnailUrl ?: "") {
                                         onInput {
@@ -605,7 +633,9 @@ fun DiscordMessageEditor(
 
                                 val mutableFooter = embed.footer
                                 FieldWrapper {
-                                    FieldLabel("Texto do Rodapé")
+                                    FieldInformation {
+                                        FieldLabel("Texto do Rodapé")
+                                    }
 
                                     TextInput(embed.footer?.text ?: "") {
                                         onInput {
@@ -641,7 +671,9 @@ fun DiscordMessageEditor(
                                 }
 
                                 FieldWrapper {
-                                    FieldLabel("URL do Ícone do Rodapé")
+                                    FieldInformation {
+                                        FieldLabel("URL do Ícone do Rodapé")
+                                    }
 
                                     TextInput(embed.footer?.iconUrl ?: "") {
                                         // Only allow setting the Icon URL if the footer text is present
@@ -698,7 +730,9 @@ fun DiscordMessageEditor(
                 EditorType.RAW -> {
                     VerticalList {
                         FieldWrapper {
-                            FieldLabel("Conteúdo da Mensagem em JSON")
+                            FieldInformation {
+                                FieldLabel("Conteúdo da Mensagem em JSON")
+                            }
 
                             TextArea(rawMessage) {
                                 onInput {
@@ -726,7 +760,9 @@ fun DiscordMessageEditor(
                 classes("message-preview-section")
             }) {
                 FieldWrapper {
-                    FieldLabel("Pré-visualização da Mensagem")
+                    FieldInformation {
+                        FieldLabel("Pré-visualização da Mensagem")
+                    }
 
                     Div(attrs = {
                         id("message-preview-wrapper-$rId")
@@ -843,7 +879,9 @@ fun DiscordMessageEditor(
 @Composable
 fun ActionRowEditor(m: LorittaDashboardFrontend, component: MutableDiscordMessage.MutableDiscordComponent.MutableActionRow, message: MutableDiscordMessage) {
     FieldWrapper {
-        FieldLabel("Linha de Botões")
+        FieldInformation {
+            FieldLabel("Linha de Botões")
+        }
 
         VerticalList(attrs = {
             attr(
@@ -910,7 +948,9 @@ fun ActionRowEditor(m: LorittaDashboardFrontend, component: MutableDiscordMessag
 fun ButtonEditor(parentComponent: MutableDiscordMessage.MutableDiscordComponent.MutableActionRow, component: MutableDiscordMessage.MutableDiscordComponent.MutableButton, message: MutableDiscordMessage) {
     VerticalList {
         FieldWrapper {
-            FieldLabel("Label")
+            FieldInformation {
+                FieldLabel("Label")
+            }
 
             TextInput(component.label ?: "") {
                 onInput {
@@ -921,7 +961,9 @@ fun ButtonEditor(parentComponent: MutableDiscordMessage.MutableDiscordComponent.
         }
 
         FieldWrapper {
-            FieldLabel("URL")
+            FieldInformation {
+                FieldLabel("URL")
+            }
 
             TextInput(component.url ?: "") {
                 onInput {

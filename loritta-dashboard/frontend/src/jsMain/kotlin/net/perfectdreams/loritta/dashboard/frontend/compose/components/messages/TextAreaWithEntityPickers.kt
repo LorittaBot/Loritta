@@ -17,6 +17,7 @@ import net.perfectdreams.loritta.dashboard.discord.DiscordGuild
 import net.perfectdreams.loritta.dashboard.discord.DiscordRole
 import net.perfectdreams.loritta.dashboard.frontend.compose.components.DiscordButton
 import net.perfectdreams.loritta.dashboard.frontend.compose.components.DiscordButtonType
+import net.perfectdreams.loritta.dashboard.frontend.compose.components.FieldInformation
 import net.perfectdreams.loritta.dashboard.frontend.compose.components.FieldLabel
 import net.perfectdreams.loritta.dashboard.frontend.compose.components.FieldWrappers
 import net.perfectdreams.loritta.dashboard.frontend.compose.components.TextWithIconWrapper
@@ -224,7 +225,9 @@ private fun DiscordChannelEntityPickerButton(textAreaWrapper: TextAreaWithEntity
                 FieldWrappers(attrs = {
                     classes("message-config-popover-content")
                 }) {
-                    FieldLabel("Adicionar menção de canal")
+                    FieldInformation {
+                        FieldLabel("Adicionar menção de canal")
+                    }
 
                     Div(attrs = {
                         classes("message-config-list")
@@ -318,7 +321,9 @@ private fun DiscordRoleEntityPickerButton(textAreaWrapper: TextAreaWithEntityPic
                 FieldWrappers(attrs = {
                     classes("message-config-popover-content")
                 }) {
-                    FieldLabel("Adicionar menção de cargo")
+                    FieldInformation {
+                        FieldLabel("Adicionar menção de cargo")
+                    }
 
                     Div(attrs = {
                         classes("message-config-list")
@@ -419,7 +424,9 @@ private fun DiscordEmojiEntityPickerButton(textAreaWrapper: TextAreaWithEntityPi
                 FieldWrappers(attrs = {
                     classes("message-config-popover-content")
                 }) {
-                    FieldLabel("Adicionar emoji")
+                    FieldInformation {
+                        FieldLabel("Adicionar emoji")
+                    }
 
                     Div(attrs = {
                         classes("message-config-emoji-grid")

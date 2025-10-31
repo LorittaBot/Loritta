@@ -33,6 +33,18 @@ fun FieldWrapper(block: @Composable () -> (Unit)) {
 }
 
 @Composable
+fun FieldInformation(block: @Composable () -> (Unit)) {
+    Div(
+        attrs = {
+            classes("field-information")
+        }
+    ) {
+        block.invoke()
+    }
+}
+
+
+@Composable
 fun FieldLabel(text: String, forId: String) {
     Div(attrs = { classes("field-title") }) {
         Label(forId) {
