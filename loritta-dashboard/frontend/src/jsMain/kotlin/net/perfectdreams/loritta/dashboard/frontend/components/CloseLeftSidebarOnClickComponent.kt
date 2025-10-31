@@ -14,11 +14,7 @@ import web.window.window
 class CloseLeftSidebarOnClickComponent(val m: LorittaDashboardFrontend) : BlissComponent<HTMLElement>() {
     override fun onMount() {
         this.registeredEvents += this.mountedElement.addEventHandler(PointerEvent.CLICK) {
-            val sidebar = document.querySelector("#left-sidebar") ?: error("Could not find left sidebar!")
-            if (sidebar.classList.contains(ClassName("is-open"))) {
-                sidebar.classList.remove(ClassName("is-open"))
-                sidebar.classList.add(ClassName("is-closed"))
-            }
+            m.closeLeftSidebar()
         }
     }
 

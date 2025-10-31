@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.dashboard.frontend.components
 
 import net.perfectdreams.bliss.BlissComponent
+import net.perfectdreams.loritta.dashboard.frontend.LorittaDashboardFrontend
 import web.cssom.ClassName
 import web.cssom.MediaQuery
 import web.cssom.matchMedia
@@ -11,7 +12,7 @@ import web.html.HTMLButtonElement
 import web.pointer.*
 import kotlin.math.abs
 
-class SidebarToggleComponent : BlissComponent<HTMLButtonElement>() {
+class SidebarToggleComponent(val m: LorittaDashboardFrontend) : BlissComponent<HTMLButtonElement>() {
     companion object {
         private const val SWIPE_THRESHOLD = 50
         private const val IGNORE_IF_Y_THRESHOLD = 30
@@ -19,14 +20,10 @@ class SidebarToggleComponent : BlissComponent<HTMLButtonElement>() {
 
     override fun onMount() {
         this.registeredEvents += mountedElement.addEventHandler(PointerEvent.CLICK) {
-            val sidebar = document.querySelector("#left-sidebar") ?: error("Could not find left sidebar!")
-
-            if (sidebar.classList.contains(ClassName("is-open"))) {
-                sidebar.classList.add(ClassName("is-closed"))
-                sidebar.classList.remove(ClassName("is-open"))
+            if (m.isLeftSidebarOpen()) {
+                m.closeLeftSidebar()
             } else {
-                sidebar.classList.add(ClassName("is-open"))
-                sidebar.classList.remove(ClassName("is-closed"))
+                m.openLeftSidebar()
             }
         }
 
@@ -43,10 +40,7 @@ class SidebarToggleComponent : BlissComponent<HTMLButtonElement>() {
         onHorizontalSwipe(
             rightSidebar,
             onLeftToRightSwipe = {
-                val sidebar = document.querySelector("#left-sidebar") ?: error("Could not find left sidebar!")
-
-                sidebar.classList.remove(ClassName("is-closed"))
-                sidebar.classList.add(ClassName("is-open"))
+                m.openLeftSidebar()
             }
         )
     }
@@ -57,8 +51,7 @@ class SidebarToggleComponent : BlissComponent<HTMLButtonElement>() {
         onHorizontalSwipe(
             leftSidebar,
             onRightToLeftSwipe = {
-                leftSidebar.classList.add(ClassName("is-closed"))
-                leftSidebar.classList.remove(ClassName("is-open"))
+                m.closeLeftSidebar()
             }
         )
     }

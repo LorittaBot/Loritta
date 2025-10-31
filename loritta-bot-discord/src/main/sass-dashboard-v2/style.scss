@@ -365,6 +365,13 @@ nav#mobile-left-sidebar {
     }
 }
 
+body {
+    // Disallow scrolling the app wrapper while the sidebar is open
+    &.left-sidebar-open {
+        overflow: hidden;
+    }
+}
+
 @keyframes toggle-sidebar-visibility {
     from { visibility: visible; }
     to { visibility: hidden; }

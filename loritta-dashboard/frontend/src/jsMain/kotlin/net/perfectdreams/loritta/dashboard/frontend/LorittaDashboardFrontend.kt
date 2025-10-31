@@ -145,7 +145,7 @@ class LorittaDashboardFrontend {
         Bliss.registerComponent("fancy-select-menu") { FancySelectMenuComponent(this) }
         Bliss.registerComponent("color-picker") { ColorPickerComponent(this) }
         Bliss.registerComponent("discord-message-editor") { DiscordMessageEditorComponent(this) }
-        Bliss.registerComponent("sidebar-toggle") { SidebarToggleComponent() }
+        Bliss.registerComponent("sidebar-toggle") { SidebarToggleComponent(this) }
         Bliss.registerComponent("loritta-shimeji") { LorittaShimejiComponent() }
         Bliss.registerComponent("twitch-callback-listener") { TwitchCallbackListenerComponent(this) }
         Bliss.registerComponent("close-left-sidebar-on-click") { CloseLeftSidebarOnClickComponent(this) }
@@ -203,5 +203,27 @@ class LorittaDashboardFrontend {
                 return@addEventHandler
             }
         }
+    }
+
+    fun isLeftSidebarOpen(): Boolean {
+        val sidebar = document.querySelector("#left-sidebar") ?: error("Could not find left sidebar!")
+
+        return sidebar.classList.contains(ClassName("is-open"))
+    }
+
+    fun openLeftSidebar() {
+        val sidebar = document.querySelector("#left-sidebar") ?: error("Could not find left sidebar!")
+
+        sidebar.classList.remove(ClassName("is-closed"))
+        sidebar.classList.add(ClassName("is-open"))
+        document.body.classList.add(ClassName("left-sidebar-open"))
+    }
+
+    fun closeLeftSidebar() {
+        val sidebar = document.querySelector("#left-sidebar") ?: error("Could not find left sidebar!")
+
+        sidebar.classList.remove(ClassName("is-open"))
+        sidebar.classList.add(ClassName("is-closed"))
+        document.body.classList.remove(ClassName("left-sidebar-open"))
     }
 }
