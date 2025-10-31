@@ -1,6 +1,6 @@
 label: "ver"
 description: "Veja o seu perfil social, ou o perfil social de outros usuários!"
-viewUserProfile: "Ver perfil da Loritta"
+viewUserProfile: "Ver perfil"
 examples:
   - "|-| Mostra o seu próprio perfil"
   - "@Loritta |-| Veja o perfil da garota mais maravilhosa do Discord!"
