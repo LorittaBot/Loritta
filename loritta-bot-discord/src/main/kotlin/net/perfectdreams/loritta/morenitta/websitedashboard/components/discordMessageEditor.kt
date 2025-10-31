@@ -22,57 +22,83 @@ import net.perfectdreams.loritta.placeholders.LorittaPlaceholder
 import net.perfectdreams.loritta.placeholders.sections.SectionPlaceholder
 
 fun FlowContent.discordMessageEditor(
+    i18nContext: I18nContext,
     guild: Guild,
+    title: FlowContent.() -> (Unit),
+    description: (FlowContent.() -> (Unit))? = null,
     target: MessageEditorBootstrap.TestMessageTarget,
     templates: List<LorittaMessageTemplate>,
     placeholders: List<MessageEditorMessagePlaceholderGroup>,
     message: String,
+    name: String,
     block: TEXTAREA.() -> (Unit)
 ) {
-    textArea {
-        attributes["bliss-component"] = "discord-message-editor"
-        attributes["discord-message-editor-bootstrap"] = BlissHex.encodeToHexString(
-            Json.encodeToString(
-                MessageEditorBootstrap(
-                    RenderableDiscordUser(
-                        guild.selfMember.effectiveName,
-                        guild.selfMember.effectiveAvatarUrl,
-                        guild.selfMember.user.isBot,
-                        true
-                    ),
-                    templates,
-                    placeholders,
-                    DiscordGuild(
-                        guild.idLong,
-                        guild.name,
-                        guild.iconId,
-                        guild.roles.map {
-                            DiscordRole(
-                                it.idLong,
-                                it.name,
-                                it.colorRaw
-                            )
-                        },
-                        listOf(),
-                        guild.emojis.map {
-                            DiscordEmoji(
-                                it.idLong,
-                                it.name,
-                                it.isAnimated
-                            )
-                        }
-                    ),
-                    target,
-                    SVGIcons.CheckFat.html.toString(),
-                    SVGIcons.EyeDropper.html.toString(),
-                    SVGIcons.CaretDown.html.toString(),
+    fieldWrapper {
+        fieldInformationWithControl {
+            fieldInformationBlock {
+                fieldTitle {
+                    title()
+                }
+
+                if (description != null) {
+                    fieldDescription {
+                        description()
+                    }
+                }
+            }
+
+            discordButton(ButtonStyle.PRIMARY) {
+                attributes["discord-message-editor-button-for"] = name
+                text("Editar")
+            }
+        }
+
+        textArea {
+            this.name = name
+            attributes["bliss-component"] = "discord-message-editor"
+            attributes["discord-message-editor-bootstrap"] = BlissHex.encodeToHexString(
+                Json.encodeToString(
+                    MessageEditorBootstrap(
+                        RenderableDiscordUser(
+                            guild.selfMember.effectiveName,
+                            guild.selfMember.effectiveAvatarUrl,
+                            guild.selfMember.user.isBot,
+                            true
+                        ),
+                        templates,
+                        placeholders,
+                        DiscordGuild(
+                            guild.idLong,
+                            guild.name,
+                            guild.iconId,
+                            guild.roles.map {
+                                DiscordRole(
+                                    it.idLong,
+                                    it.name,
+                                    it.colorRaw
+                                )
+                            },
+                            listOf(),
+                            guild.emojis.map {
+                                DiscordEmoji(
+                                    it.idLong,
+                                    it.name,
+                                    it.isAnimated
+                                )
+                            }
+                        ),
+                        target,
+                        SVGIcons.CheckFat.html.toString(),
+                        SVGIcons.EyeDropper.html.toString(),
+                        SVGIcons.CaretDown.html.toString(),
+                    )
                 )
             )
-        )
 
-        block()
+            block()
 
-        text(message)
+            text(message)
+        }
     }
 }
 

@@ -24,12 +24,15 @@ import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Text
 import org.jetbrains.compose.web.renderComposable
 import web.dom.document
+import web.events.addEventHandler
 import web.html.HTMLInputElement
 import web.html.HTMLSelectElement
 import web.html.HTMLTextAreaElement
 import web.input.INPUT
 import web.input.InputEvent
 import web.input.InputEventInit
+import web.pointer.CLICK
+import web.pointer.PointerEvent
 
 class DiscordMessageEditorComponent(val m: LorittaDashboardFrontend) : BlissComponent<HTMLTextAreaElement>() {
     override fun onMount() {
@@ -48,58 +51,56 @@ class DiscordMessageEditorComponent(val m: LorittaDashboardFrontend) : BlissComp
         val eyeDropperIcon = SVGIconManager.fromRawHtml(bootstrap.eyeDropperIconRawHtml)
         val chevronDownIcon = SVGIconManager.fromRawHtml(bootstrap.chevronDownIconRawHtml)
 
-        renderComposable(rootNode) {
-            DiscordButton(DiscordButtonType.PRIMARY, attrs = {
-                onClick {
-                    m.modalManager.openModalWithOnlyCloseButton(
-                        "Editor de Mensagem",
-                        {
-                            DiscordMessageEditor(
-                                m,
-                                bootstrap.templates,
-                                bootstrap.placeholders,
-                                bootstrap.guild,
-                                when (val target = bootstrap.testMessageTarget) {
-                                    is MessageEditorBootstrap.TestMessageTarget.QuerySelector -> {
-                                        val targetElement = document.querySelector(target.querySelector)
+        val buttonEditorTarget = document.querySelector("[discord-message-editor-button-for='${mountedElement.name}']")!!
 
-                                        val channelId = when (targetElement) {
-                                            is HTMLInputElement -> targetElement.value
-                                            is HTMLTextAreaElement -> targetElement.value
-                                            is HTMLSelectElement -> targetElement.value
-                                            else -> error("Unsupported element ${target.querySelector}!")
-                                        }
+        buttonEditorTarget.addEventHandler(PointerEvent.CLICK) {
+            m.modalManager.openModalWithOnlyCloseButton(
+                "Editor de Mensagem",
+                {
+                    DiscordMessageEditor(
+                        m,
+                        bootstrap.templates,
+                        bootstrap.placeholders,
+                        bootstrap.guild,
+                        when (val target = bootstrap.testMessageTarget) {
+                            is MessageEditorBootstrap.TestMessageTarget.QuerySelector -> {
+                                val targetElement = document.querySelector(target.querySelector)
 
-                                        TargetChannelResult.GuildMessageChannelTarget(channelId.toLong())
-                                    }
-                                    MessageEditorBootstrap.TestMessageTarget.SendDirectMessage -> TargetChannelResult.DirectMessageTarget
-                                    MessageEditorBootstrap.TestMessageTarget.Unavailable -> TargetChannelResult.ChannelNotSelected
-                                },
-                                bootstrap.selfUser,
-                                verifiedIcon,
-                                eyeDropperIcon,
-                                chevronDownIcon,
-                                rawMessage,
-                                onMessageContentChange = {
-                                    rawMessage = it
-                                    mountedElement.value = it
-                                    mountedElement.dispatchEvent(
-                                        InputEvent(
-                                            InputEvent.INPUT,
-                                            InputEventInit(
-                                                bubbles = true
-                                            )
-                                        )
-                                    )
+                                val channelId = when (targetElement) {
+                                    is HTMLInputElement -> targetElement.value
+                                    is HTMLTextAreaElement -> targetElement.value
+                                    is HTMLSelectElement -> targetElement.value
+                                    else -> error("Unsupported element ${target.querySelector}!")
                                 }
+
+                                TargetChannelResult.GuildMessageChannelTarget(channelId.toLong())
+                            }
+                            MessageEditorBootstrap.TestMessageTarget.SendDirectMessage -> TargetChannelResult.DirectMessageTarget
+                            MessageEditorBootstrap.TestMessageTarget.Unavailable -> TargetChannelResult.ChannelNotSelected
+                        },
+                        bootstrap.selfUser,
+                        verifiedIcon,
+                        eyeDropperIcon,
+                        chevronDownIcon,
+                        rawMessage,
+                        onMessageContentChange = {
+                            rawMessage = it
+                            mountedElement.value = it
+                            mountedElement.dispatchEvent(
+                                InputEvent(
+                                    InputEvent.INPUT,
+                                    InputEventInit(
+                                        bubbles = true
+                                    )
+                                )
                             )
                         }
                     )
                 }
-            }) {
-                Text("Editar Mensagem")
-            }
+            )
+        }
 
+        renderComposable(rootNode) {
             val parsedMessage = try {
                 JsonForDiscordMessages.decodeFromString<DiscordMessage>(rawMessage)
             } catch (e: SerializationException) {

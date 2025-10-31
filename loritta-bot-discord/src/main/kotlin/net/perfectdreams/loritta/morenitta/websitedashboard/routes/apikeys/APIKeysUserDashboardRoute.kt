@@ -74,10 +74,8 @@ class APIKeysUserDashboardRoute(website: LorittaDashboardWebServer) : RequiresUs
                         }
                     }
 
-                    div(classes = "field-wrapper") {
-                        div(classes = "field-title") {
-                            text(i18nContext.get(I18nKeysData.Website.Dashboard.ApiKeys.YourToken))
-                        }
+                    fieldWrapper {
+                        fieldInformation(i18nContext.get(I18nKeysData.Website.Dashboard.ApiKeys.YourToken))
 
                         div {
                             text(i18nContext.get(I18nKeysData.Website.Dashboard.ApiKeys.ResetTheTokenToGetIt))

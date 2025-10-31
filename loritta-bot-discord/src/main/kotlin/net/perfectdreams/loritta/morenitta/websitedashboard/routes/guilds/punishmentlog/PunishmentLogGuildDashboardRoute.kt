@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.punis
 
 import io.ktor.server.application.*
 import kotlinx.html.*
-import kotlinx.html.stream.createHTML
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.ModerationPunishmentMessagesConfig
@@ -17,7 +16,6 @@ import net.perfectdreams.loritta.i18n.I18nKeys
 import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls
 import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls.appendAsFormattedText
 import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls.handleI18nString
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.GuildDashboardSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
@@ -28,8 +26,6 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissEvent
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
-import net.perfectdreams.loritta.placeholders.Placeholders
-import net.perfectdreams.loritta.placeholders.sections.JoinMessagePlaceholders
 import net.perfectdreams.loritta.placeholders.sections.PunishmentMessagePlaceholders
 import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jetbrains.exposed.sql.selectAll
@@ -189,8 +185,10 @@ class PunishmentLogGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
                                         ) {
                                             fieldWrappers {
                                                 fieldWrapper {
-                                                    fieldTitle {
-                                                        text("Canal de punições")
+                                                    fieldInformationBlock {
+                                                        fieldTitle {
+                                                            text("Canal de punições")
+                                                        }
                                                     }
 
                                                     channelSelectMenu(
@@ -202,30 +200,29 @@ class PunishmentLogGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
                                                     }
                                                 }
 
-                                                fieldWrapper {
-                                                    fieldTitle {
-                                                        text("Mensagem que será mostrada quando alguém for punido")
-                                                    }
-
-                                                    discordMessageEditor(
-                                                        guild,
-                                                        MessageEditorBootstrap.TestMessageTarget.Unavailable,
-                                                        listOf(),
-                                                        placeholders,
-                                                        moderationLogConfig?.punishLogMessage ?: ""
-                                                    ) {
-                                                        attributes["loritta-config"] = "punishLogMessage"
-                                                        name = "punishLogMessage"
-                                                    }
+                                                discordMessageEditor(
+                                                    i18nContext,
+                                                    guild,
+                                                    { text( "Mensagem que será mostrada quando alguém for punido") },
+                                                    null,
+                                                    MessageEditorBootstrap.TestMessageTarget.Unavailable,
+                                                    listOf(),
+                                                    placeholders,
+                                                    moderationLogConfig?.punishLogMessage ?: "",
+                                                    "punishLogMessage"
+                                                ) {
+                                                    attributes["loritta-config"] = "punishLogMessage"
                                                 }
 
                                                 fieldWrapper {
-                                                    fieldTitle {
-                                                        text("Mensagem específicas para cada punição")
-                                                    }
+                                                    fieldInformationBlock {
+                                                        fieldTitle {
+                                                            text("Mensagem específicas para cada punição")
+                                                        }
 
-                                                    fieldDescription {
-                                                        text("Você pode escolher mensagens diferentes para cada tipo de punição, assim colocando o seu charme em cada uma delas!")
+                                                        fieldDescription {
+                                                            text("Você pode escolher mensagens diferentes para cada tipo de punição, assim colocando o seu charme em cada uma delas!")
+                                                        }
                                                     }
 
                                                     fieldWrappers {
@@ -250,14 +247,17 @@ class PunishmentLogGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
                                                                     true
                                                                 ) {
                                                                     discordMessageEditor(
+                                                                        i18nContext,
                                                                         guild,
+                                                                        { text( "Mensagem") },
+                                                                        null,
                                                                         MessageEditorBootstrap.TestMessageTarget.Unavailable,
                                                                         listOf(),
                                                                         placeholders,
-                                                                        punishmentMessage?.get(ModerationPunishmentMessagesConfig.punishLogMessage) ?: ""
+                                                                        punishmentMessage?.get(ModerationPunishmentMessagesConfig.punishLogMessage) ?: "",
+                                                                        "punishLogMessage$partName"
                                                                     ) {
                                                                         attributes["loritta-config"] = "punishLogMessage$partName"
-                                                                        name = "punishLogMessage$partName"
                                                                     }
                                                                 }
                                                             }

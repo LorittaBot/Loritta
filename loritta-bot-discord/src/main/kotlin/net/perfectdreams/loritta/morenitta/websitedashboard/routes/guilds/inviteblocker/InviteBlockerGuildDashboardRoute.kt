@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.invit
 
 import io.ktor.server.application.*
 import kotlinx.html.*
-import kotlinx.html.stream.createHTML
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
@@ -11,7 +10,6 @@ import net.perfectdreams.loritta.dashboard.EmbeddedToast
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.dashboard.messageeditor.MessageEditorBootstrap
 import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.GuildDashboardSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
@@ -29,6 +27,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.createUse
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.createUserTagPlaceholderGroup
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.dashboardBase
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.discordMessageEditor
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldInformationBlock
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldTitle
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrapper
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrappers
@@ -44,7 +43,6 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissEvent
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
-import net.perfectdreams.loritta.placeholders.sections.BlockedCommandChannelPlaceholders
 import net.perfectdreams.loritta.placeholders.sections.InviteBlockedPlaceholders
 import net.perfectdreams.loritta.serializable.ColorTheme
 import kotlin.collections.map
@@ -145,8 +143,10 @@ class InviteBlockerGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
                                         }
 
                                         fieldWrapper {
-                                            fieldTitle {
-                                                text("Canais aonde são permitidos enviar convites")
+                                            fieldInformationBlock {
+                                                fieldTitle {
+                                                    text("Canais aonde são permitidos enviar convites")
+                                                }
                                             }
 
                                             configurableChannelListInput(
@@ -170,13 +170,16 @@ class InviteBlockerGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
                                             true,
                                         ) {
                                             discordMessageEditor(
+                                                i18nContext,
                                                 guild,
+                                                { text("Mensagem") },
+                                                null,
                                                 MessageEditorBootstrap.TestMessageTarget.Unavailable,
                                                 listOf(defaultDenyMessage),
                                                 inviteBlockedPlaceholders,
-                                                inviteBlockerConfig?.warnMessage ?: defaultDenyMessage.content
+                                                inviteBlockerConfig?.warnMessage ?: defaultDenyMessage.content,
+                                                "message"
                                             ) {
-                                                name = "message"
                                                 attributes["loritta-config"] = "message"
                                             }
                                         }

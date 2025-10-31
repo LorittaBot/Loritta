@@ -6,12 +6,10 @@ import kotlinx.html.div
 import kotlinx.html.h1
 import kotlinx.html.h2
 import kotlinx.html.hr
-import kotlinx.html.html
 import kotlinx.html.id
 import kotlinx.html.numberInput
 import kotlinx.html.p
 import kotlinx.html.span
-import kotlinx.html.stream.createHTML
 import kotlinx.html.textInput
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ShipEffects
@@ -23,12 +21,12 @@ import net.perfectdreams.loritta.morenitta.website.components.EtherealGambiUtils
 import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls
 import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls.appendAsFormattedText
 import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls.handleI18nString
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserDashboardSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.dashboardBase
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldInformationBlock
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldTitle
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrapper
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrappers
@@ -123,8 +121,10 @@ class ShipEffectsUserDashboardRoute(website: LorittaDashboardWebServer) : Requir
 
                     fieldWrappers {
                         fieldWrapper {
-                            fieldTitle {
-                                text(i18nContext.get(DashboardI18nKeysData.ShipEffects.Bribe.UserThatWillReceiveTheEffect))
+                            fieldInformationBlock {
+                                fieldTitle {
+                                    text(i18nContext.get(DashboardI18nKeysData.ShipEffects.Bribe.UserThatWillReceiveTheEffect))
+                                }
                             }
 
                             div {
@@ -145,8 +145,10 @@ class ShipEffectsUserDashboardRoute(website: LorittaDashboardWebServer) : Requir
                         }
 
                         fieldWrapper {
-                            fieldTitle {
-                                text(i18nContext.get(DashboardI18nKeysData.ShipEffects.Bribe.NewShipPercentage))
+                            fieldInformationBlock {
+                                fieldTitle {
+                                    text(i18nContext.get(DashboardI18nKeysData.ShipEffects.Bribe.NewShipPercentage))
+                                }
                             }
 
                             div {

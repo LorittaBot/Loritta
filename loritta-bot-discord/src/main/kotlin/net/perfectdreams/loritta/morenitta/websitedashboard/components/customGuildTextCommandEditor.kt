@@ -8,7 +8,6 @@ import net.perfectdreams.loritta.dashboard.messageeditor.MessageEditorBootstrap
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.placeholders.sections.CustomTextCommandPlaceholders
-import net.perfectdreams.loritta.placeholders.sections.InviteBlockedPlaceholders
 
 fun FlowContent.customGuildCommandTextEditor(
     i18nContext: I18nContext,
@@ -38,8 +37,10 @@ fun FlowContent.customGuildCommandTextEditor(
 
     fieldWrappers {
         fieldWrapper {
-            fieldTitle {
-                text("Nome do Comando")
+            fieldInformationBlock {
+                fieldTitle {
+                    text("Nome do Comando")
+                }
             }
 
             textInput {
@@ -50,21 +51,18 @@ fun FlowContent.customGuildCommandTextEditor(
             }
         }
 
-        fieldWrapper {
-            fieldTitle {
-                text("Mensagem")
-            }
-
-            discordMessageEditor(
-                guild,
-                MessageEditorBootstrap.TestMessageTarget.Unavailable,
-                listOf(),
-                customGuildCommandTextPlaceholders,
-                message ?: defaultMessage.content
-            ) {
-                this.name = "message"
-                this.attributes["loritta-config"] = "message"
-            }
+        discordMessageEditor(
+            i18nContext,
+            guild,
+            { text("Mensagem") },
+            null,
+            MessageEditorBootstrap.TestMessageTarget.Unavailable,
+            listOf(),
+            customGuildCommandTextPlaceholders,
+            message ?: defaultMessage.content,
+            "message"
+        ) {
+            this.attributes["loritta-config"] = "message"
         }
     }
 }

@@ -20,8 +20,10 @@ fun FlowContent.trackedBlueskyProfileEditor(
 
     fieldWrappers {
         fieldWrapper {
-            fieldTitle {
-                text("Canal onde será enviado as mensagens")
+            fieldInformationBlock {
+                fieldTitle {
+                    text("Canal onde será enviado as mensagens")
+                }
             }
 
             channelSelectMenu(
@@ -33,52 +35,53 @@ fun FlowContent.trackedBlueskyProfileEditor(
             }
         }
 
-        fieldWrapper {
-            discordMessageEditor(
-                guild,
-                MessageEditorBootstrap.TestMessageTarget.QuerySelector("[name='channelId']"),
-                listOf(),
-                BlueskyPostPlaceholders.placeholders.map {
-                    when (it) {
-                        BlueskyPostPlaceholders.GuildIconUrlPlaceholder -> {
-                            createPlaceholderGroup(
-                                it,
-                                null,
-                                guild.iconUrl ?: "???",
-                                MessageEditorMessagePlaceholderGroup.RenderType.TEXT
-                            )
-                        }
-                        BlueskyPostPlaceholders.GuildNamePlaceholder -> {
-                            createPlaceholderGroup(
-                                it,
-                                null,
-                                guild.name,
-                                MessageEditorMessagePlaceholderGroup.RenderType.TEXT
-                            )
-                        }
-                        BlueskyPostPlaceholders.GuildSizePlaceholder -> {
-                            createPlaceholderGroup(
-                                it,
-                                null,
-                                guild.memberCount.toString(),
-                                MessageEditorMessagePlaceholderGroup.RenderType.TEXT
-                            )
-                        }
-                        BlueskyPostPlaceholders.PostUrlPlaceholder -> {
-                            createPlaceholderGroup(
-                                it,
-                                null,
-                                "https://bsky.app/profile/loritta.website/post/3l34ux7btja24",
-                                MessageEditorMessagePlaceholderGroup.RenderType.TEXT
-                            )
-                        }
+        discordMessageEditor(
+            i18nContext,
+            guild,
+            { text("Mensagem") },
+            null,
+            MessageEditorBootstrap.TestMessageTarget.QuerySelector("[name='channelId']"),
+            listOf(),
+            BlueskyPostPlaceholders.placeholders.map {
+                when (it) {
+                    BlueskyPostPlaceholders.GuildIconUrlPlaceholder -> {
+                        createPlaceholderGroup(
+                            it,
+                            null,
+                            guild.iconUrl ?: "???",
+                            MessageEditorMessagePlaceholderGroup.RenderType.TEXT
+                        )
                     }
-                },
-                message ?: defaultPostMessage.content
-            ) {
-                this.name = "message"
-                this.attributes["loritta-config"] = "message"
-            }
+                    BlueskyPostPlaceholders.GuildNamePlaceholder -> {
+                        createPlaceholderGroup(
+                            it,
+                            null,
+                            guild.name,
+                            MessageEditorMessagePlaceholderGroup.RenderType.TEXT
+                        )
+                    }
+                    BlueskyPostPlaceholders.GuildSizePlaceholder -> {
+                        createPlaceholderGroup(
+                            it,
+                            null,
+                            guild.memberCount.toString(),
+                            MessageEditorMessagePlaceholderGroup.RenderType.TEXT
+                        )
+                    }
+                    BlueskyPostPlaceholders.PostUrlPlaceholder -> {
+                        createPlaceholderGroup(
+                            it,
+                            null,
+                            "https://bsky.app/profile/loritta.website/post/3l34ux7btja24",
+                            MessageEditorMessagePlaceholderGroup.RenderType.TEXT
+                        )
+                    }
+                }
+            },
+            message ?: defaultPostMessage.content,
+            "message"
+        ) {
+            this.attributes["loritta-config"] = "message"
         }
     }
 }

@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.xprat
 
 import io.ktor.server.application.*
 import kotlinx.html.*
-import kotlinx.html.stream.createHTML
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.ExperienceRoleRates
@@ -11,7 +10,6 @@ import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.dashboard.EmbeddedToast
 import net.perfectdreams.loritta.i18n.I18nKeys
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.GuildDashboardSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
@@ -20,7 +18,6 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.ButtonSty
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.configurableRoleRates
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.dashboardBase
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.discordButton
-import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldTitle
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrapper
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrappers
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.genericSaveBar
@@ -29,6 +26,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.guildDash
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.heroText
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.heroWrapper
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.controlsWithButton
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldInformation
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.inlinedControls
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.rightSidebarContentAndSaveBarWrapper
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.roleSelectMenu
@@ -91,49 +89,45 @@ class XPRatesGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresG
                             sectionConfig {
                                 fieldWrappers {
                                     fieldWrapper {
-                                        div {
-                                            fieldTitle {
-                                                text("Bônus de XP para Cargos")
-                                            }
+                                        fieldInformation({ text("Bônus de XP para Cargos") })
 
-                                            controlsWithButton {
-                                                inlinedControls {
-                                                    span {
-                                                        text("Usuários com o cargo ")
-                                                    }
+                                        controlsWithButton {
+                                            inlinedControls {
+                                                span {
+                                                    text("Usuários com o cargo ")
+                                                }
 
-                                                    growInputWrapper {
-                                                        roleSelectMenu(guild, null) {
-                                                            name = "roleId"
-                                                            attributes["xp-action-add-element"] = "true"
-                                                        }
-                                                    }
-
-                                                    span {
-                                                        text(" irão ganhar ")
-                                                    }
-
-                                                    numberInput {
-                                                        name = "rate"
-                                                        placeholder = "2.0"
-                                                        style = "width: 100px;"
-                                                        value = "1"
-                                                        min = "0"
-                                                        step = "0.05"
+                                                growInputWrapper {
+                                                    roleSelectMenu(guild, null) {
+                                                        name = "roleId"
                                                         attributes["xp-action-add-element"] = "true"
                                                     }
-
-                                                    span {
-                                                        text("x mais XP")
-                                                    }
                                                 }
 
-                                                discordButton(ButtonStyle.SUCCESS) {
-                                                    attributes["bliss-post"] = "/${i18nContext.get(I18nKeys.Website.LocalePathId)}/guilds/${guild.idLong}/xp-rates/add"
-                                                    attributes["bliss-include-json"] = "[xp-action-add-element]"
-                                                    attributes["bliss-swap:200"] = "body (innerHTML) -> #role-rates (innerHTML)"
-                                                    text("Adicionar")
+                                                span {
+                                                    text(" irão ganhar ")
                                                 }
+
+                                                numberInput {
+                                                    name = "rate"
+                                                    placeholder = "2.0"
+                                                    style = "width: 100px;"
+                                                    value = "1"
+                                                    min = "0"
+                                                    step = "0.05"
+                                                    attributes["xp-action-add-element"] = "true"
+                                                }
+
+                                                span {
+                                                    text("x mais XP")
+                                                }
+                                            }
+
+                                            discordButton(ButtonStyle.SUCCESS) {
+                                                attributes["bliss-post"] = "/${i18nContext.get(I18nKeys.Website.LocalePathId)}/guilds/${guild.idLong}/xp-rates/add"
+                                                attributes["bliss-include-json"] = "[xp-action-add-element]"
+                                                attributes["bliss-swap:200"] = "body (innerHTML) -> #role-rates (innerHTML)"
+                                                text("Adicionar")
                                             }
                                         }
 

@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.badge
 
 import io.ktor.server.application.*
 import kotlinx.html.*
-import kotlinx.html.stream.createHTML
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
@@ -14,7 +13,6 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls
 import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls.appendAsFormattedText
 import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls.handleI18nString
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.GuildDashboardSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
@@ -106,8 +104,10 @@ class BadgeGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGui
                                 ) {
                                     fieldWrappers {
                                         fieldWrapper {
-                                            fieldTitle {
-                                                text("Imagem da Insígnia")
+                                            fieldInformationBlock {
+                                                fieldTitle {
+                                                    text("Imagem da Insígnia")
+                                                }
                                             }
 
                                             discordButton(ButtonStyle.PRIMARY) {

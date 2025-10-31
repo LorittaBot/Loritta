@@ -37,76 +37,77 @@ fun FlowContent.trackedYouTubeChannelEditor(
 
         val genericVideoId = "jhkGNIlNqXw"
 
-        fieldWrapper {
-            discordMessageEditor(
-                guild,
-                MessageEditorBootstrap.TestMessageTarget.QuerySelector("[name='channelId']"),
-                listOf(defaultYouTubeMessage),
-                YouTubePostPlaceholders.placeholders.map {
-                    when (it) {
-                        YouTubePostPlaceholders.VideoTitlePlaceholder -> {
-                            createPlaceholderGroup(
-                                it.placeholders,
-                                null,
-                                "paffendorf",
-                                MessageEditorMessagePlaceholderGroup.RenderType.TEXT
-                            )
-                        }
-                        YouTubePostPlaceholders.GuildIconUrlPlaceholder -> {
-                            createPlaceholderGroup(
-                                it.placeholders,
-                                null,
-                                guild.iconUrl ?: "???",
-                                MessageEditorMessagePlaceholderGroup.RenderType.TEXT
-                            )
-                        }
-                        YouTubePostPlaceholders.GuildSizePlaceholder -> {
-                            createPlaceholderGroup(
-                                it.placeholders,
-                                null,
-                                guild.memberCount.toString(),
-                                MessageEditorMessagePlaceholderGroup.RenderType.TEXT
-                            )
-                        }
-                        YouTubePostPlaceholders.VideoUrlPlaceholder -> {
-                            createPlaceholderGroup(
-                                it.placeholders,
-                                null,
-                                "https://youtu.be/$genericVideoId",
-                                MessageEditorMessagePlaceholderGroup.RenderType.TEXT
-                            )
-                        }
-                        YouTubePostPlaceholders.GuildNamePlaceholder -> {
-                            createPlaceholderGroup(
-                                it.placeholders,
-                                null,
-                                guild.name,
-                                MessageEditorMessagePlaceholderGroup.RenderType.TEXT
-                            )
-                        }
-                        YouTubePostPlaceholders.VideoIdPlaceholder -> {
-                            createPlaceholderGroup(
-                                it.placeholders,
-                                null,
-                                genericVideoId,
-                                MessageEditorMessagePlaceholderGroup.RenderType.TEXT
-                            )
-                        }
-                        YouTubePostPlaceholders.VideoThumbnailPlaceholder -> {
-                            createPlaceholderGroup(
-                                it.placeholders,
-                                null,
-                                "https://img.youtube.com/vi/$genericVideoId/maxresdefault.jpg",
-                                MessageEditorMessagePlaceholderGroup.RenderType.TEXT
-                            )
-                        }
+        discordMessageEditor(
+            i18nContext,
+            guild,
+            { text("Mensagem") },
+            null,
+            MessageEditorBootstrap.TestMessageTarget.QuerySelector("[name='channelId']"),
+            listOf(defaultYouTubeMessage),
+            YouTubePostPlaceholders.placeholders.map {
+                when (it) {
+                    YouTubePostPlaceholders.VideoTitlePlaceholder -> {
+                        createPlaceholderGroup(
+                            it.placeholders,
+                            null,
+                            "paffendorf",
+                            MessageEditorMessagePlaceholderGroup.RenderType.TEXT
+                        )
                     }
-                },
-                message ?: defaultYouTubeMessage.content
-            ) {
-                this.name = "message"
-                this.attributes["loritta-config"] = "message"
-            }
+                    YouTubePostPlaceholders.GuildIconUrlPlaceholder -> {
+                        createPlaceholderGroup(
+                            it.placeholders,
+                            null,
+                            guild.iconUrl ?: "???",
+                            MessageEditorMessagePlaceholderGroup.RenderType.TEXT
+                        )
+                    }
+                    YouTubePostPlaceholders.GuildSizePlaceholder -> {
+                        createPlaceholderGroup(
+                            it.placeholders,
+                            null,
+                            guild.memberCount.toString(),
+                            MessageEditorMessagePlaceholderGroup.RenderType.TEXT
+                        )
+                    }
+                    YouTubePostPlaceholders.VideoUrlPlaceholder -> {
+                        createPlaceholderGroup(
+                            it.placeholders,
+                            null,
+                            "https://youtu.be/$genericVideoId",
+                            MessageEditorMessagePlaceholderGroup.RenderType.TEXT
+                        )
+                    }
+                    YouTubePostPlaceholders.GuildNamePlaceholder -> {
+                        createPlaceholderGroup(
+                            it.placeholders,
+                            null,
+                            guild.name,
+                            MessageEditorMessagePlaceholderGroup.RenderType.TEXT
+                        )
+                    }
+                    YouTubePostPlaceholders.VideoIdPlaceholder -> {
+                        createPlaceholderGroup(
+                            it.placeholders,
+                            null,
+                            genericVideoId,
+                            MessageEditorMessagePlaceholderGroup.RenderType.TEXT
+                        )
+                    }
+                    YouTubePostPlaceholders.VideoThumbnailPlaceholder -> {
+                        createPlaceholderGroup(
+                            it.placeholders,
+                            null,
+                            "https://img.youtube.com/vi/$genericVideoId/maxresdefault.jpg",
+                            MessageEditorMessagePlaceholderGroup.RenderType.TEXT
+                        )
+                    }
+                }
+            },
+            message ?: defaultYouTubeMessage.content,
+            "message"
+        ) {
+            this.attributes["loritta-config"] = "message"
         }
     }
 }

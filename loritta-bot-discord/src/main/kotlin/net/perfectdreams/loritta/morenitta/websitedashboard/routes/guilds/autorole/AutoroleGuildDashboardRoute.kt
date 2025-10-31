@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.autor
 
 import io.ktor.server.application.*
 import kotlinx.html.*
-import kotlinx.html.stream.createHTML
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
@@ -10,13 +9,13 @@ import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.dashboard.EmbeddedToast
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.GuildDashboardSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.configurableRoleListInput
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.dashboardBase
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldInformationBlock
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldTitle
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrapper
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrappers
@@ -86,8 +85,10 @@ class AutoroleGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                                 ) {
                                     fieldWrappers {
                                         fieldWrapper {
-                                            fieldTitle {
-                                                text("Cargos que serão dados ao usuário ao ele entrar")
+                                            fieldInformationBlock {
+                                                fieldTitle {
+                                                    text("Cargos que serão dados ao usuário ao ele entrar")
+                                                }
                                             }
 
                                             configurableRoleListInput(
@@ -116,8 +117,10 @@ class AutoroleGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                                         }
 
                                         fieldWrapper {
-                                            fieldTitle {
-                                                text("Depois de quanto tempo o cargo será dado? (Segundos)")
+                                            fieldInformationBlock {
+                                                fieldTitle {
+                                                    text("Depois de quanto tempo o cargo será dado? (Segundos)")
+                                                }
                                             }
 
                                             numberInput {

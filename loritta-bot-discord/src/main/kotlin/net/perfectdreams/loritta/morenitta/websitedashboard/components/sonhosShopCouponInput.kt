@@ -15,10 +15,9 @@ fun FlowContent.sonhosShopCouponInput(i18nContext: I18nContext) {
         id = "coupon-wrapper"
         style = "gap: 1em; display: flex; flex-direction: column; justify-content: left; gap: 1em;"
 
-        div(classes = "field-wrapper") {
-            div(classes = "field-title") {
-                text(i18nContext.get(DashboardI18nKeysData.SonhosShop.CouponCodes.DiscountCoupon))
-            }
+        fieldWrapper {
+            fieldInformation(i18nContext.get(DashboardI18nKeysData.SonhosShop.CouponCodes.DiscountCoupon))
+
 
             div {
                 style = "display: flex; gap: 1em;"

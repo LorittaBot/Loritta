@@ -2,20 +2,14 @@ package net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.welco
 
 import io.ktor.server.application.*
 import kotlinx.html.*
-import kotlinx.html.stream.createHTML
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
-import net.perfectdreams.loritta.common.utils.embeds.DiscordMessage
 import net.perfectdreams.loritta.dashboard.EmbeddedToast
 import net.perfectdreams.loritta.dashboard.messageeditor.MessageEditorBootstrap
 import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.morenitta.website.components.DashboardDiscordMessageEditor
 import net.perfectdreams.loritta.morenitta.website.components.EtherealGambiUtils.etherealGambiImg
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.GuildDashboardSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
@@ -187,8 +181,10 @@ class WelcomerGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                                     ) {
                                         fieldWrappers {
                                             fieldWrapper {
-                                                fieldTitle {
-                                                    text("Canal onde será enviado as mensagens")
+                                                fieldInformationBlock {
+                                                    fieldTitle {
+                                                        text("Canal onde será enviado as mensagens")
+                                                    }
                                                 }
 
                                                 channelSelectMenu(
@@ -201,8 +197,10 @@ class WelcomerGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                                             }
 
                                             fieldWrapper {
-                                                fieldTitle {
-                                                    text("Segundos para deletar a mensagem (Deixe em 0 para nunca deletar)")
+                                                fieldInformationBlock {
+                                                    fieldTitle {
+                                                        text("Segundos para deletar a mensagem (Deixe em 0 para nunca deletar)")
+                                                    }
                                                 }
 
                                                 numberInput {
@@ -215,21 +213,18 @@ class WelcomerGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                                                 }
                                             }
 
-                                            fieldWrapper {
-                                                fieldTitle {
-                                                    text("Mensagem quando alguém entrar")
-                                                }
-
-                                                discordMessageEditor(
-                                                    guild,
-                                                    MessageEditorBootstrap.TestMessageTarget.QuerySelector("[loritta-config='channelJoinId']"),
-                                                    listOf(defaultJoinMessage),
-                                                    joinMessagePlaceholders,
-                                                    welcomerConfig?.joinMessage ?: defaultJoinMessage.content
-                                                ) {
-                                                    attributes["loritta-config"] = "joinMessage"
-                                                    name = "joinMessage"
-                                                }
+                                            discordMessageEditor(
+                                                i18nContext,
+                                                guild,
+                                                { text("Mensagem quando alguém entrar") },
+                                                null,
+                                                MessageEditorBootstrap.TestMessageTarget.QuerySelector("[loritta-config='channelJoinId']"),
+                                                listOf(defaultJoinMessage),
+                                                joinMessagePlaceholders,
+                                                welcomerConfig?.joinMessage ?: defaultJoinMessage.content,
+                                                "joinMessage"
+                                            ) {
+                                                attributes["loritta-config"] = "joinMessage"
                                             }
                                         }
                                     }
@@ -245,8 +240,10 @@ class WelcomerGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                                     ) {
                                         fieldWrappers {
                                             fieldWrapper {
-                                                fieldTitle {
-                                                    text("Canal onde será enviado as mensagens")
+                                                fieldInformationBlock {
+                                                    fieldTitle {
+                                                        text("Canal onde será enviado as mensagens")
+                                                    }
                                                 }
 
                                                 channelSelectMenu(
@@ -259,8 +256,10 @@ class WelcomerGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                                             }
 
                                             fieldWrapper {
-                                                fieldTitle {
-                                                    text("Segundos para deletar a mensagem (Deixe em 0 para nunca deletar)")
+                                                fieldInformationBlock {
+                                                    fieldTitle {
+                                                        text("Segundos para deletar a mensagem (Deixe em 0 para nunca deletar)")
+                                                    }
                                                 }
 
                                                 numberInput {
@@ -273,21 +272,18 @@ class WelcomerGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                                                 }
                                             }
 
-                                            fieldWrapper {
-                                                fieldTitle {
-                                                    text("Mensagem quando alguém sair")
-                                                }
-
-                                                discordMessageEditor(
-                                                    guild,
-                                                    MessageEditorBootstrap.TestMessageTarget.QuerySelector("[loritta-config='channelRemoveId']"),
-                                                    listOf(defaultLeaveMessage),
-                                                    leaveMessagePlaceholders,
-                                                    welcomerConfig?.removeMessage ?: defaultLeaveMessage.content
-                                                ) {
-                                                    attributes["name"] = "removeMessage"
-                                                    attributes["loritta-config"] = "removeMessage"
-                                                }
+                                            discordMessageEditor(
+                                                i18nContext,
+                                                guild,
+                                                { text("Mensagem quando alguém sair") },
+                                                null,
+                                                MessageEditorBootstrap.TestMessageTarget.QuerySelector("[loritta-config='channelRemoveId']"),
+                                                listOf(defaultLeaveMessage),
+                                                leaveMessagePlaceholders,
+                                                welcomerConfig?.removeMessage ?: defaultLeaveMessage.content,
+                                                "removeMessage"
+                                            ) {
+                                                attributes["loritta-config"] = "removeMessage"
                                             }
 
                                             fieldWrapper {
@@ -301,21 +297,18 @@ class WelcomerGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                                                     true
                                                 ) {
                                                     fieldWrappers {
-                                                        fieldWrapper {
-                                                            fieldTitle {
-                                                                text("Mensagem quando alguém for banido")
-                                                            }
-
-                                                            discordMessageEditor(
-                                                                guild,
-                                                                MessageEditorBootstrap.TestMessageTarget.QuerySelector("[loritta-config='channelRemoveId']"),
-                                                                listOf(),
-                                                                leaveMessagePlaceholders,
-                                                                welcomerConfig?.bannedMessage ?: ""
-                                                            ) {
-                                                                attributes["name"] = "bannedMessage"
-                                                                attributes["loritta-config"] = "bannedMessage"
-                                                            }
+                                                        discordMessageEditor(
+                                                            i18nContext,
+                                                            guild,
+                                                            { text("Mensagem quando alguém for banido") },
+                                                            null,
+                                                            MessageEditorBootstrap.TestMessageTarget.QuerySelector("[loritta-config='channelRemoveId']"),
+                                                            listOf(),
+                                                            leaveMessagePlaceholders,
+                                                            welcomerConfig?.bannedMessage ?: "",
+                                                            "bannedMessage"
+                                                        ) {
+                                                            attributes["loritta-config"] = "bannedMessage"
                                                         }
                                                     }
                                                 }
@@ -335,21 +328,18 @@ class WelcomerGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                                         true
                                     ) {
                                         fieldWrappers {
-                                            fieldWrapper {
-                                                fieldTitle {
-                                                    text("Mensagem quando alguém entrar (via mensagem direta)")
-                                                }
-
-                                                discordMessageEditor(
-                                                    guild,
-                                                    MessageEditorBootstrap.TestMessageTarget.SendDirectMessage,
-                                                    listOf(),
-                                                    joinMessagePlaceholders,
-                                                    welcomerConfig?.joinPrivateMessage ?: ""
-                                                ) {
-                                                    attributes["name"] = "joinPrivateMessage"
-                                                    attributes["loritta-config"] = "joinPrivateMessage"
-                                                }
+                                            discordMessageEditor(
+                                                i18nContext,
+                                                guild,
+                                                { text("Mensagem quando alguém entrar (via mensagem direta)") },
+                                                null,
+                                                MessageEditorBootstrap.TestMessageTarget.SendDirectMessage,
+                                                listOf(),
+                                                joinMessagePlaceholders,
+                                                welcomerConfig?.joinPrivateMessage ?: "",
+                                                "joinPrivateMessage"
+                                            ) {
+                                                attributes["loritta-config"] = "joinPrivateMessage"
                                             }
                                         }
                                     }

@@ -7,12 +7,9 @@ import io.ktor.server.util.*
 import kotlinx.html.FlowContent
 import kotlinx.html.div
 import kotlinx.html.hr
-import kotlinx.html.html
 import kotlinx.html.id
 import kotlinx.html.numberInput
 import kotlinx.html.option
-import kotlinx.html.select
-import kotlinx.html.stream.createHTML
 import kotlinx.html.textArea
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel
@@ -26,7 +23,6 @@ import net.perfectdreams.loritta.dashboard.EmbeddedToast
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.GuildDashboardSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
@@ -115,8 +111,10 @@ class MemberCounterChannelGuildDashboardRoute(website: LorittaDashboardWebServer
                                         ) {
                                             fieldWrappers {
                                                 fieldWrapper {
-                                                    fieldTitle {
-                                                        text("Tópico do Canal (Será utilizado após alguém entrar/sair)")
+                                                    fieldInformationBlock {
+                                                        fieldTitle {
+                                                            text("Tópico do Canal (Será utilizado após alguém entrar/sair)")
+                                                        }
                                                     }
 
                                                     textArea {
@@ -127,8 +125,10 @@ class MemberCounterChannelGuildDashboardRoute(website: LorittaDashboardWebServer
                                                 }
 
                                                 fieldWrapper {
-                                                    fieldTitle {
-                                                        text("Tema do Contador de Membros")
+                                                    fieldInformationBlock {
+                                                        fieldTitle {
+                                                            text("Tema do Contador de Membros")
+                                                        }
                                                     }
 
                                                     fancySelectMenu {
@@ -150,8 +150,10 @@ class MemberCounterChannelGuildDashboardRoute(website: LorittaDashboardWebServer
                                                 }
 
                                                 fieldWrapper {
-                                                    fieldTitle {
-                                                        text("Preenchimento com Zeros")
+                                                    fieldInformationBlock {
+                                                        fieldTitle {
+                                                            text("Preenchimento com Zeros")
+                                                        }
                                                     }
 
                                                     numberInput {
@@ -169,8 +171,10 @@ class MemberCounterChannelGuildDashboardRoute(website: LorittaDashboardWebServer
                                                 }
 
                                                 fieldWrapper {
-                                                    fieldTitle {
-                                                        text("Pré-visualização")
+                                                    fieldInformationBlock {
+                                                        fieldTitle {
+                                                            text("Pré-visualização")
+                                                        }
                                                     }
 
                                                     div {

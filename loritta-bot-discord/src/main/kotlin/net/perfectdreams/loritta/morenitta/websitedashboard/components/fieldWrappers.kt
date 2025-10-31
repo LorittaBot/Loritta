@@ -16,6 +16,41 @@ fun FlowContent.fieldWrapper(block: DIV.() -> (Unit)) {
     }
 }
 
+fun FlowContent.fieldInformationWithControl(block: FlowContent.() -> (Unit)) {
+    div(classes = "field-information-with-control") {
+        block()
+    }
+}
+
+fun FlowContent.fieldInformationBlock(block: FlowContent.() -> (Unit)) {
+    div(classes = "field-information") {
+        block()
+    }
+}
+
+fun FlowContent.fieldInformation(title: String, description: String? = null) {
+    fieldInformation(
+        {
+            text(title)
+        },
+        description?.let { { text(description) } }
+    )
+}
+
+fun FlowContent.fieldInformation(title: FlowContent.() -> (Unit), description: (FlowContent.() -> (Unit))? = null) {
+    div(classes = "field-information") {
+        fieldTitle {
+            title()
+        }
+
+        if (description != null) {
+            fieldDescription {
+                description()
+            }
+        }
+    }
+}
+
 fun FlowContent.fieldTitle(block: FlowContent.() -> (Unit)) {
     div(classes = "field-title") {
         block()

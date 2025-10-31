@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.xpblo
 
 import io.ktor.server.application.*
 import kotlinx.html.*
-import kotlinx.html.stream.createHTML
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
@@ -10,7 +9,6 @@ import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.dashboard.EmbeddedToast
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.GuildDashboardSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
@@ -19,6 +17,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.configura
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.configurableRoleListInput
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.dashboardBase
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldDescription
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldInformationBlock
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldTitle
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrapper
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrappers
@@ -80,12 +79,14 @@ class XPBlockersGuildDashboardRoute(website: LorittaDashboardWebServer) : Requir
                             sectionConfig {
                                 fieldWrappers {
                                     fieldWrapper {
-                                        fieldTitle {
-                                            text("Cargos que não irão receber experiência")
-                                        }
+                                        fieldInformationBlock {
+                                            fieldTitle {
+                                                text("Cargos que não irão receber experiência")
+                                            }
 
-                                        fieldDescription {
-                                            text("Cargos que estão na lista não irão ganhar experiência. Perfeito para usuários que acham engraçado \"spammar\" e \"floodar\" seu servidor com mensagens aleatórias toscas só para ganhar mais experiência.")
+                                            fieldDescription {
+                                                text("Cargos que estão na lista não irão ganhar experiência. Perfeito para usuários que acham engraçado \"spammar\" e \"floodar\" seu servidor com mensagens aleatórias toscas só para ganhar mais experiência.")
+                                            }
                                         }
 
                                         configurableRoleListInput(
@@ -100,12 +101,14 @@ class XPBlockersGuildDashboardRoute(website: LorittaDashboardWebServer) : Requir
                                     }
 
                                     fieldWrapper {
-                                        fieldTitle {
-                                            text("Canais que não irão dar experiência")
-                                        }
+                                        fieldInformationBlock {
+                                            fieldTitle {
+                                                text("Canais que não irão dar experiência")
+                                            }
 
-                                        fieldDescription {
-                                            text("Canais que estão nesta lista não irão dar experência para usuários que falarem neles. Útil para bloquear canais criados para \"spam\" ou \"flood\", assim evitando que usuários ganhem experiência no seu servidor apenas mandando mensagens aleatórias toscas sem realmente conversar.")
+                                            fieldDescription {
+                                                text("Canais que estão nesta lista não irão dar experência para usuários que falarem neles. Útil para bloquear canais criados para \"spam\" ou \"flood\", assim evitando que usuários ganhem experiência no seu servidor apenas mandando mensagens aleatórias toscas sem realmente conversar.")
+                                            }
                                         }
 
                                         configurableChannelListInput(

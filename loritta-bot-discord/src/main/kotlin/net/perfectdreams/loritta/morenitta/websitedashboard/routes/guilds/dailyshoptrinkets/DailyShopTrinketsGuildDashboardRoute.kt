@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.daily
 
 import io.ktor.server.application.*
 import kotlinx.html.*
-import kotlinx.html.stream.createHTML
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.utils.TimeFormat
 import net.perfectdreams.i18nhelper.core.I18nContext
@@ -17,7 +16,6 @@ import net.perfectdreams.loritta.i18n.I18nKeys
 import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls
 import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls.appendAsFormattedText
 import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls.handleI18nString
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.GuildDashboardSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
@@ -26,6 +24,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.channelSe
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.createPlaceholderGroup
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.dashboardBase
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.discordMessageEditor
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldInformationBlock
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldTitle
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrapper
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrappers
@@ -152,7 +151,9 @@ class DailyShopTrinketsGuildDashboardRoute(website: LorittaDashboardWebServer) :
                                     ) {
                                         fieldWrappers {
                                             fieldWrapper {
-                                                fieldTitle { text(i18nContext.get(DashboardI18nKeysData.DailyShopTrinkets.ShopRefresh.ChannelWhereTheMessagesWillBeSent)) }
+                                                fieldInformationBlock {
+                                                    fieldTitle { text(i18nContext.get(DashboardI18nKeysData.DailyShopTrinkets.ShopRefresh.ChannelWhereTheMessagesWillBeSent)) }
+                                                }
 
                                                 channelSelectMenu(
                                                     guild,
@@ -163,19 +164,18 @@ class DailyShopTrinketsGuildDashboardRoute(website: LorittaDashboardWebServer) :
                                                 }
                                             }
 
-                                            fieldWrapper {
-                                                fieldTitle { text(i18nContext.get(DashboardI18nKeysData.DailyShopTrinkets.ShopRefresh.MessageWhenTheShopUpdates)) }
-
-                                                discordMessageEditor(
-                                                    guild,
-                                                    MessageEditorBootstrap.TestMessageTarget.QuerySelector("[loritta-config='shopTrinketsChannelId']"),
-                                                    listOf(),
-                                                    placeholderGroups,
-                                                    databaseConfig?.get(LorittaDailyShopNotificationsConfigs.shopTrinketsMessage) ?: ""
-                                                ) {
-                                                    attributes["loritta-config"] = "shopTrinketsMessage"
-                                                    name = "shopTrinketsMessage"
-                                                }
+                                            discordMessageEditor(
+                                                i18nContext,
+                                                guild,
+                                                { text(i18nContext.get(DashboardI18nKeysData.DailyShopTrinkets.ShopRefresh.MessageWhenTheShopUpdates)) },
+                                                null,
+                                                MessageEditorBootstrap.TestMessageTarget.QuerySelector("[loritta-config='shopTrinketsChannelId']"),
+                                                listOf(),
+                                                placeholderGroups,
+                                                databaseConfig?.get(LorittaDailyShopNotificationsConfigs.shopTrinketsMessage) ?: "",
+                                                "shopTrinketsMessage"
+                                            ) {
+                                                attributes["loritta-config"] = "shopTrinketsMessage"
                                             }
                                         }
                                     }
@@ -193,7 +193,9 @@ class DailyShopTrinketsGuildDashboardRoute(website: LorittaDashboardWebServer) :
                                     ) {
                                         fieldWrappers {
                                             fieldWrapper {
-                                                fieldTitle { text(i18nContext.get(DashboardI18nKeysData.DailyShopTrinkets.NewTrinkets.ChannelWhereTheMessagesWillBeSent)) }
+                                                fieldInformationBlock {
+                                                    fieldTitle { text(i18nContext.get(DashboardI18nKeysData.DailyShopTrinkets.NewTrinkets.ChannelWhereTheMessagesWillBeSent)) }
+                                                }
 
                                                 channelSelectMenu(
                                                     guild,
@@ -204,19 +206,18 @@ class DailyShopTrinketsGuildDashboardRoute(website: LorittaDashboardWebServer) :
                                                 }
                                             }
 
-                                            fieldWrapper {
-                                                fieldTitle { text(i18nContext.get(DashboardI18nKeysData.DailyShopTrinkets.NewTrinkets.MessageWhenNewTrinkets)) }
-
-                                                discordMessageEditor(
-                                                    guild,
-                                                    MessageEditorBootstrap.TestMessageTarget.QuerySelector("[loritta-config='newTrinketsChannelId']"),
-                                                    listOf(),
-                                                    placeholderGroups,
-                                                    databaseConfig?.get(LorittaDailyShopNotificationsConfigs.newTrinketsMessage) ?: ""
-                                                ) {
-                                                    attributes["loritta-config"] = "newTrinketsMessage"
-                                                    name = "newTrinketsMessage"
-                                                }
+                                            discordMessageEditor(
+                                                i18nContext,
+                                                guild,
+                                                { text(i18nContext.get(DashboardI18nKeysData.DailyShopTrinkets.NewTrinkets.MessageWhenNewTrinkets)) },
+                                                null,
+                                                MessageEditorBootstrap.TestMessageTarget.QuerySelector("[loritta-config='newTrinketsChannelId']"),
+                                                listOf(),
+                                                placeholderGroups,
+                                                databaseConfig?.get(LorittaDailyShopNotificationsConfigs.newTrinketsMessage) ?: "",
+                                                "newTrinketsMessage"
+                                            ) {
+                                                attributes["loritta-config"] = "newTrinketsMessage"
                                             }
                                         }
                                     }

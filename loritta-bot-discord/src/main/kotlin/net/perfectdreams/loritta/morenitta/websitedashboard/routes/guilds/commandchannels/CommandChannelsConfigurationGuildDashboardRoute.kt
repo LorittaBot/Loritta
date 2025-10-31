@@ -2,9 +2,7 @@ package net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.comma
 
 import io.ktor.server.application.ApplicationCall
 import kotlinx.html.div
-import kotlinx.html.html
 import kotlinx.html.id
-import kotlinx.html.stream.createHTML
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import net.dv8tion.jda.api.entities.Guild
@@ -13,9 +11,7 @@ import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.dashboard.messageeditor.MessageEditorBootstrap
-import net.perfectdreams.loritta.dashboard.messageeditor.MessageEditorMessagePlaceholderGroup
 import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.GuildDashboardSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
@@ -25,7 +21,6 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.createGui
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.createGuildNamePlaceholderGroup
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.createGuildSizePlaceholderGroup
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.createMessageTemplate
-import net.perfectdreams.loritta.morenitta.websitedashboard.components.createPlaceholderGroup
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.createUserAvatarUrlPlaceholderGroup
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.createUserDiscriminatorPlaceholderGroup
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.createUserIdPlaceholderGroup
@@ -35,6 +30,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.createUse
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.dashboardBase
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.discordMessageEditor
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldDescription
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldInformationBlock
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldTitle
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrapper
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrappers
@@ -125,12 +121,14 @@ class CommandChannelsConfigurationGuildDashboardRoute(website: LorittaDashboardW
 
                                 fieldWrappers {
                                     fieldWrapper {
-                                        fieldTitle {
-                                            text("Canais que serão proibidos usar comandos")
-                                        }
+                                        fieldInformationBlock {
+                                            fieldTitle {
+                                                text("Canais que serão proibidos usar comandos")
+                                            }
 
-                                        fieldDescription {
-                                            text("Nestes canais eu irei ignorar comandos de usuários, como se eu nem estivesse lá! (Mesmo que eu esteja observando as suas mensagens para dar XP, hihi~) Caso você queira configurar que cargos específicos possam burlar a restrição, configure na seção de permissões.")
+                                            fieldDescription {
+                                                text("Nestes canais eu irei ignorar comandos de usuários, como se eu nem estivesse lá! (Mesmo que eu esteja observando as suas mensagens para dar XP, hihi~) Caso você queira configurar que cargos específicos possam burlar a restrição, configure na seção de permissões.")
+                                            }
                                         }
 
                                         configurableChannelListInput(
@@ -159,11 +157,15 @@ class CommandChannelsConfigurationGuildDashboardRoute(website: LorittaDashboardW
                                             true
                                         ) {
                                             discordMessageEditor(
+                                                i18nContext,
                                                 guild,
+                                                { text("Mensagem") },
+                                                null,
                                                 MessageEditorBootstrap.TestMessageTarget.Unavailable,
                                                 listOf(defaultDenyMessage),
                                                 blockedCommandsPlaceholders,
-                                                blockedWarning ?: defaultDenyMessage.content
+                                                blockedWarning ?: defaultDenyMessage.content,
+                                                "blockedWarning"
                                             ) {
                                                 name = "blockedWarning"
                                                 attributes["loritta-config"] = "blockedWarning"

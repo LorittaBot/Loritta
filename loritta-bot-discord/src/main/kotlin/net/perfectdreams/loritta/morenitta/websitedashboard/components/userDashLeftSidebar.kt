@@ -4,7 +4,6 @@ import kotlinx.html.FlowContent
 import kotlinx.html.a
 import kotlinx.html.div
 import kotlinx.html.img
-import kotlinx.html.ins
 import kotlinx.html.option
 import kotlinx.html.p
 import kotlinx.html.select
@@ -17,7 +16,6 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysDat
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserDashboardSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.SVGIcons
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedModal
-import net.perfectdreams.loritta.morenitta.websitedashboard.utils.defaultModalCloseButton
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.openModalOnClick
 
 fun FlowContent.userDashLeftSidebarEntries(
@@ -131,9 +129,7 @@ fun FlowContent.userDashLeftSidebarEntries(
 
                     fieldWrappers {
                         fieldWrapper {
-                            fieldTitle {
-                                text(i18nContext.get(DashboardI18nKeysData.LorittaSpawner.ActivityLevel.Title))
-                            }
+                            fieldInformation(i18nContext.get(DashboardI18nKeysData.LorittaSpawner.ActivityLevel.Title))
 
                             select {
                                 attributes["bliss-component"] = "loritta-shimeji-activity-level, fancy-select-menu"

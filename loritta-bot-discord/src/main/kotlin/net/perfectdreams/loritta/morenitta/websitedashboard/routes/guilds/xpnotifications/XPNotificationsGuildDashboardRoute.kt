@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.xpnot
 
 import io.ktor.server.application.*
 import kotlinx.html.*
-import kotlinx.html.stream.createHTML
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.LevelAnnouncementConfigs
@@ -12,7 +11,6 @@ import net.perfectdreams.loritta.dashboard.EmbeddedToast
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.dashboard.messageeditor.MessageEditorBootstrap
 import net.perfectdreams.loritta.dashboard.messageeditor.MessageEditorMessagePlaceholderGroup.RenderType
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.GuildDashboardSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
@@ -32,6 +30,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.createUse
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.dashboardBase
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.discordMessageEditor
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fancySelectMenu
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldInformationBlock
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldTitle
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrapper
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrappers
@@ -180,8 +179,10 @@ class XPNotificationsGuildDashboardRoute(website: LorittaDashboardWebServer) : R
                                         ) {
                                             fieldWrappers {
                                                 fieldWrapper {
-                                                    fieldTitle {
-                                                        text("Onde a mensagem será enviada")
+                                                    fieldInformationBlock {
+                                                        fieldTitle {
+                                                            text("Onde a mensagem será enviada")
+                                                        }
                                                     }
 
                                                     fancySelectMenu {
@@ -209,8 +210,10 @@ class XPNotificationsGuildDashboardRoute(website: LorittaDashboardWebServer) : R
                                                 }
 
                                                 fieldWrapper {
-                                                    fieldTitle {
-                                                        text("Canal onde a mensagem será enviada")
+                                                    fieldInformationBlock {
+                                                        fieldTitle {
+                                                            text("Canal onde a mensagem será enviada")
+                                                        }
                                                     }
 
                                                     channelSelectMenu(
@@ -238,21 +241,18 @@ class XPNotificationsGuildDashboardRoute(website: LorittaDashboardWebServer) : R
                                                     )
                                                 }
 
-                                                fieldWrapper {
-                                                    fieldTitle {
-                                                        text("Mensagem ao subir de nível")
-                                                    }
-
-                                                    discordMessageEditor(
-                                                        guild,
-                                                        MessageEditorBootstrap.TestMessageTarget.Unavailable,
-                                                        listOf(defaultLevelUpMessage),
-                                                        xpRewardsPlaceholders,
-                                                        announcement?.get(LevelAnnouncementConfigs.message) ?: defaultLevelUpMessage.content
-                                                    ) {
-                                                        name = "message"
-                                                        attributes["loritta-config"] = "message"
-                                                    }
+                                                discordMessageEditor(
+                                                    i18nContext,
+                                                    guild,
+                                                    { text("Mensagem ao subir de nível") },
+                                                    null,
+                                                    MessageEditorBootstrap.TestMessageTarget.Unavailable,
+                                                    listOf(defaultLevelUpMessage),
+                                                    xpRewardsPlaceholders,
+                                                    announcement?.get(LevelAnnouncementConfigs.message) ?: defaultLevelUpMessage.content,
+                                                    "message"
+                                                ) {
+                                                    attributes["loritta-config"] = "message"
                                                 }
                                             }
                                         }

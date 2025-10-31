@@ -6,11 +6,9 @@ import kotlinx.html.classes
 import kotlinx.html.div
 import kotlinx.html.h1
 import kotlinx.html.hr
-import kotlinx.html.html
 import kotlinx.html.id
 import kotlinx.html.numberInput
 import kotlinx.html.p
-import kotlinx.html.stream.createHTML
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
@@ -19,13 +17,13 @@ import net.perfectdreams.loritta.dashboard.EmbeddedToast
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.website.components.EtherealGambiUtils.etherealGambiImg
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.GuildDashboardSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.channelSelectMenu
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.dashboardBase
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldInformationBlock
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldTitle
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrapper
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrappers
@@ -111,8 +109,10 @@ class StarboardGuildDashboardRoute(website: LorittaDashboardWebServer) : Require
                                 ) {
                                     fieldWrappers {
                                         fieldWrapper {
-                                            fieldTitle {
-                                                text(i18nContext.get(DashboardI18nKeysData.Starboard.StarboardChannel))
+                                            fieldInformationBlock {
+                                                fieldTitle {
+                                                    text(i18nContext.get(DashboardI18nKeysData.Starboard.StarboardChannel))
+                                                }
                                             }
 
                                             channelSelectMenu(guild, starboardChannelId) {
@@ -126,8 +126,10 @@ class StarboardGuildDashboardRoute(website: LorittaDashboardWebServer) : Require
                                         }
 
                                         fieldWrapper {
-                                            fieldTitle {
-                                                text(i18nContext.get(DashboardI18nKeysData.Starboard.MinimumReactCount))
+                                            fieldInformationBlock {
+                                                fieldTitle {
+                                                    text(i18nContext.get(DashboardI18nKeysData.Starboard.MinimumReactCount))
+                                                }
                                             }
 
                                             numberInput {

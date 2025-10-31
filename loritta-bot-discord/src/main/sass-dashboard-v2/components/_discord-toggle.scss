@@ -50,27 +50,9 @@ label.toggle-wrapper {
     cursor: pointer;
     min-height: 3em;
     align-items: center;
-    // To avoid the text being smushed together with the toggle
-    gap: 1em;
 
     input {
         display:none;
-    }
-
-    .toggle-information {
-        display: flex;
-        flex-direction: column;
-        flex-grow: 1;
-        justify-content: center;
-
-        .toggle-title {
-            font-weight: 600;
-        }
-
-        .toggle-description {
-            opacity: 0.8;
-            font-size: var(--description-font-size);
-        }
     }
 }
 

@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.event
 
 import io.ktor.server.application.*
 import kotlinx.html.*
-import kotlinx.html.stream.createHTML
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
@@ -13,13 +12,13 @@ import net.perfectdreams.loritta.i18n.I18nKeys
 import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls
 import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls.appendAsFormattedText
 import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls.handleI18nString
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.GuildDashboardSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.channelSelectMenu
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.dashboardBase
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldInformationBlock
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldTitle
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrapper
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrappers
@@ -60,7 +59,9 @@ class EventLogGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
             ) {
                 fieldWrappers {
                     fieldWrapper {
-                        fieldTitle { text(i18nContext.get(DashboardI18nKeysData.EventLog.ChannelWhereTheActionsWillBeSent)) }
+                        fieldInformationBlock {
+                            fieldTitle { text(i18nContext.get(DashboardI18nKeysData.EventLog.ChannelWhereTheActionsWillBeSent)) }
+                        }
 
                         channelSelectMenu(
                             guild,
@@ -136,7 +137,9 @@ class EventLogGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
 
                                 fieldWrappers {
                                     fieldWrapper {
-                                        fieldTitle { text(i18nContext.get(DashboardI18nKeysData.EventLog.DefaultChannelWhereTheActionsWillBeSent)) }
+                                        fieldInformationBlock {
+                                            fieldTitle { text(i18nContext.get(DashboardI18nKeysData.EventLog.DefaultChannelWhereTheActionsWillBeSent)) }
+                                        }
 
                                         channelSelectMenu(
                                             guild,

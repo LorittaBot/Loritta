@@ -19,29 +19,21 @@ fun FlowContent.toggle(
     label(classes = "toggle-wrapper") {
         htmlFor = toggleId
 
-        div(classes = "toggle-information") {
-            div(classes = "toggle-title") {
-                title()
-            }
+        fieldInformationWithControl {
+            fieldInformation(title, description)
 
-            if (description != null) {
-                div(classes = "toggle-description") {
-                    description()
+            div {
+                checkBoxInput {
+                    if (trackCheckboxState)
+                        attributes["loritta-config"] = checkboxName
+                    name = checkboxName
+                    if (enabled)
+                        checked = true
+                    id = toggleId
                 }
-            }
-        }
 
-        div {
-            checkBoxInput {
-                if (trackCheckboxState)
-                    attributes["loritta-config"] = checkboxName
-                name = checkboxName
-                if (enabled)
-                    checked = true
-                id = toggleId
+                div(classes = "switch-slider round") {}
             }
-
-            div(classes = "switch-slider round") {}
         }
     }
 }

@@ -3,9 +3,7 @@ package net.perfectdreams.loritta.morenitta.websitedashboard.routes.profileprese
 import io.ktor.server.application.ApplicationCall
 import kotlinx.html.div
 import kotlinx.html.hr
-import kotlinx.html.html
 import kotlinx.html.img
-import kotlinx.html.stream.createHTML
 import kotlinx.html.style
 import kotlinx.html.textInput
 import kotlinx.serialization.json.buildJsonObject
@@ -15,7 +13,6 @@ import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.dao.ProfileDesign
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserDashboardSection
@@ -25,6 +22,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.character
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.dashboardBase
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.discordButton
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldDescription
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldInformationBlock
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldTitle
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrapper
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrappers
@@ -76,12 +74,14 @@ class CreateProfilePresetsUserDashboardRoute(website: LorittaDashboardWebServer)
 
                     fieldWrappers {
                         fieldWrapper {
-                            fieldTitle {
-                                text(i18nContext.get(DashboardI18nKeysData.ProfilePresets.PresetCreation.ProfilePresetName))
-                            }
+                            fieldInformationBlock {
+                                fieldTitle {
+                                    text(i18nContext.get(DashboardI18nKeysData.ProfilePresets.PresetCreation.ProfilePresetName))
+                                }
 
-                            fieldDescription {
-                                text(i18nContext.get(DashboardI18nKeysData.ProfilePresets.PresetCreation.ProfilePresetDescription))
+                                fieldDescription {
+                                    text(i18nContext.get(DashboardI18nKeysData.ProfilePresets.PresetCreation.ProfilePresetDescription))
+                                }
                             }
 
                             textInput {

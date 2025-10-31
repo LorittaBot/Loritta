@@ -819,16 +819,28 @@ aside#that-wasnt-very-cash-money-of-you-fixed-sidebar-reserved-space {
 .field-wrapper {
     display: flex;
     flex-direction: column;
-    gap: 0.25em;
     flex-wrap: wrap;
+    gap: 8px; // Don't touch the element below us!
 
     input {
         width: 100%;
     }
+}
 
-    /* button {
-        width: fit-content;
-    } */
+.field-information-with-control {
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    // To avoid the text being smushed together with whatever control we may have
+    gap: 8px;
+    align-items: center;
+}
+
+.field-information {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex-grow: 1;
 
     .field-title {
         // A Discord-like field title
