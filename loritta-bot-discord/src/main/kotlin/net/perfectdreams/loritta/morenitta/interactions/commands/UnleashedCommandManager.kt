@@ -343,7 +343,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         register(XpCommand(loritta))
         register(AchievementsCommand(loritta))
         register(MarriageCommand(loritta))
-        register(ViewUserProfileUserCommand(loritta))
+        register(ProfileViewUserCommand(loritta))
 
         // ===[ ECONOMY ]===
         register(DailyCommand(loritta))
@@ -357,6 +357,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         register(SonhosCommand(loritta))
         register(VacationCommand(loritta))
         register(LigarCommand(loritta))
+        register(SonhosAtmUserCommand(loritta))
 
         // ===[ MINECRAFT ]===
         register(MinecraftCommand(loritta))

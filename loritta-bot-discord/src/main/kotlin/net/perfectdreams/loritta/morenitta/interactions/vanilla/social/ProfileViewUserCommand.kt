@@ -14,7 +14,7 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.ProfileCo
 import net.perfectdreams.loritta.morenitta.utils.AccountUtils
 import java.util.*
 
-class ViewUserProfileUserCommand(val loritta: LorittaBot) : UserCommandDeclarationWrapper {
+class ProfileViewUserCommand(val loritta: LorittaBot) : UserCommandDeclarationWrapper {
     override fun command() = userCommand(I18nKeysData.Commands.Command.Profileview.ViewUserProfile, CommandCategory.DISCORD, UUID.fromString("5b2666e5-981c-49ef-977a-0d1416e2ddfc"), ProfileViewUserExecutor(loritta)) {
         this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
     }
