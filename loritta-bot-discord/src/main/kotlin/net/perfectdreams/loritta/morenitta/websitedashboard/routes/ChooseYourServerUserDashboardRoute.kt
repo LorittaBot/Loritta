@@ -65,7 +65,7 @@ class ChooseYourServerUserDashboardRoute(website: LorittaDashboardWebServer) : R
 
                             div {
                                 text("Achou algum problema, tem sugestões, ou apenas quer mandar um elogio sobre o novo painel? Então entre em nosso ")
-                                a(href = "${website.loritta.config.loritta.website.url}/${i18nContext.get(I18nKeysData.Website.LocalePathId)}support", target = "_blank") {
+                                a(href = "${website.loritta.config.loritta.website.url.removePrefix("/")}/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/support", target = "_blank") {
                                     text("servidor de suporte")
                                 }
                                 text("!")
