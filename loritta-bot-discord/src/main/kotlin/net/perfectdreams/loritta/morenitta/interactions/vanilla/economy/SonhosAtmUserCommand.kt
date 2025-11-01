@@ -23,7 +23,7 @@ class SonhosAtmUserCommand(val loritta: LorittaBot) : UserCommandDeclarationWrap
                 loritta,
                 context,
                 true,
-                context.user,
+                user,
                 InformationType.NORMAL
             )
         }
