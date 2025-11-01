@@ -211,7 +211,7 @@ class SonhosAtmExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor()
             loritta,
             context,
             false,
-            context.user,
+            args[options.user]?.user ?: context.user,
             args[options.informationType]?.let { InformationType.valueOf(it) } ?: InformationType.NORMAL
         )
     }
