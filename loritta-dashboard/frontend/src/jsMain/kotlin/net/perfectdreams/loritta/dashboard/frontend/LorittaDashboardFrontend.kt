@@ -152,6 +152,7 @@ class LorittaDashboardFrontend {
         Bliss.registerComponent("loritta-shimeji-spawner") { LorittaShimejiSpawnerComponent(this) }
         Bliss.registerComponent("loritta-shimeji-clear") { LorittaShimejiClearComponent(this) }
         Bliss.registerComponent("loritta-shimeji-activity-level") { LorittaShimejiActivityLevelComponent(this) }
+        Bliss.registerComponent("not-very-cash-money-blocker-replacement") { NotVeryCashMoneyBlockerReplacementComponent(this) }
         Bliss.processAttributes(document.body)
 
         toastManager.render(document.querySelector("#toast-list") as HTMLElement)

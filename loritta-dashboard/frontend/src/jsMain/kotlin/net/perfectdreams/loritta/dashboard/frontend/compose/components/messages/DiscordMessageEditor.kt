@@ -821,7 +821,10 @@ fun DiscordMessageEditor(
             }
 
             Div(attrs = { classes("details-content") }) {
-                Table {
+                Table(attrs = {
+                    // Make the table always use all available width
+                    attr("style", "width: 100%;")
+                }) {
                     Thead {
                         Th {
                             Text("Placeholder")
