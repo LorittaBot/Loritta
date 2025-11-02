@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.dashboard.backend
 
 import io.ktor.client.*
+import io.ktor.client.engine.java.Java
 import io.ktor.client.plugins.sse.SSE
 import io.ktor.client.plugins.sse.sse
 import io.ktor.client.request.*
@@ -8,12 +9,11 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.server.application.*
-import io.ktor.server.cio.*
 import io.ktor.server.engine.*
+import io.ktor.server.netty.Netty
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import io.ktor.utils.io.flushIfNeeded
 import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.dashboard.backend.configs.LorittaDashboardBackendConfig
 import net.perfectdreams.loritta.dashboard.backend.utils.writeSseEvent
@@ -54,7 +54,7 @@ class LorittaDashboardBackend(val config: LorittaDashboardBackendConfig) {
         val logger by HarmonyLoggerFactory.logger {}
     }
 
-    val http = HttpClient(io.ktor.client.engine.cio.CIO) {
+    val http = HttpClient(Java) {
         this.expectSuccess = false
         this.followRedirects = false
 
@@ -62,7 +62,7 @@ class LorittaDashboardBackend(val config: LorittaDashboardBackendConfig) {
     }
 
     fun start() {
-        val server = embeddedServer(CIO, port = 8080) {
+        val server = embeddedServer(Netty, port = 8080) {
             routing {
                 get("/hewwo") {
                     call.respondText("""Loritta's Dashboard Proxy - Loritta is so cute!! :3""")

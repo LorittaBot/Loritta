@@ -88,10 +88,10 @@ include(":loritta-dashboard:bliss")
 include(":loritta-dashboard:bliss-standalone")
 
 // ===[ DASHBOARD ]===
+include(":loritta-dashboard-proxy")
 include(":loritta-dashboard:message-renderer")
 include(":loritta-dashboard:loritta-shimeji-common")
 include(":loritta-dashboard:dashboard-common")
-include(":loritta-dashboard:backend")
 include(":loritta-dashboard:frontend")
 
 // ===[ LOTRUNFO ]===
