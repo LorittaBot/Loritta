@@ -6,6 +6,7 @@ import io.ktor.server.application.*
 import io.ktor.server.cio.*
 import io.ktor.server.engine.*
 import io.ktor.server.http.content.staticResources
+import io.ktor.server.netty.Netty
 import io.ktor.server.plugins.compression.*
 import io.ktor.server.request.header
 import io.ktor.server.request.uri
@@ -458,7 +459,7 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
             cssBundle
         )
 
-        val server = embeddedServer(CIO, 13004) {
+        val server = embeddedServer(Netty, 13004) {
             install(Compression)
 
             intercept(ApplicationCallPipeline.Setup) {
