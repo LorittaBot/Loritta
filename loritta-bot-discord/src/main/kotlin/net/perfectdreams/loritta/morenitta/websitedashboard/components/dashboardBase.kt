@@ -30,8 +30,11 @@ import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.SVGIcons
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedDisableAdBlockModal
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.dashboardTitle
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.defaultModalCloseButton
 import net.perfectdreams.loritta.serializable.ColorTheme
 
 fun HTML.dashboardBase(
@@ -77,8 +80,10 @@ fun HTML.dashboardBase(
         }
 
         // ad bait :3
-        script(src = "/assets/js/fuckadblock.js") {
-            defer = true
+        for (advertismentBait in LorittaDashboardWebServer.INSTANCE.advertisementBaits) {
+            script(src = advertismentBait.path) {
+                defer = true
+            }
         }
 
         // Loritta!
@@ -137,6 +142,9 @@ fun HTML.dashboardBase(
                                     style = "display:inline-block;width:320px;height:100px;"
                                     attributes["data-ad-client"] = "ca-pub-9989170954243288"
                                     attributes["data-ad-slot"] = "8915802761"
+                                    attributes["bliss-component"] = "not-very-cash-money-blocker-replacement"
+                                    attributes["not-very-cash-money-blocker-replacement-images"] = "https://stuff.loritta.website/that-wasnt-very-cash-money-of-you/left-sidebar-bottom-1-v2.png"
+                                    attributes["bliss-modal"] = BlissHex.encodeToHexString(Json.encodeToString(createEmbeddedDisableAdBlockModal(i18nContext)))
                                 }
                             }
 

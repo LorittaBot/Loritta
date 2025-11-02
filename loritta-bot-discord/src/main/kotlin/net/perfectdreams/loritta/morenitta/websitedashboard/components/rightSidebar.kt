@@ -5,6 +5,7 @@ import kotlinx.serialization.json.Json
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.dashboard.BlissHex
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedDisableAdBlockModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.defaultModalCloseButton
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.openModalOnClick
@@ -75,21 +76,8 @@ fun FlowContent.rightSidebar(
                         attributes["data-ad-client"] = "ca-pub-9989170954243288"
                         attributes["data-ad-slot"] = "6094198302"
                         attributes["bliss-component"] = "not-very-cash-money-blocker-replacement"
-                        attributes["not-very-cash-money-blocker-replacement-images"] = "https://stuff.loritta.website/that-wasnt-very-cash-money-of-you/fixed-right-sidebar-1.png"
-                        attributes["bliss-modal"] = BlissHex.encodeToHexString(
-                            Json.encodeToString(
-                                createEmbeddedModal(
-                                    "Desative o Adblock!",
-                                    true,
-                                    {
-                                        text("plsss :3")
-                                    },
-                                    listOf {
-                                        defaultModalCloseButton(i18nContext)
-                                    }
-                                )
-                            )
-                        )
+                        attributes["not-very-cash-money-blocker-replacement-images"] = "https://stuff.loritta.website/that-wasnt-very-cash-money-of-you/fixed-right-sidebar-1.png, https://stuff.loritta.website/that-wasnt-very-cash-money-of-you/fixed-right-sidebar-2.png"
+                        attributes["bliss-modal"] = BlissHex.encodeToHexString(Json.encodeToString(createEmbeddedDisableAdBlockModal(i18nContext)))
                     }
 
                     pushAdSenseAdScript()

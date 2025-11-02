@@ -5,15 +5,12 @@ import net.perfectdreams.bliss.BlissComponent
 import net.perfectdreams.loritta.dashboard.BlissHex
 import net.perfectdreams.loritta.dashboard.EmbeddedModal
 import net.perfectdreams.loritta.dashboard.frontend.LorittaDashboardFrontend
-import net.perfectdreams.loritta.dashboard.frontend.utils.isUserUsingAdblock
+import net.perfectdreams.loritta.dashboard.frontend.utils.isUserUsingAdBlock
 import org.jetbrains.compose.web.dom.clear
 import web.dom.document
 import web.events.addEventHandler
 import web.html.HTMLDivElement
 import web.html.HTMLImageElement
-import web.html.HTMLInputElement
-import web.input.INPUT
-import web.input.InputEvent
 import web.pointer.CLICK
 import web.pointer.PointerEvent
 
@@ -21,9 +18,16 @@ class NotVeryCashMoneyBlockerReplacementComponent(val m: LorittaDashboardFronten
     override fun onMount() {
         val imagesToBeReplaced = this.mountedElement.getAttribute("not-very-cash-money-blocker-replacement-images")!!.split(",").map { it.trim() }
 
-        if (isUserUsingAdblock()) {
+        if (isUserUsingAdBlock()) {
             this.mountedElement.clear()
             this.mountedElement.style.display = "none"
+
+            val imgWrapperElement = document.createElement("div").apply {
+                this as HTMLDivElement
+                this.style.display = "flex"
+                this.style.justifyContent = "center"
+                this.style.alignItems = "center"
+            }
 
             val imgElement = document.createElement("img").apply {
                 this as HTMLImageElement
@@ -40,8 +44,9 @@ class NotVeryCashMoneyBlockerReplacementComponent(val m: LorittaDashboardFronten
                 m.modalManager.openModal(modal)
             }
 
+            imgWrapperElement.appendChild(imgElement)
             this.mountedElement.parentElement!!
-                .after(imgElement)
+                .after(imgWrapperElement)
         }
     }
 

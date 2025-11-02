@@ -198,6 +198,25 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
         val favicon192x192Hash = DigestUtils.md5Hex(LorittaDashboardWebServer::class.java.getResourceAsStream("/dashboard/static/assets/images/favicon-192x192.png"))
     }
 
+    val advertisementBaits = listOf(
+        AdvertisementBait(
+            "/assets/js/fuckadblock.js",
+            "isUserUsingUBlockOrigin",
+        ),
+        AdvertisementBait(
+            "/ads/anuncio.js",
+            "isUserUsingEasyListPortuguese",
+        ),
+        AdvertisementBait(
+            "/publi.js",
+            "isUserUsingAdGuardSpanishPortuguese",
+        ),
+        AdvertisementBait(
+            "/jquery.adx.js",
+            "isUserUsingBraveShields",
+        )
+    )
+
     val routes = listOf(
         ChooseYourServerUserDashboardRoute(this),
         PocketLorittaUserDashboardRoute(this),
@@ -472,12 +491,14 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
                     )
                 }
 
-                // ad bait :3
-                get("/assets/js/fuckadblock.js") {
-                    call.respondText(
-                        """window.isUserUsingAdblock = false;""",
-                        contentType = ContentType.Application.JavaScript
-                    )
+                // ad baits :3
+                for (advertismentBait in this@LorittaDashboardWebServer.advertisementBaits) {
+                    get(advertismentBait.path) {
+                        call.respondText(
+                            """window.${advertismentBait.variableName} = false;""",
+                            contentType = ContentType.Application.JavaScript
+                        )
+                    }
                 }
 
                 staticResources("/assets", "/dashboard/static/assets")

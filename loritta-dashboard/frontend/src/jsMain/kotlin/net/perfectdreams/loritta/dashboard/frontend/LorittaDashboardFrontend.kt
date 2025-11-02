@@ -17,7 +17,11 @@ import net.perfectdreams.loritta.dashboard.frontend.modals.ModalManager
 import net.perfectdreams.loritta.dashboard.frontend.shimeji.entities.LorittaPlayer
 import net.perfectdreams.loritta.dashboard.frontend.soundeffects.SoundEffects
 import net.perfectdreams.loritta.dashboard.frontend.toasts.ToastManager
-import net.perfectdreams.loritta.dashboard.frontend.utils.isUserUsingAdblock
+import net.perfectdreams.loritta.dashboard.frontend.utils.isUserUsingAdBlock
+import net.perfectdreams.loritta.dashboard.frontend.utils.isUserUsingAdGuardSpanishPortuguese
+import net.perfectdreams.loritta.dashboard.frontend.utils.isUserUsingBraveShields
+import net.perfectdreams.loritta.dashboard.frontend.utils.isUserUsingEasyListPortuguese
+import net.perfectdreams.loritta.dashboard.frontend.utils.isUserUsingUBlockOrigin
 import web.animations.awaitAnimationFrame
 import web.cssom.ClassName
 import web.dom.document
@@ -40,8 +44,14 @@ class LorittaDashboardFrontend {
     fun start() {
         INSTANCE = this
 
-        if (isUserUsingAdblock())
-            println("Stop using Adblock >:(")
+        println("AdBlock checks:")
+        println("Is user using uBlock Origin? ${isUserUsingUBlockOrigin()}")
+        println("Is user using EasyList Portuguese? ${isUserUsingEasyListPortuguese()}")
+        println("Is user using AdGuard Spanish/Portuguese? ${isUserUsingAdGuardSpanishPortuguese()}")
+        println("Is user using Brave Shields? ${isUserUsingBraveShields()}")
+
+        if (isUserUsingAdBlock())
+            println("Stop using AdBlock >:(")
 
         Bliss.setupEvents()
 

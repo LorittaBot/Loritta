@@ -132,6 +132,25 @@ fun createEmbeddedConfirmDeletionModal(
     )
 }
 
+fun createEmbeddedDisableAdBlockModal(i18nContext: I18nContext): EmbeddedModal {
+    return createEmbeddedModal(
+        "AdBlock Detectado",
+        true,
+        {
+            p {
+                text("Parece que você está usando AdBlock. A gente te entende. Propagandas ajudam a manter a Loritta.")
+            }
+
+            p {
+                text("Se você quer ajudar a manter a Loritta, desative o seu AdBlock!")
+            }
+        },
+        listOf {
+            defaultModalCloseButton(i18nContext)
+        }
+    )
+}
+
 /**
  * Adds a "show modal" to the DOM
  */
