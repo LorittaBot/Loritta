@@ -47,7 +47,7 @@ class LorittaDashboardFrontend {
 
         println("AdBlock checks:")
         println("Is user using uBlock Origin? ${isUserUsingUBlockOrigin()}")
-        println("Is user using Easylist? ${isUserUsingEasyList()}")
+        println("Is user using EasyList? ${isUserUsingEasyList()}")
         println("Is user using EasyList Portuguese? ${isUserUsingEasyListPortuguese()}")
         println("Is user using AdGuard Spanish/Portuguese? ${isUserUsingAdGuardSpanishPortuguese()}")
         println("Is user using Brave Shields? ${isUserUsingBraveShields()}")
