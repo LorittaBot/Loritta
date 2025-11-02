@@ -204,6 +204,10 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
             "isUserUsingUBlockOrigin",
         ),
         AdvertisementBait(
+            "/jquery.adi.js",
+            "isUserUsingEasyList",
+        ),
+        AdvertisementBait(
             "/ads/anuncio.js",
             "isUserUsingEasyListPortuguese",
         ),

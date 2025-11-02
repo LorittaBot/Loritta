@@ -21,6 +21,7 @@ import net.perfectdreams.loritta.dashboard.frontend.utils.isUserUsingAdBlock
 import net.perfectdreams.loritta.dashboard.frontend.utils.isUserUsingAdGuardSpanishPortuguese
 import net.perfectdreams.loritta.dashboard.frontend.utils.isUserUsingBraveShields
 import net.perfectdreams.loritta.dashboard.frontend.utils.isUserUsingEasyListPortuguese
+import net.perfectdreams.loritta.dashboard.frontend.utils.isUserUsingEasyList
 import net.perfectdreams.loritta.dashboard.frontend.utils.isUserUsingUBlockOrigin
 import web.animations.awaitAnimationFrame
 import web.cssom.ClassName
@@ -46,6 +47,7 @@ class LorittaDashboardFrontend {
 
         println("AdBlock checks:")
         println("Is user using uBlock Origin? ${isUserUsingUBlockOrigin()}")
+        println("Is user using Easylist? ${isUserUsingEasyList()}")
         println("Is user using EasyList Portuguese? ${isUserUsingEasyListPortuguese()}")
         println("Is user using AdGuard Spanish/Portuguese? ${isUserUsingAdGuardSpanishPortuguese()}")
         println("Is user using Brave Shields? ${isUserUsingBraveShields()}")
