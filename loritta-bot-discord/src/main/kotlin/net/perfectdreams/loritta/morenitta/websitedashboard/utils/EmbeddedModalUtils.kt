@@ -11,8 +11,10 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.website.components.LoadingSectionComponents
 import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.defaultModalCloseButton
 import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.openEmbeddedModalOnClick
+import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.ButtonStyle
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.discordButton
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.discordButtonLink
 import java.util.*
 import kotlin.collections.set
 
@@ -134,20 +136,34 @@ fun createEmbeddedConfirmDeletionModal(
 
 fun createEmbeddedDisableAdBlockModal(i18nContext: I18nContext): EmbeddedModal {
     return createEmbeddedModal(
-        "AdBlock Detectado",
+        i18nContext.get(I18nKeysData.Website.Dashboard.DisableAdBlock.Title),
         true,
         {
-            p {
-                text("Parece que você está usando AdBlock. A gente te entende. Propagandas ajudam a manter a Loritta.")
+            div {
+                style = "text-align: center;"
+
+                img {
+                    src = "https://stuff.loritta.website/that-wasnt-very-cash-money-of-you/that-wasnt-very-cash-money-of-you.png"
+                    width = "300"
+                }
             }
 
-            p {
-                text("Se você quer ajudar a manter a Loritta, desative o seu AdBlock!")
+            for (line in i18nContext.get(I18nKeysData.Website.Dashboard.DisableAdBlock.PleaseDisable)) {
+                p {
+                    text(line)
+                }
             }
         },
-        listOf {
-            defaultModalCloseButton(i18nContext)
-        }
+        listOf(
+            {
+                defaultModalCloseButton(i18nContext)
+            },
+            {
+                discordButtonLink(ButtonStyle.PRIMARY, LorittaDashboardWebServer.INSTANCE.loritta.config.loritta.website.url.removeSuffix("/") + "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/donate") {
+                    text("Premium")
+                }
+            }
+        )
     )
 }
 

@@ -137,3 +137,9 @@ website:
         - "Isto pode acontecer se você desautorizou a Loritta nas configurações do Discord, se faz tempo que você acessou o painel da Loritta, ou por alguma intervenção divina."
         - "Para usar o painel da Loritta, você precisará reautorizar a sua conta do Discord."
       reauthorize: "Reautorizar"
+    disableAdBlock:
+      title: "Você clicou em uma propaganda falsa!"
+      pleaseDisable:
+        - "Espero que você esteja se divertindo com as nossas propagandas falsas! Elas aparecem quando você está usando AdBlock."
+        - "Ficaríamos muito felizes se você desativasse o AdBlock no painel. Propagandas ajudam a pagar as contas da Loritta. Se não quiser, tudo bem! Você ainda poderá usar o painel com o AdBlock ativado."
+        - "Se você quer apoiar a Loritta e poder usar o painel sem propagandas e sem ter peso na consciência, então compre Loritta Premium!"

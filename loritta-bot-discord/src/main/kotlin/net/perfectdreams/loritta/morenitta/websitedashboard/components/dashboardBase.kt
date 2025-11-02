@@ -143,7 +143,7 @@ fun HTML.dashboardBase(
                                     attributes["data-ad-client"] = "ca-pub-9989170954243288"
                                     attributes["data-ad-slot"] = "8915802761"
                                     attributes["bliss-component"] = "not-very-cash-money-blocker-replacement"
-                                    attributes["not-very-cash-money-blocker-replacement-images"] = "https://stuff.loritta.website/that-wasnt-very-cash-money-of-you/left-sidebar-bottom-1-v2.png"
+                                    attributes["not-very-cash-money-blocker-replacement-images"] = "https://stuff.loritta.website/that-wasnt-very-cash-money-of-you/left-sidebar-bottom-1-v3.png"
                                     attributes["bliss-modal"] = BlissHex.encodeToHexString(Json.encodeToString(createEmbeddedDisableAdBlockModal(i18nContext)))
                                 }
                             }
