@@ -18,19 +18,16 @@ import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import io.ktor.server.sessions.*
 import io.ktor.util.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.perfectdreams.etherealgambi.client.EtherealGambiClient
 import net.perfectdreams.etherealgambi.data.api.responses.ImageVariantsResponse
-import net.perfectdreams.loritta.api.utils.format
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LanguageManager
 import net.perfectdreams.loritta.serializable.UserIdentification
-import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.backend.content.ContentBase
 import net.perfectdreams.loritta.website.backend.content.MultilanguageContent
 import net.perfectdreams.loritta.website.backend.routes.LocalizedRoute
@@ -101,17 +98,6 @@ class LorittaWebsiteBackend(
         val server = embeddedServer(Netty, port = 8080) {
             // Enables gzip and deflate compression
             install(Compression)
-
-            install(Sessions) {
-                val secretHashKey = hex(rootConfig.sessionHex)
-
-                cookie<LorittaJsonWebSession>(rootConfig.sessionName) {
-                    cookie.path = "/"
-                    cookie.domain = rootConfig.sessionDomain
-                    cookie.maxAgeInSeconds = 365L * 24 * 3600 // one year
-                    transform(SessionTransportTransformerMessageAuthentication(secretHashKey, "HmacSHA256"))
-                }
-            }
 
             // Enables caching for the specified types in the typesToCache list
             install(CachingHeaders) {

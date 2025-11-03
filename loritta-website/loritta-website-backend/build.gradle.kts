@@ -13,8 +13,6 @@ dependencies {
     implementation(project(":loritta-serializable-commons"))
     implementation(project(":loritta-website:web-common"))
     implementation(project(":pudding:client"))
-    implementation(project(":temmie-discord-auth"))
-    implementation(project(":temmie-discord-auth-loritta-commons"))
 
     // Logging Stuff
     implementation(libs.logback.classic)
@@ -25,7 +23,6 @@ dependencies {
     implementation("io.ktor:ktor-server-caching-headers:${Versions.KTOR}")
     implementation("io.ktor:ktor-server-compression:${Versions.KTOR}")
     implementation("io.ktor:ktor-server-status-pages:${Versions.KTOR}")
-    implementation(libs.ktor.server.sessions)
 
     // KotlinX HTML
     implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.12.0")

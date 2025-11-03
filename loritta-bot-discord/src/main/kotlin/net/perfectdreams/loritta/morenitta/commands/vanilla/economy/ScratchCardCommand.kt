@@ -150,7 +150,7 @@ class ScratchCardCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lorit
 					this.append {
 						this.message = context.i18nContext.get(
 							GACampaigns.sonhosBundlesUpsellDiscordMessage(
-								"https://loritta.website/", // Hardcoded, woo
+                                loritta.config.loritta.dashboard.url,
 								"scratch-card-legacy",
 								"bet-not-enough-sonhos"
 							)

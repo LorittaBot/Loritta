@@ -473,7 +473,7 @@ object MessageUtils {
 			actionRow(
 				linkButton(
 					GACampaigns.createUrlWithCampaign(
-						"https://loritta.website/dashboard",
+						"https://dash.loritta.website/", // woo, hardcoded!
 						"discord",
 						"loritta-info",
 						"loritta-info-links",

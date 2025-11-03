@@ -111,7 +111,7 @@ class HomeView(
 
                     div(classes = "special-dashboard-button") {
                         style = "grid-column: 1 / 3;"
-                        a(classes = "discord-button purple", href = "/${locale.path}/dashboard") {
+                        a(classes = "discord-button purple", href = "https://dash.loritta.website/") {
                             LorittaWebsiteBackend.svgIconManager.cogs.apply(this)
 
                             + " ${locale["website.jumbotron.dashboard"]}"

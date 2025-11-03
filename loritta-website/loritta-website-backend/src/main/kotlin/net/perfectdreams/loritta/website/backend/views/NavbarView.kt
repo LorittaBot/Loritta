@@ -160,7 +160,7 @@ abstract class NavbarView(
                             +" ${locale["website.navbar.sponsors"]}"
                         }
 
-                        a(classes = "entry sonhos-shop", href = "$base/dashboard/sonhos-shop") {
+                        a(classes = "entry sonhos-shop", href = "https://dash.loritta.website/sonhos-shop") {
                             iconManager.cartShopping.apply(this)
 
                             +" Lojinha de Sonhos"
@@ -235,7 +235,7 @@ abstract class NavbarView(
 
                         // ===[ LOGIN BUTTON ]===
                         // TODO: Fix
-                        a(classes = "entry", href = "/dashboard") {
+                        a(classes = "entry", href = "https://dash.loritta.website/") {
                             id = "login-button"
                             iconManager.signIn.apply(this)
 
@@ -308,7 +308,7 @@ abstract class NavbarView(
                                 a(href = "$base/discord-bot-brasileiro") {
                                     +"Loritta: Apenas um simples bot brasileiro para o Discord"
                                 }
-                                a(href = "$base/dashboard") {
+                                a(href = "https://dash.loritta.website/") {
                                     +locale["website.navbar.dashboard"]
                                 }
                                 a(href = "$base/support") {

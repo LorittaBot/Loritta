@@ -486,7 +486,7 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     styled(
                         context.i18nContext.get(
                             GACampaigns.sonhosBundlesUpsellDiscordMessage(
-                                "https://loritta.website/", // Hardcoded, woo
+                                loritta.config.loritta.dashboard.url,
                                 "loraffle-legacy",
                                 "buy-tickets-not-enough-sonhos"
                             )

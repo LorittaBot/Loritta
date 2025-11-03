@@ -9,29 +9,29 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
  */
 object GACampaigns {
     fun sonhosBundlesUpsellDiscordMessage(
-        lorittaWebsiteUrl: String,
+        lorittaDashboardUrl: String,
         medium: String,
         campaignContent: String
     ): StringI18nData {
-        return I18nKeysData.Commands.WantingMoreSonhosBundlesUpsell(sonhosBundlesUpsellDiscordMessageUrl(lorittaWebsiteUrl, medium, campaignContent))
+        return I18nKeysData.Commands.WantingMoreSonhosBundlesUpsell(sonhosBundlesUpsellDiscordMessageUrl(lorittaDashboardUrl, medium, campaignContent))
     }
 
     fun sonhosBundlesUpsellDiscordMessageUrl(
-        lorittaWebsiteUrl: String,
+        lorittaDashboardUrl: String,
         medium: String,
         campaignContent: String
     ): String {
-        return "<${sonhosBundlesUpsellUrl(lorittaWebsiteUrl, "discord", medium, "sonhos-bundles-upsell", campaignContent)}>"
+        return "<${sonhosBundlesUpsellUrl(lorittaDashboardUrl, "discord", medium, "sonhos-bundles-upsell", campaignContent)}>"
     }
 
     fun sonhosBundlesUpsellUrl(
-        lorittaWebsiteUrl: String,
+        lorittaDashboardUrl: String,
         source: String,
         medium: String,
         campaignName: String,
         campaignContent: String
     ): String {
-        return "${lorittaWebsiteUrl}dashboard/sonhos-shop?utm_source=$source&utm_medium=$medium&utm_campaign=$campaignName&utm_content=$campaignContent"
+        return "${lorittaDashboardUrl.removeSuffix("/")}/sonhos-shop?utm_source=$source&utm_medium=$medium&utm_campaign=$campaignName&utm_content=$campaignContent"
     }
 
     fun premiumUpsellDiscordMessageUrl(

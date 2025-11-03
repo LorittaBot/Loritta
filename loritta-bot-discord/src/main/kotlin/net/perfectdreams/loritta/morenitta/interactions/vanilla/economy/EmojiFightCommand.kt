@@ -213,7 +213,7 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
                         this.styled(
                             context.i18nContext.get(
                                 GACampaigns.sonhosBundlesUpsellDiscordMessage(
-                                    "https://loritta.website/", // Hardcoded, woo
+                                    loritta.config.loritta.dashboard.url,
                                     "bet-coinflip-legacy",
                                     "bet-not-enough-sonhos"
                                 )

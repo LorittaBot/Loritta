@@ -191,7 +191,7 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                     styled(
                         context.i18nContext.get(
                             GACampaigns.sonhosBundlesUpsellDiscordMessage(
-                                "https://loritta.website/", // Hardcoded, woo
+                                loritta.config.loritta.dashboard.url,
                                 "bet-coinflip-legacy",
                                 "bet-not-enough-sonhos"
                             )

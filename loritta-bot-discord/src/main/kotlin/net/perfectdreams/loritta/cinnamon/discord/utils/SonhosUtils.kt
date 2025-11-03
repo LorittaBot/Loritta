@@ -89,7 +89,7 @@ object SonhosUtils {
 
             return Button.of(
                 ButtonStyle.LINK,
-                GACampaigns.sonhosBundlesUpsellUrl("https://loritta.website/", "discord", upsellMedium, "sonhos-bundles-upsell", "coupon-code"),
+                GACampaigns.sonhosBundlesUpsellUrl(loritta.config.loritta.dashboard.url.removeSuffix("/"), "discord", upsellMedium, "sonhos-bundles-upsell", "coupon-code"),
                 i18nContext.get(I18nKeysData.Website.Dashboard.SonhosShop.Title)
             ).withEmoji(Emotes.Sonhos3.toJDA())
         } else {

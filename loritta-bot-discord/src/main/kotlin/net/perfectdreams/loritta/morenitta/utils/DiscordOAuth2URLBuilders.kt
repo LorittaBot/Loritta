@@ -20,8 +20,8 @@ fun LorittaDiscordOAuth2AddBotURL(
     redirectAfterAuthenticationUrl: String? = null,
     parameters: ParametersBuilder.() -> (Unit) = {}
 ) = net.perfectdreams.loritta.common.utils.LorittaDiscordOAuth2AddBotURL(
-    loritta.config.loritta.discord.applicationId.toLong(),
-    "${loritta.config.loritta.website.url}dashboard",
+    loritta.config.loritta.discord.applicationId,
+    "${loritta.config.loritta.dashboard.url.removeSuffix("/")}/discord/login",
     guildId,
     redirectAfterAuthenticationUrl,
     parameters
@@ -43,8 +43,8 @@ fun LorittaDiscordOAuth2AuthorizeScopeURL(
     redirectAfterAuthenticationUrl: String? = null,
     parameters: ParametersBuilder.() -> (Unit) = {}
 ) = net.perfectdreams.loritta.common.utils.LorittaDiscordOAuth2AuthorizeScopeURL(
-    loritta.config.loritta.discord.applicationId.toLong(),
-    "${loritta.config.loritta.website.url}dashboard",
+    loritta.config.loritta.discord.applicationId,
+    "${loritta.config.loritta.dashboard.url.removeSuffix("/")}/discord/login",
     redirectAfterAuthenticationUrl,
     parameters
 )

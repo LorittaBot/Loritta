@@ -62,7 +62,7 @@ class GuessNumberCommand(plugin: LorittaBot) : DiscordAbstractCommandBase(
                     this.append {
                         message = i18nContext.get(
                             GACampaigns.sonhosBundlesUpsellDiscordMessage(
-                                "https://loritta.website/", // Hardcoded, woo
+                                loritta.config.loritta.dashboard.url,
                                 "guess-number-legacy",
                                 "bet-not-enough-sonhos"
                             )

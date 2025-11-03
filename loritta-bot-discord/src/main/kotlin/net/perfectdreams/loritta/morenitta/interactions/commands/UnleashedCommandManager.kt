@@ -256,7 +256,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
 
     init {
         // ===[ DISCORD ]===
-        register(LorittaCommand())
+        register(LorittaCommand(loritta))
         register(WebhookCommand(loritta))
         register(UserCommand(loritta))
         register(MessageStickerCommand())

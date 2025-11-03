@@ -94,6 +94,13 @@ abstract class NavbarView(
                         }
 
                         div(classes = "entry") {
+                            a(classes = "merch", href = "${loritta.config.loritta.dashboard.url.removeSuffix("/")}/sonhos-shop") {
+                                i(classes = "fas fa-shopping-cart") {}
+                                +" Lojinha de Sonhos"
+                            }
+                        }
+
+                        div(classes = "entry") {
                             a(classes = "donate", href = "$base/donate") {
                                 unsafe {
                                     // Font Awesome's "Sparkles" icon is Pro only smh
@@ -120,13 +127,6 @@ abstract class NavbarView(
                                 i(classes = "fas fa-paint-brush") {}
 
                                 +" Fan Arts"
-                            }
-                        }
-
-                        div(classes = "entry") {
-                            a(classes = "merch", href = "$base/dashboard/sonhos-shop") {
-                                i(classes = "fas fa-shopping-cart") {}
-                                +" Lojinha de Sonhos"
                             }
                         }
                     }
@@ -233,7 +233,7 @@ abstract class NavbarView(
                                     attributes["data-enable-link-preload"] = "true"
                                     +"Loritta: Apenas um simples bot brasileiro para o Discord"
                                 }
-                                a(href = "$base/dashboard") {
+                                a(href = loritta.config.loritta.dashboard.url) {
                                     +locale["website.navbar.dashboard"]
                                 }
                                 a(href = "$base/support") {

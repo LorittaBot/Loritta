@@ -12,7 +12,6 @@ object DefaultRoutes {
         ExtrasRoute(showtime),
         StaffRoute(showtime),
         ContactRoute(showtime),
-        DonateRoute(showtime),
         DashboardRoute(showtime),
         BlissPlaygroundRoute(showtime),
         RandomRoute(showtime)

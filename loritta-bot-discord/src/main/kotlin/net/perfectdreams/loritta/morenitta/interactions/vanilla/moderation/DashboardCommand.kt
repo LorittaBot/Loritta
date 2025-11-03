@@ -35,11 +35,11 @@ class DashboardCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper
     inner class DashboardExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             val guild = context.guildOrNull
-            val dashboardUrl = "${context.loritta.config.loritta.website.url}dashboard"
+            val dashboardUrl = "${context.loritta.config.loritta.dashboard.url.removePrefix("/")}/${context.i18nContext.get(I18nKeysData.Website.LocalePathId)}/"
             var url = dashboardUrl
 
             if (guild != null && context.member.hasPermission(Permission.MANAGE_SERVER))
-                url = "${context.loritta.config.loritta.website.url}guild/${guild.idLong}/configure/"
+                url = "${context.loritta.config.loritta.dashboard.url.removePrefix("/")}/${context.i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${context.guild.idLong}/overview"
 
             context.reply(true) {
                 styled(

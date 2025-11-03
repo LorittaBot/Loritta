@@ -25,6 +25,7 @@ import net.perfectdreams.loritta.common.utils.HostnameUtils
 import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.linkButton
@@ -36,7 +37,7 @@ import java.time.Instant
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class LorittaCommand : SlashCommandDeclarationWrapper {
+class LorittaCommand(val m: LorittaBot) : SlashCommandDeclarationWrapper {
     companion object {
         private val logger by HarmonyLoggerFactory.logger {}
         private val I18N_PREFIX = I18nKeysData.Commands.Command.Loritta
@@ -55,7 +56,7 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
                 add("botinfo")
             }
 
-            executor = LorittaInfoExecutor()
+            executor = LorittaInfoExecutor(m)
         }
 
         subcommand(PING_I18N_PREFIX.Label, PING_I18N_PREFIX.Description, UUID.fromString("7dcf8135-ed5c-42e4-87ac-b01fe22fab1b")) {
@@ -63,7 +64,7 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
                 add("ping")
             }
 
-            executor = LorittaPingExecutor()
+            executor = LorittaPingExecutor(m)
         }
 
         subcommand(CLUSTERS_I18N_PREFIX.Label, CLUSTERS_I18N_PREFIX.Description, UUID.fromString("a42112fe-3c84-4cae-81dd-bd62dfc71485")) {
@@ -71,7 +72,7 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
                 add("ping clusters")
             }
 
-            executor = LorittaClustersExecutor()
+            executor = LorittaClustersExecutor(m)
         }
 
         subcommand(NERD_I18N_PREFIX.Label, NERD_I18N_PREFIX.Description, UUID.fromString("5129831a-a9bc-4180-9b87-7e1c466d029a")) {
@@ -79,11 +80,11 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
                 add("botinfo extended")
             }
 
-            executor = LorittaNerdStatsExecutor()
+            executor = LorittaNerdStatsExecutor(m)
         }
     }
 
-    inner class LorittaInfoExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+    class LorittaInfoExecutor(val m: LorittaBot) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             context.deferChannelMessage(false)
 
@@ -104,11 +105,11 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
             }
 
             val uniqueUsersExecutedCommands = context.loritta.transaction {
-                val appCommands = ExecutedApplicationCommandsLog.select(ExecutedApplicationCommandsLog.userId).where { 
+                val appCommands = ExecutedApplicationCommandsLog.select(ExecutedApplicationCommandsLog.userId).where {
                     ExecutedApplicationCommandsLog.sentAt greaterEq since.toJavaInstant()
                 }.groupBy(ExecutedApplicationCommandsLog.userId).toList()
                     .map { it[ExecutedApplicationCommandsLog.userId] }
-                val legacyCommands = ExecutedCommandsLog.select(ExecutedCommandsLog.userId).where { 
+                val legacyCommands = ExecutedCommandsLog.select(ExecutedCommandsLog.userId).where {
                     ExecutedCommandsLog.sentAt greaterEq since.toEpochMilliseconds()
                 }.groupBy(ExecutedCommandsLog.userId).toList()
                     .map { it[ExecutedCommandsLog.userId] }
@@ -155,7 +156,7 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
                     ),
                     linkButton(
                         GACampaigns.createUrlWithCampaign(
-                            "https://loritta.website/dashboard",
+                            m.config.loritta.dashboard.url,
                             "discord",
                             "loritta-info",
                             "loritta-info-links",
@@ -235,8 +236,7 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
         ) = LorittaLegacyMessageCommandExecutor.NO_ARGS
     }
 
-
-    inner class LorittaPingExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+    class LorittaPingExecutor(val m: LorittaBot) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             val time = System.currentTimeMillis()
 
@@ -277,7 +277,7 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
         ) = LorittaLegacyMessageCommandExecutor.NO_ARGS
     }
 
-    inner class LorittaClustersExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+    class LorittaClustersExecutor(val m: LorittaBot) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             context.deferChannelMessage(false)
 
@@ -456,7 +456,7 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
         ) = LorittaLegacyMessageCommandExecutor.NO_ARGS
     }
 
-    inner class LorittaNerdStatsExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+    class LorittaNerdStatsExecutor(val m: LorittaBot) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             val locale = context.locale
             val lorittaShards = context.loritta.lorittaShards
