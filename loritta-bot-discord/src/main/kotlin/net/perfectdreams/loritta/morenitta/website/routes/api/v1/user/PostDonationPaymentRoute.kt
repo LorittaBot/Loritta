@@ -19,6 +19,7 @@ import net.perfectdreams.loritta.morenitta.dao.DonationKey
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIDiscordLoginRoute
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
+import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
@@ -27,18 +28,18 @@ class PostDonationPaymentRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRou
 		private val logger by HarmonyLoggerFactory.logger {}
 	}
 
-	override suspend fun onAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
+	override suspend fun onAuthenticatedRequest(call: ApplicationCall, session: UserSession) {
 		// This is a security measure, to avoid "high risk" purchases.
 		// We will require that users need to verify their account + have MFA enabled.
-		val refreshedUserIdentification = discordAuth.getUserIdentification()
+		val refreshedUserIdentification = session.getUserIdentification(loritta)
 		if (!WebsiteUtils.checkIfAccountHasMFAEnabled(loritta, refreshedUserIdentification))
 			return
 
 		val payload = withContext(Dispatchers.IO) { JsonParser.parseString(call.receiveText()).obj }
 
-		val whoDonated = "${userIdentification.username}#${userIdentification.discriminator}"
+		val whoDonated = refreshedUserIdentification.username
 
-		logger.info { "User $whoDonated (${userIdentification.id}) wants to buy premium!" }
+		logger.info { "User $whoDonated (${refreshedUserIdentification.id}) wants to buy premium!" }
 
 		var grana = payload["money"].double
 		val keyId = payload["keyId"].nullLong
@@ -47,7 +48,7 @@ class PostDonationPaymentRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRou
 			loritta.newSuspendedTransaction {
 				val key = DonationKey.findById(keyId)
 
-				if (key?.userId == userIdentification.id.toLong())
+				if (key?.userId == refreshedUserIdentification.id)
 					return@newSuspendedTransaction key
 				else
 					return@newSuspendedTransaction null
@@ -82,8 +83,8 @@ class PostDonationPaymentRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRou
 
 		val paymentUrl = loritta.perfectPaymentsClient.createPayment(
 			loritta,
-			userIdentification.id.toLong(),
-			"Loritta Premium - $whoDonated (${userIdentification.id})",
+            refreshedUserIdentification.id.toLong(),
+			"Loritta Premium - $whoDonated (${refreshedUserIdentification.id})",
 			(realValue * 100).toLong(),
 			(storedAmount * 100).toLong(),
 			PaymentReason.DONATION,

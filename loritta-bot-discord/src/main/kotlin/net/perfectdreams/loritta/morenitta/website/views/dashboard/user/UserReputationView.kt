@@ -9,13 +9,14 @@ import net.perfectdreams.loritta.morenitta.dao.Reputation
 import net.perfectdreams.loritta.morenitta.utils.LorittaDiscordOAuth2AuthorizeScopeURL
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.views.BaseView
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.DiscordLoginUserDashboardRoute
 
 class UserReputationView(
     val loritta: LorittaBot,
     i18nContext: I18nContext,
     locale: BaseLocale,
     path: String,
-    val userIdentification: LorittaJsonWebSession.UserIdentification?,
+    val userIdentification: DiscordLoginUserDashboardRoute.UserIdentification?,
     val user: User?,
     val lastReputationGiven: Reputation?,
     val reputations: List<Reputation>,

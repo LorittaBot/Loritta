@@ -364,7 +364,7 @@ class LorittaBot(
 	val gatewayShardsStartupResumeStatus = ConcurrentHashMap<Int, GatewayShardStartupResumeStatus>()
 
 	private val internalWebServer = InternalWebServer(this)
-    private val dashboardWebServer = LorittaDashboardWebServer(this)
+    val dashboardWebServer = LorittaDashboardWebServer(this)
 
 	val preLoginStates = mutableMapOf<Int, MutableStateFlow<PreStartGatewayEventReplayListener.ProcessorState>>()
 	var isActive = true

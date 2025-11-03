@@ -8,6 +8,7 @@ import net.perfectdreams.loritta.morenitta.website.LoriWebCode
 import net.perfectdreams.loritta.morenitta.website.WebsiteAPIException
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.lorittaSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.sequins.ktor.BaseRoute
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
@@ -17,15 +18,12 @@ abstract class RequiresAPIDiscordLoginRoute(val loritta: LorittaBot, path: Strin
 		private val logger by HarmonyLoggerFactory.logger {}
 	}
 
-	abstract suspend fun onAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification)
+	abstract suspend fun onAuthenticatedRequest(call: ApplicationCall, session: UserSession)
 
 	override suspend fun onRequest(call: ApplicationCall) {
-		val session = call.lorittaSession
+        val session = loritta.dashboardWebServer.getSession(call)
 
-		val discordAuth = session.getDiscordAuth(loritta.config.loritta.discord.applicationId.toLong(), loritta.config.loritta.discord.clientSecret, call)
-		val userIdentification = session.getUserIdentification(loritta.config.loritta.discord.applicationId.toLong(), loritta.config.loritta.discord.clientSecret, call)
-
-		if (discordAuth == null || userIdentification == null)
+		if (session == null)
 			throw WebsiteAPIException(
 					HttpStatusCode.Unauthorized,
 					WebsiteUtils.createErrorPayload(
@@ -35,7 +33,7 @@ abstract class RequiresAPIDiscordLoginRoute(val loritta: LorittaBot, path: Strin
 					)
 			)
 
-		val profile = loritta.getOrCreateLorittaProfile(userIdentification.id)
+		val profile = loritta.getOrCreateLorittaProfile(session.userId)
 		val bannedState = profile.getBannedState(loritta)
 
 		if (bannedState != null)
@@ -48,6 +46,6 @@ abstract class RequiresAPIDiscordLoginRoute(val loritta: LorittaBot, path: Strin
 					)
 			)
 
-		onAuthenticatedRequest(call, discordAuth, userIdentification)
+		onAuthenticatedRequest(call, session)
 	}
 }

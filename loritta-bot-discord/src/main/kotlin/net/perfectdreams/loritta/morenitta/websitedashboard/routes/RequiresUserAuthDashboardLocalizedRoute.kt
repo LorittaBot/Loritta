@@ -1,14 +1,26 @@
 package net.perfectdreams.loritta.morenitta.websitedashboard.routes
 
+import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.*
+import io.ktor.server.request.userAgent
+import io.ktor.server.response.respondRedirect
 import io.ktor.server.response.respondText
+import kotlinx.html.body
+import kotlinx.html.head
+import kotlinx.html.meta
+import kotlinx.html.p
+import kotlinx.html.title
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserPocketLorittaSettings
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserWebsiteSettings
+import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.morenitta.utils.Constants
+import net.perfectdreams.loritta.morenitta.utils.LorittaDiscordOAuth2AuthorizeScopeURL
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.shimeji.ActivityLevel
 import org.jetbrains.exposed.sql.selectAll
@@ -58,6 +70,39 @@ abstract class RequiresUserAuthDashboardLocalizedRoute(website: LorittaDashboard
     )
 
     suspend fun onUnauthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext) {
-        call.respondText("Requires Login!")
+        if (call.request.userAgent() == Constants.DISCORD_CRAWLER_USER_AGENT) {
+            call.respondHtml {
+                head {
+                    fun setMetaProperty(property: String, content: String) {
+                        meta(content = content) { attributes["property"] = property }
+                    }
+
+                    title("Login • Loritta")
+                    setMetaProperty("og:site_name", "Loritta")
+                    setMetaProperty("og:title", "Painel da Loritta")
+                    setMetaProperty("og:description", "Meu painel de configuração, aonde você pode me configurar para deixar o seu servidor único e incrível!")
+                    setMetaProperty("og:image", "https://stuff.loritta.website/loritta-and-wumpus-dashboard-yafyr.png")
+                    setMetaProperty("og:image:width", "320")
+                    setMetaProperty("og:ttl", "660")
+                    setMetaProperty("og:image:width", "320")
+                    setMetaProperty("theme-color", LorittaColors.LorittaAqua.toHex())
+                    meta("twitter:card", "summary_large_image")
+                }
+                body {
+                    p {
+                        + "Parabéns, você encontrou um easter egg!"
+                    }
+                }
+            }
+            return
+        }
+        
+        call.respondRedirect(
+            LorittaDiscordOAuth2AuthorizeScopeURL(
+                website.loritta,
+                null
+            ),
+            false
+        )
     }
 }

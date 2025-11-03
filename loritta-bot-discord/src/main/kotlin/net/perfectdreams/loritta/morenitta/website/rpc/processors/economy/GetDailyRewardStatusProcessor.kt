@@ -16,7 +16,7 @@ class GetDailyRewardStatusProcessor(val m: LorittaWebsite) : LorittaRpcProcessor
             LorittaRpcProcessor.DiscordAccountInformationResult.InvalidDiscordAuthorization -> return DiscordAccountError.InvalidDiscordAuthorization()
             LorittaRpcProcessor.DiscordAccountInformationResult.UserIsLorittaBanned -> return DiscordAccountError.UserIsLorittaBanned()
             is LorittaRpcProcessor.DiscordAccountInformationResult.Success -> {
-                val userIdentification = result.discordAuth.getUserIdentification()
+                val userIdentification = result.session.getUserIdentification(m.loritta)
 
                 return when (DailyAccountSafetyUtils.verifyIfAccountAndIpAreSafe(m.loritta, userIdentification, ip)) {
                     DailyAccountSafetyUtils.AccountCheckResult.BlockedEmail -> UserVerificationError.BlockedEmail()

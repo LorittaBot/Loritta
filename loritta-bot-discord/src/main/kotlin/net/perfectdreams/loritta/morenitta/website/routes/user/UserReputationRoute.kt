@@ -12,6 +12,7 @@ import net.perfectdreams.loritta.morenitta.website.routes.RequiresDiscordLoginLo
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.trueIp
 import net.perfectdreams.loritta.morenitta.website.views.dashboard.user.UserReputationView
+import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.SortOrder
@@ -20,18 +21,18 @@ import org.jetbrains.exposed.sql.or
 class UserReputationRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute(loritta, "/user/{userId}/rep") {
 	override suspend fun onUnauthenticatedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext) {
 		if (call.request.header("User-Agent") == Constants.DISCORD_CRAWLER_USER_AGENT) {
-			createReputationPage(call, i18nContext, locale, null, null)
+			createReputationPage(call, i18nContext, locale, null)
 			return
 		}
 
 		super.onUnauthenticatedRequest(call, locale, i18nContext)
 	}
 
-	override suspend fun onAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
-		createReputationPage(call, i18nContext, locale, discordAuth, userIdentification)
+	override suspend fun onAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext, session: UserSession) {
+		createReputationPage(call, i18nContext, locale, session)
 	}
 
-	suspend fun createReputationPage(call: ApplicationCall, i18nContext: I18nContext, locale: BaseLocale, discordAuth: TemmieDiscordAuth?, userIdentification: LorittaJsonWebSession.UserIdentification?) {
+	suspend fun createReputationPage(call: ApplicationCall, i18nContext: I18nContext, locale: BaseLocale, session: UserSession?) {
 		val userId = call.parameters["userId"] ?: return
 
 		val user = loritta.lorittaShards.retrieveUserById(userId)!!
@@ -43,10 +44,12 @@ class UserReputationRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRo
 					.toList()
 		}
 
+        val userIdentification = session?.getUserIdentification(loritta)
+
 		val lastReputationGiven = if (userIdentification != null) {
 			loritta.newSuspendedTransaction {
 				Reputation.find {
-					(Reputations.givenById eq userIdentification.id.toLong()) or
+					(Reputations.givenById eq session.userId) or
 							(Reputations.givenByEmail eq userIdentification.email!!) or
 							(Reputations.givenByIp eq call.request.trueIp)
 				}

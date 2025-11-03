@@ -11,45 +11,46 @@ import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIDisc
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
+import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.SortOrder
 
 class GetUserReputationsRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/users/{userId}/reputation") {
-	override suspend fun onAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
-		val receiver = call.parameters["userId"] ?: return
+    override suspend fun onAuthenticatedRequest(call: ApplicationCall, session: UserSession) {
+        val receiver = call.parameters["userId"] ?: return
 
-		val reputations = loritta.newSuspendedTransaction {
-			Reputation.find { Reputations.receivedById eq receiver.toLong() }
-					.orderBy(Reputations.receivedAt to SortOrder.DESC)
-					.toList()
-		}
+        val reputations = loritta.newSuspendedTransaction {
+            Reputation.find { Reputations.receivedById eq receiver.toLong() }
+                .orderBy(Reputations.receivedAt to SortOrder.DESC)
+                .toList()
+        }
 
-		val map = reputations.groupingBy { it.givenById }.eachCount()
-				.entries
-				.sortedByDescending { it.value }
+        val map = reputations.groupingBy { it.givenById }.eachCount()
+            .entries
+            .sortedByDescending { it.value }
 
-		var idx = 0
+        var idx = 0
 
-		val rankedUsers = jsonArray()
+        val rankedUsers = jsonArray()
 
-		for ((userId, count) in map) {
-			if (idx == 5) break
-			HarmonyLoggerFactory.logger {}.value.info { "GetUserReputationsRoute#retrieveUserInfoById - UserId: ${userId}" }
-			val userInfo = loritta.lorittaShards.retrieveUserInfoById(userId) ?: continue
-			rankedUsers.add(
-					jsonObject(
-							"count" to count,
-							"user" to WebsiteUtils.transformToJson(userInfo)
-					)
-			)
-			idx++
-		}
+        for ((userId, count) in map) {
+            if (idx == 5) break
+            HarmonyLoggerFactory.logger {}.value.info { "GetUserReputationsRoute#retrieveUserInfoById - UserId: ${userId}" }
+            val userInfo = loritta.lorittaShards.retrieveUserInfoById(userId) ?: continue
+            rankedUsers.add(
+                jsonObject(
+                    "count" to count,
+                    "user" to WebsiteUtils.transformToJson(userInfo)
+                )
+            )
+            idx++
+        }
 
-		val response = jsonObject(
-				"count" to reputations.size,
-				"rank" to rankedUsers
-		)
+        val response = jsonObject(
+            "count" to reputations.size,
+            "rank" to rankedUsers
+        )
 
-		call.respondJson(response)
-	}
+        call.respondJson(response)
+    }
 }

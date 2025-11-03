@@ -3,17 +3,17 @@ package net.perfectdreams.loritta.morenitta.website.rpc.processors
 import io.ktor.server.application.*
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.lorittaSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.DiscordLoginUserDashboardRoute
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 interface LorittaRpcProcessor {
     suspend fun getDiscordAccountInformation(loritta: LorittaBot, call: ApplicationCall): DiscordAccountInformationResult {
-        val session = call.lorittaSession
+        val session = loritta.dashboardWebServer.getSession(call)
+        val userIdentification = session?.getUserIdentification(loritta)
 
-        val discordAuth = session.getDiscordAuth(loritta.config.loritta.discord.applicationId.toLong(), loritta.config.loritta.discord.clientSecret, call)
-        val userIdentification = session.getUserIdentification(loritta.config.loritta.discord.applicationId.toLong(), loritta.config.loritta.discord.clientSecret, call)
-
-        if (discordAuth == null || userIdentification == null)
+        if (session == null || userIdentification == null)
             return DiscordAccountInformationResult.InvalidDiscordAuthorization
 
         val profile = loritta.getOrCreateLorittaProfile(userIdentification.id)
@@ -22,7 +22,7 @@ interface LorittaRpcProcessor {
         if (bannedState != null)
             return DiscordAccountInformationResult.UserIsLorittaBanned
 
-        return DiscordAccountInformationResult.Success(discordAuth, userIdentification)
+        return DiscordAccountInformationResult.Success(session, userIdentification)
     }
 
     sealed class DiscordAccountInformationResult {
@@ -30,8 +30,8 @@ interface LorittaRpcProcessor {
         object UserIsLorittaBanned : DiscordAccountInformationResult()
 
         data class Success(
-            val discordAuth: TemmieDiscordAuth,
-            val userIdentification: LorittaJsonWebSession.UserIdentification
+            val session: UserSession,
+            val userIdentification: DiscordLoginUserDashboardRoute.UserIdentification
         ) : DiscordAccountInformationResult()
     }
 }

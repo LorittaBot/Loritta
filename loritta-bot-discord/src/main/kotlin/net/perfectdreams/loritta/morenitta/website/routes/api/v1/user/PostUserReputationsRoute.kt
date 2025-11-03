@@ -24,7 +24,6 @@ import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.dao.Reputation
-import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.locale.PersonalPronoun
@@ -35,10 +34,8 @@ import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIDisc
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.trueIp
-import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
-import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
+import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import org.jetbrains.exposed.sql.or
-import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import java.util.EnumSet
 
@@ -135,10 +132,10 @@ class PostUserReputationsRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRou
 		}
 	}
 
-	override suspend fun onAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
-		val receiver = call.parameters["userId"] ?: return
+    override suspend fun onAuthenticatedRequest(call: ApplicationCall, session: UserSession) {
+        val receiver = call.parameters["userId"] ?: return
 
-		if (userIdentification.id == receiver) {
+		if (session.userId.toString() == receiver) {
 			throw WebsiteAPIException(
 				HttpStatusCode.Forbidden,
 				WebsiteUtils.createErrorPayload(
@@ -149,7 +146,7 @@ class PostUserReputationsRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRou
 			)
 		}
 
-		val dailyRewardToday = AccountUtils.getUserTodayDailyReward(loritta, userIdentification.id.toLong())
+		val dailyRewardToday = AccountUtils.getUserTodayDailyReward(loritta, session.userId)
 		if (dailyRewardToday == null) {
 			throw WebsiteAPIException(
 				HttpStatusCode.Forbidden,
@@ -178,10 +175,11 @@ class PostUserReputationsRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRou
 
 		val ip = call.request.trueIp
 
+        val userIdentification = session.getUserIdentification(loritta)
 		mutex.withLock {
 			val lastReputationGiven = loritta.newSuspendedTransaction {
 				Reputation.find {
-					(Reputations.givenById eq userIdentification.id.toLong()) or
+					(Reputations.givenById eq session.userId) or
 							(Reputations.givenByEmail eq userIdentification.email!!) or
 							(Reputations.givenByIp eq ip)
 				}.sortedByDescending { it.receivedAt }.firstOrNull()
@@ -204,7 +202,6 @@ class PostUserReputationsRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRou
 			if (!reputationsEnabled)
 				throw WebsiteAPIException(HttpStatusCode.Forbidden, WebsiteUtils.createErrorPayload(loritta, LoriWebCode.FORBIDDEN))
 
-			val userIdentification = discordAuth.getUserIdentification()
 			val status = MiscUtils.verifyAccount(loritta, userIdentification, ip)
 			val email = userIdentification.email
 			logger.info { "AccountCheckResult for (${userIdentification.username}#${userIdentification.discriminator}) ${userIdentification.id} - ${status.name}" }
@@ -231,11 +228,11 @@ class PostUserReputationsRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRou
 					)
 
 					val reputationCount = loritta.newSuspendedTransaction {
-						Reputations.selectAll().where { Reputations.receivedById eq userIdentification.id.toLong() }.count()
+						Reputations.selectAll().where { Reputations.receivedById eq userIdentification.id }.count()
 					}
 
 					if (guildId != null && channelId != null) {
-						sendReputationToCluster(loritta, guildId, channelId, loritta.config.loritta.discord.applicationId.toString(), userIdentification.id, reputationCount)
+						sendReputationToCluster(loritta, guildId, channelId, loritta.config.loritta.discord.applicationId.toString(), userIdentification.id.toString(), reputationCount)
 					}
 				}
 			}
@@ -245,7 +242,7 @@ class PostUserReputationsRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRou
 			}
 
 			if (guildId != null && channelId != null)
-				sendReputationToCluster(loritta, guildId, channelId, userIdentification.id, receiver, reputations.size.toLong())
+				sendReputationToCluster(loritta, guildId, channelId, session.userId.toString(), receiver, reputations.size.toLong())
 
 			call.respondJson(jsonObject())
 		}

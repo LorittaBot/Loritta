@@ -20,20 +20,6 @@ import javax.xml.transform.TransformerFactory
 import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
 
-fun Document.transformToString(): String {
-	try {
-		val sw = StringWriter()
-		val tf = TransformerFactory.newInstance()
-		val transformer = tf.newTransformer()
-		transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "about:legacy-compat")
-
-		transformer.transform(DOMSource(this), StreamResult(sw))
-		return sw.toString()
-	} catch (ex: Exception) {
-		throw RuntimeException("Error converting to String", ex)
-	}
-}
-
 suspend fun ApplicationCall.respondJson(json: JsonElement, status: HttpStatusCode? = null) = this.respondText(ContentType.Application.Json, status) {
 	gson.toJson(json)
 }
@@ -66,15 +52,6 @@ val ApplicationRequest.trueIp: String get() {
 			else
 				it
 		}
-}
-
-// TODO - htmx-adventures: Remove this after we stop using Pebble
-fun ApplicationCall.legacyVariables(loritta: LorittaBot, locale: BaseLocale): MutableMap<String, Any?> {
-	if (attributes.contains(WebsiteUtils.variablesKey))
-		return attributes[WebsiteUtils.variablesKey]
-
-	WebsiteUtils.initializeVariables(loritta, this, locale, loritta.getLegacyLocaleById(locale.id), locale.path)
-	return legacyVariables(loritta, locale)
 }
 
 var ApplicationCall.lorittaSession: LorittaJsonWebSession

@@ -9,6 +9,7 @@ import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.sweetmorenitta.utils.imgSrcSet
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.DiscordLoginUserDashboardRoute
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 
 class DonateView(
@@ -16,7 +17,7 @@ class DonateView(
     i18nContext: I18nContext,
     locale: BaseLocale,
     path: String,
-    val userIdentification: LorittaJsonWebSession.UserIdentification?,
+    val userIdentification: DiscordLoginUserDashboardRoute.UserIdentification?,
     val keys: JsonArray
 ) : NavbarView(
     loritta,

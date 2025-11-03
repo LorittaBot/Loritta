@@ -36,6 +36,7 @@ import net.perfectdreams.loritta.morenitta.loricoolcards.StickerAlbumTemplate
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.rpc.processors.LorittaRpcProcessor
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.trueIp
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.DiscordLoginUserDashboardRoute
 import net.perfectdreams.loritta.serializable.SonhosPaymentReason
 import net.perfectdreams.loritta.serializable.StoredDailyRewardSonhosTransaction
 import net.perfectdreams.loritta.serializable.requests.GetDailyRewardRequest
@@ -89,7 +90,7 @@ class GetDailyRewardProcessor(val m: LorittaWebsite) : LorittaRpcProcessor {
 
                 val lorittaProfile = loritta.getOrCreateLorittaProfile(cachedUserIdentification.id)
 
-                val userIdentification = discordAuth.getUserIdentification()
+                val userIdentification = result.userIdentification
 
                 return when (DailyAccountSafetyUtils.verifyIfAccountAndIpAreSafe(m.loritta, userIdentification, ip)) {
                     DailyAccountSafetyUtils.AccountCheckResult.BlockedEmail -> UserVerificationError.BlockedEmail()
@@ -138,9 +139,9 @@ class GetDailyRewardProcessor(val m: LorittaWebsite) : LorittaRpcProcessor {
                                     var dailyPayout = LorittaBot.RANDOM.nextInt(1800 /* Math.max(555, 555 * (multiplier - 1)) */, ((1800 * multiplier) + 1).toInt()) // 555 (lower bound) -> 555 * sites de votação do PerfectDreams
                                     val originalPayout = dailyPayout
 
-                                    val mutualGuilds = discordAuth.getUserGuilds()
+                                    val mutualGuilds = discordAuth.getUserGuilds(loritta)
 
-                                    var sponsoredBy: TemmieDiscordAuth.Guild? = null
+                                    var sponsoredBy: DiscordLoginUserDashboardRoute.DiscordGuild? = null
                                     var multipliedBy: Double? = null
                                     var sponsoredByUserId: Long? = null
 
@@ -156,10 +157,10 @@ class GetDailyRewardProcessor(val m: LorittaWebsite) : LorittaRpcProcessor {
                                         val serverConfigs = ServerConfig.wrapRows(results)
 
                                         var bestServer: ServerConfig? = null
-                                        var bestServerInfo: TemmieDiscordAuth.Guild? = null
+                                        var bestServerInfo: DiscordLoginUserDashboardRoute.DiscordGuild? = null
 
                                         // VIVO SPONSOR
-                                        val vivoGuildId = "1102914516842446848"
+                                        val vivoGuildId = 1102914516842446848L
                                         val hasJoinedVivoSponsor = mutualGuilds.any { it.id == vivoGuildId }
                                         if (hasJoinedVivoSponsor) {
                                             bestServerInfo = mutualGuilds.first { it.id == vivoGuildId }
@@ -183,9 +184,9 @@ class GetDailyRewardProcessor(val m: LorittaWebsite) : LorittaRpcProcessor {
                                             val (config, donationValue) = pair
                                             logger.info { "Checking ${config.guildId}" }
 
-                                            val guild = mutualGuilds.firstOrNull { logger.info { "it[id] = ${it.id.toLong()}" }; it.id.toLong() == config.guildId }
+                                            val guild = mutualGuilds.firstOrNull { logger.info { "it[id] = ${it.id}" }; it.id == config.guildId }
                                                 ?: continue
-                                            val id = guild.id.toLong()
+                                            val id = guild.id
 
                                             val xp = GuildProfile.find { (GuildProfiles.guildId eq id) and (GuildProfiles.userId eq userIdentification.id.toLong()) }.firstOrNull()?.xp
                                                 ?: 0L
@@ -196,7 +197,7 @@ class GetDailyRewardProcessor(val m: LorittaWebsite) : LorittaRpcProcessor {
                                                         GetDailyRewardResponse.GuildInfo(
                                                             guild.name,
                                                             guild.icon,
-                                                            guild.id.toLong()
+                                                            guild.id
                                                         ),
                                                         DailyGuildMissingRequirement.REQUIRES_MORE_XP,
                                                         500 - xp,

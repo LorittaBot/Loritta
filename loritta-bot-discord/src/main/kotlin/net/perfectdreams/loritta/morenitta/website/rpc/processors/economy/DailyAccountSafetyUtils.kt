@@ -5,6 +5,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.MiscUtils
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.DiscordLoginUserDashboardRoute
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
@@ -159,7 +160,172 @@ object DailyAccountSafetyUtils {
         }
     }
 
+    suspend fun checkIfUserCanPayout(loritta: LorittaBot, userIdentification: DiscordLoginUserDashboardRoute.UserIdentification, ip: String): AccountDailyPayoutCheckResult {
+        val isIPv6 = ip.contains(":")
+
+        val todayAtMidnight = ZonedDateTime.now(Constants.LORITTA_TIMEZONE)
+            .withHour(0)
+            .withMinute(0)
+            .withSecond(0)
+            .toInstant()
+            .toEpochMilli()
+        val tomorrowAtMidnight = ZonedDateTime.now(Constants.LORITTA_TIMEZONE)
+            .plusDays(1)
+            .withHour(0)
+            .withMinute(0)
+            .withSecond(0)
+            .toInstant()
+            .toEpochMilli()
+        val nowOneHourAgo = ZonedDateTime.now(Constants.LORITTA_TIMEZONE)
+            .let {
+                if (it.hour != 0) // If the hour is 0, we would get the hour *one day ago*, which is isn't what we want
+                    it.minusHours(1)
+                else {
+                    it.withHour(0)
+                        .withMinute(0)
+                        .withSecond(0)
+                        .withNano(0)
+                }
+            }
+            .toInstant()
+            .toEpochMilli()
+
+        // Para evitar pessoas criando várias contas e votando, nós iremos também verificar o IP dos usuários que votarem
+        // Isto evita pessoas farmando upvotes votando (claro que não é um método infalível, mas é melhor que nada, né?)
+        val lastReceivedDailyAt = loritta.newSuspendedTransaction {
+            net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies.selectAll().where { Dailies.receivedById eq userIdentification.id.toLong() and (Dailies.receivedAt greaterEq todayAtMidnight) }.orderBy(
+                Dailies.receivedAt, SortOrder.DESC)
+                .map {
+                    it[Dailies.receivedAt]
+                }
+        }
+
+        if (lastReceivedDailyAt.isNotEmpty()) {
+            logger.info { "Blocking ${userIdentification.id.toLong()} because they already received the daily reward today" }
+            if (!loritta.isOwner(userIdentification.id.toLong())) {
+                return AccountDailyPayoutCheckResult.AlreadyGotTheDailyRewardSameAccount(tomorrowAtMidnight)
+            }
+        }
+
+        // Depending on if the user is using IPv6 or IPv4, we do different checks
+        if (isIPv6) {
+            // For IPv6, we attempt to extract the "prefix" of the IPv6
+            // While we don't actually know the prefix, it seems that most providers use /64 for residential usage
+            // And it seems to be pretty dead on, rarely you'll have someone with the same IPv6 prefix if they don't live in the same house/using same network
+            val expandedSelfIp = expandIPv6Address(ip)
+            val selfIpHouseholdPrefixBlocks = expandedSelfIp.split(":").take(EXPANDED_IPV6_HOUSEHOLD_PREFIX)
+
+            // This SUCKS A LOT BUT THERE IS NOT A BETTER SOLUTION FOR THIS
+            // The best...est solution would be to save the IPv6s in a binary format (maybe) or in PostgreSQL's inet format (also maybe)
+            // But because we are already saving them using TEXT, we need to query EVERYTHING to then expand and check
+            val allDailiesThatWereReceivedToday = loritta.newSuspendedTransaction {
+                Dailies.select(Dailies.ip)
+                    .where { Dailies.receivedAt greaterEq todayAtMidnight }
+                    .orderBy(Dailies.receivedAt, SortOrder.DESC)
+                    .map {
+                        it[Dailies.ip]
+                    }
+            }
+
+            // TODO: Should we also implement the "sameIpDailyOneHourAgoAt" IPv4 checks too?
+
+            var trippedSamePrefixChecks = 0
+
+            for (dailyIp in allDailiesThatWereReceivedToday) {
+                val expandedDailyIp = expandIPv6Address(dailyIp)
+
+                val dailyIpHouseholdPrefixBlocks = expandedDailyIp.split(":").take(EXPANDED_IPV6_HOUSEHOLD_PREFIX)
+
+                if (dailyIpHouseholdPrefixBlocks == selfIpHouseholdPrefixBlocks) {
+                    // Just like IPv4 checks, we will do some checks here too
+                    if (expandedDailyIp == expandedSelfIp) {
+                        logger.info { "Blocking ${userIdentification.id.toLong()} because they already received the daily reward today (Same IPv6)" }
+                        if (!loritta.isOwner(userIdentification.id.toLong())) {
+                            return AccountDailyPayoutCheckResult.AlreadyGotTheDailyRewardSameIp(
+                                tomorrowAtMidnight,
+                                ip
+                            )
+                        }
+                    }
+
+                    trippedSamePrefixChecks++
+
+                    logger.info { "Tripped ${userIdentification.id.toLong()} same household prefix checks (IPv6 - Trip count: $trippedSamePrefixChecks - Household prefix is $dailyIpHouseholdPrefixBlocks)" }
+
+                    if (trippedSamePrefixChecks == 3) {
+                        logger.info { "Blocking ${userIdentification.id.toLong()} because they already received the daily reward today (IPv6 - Too many rewards on the same IPv6 prefix - Household prefix is $dailyIpHouseholdPrefixBlocks)" }
+                        if (!loritta.isOwner(userIdentification.id.toLong())) {
+                            return AccountDailyPayoutCheckResult.AlreadyGotTheDailyRewardSameIp(
+                                tomorrowAtMidnight,
+                                ip
+                            )
+                        }
+                    }
+                }
+            }
+
+            return AccountDailyPayoutCheckResult.Success(trippedSamePrefixChecks)
+        } else {
+            val sameIpDailyAt = loritta.newSuspendedTransaction {
+                net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies.selectAll().where { Dailies.ip eq ip and (Dailies.receivedAt greaterEq todayAtMidnight) }
+                    .orderBy(Dailies.receivedAt, SortOrder.DESC)
+                    .map {
+                        it[Dailies.receivedAt]
+                    }
+            }
+
+            val sameIpDailyOneHourAgoAt = loritta.newSuspendedTransaction {
+                net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies.selectAll().where { Dailies.ip eq ip and (Dailies.receivedAt greaterEq nowOneHourAgo) }
+                    .orderBy(Dailies.receivedAt, SortOrder.DESC)
+                    .map {
+                        it[Dailies.receivedAt]
+                    }
+            }
+
+            if (lastReceivedDailyAt.isNotEmpty() || sameIpDailyOneHourAgoAt.isNotEmpty()) {
+                logger.info { "Blocking ${userIdentification.id.toLong()} because they already received the daily reward today (Same IPv4)" }
+                if (!loritta.isOwner(userIdentification.id.toLong())) {
+                    return AccountDailyPayoutCheckResult.AlreadyGotTheDailyRewardSameAccount(tomorrowAtMidnight)
+                }
+            }
+
+            if (sameIpDailyAt.isNotEmpty()) {
+                // If there's more than 3 users getting daily on the same IPv4, then block them!
+                if (sameIpDailyAt.size >= 3) {
+                    logger.info { "Blocking ${userIdentification.id.toLong()} because they already received the daily reward today (IPv4 - Too many rewards on the same IP)" }
+                    return AccountDailyPayoutCheckResult.AlreadyGotTheDailyRewardSameIp(
+                        tomorrowAtMidnight,
+                        ip
+                    )
+                }
+            }
+
+            return AccountDailyPayoutCheckResult.Success(sameIpDailyAt.size)
+        }
+    }
+
     suspend fun verifyIfAccountAndIpAreSafe(loritta: LorittaBot, userIdentification: TemmieDiscordAuth.UserIdentification, ip: String): AccountCheckResult {
+        val status = MiscUtils.verifyAccount(loritta, userIdentification, ip)
+        val email = userIdentification.email
+        logger.info { "AccountCheckResult for (${userIdentification.username}#${userIdentification.discriminator}) ${userIdentification.id} - ${status.name}" }
+        logger.info { "Is verified? ${userIdentification.verified}" }
+        logger.info { "Email ${email}" }
+        logger.info { "IP: $ip" }
+
+        return when (status) {
+            MiscUtils.AccountCheckResult.STOP_FORUM_SPAM,
+            MiscUtils.AccountCheckResult.BAD_HOSTNAME,
+            MiscUtils.AccountCheckResult.OVH_HOSTNAME -> AccountCheckResult.BlockedIp
+
+            MiscUtils.AccountCheckResult.BAD_EMAIL -> AccountCheckResult.BlockedEmail
+
+            MiscUtils.AccountCheckResult.NOT_VERIFIED -> AccountCheckResult.NotVerified
+
+            MiscUtils.AccountCheckResult.SUCCESS -> AccountCheckResult.Safe
+        }
+    }
+
+    suspend fun verifyIfAccountAndIpAreSafe(loritta: LorittaBot, userIdentification: DiscordLoginUserDashboardRoute.UserIdentification, ip: String): AccountCheckResult {
         val status = MiscUtils.verifyAccount(loritta, userIdentification, ip)
         val email = userIdentification.email
         logger.info { "AccountCheckResult for (${userIdentification.username}#${userIdentification.discriminator}) ${userIdentification.id} - ${status.name}" }

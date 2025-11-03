@@ -157,7 +157,8 @@ class DiscordLoginUserDashboardRoute(val website: LorittaDashboardWebServer) : B
         val locale: String,
         @SerialName("premium_type")
         val premiumType: Int,
-        val email: String,
-        val verified: Boolean
+        val flags: Int,
+        val email: String?,
+        val verified: Boolean,
     )
 }
