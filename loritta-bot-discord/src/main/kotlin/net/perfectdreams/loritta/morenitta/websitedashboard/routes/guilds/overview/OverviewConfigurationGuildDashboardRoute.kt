@@ -40,6 +40,7 @@ class OverviewConfigurationGuildDashboardRoute(website: LorittaDashboardWebServe
                 },
                 {
                     heroWrapper {
+                        simpleHeroImage("https://stuff.loritta.website/animations/loritta-dashboard/loritta-dashboard.png")
                         heroText {
                             h1 {
                                 text("Visão Geral")
