@@ -1,7 +1,9 @@
 package net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.overview
 
 import io.ktor.server.application.*
+import kotlinx.html.h1
 import kotlinx.html.html
+import kotlinx.html.p
 import kotlinx.html.stream.createHTML
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
@@ -14,6 +16,9 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebS
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.dashboardBase
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.guildDashLeftSidebarEntries
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.heroText
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.heroWrapper
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.simpleHeroImage
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.serializable.ColorTheme
@@ -34,7 +39,17 @@ class OverviewConfigurationGuildDashboardRoute(website: LorittaDashboardWebServe
                     guildDashLeftSidebarEntries(i18nContext, guild, userPremiumPlan, GuildDashboardSection.OVERVIEW)
                 },
                 {
-                    text("Página vazia... por enquanto. (Eu ainda não decidi o que terá na visão geral, então acesse as outras seções na sidebar para configurar o seu servidor!)")
+                    heroWrapper {
+                        heroText {
+                            h1 {
+                                text("Visão Geral")
+                            }
+
+                            p {
+                                text("Acesse as seções na sidebar para configurar as minhas funcionalidades!")
+                            }
+                        }
+                    }
                 }
             )
         }
