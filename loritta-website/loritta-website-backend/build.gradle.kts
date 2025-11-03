@@ -33,7 +33,7 @@ dependencies {
     implementation("org.yaml:snakeyaml:2.4")
     implementation("com.charleskorn.kaml:kaml:0.80.1")
 
-    implementation("net.perfectdreams.etherealgambi:client:1.0.0")
+    implementation("net.perfectdreams.etherealgambi:client:1.0.4")
 
     api("commons-codec:commons-codec:1.15")
 
