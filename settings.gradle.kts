@@ -101,7 +101,6 @@ include(":lotrunfo:lotrunfo-frontend")
 // ===[ MISC ]===
 include(":loritta-helper")
 include(":temmie-discord-auth")
-include(":temmie-discord-auth-loritta-commons")
 include(":switch-twitch")
 include(":broker-tickers-updater")
 include(":loricoolcards-generator")
