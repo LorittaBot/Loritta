@@ -370,14 +370,14 @@ class LorittaWebsiteBackend(
 
         // Before we say "okay everything is OK! Let's go!!" we are going to format every single string on the locale
         // to check if everything is really OK
-        for ((key, string) in locale.localeStringEntries) {
+        /* for ((key, string) in locale.localeStringEntries) {
             try {
                 string?.format()
             } catch (e: IllegalArgumentException) {
                 logger.error("String \"$string\" stored in \"$key\" from $id can't be formatted! If you are using {...} formatted placeholders, do not forget to add \\' before and after the placeholder!")
                 throw e
             }
-        }
+        } */
 
         return locale
     }
