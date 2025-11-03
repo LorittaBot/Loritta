@@ -14,6 +14,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
+import io.ktor.server.util.getOrFail
 import io.ktor.util.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.SharingStarted
@@ -27,14 +28,12 @@ import net.perfectdreams.loritta.morenitta.website.routes.LocalizedRoute
 import net.perfectdreams.loritta.morenitta.website.rpc.processors.Processors
 import net.perfectdreams.loritta.morenitta.website.utils.SVGIconManager
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
-import net.perfectdreams.loritta.morenitta.website.utils.config.types.*
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.*
 import net.perfectdreams.loritta.morenitta.website.views.Error404View
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.apache.commons.lang3.exception.ExceptionUtils
 import java.io.File
-import java.io.StringWriter
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
@@ -44,388 +43,436 @@ import java.util.concurrent.ConcurrentHashMap
  * This is used as a "hack" until the new website is done
  */
 class LorittaWebsite(
-	val loritta: LorittaBot,
-	val websiteUrl: String,
-	var frontendFolder: String,
-	val spicyMorenittaBundle: SpicyMorenittaBundle
+    val loritta: LorittaBot,
+    val websiteUrl: String,
+    var frontendFolder: String,
+    val spicyMorenittaBundle: SpicyMorenittaBundle
 ) {
-	companion object {
-		lateinit var INSTANCE: LorittaWebsite
-		val versionPrefix = "/v2"
-		private val logger by HarmonyLoggerFactory.logger {}
-		private val TimeToProcess = AttributeKey<Long>("TimeToProcess")
+    companion object {
+        lateinit var INSTANCE: LorittaWebsite
+        val versionPrefix = "/v2"
+        private val logger by HarmonyLoggerFactory.logger {}
+        private val TimeToProcess = AttributeKey<Long>("TimeToProcess")
 
-		lateinit var FOLDER: String
-		lateinit var WEBSITE_URL: String
+        lateinit var FOLDER: String
+        lateinit var WEBSITE_URL: String
 
-		fun canManageGuild(g: TemmieDiscordAuth.Guild): Boolean {
-			val isAdministrator = g.permissions shr 3 and 1 == 1L
-			val isManager = g.permissions shr 5 and 1 == 1L
-			return g.owner || isAdministrator || isManager
-		}
+        fun canManageGuild(g: TemmieDiscordAuth.Guild): Boolean {
+            val isAdministrator = g.permissions shr 3 and 1 == 1L
+            val isManager = g.permissions shr 5 and 1 == 1L
+            return g.owner || isAdministrator || isManager
+        }
 
-		fun getUserPermissionLevel(g: TemmieDiscordAuth.Guild): UserPermissionLevel {
-			val isAdministrator = g.permissions shr 3 and 1 == 1L
-			val isManager = g.permissions shr 5 and 1 == 1L
+        fun getUserPermissionLevel(g: TemmieDiscordAuth.Guild): UserPermissionLevel {
+            val isAdministrator = g.permissions shr 3 and 1 == 1L
+            val isManager = g.permissions shr 5 and 1 == 1L
 
-			return when {
-				g.owner -> UserPermissionLevel.OWNER
-				isAdministrator -> UserPermissionLevel.ADMINISTRATOR
-				isManager -> UserPermissionLevel.MANAGER
-				else -> UserPermissionLevel.MEMBER
-			}
-		}
+            return when {
+                g.owner -> UserPermissionLevel.OWNER
+                isAdministrator -> UserPermissionLevel.ADMINISTRATOR
+                isManager -> UserPermissionLevel.MANAGER
+                else -> UserPermissionLevel.MEMBER
+            }
+        }
 
-		private val FAKE_LOCALIZED_REDIRECTION_ROUTES = setOf(
-			"/",
-			"/commands",
-			"/staff",
-			"/extras",
-			"/wiki",
-			"/donate",
-			"/daily",
-			"/blog"
-		)
-	}
+        private val FAKE_LOCALIZED_REDIRECTION_ROUTES = setOf(
+            "/",
+            "/commands",
+            "/staff",
+            "/extras",
+            "/wiki",
+            "/donate",
+            "/daily",
+            "/blog"
+        )
+    }
 
-	init {
-		// The website code expects the website URL with a trailing slash at the end
-		WEBSITE_URL = "${websiteUrl.removeSuffix("/")}/"
-		FOLDER = frontendFolder
-	}
+    init {
+        // The website code expects the website URL with a trailing slash at the end
+        WEBSITE_URL = "${websiteUrl.removeSuffix("/")}/"
+        FOLDER = frontendFolder
+    }
 
-	val pathCache = ConcurrentHashMap<File, Any>()
-	var config = WebsiteConfig(loritta)
-	val svgIconManager = SVGIconManager(this)
-	lateinit var server: EmbeddedServer<CIOApplicationEngine, *>
-	private val typesToCache = listOf(
-		ContentType.Text.CSS,
-		ContentType.Text.JavaScript,
-		ContentType.Application.JavaScript,
-		ContentType.Image.Any
-	)
+    val pathCache = ConcurrentHashMap<File, Any>()
+    var config = WebsiteConfig(loritta)
+    val svgIconManager = SVGIconManager(this)
+    lateinit var server: EmbeddedServer<CIOApplicationEngine, *>
+    private val typesToCache = listOf(
+        ContentType.Text.CSS,
+        ContentType.Text.JavaScript,
+        ContentType.Application.JavaScript,
+        ContentType.Image.Any
+    )
 
-	val processors = Processors(this)
-	val lorifetch = Lorifetch(this.loritta)
+    val processors = Processors(this)
+    val lorifetch = Lorifetch(this.loritta)
 
-	fun start() {
-		INSTANCE = this
-		if (loritta.isMainInstance)
-			lorifetch.statsFlow.shareIn(GlobalScope, SharingStarted.Eagerly)
+    val dashboardRedirects = mutableMapOf(
+        "/dashboard" to "/",
+        "/dashboard/user-app" to "/user-app",
+        "/dashboard/profiles" to "/profiles",
+        "/dashboard/backgrounds" to "/backgrounds",
+        "/dashboard/profile-presets" to "/profile-presets",
+        "/dashboard/profile-presets" to "/profile-presets",
+        "/dashboard/daily-shop" to "/daily-shop",
+        "/dashboard/ship-effects" to "/ship-effects",
+        "/dashboard/api-keys" to "/api-keys",
 
-		val routes = DefaultRoutes.defaultRoutes(loritta, this)
+        "/guild/{guildId}/configure" to "/guilds/{guildId}/overview",
+        "/guild/{guildId}/configure/moderation" to "/guilds/{guildId}/punishment-log",
+        "/guild/{guildId}/configure/commands" to "/guilds/{guildId}/commands",
+        "/guild/{guildId}/configure/permissions" to "/guilds/{guildId}/permissions",
+        "/guild/{guildId}/configure/welcomer" to "/guilds/{guildId}/welcomer",
+        "/guild/{guildId}/configure/event-log" to "/guilds/{guildId}/event-log",
+        "/guild/{guildId}/configure/youtube" to "/guilds/{guildId}/youtube",
+        "/guild/{guildId}/configure/twitch" to "/guilds/{guildId}/twitch",
+        "/guild/{guildId}/configure/bluesky" to "/guilds/{guildId}/bluesky",
+        "/guild/{guildId}/configure/daily-shop-trinkets" to "/guilds/{guildId}/daily-shop-trinkets",
+        "/guild/{guildId}/configure/level" to "/guilds/{guildId}/xp-rewards",
+        "/guild/{guildId}/configure/autorole" to "/guilds/{guildId}/autorole",
+        "/guild/{guildId}/configure/invite-blocker" to "/guilds/{guildId}/invite-blocker",
+        "/guild/{guildId}/configure/member-counter" to "/guilds/{guildId}/member-counter",
+        "/guild/{guildId}/configure/reaction-events" to "/guilds/{guildId}/reaction-events",
+        "/guild/{guildId}/configure/miscellaneous" to "/guilds/{guildId}/bom-dia-e-cia",
+        "/guild/{guildId}/configure/premium" to "/guilds/{guildId}/premium-keys",
+        "/guild/{guildId}/configure/badge" to "/guilds/{guildId}/badge",
+        "/guild/{guildId}/configure/daily-multiplier" to "/guilds/{guildId}/daily-multiplier",
+    )
 
-		val server = embeddedServer(CIO, loritta.config.loritta.website.port) {
-			install(CachingHeaders) {
-				options { call, outgoingContent ->
-					val contentType = outgoingContent.contentType
-					if (contentType != null) {
-						val contentTypeWithoutParameters = contentType.withoutParameters()
-						val matches = typesToCache.any { contentTypeWithoutParameters.match(it) || contentTypeWithoutParameters == it }
+    fun start() {
+        INSTANCE = this
+        if (loritta.isMainInstance)
+            lorifetch.statsFlow.shareIn(GlobalScope, SharingStarted.Eagerly)
 
-						if (matches)
-							CachingOptions(CacheControl.MaxAge(maxAgeSeconds = 365 * 24 * 3600))
-						else
-							null
-					} else null
-				}
-			}
+        val routes = DefaultRoutes.defaultRoutes(loritta, this)
 
-			install(StatusPages) {
-				status(HttpStatusCode.NotFound) { call, status ->
-					if (call.alreadyHandledStatus)
-						return@status
+        val server = embeddedServer(CIO, loritta.config.loritta.website.port) {
+            install(CachingHeaders) {
+                options { call, outgoingContent ->
+                    val contentType = outgoingContent.contentType
+                    if (contentType != null) {
+                        val contentTypeWithoutParameters = contentType.withoutParameters()
+                        val matches = typesToCache.any { contentTypeWithoutParameters.match(it) || contentTypeWithoutParameters == it }
 
-					call.respondHtml(
-						Error404View(
-							loritta,
-							loritta.languageManager.defaultI18nContext,
-							loritta.localeManager.locales["default"]!!, // TODO: Localization
-							call.request.path().split("/").drop(2).joinToString("/"),
-						).generateHtml(),
-						status = HttpStatusCode.NotFound
-					)
-				}
+                        if (matches)
+                            CachingOptions(CacheControl.MaxAge(maxAgeSeconds = 365 * 24 * 3600))
+                        else
+                            null
+                    } else null
+                }
+            }
 
-				exception<TemmieDiscordAuth.TokenUnauthorizedException> { call, cause ->
-					if (call.request.path().startsWith("/api/v1/")) {
-						logger.warn { "Unauthorized token! Throwing a WebsiteAPIException... $cause" }
-						call.sessions.clear<LorittaJsonWebSession>()
+            install(StatusPages) {
+                status(HttpStatusCode.NotFound) { call, status ->
+                    if (call.alreadyHandledStatus)
+                        return@status
 
-						call.respondJson(
-							WebsiteUtils.createErrorPayload(
-								loritta,
-								LoriWebCode.UNAUTHORIZED,
-								"Invalid Discord Authorization"
-							),
-							HttpStatusCode.Unauthorized
-						)
-					} else {
-						logger.warn { "Unauthorized token! Redirecting to dashboard... $cause" }
-						val hostHeader = call.request.hostFromHeader()
-						call.sessions.clear<LorittaJsonWebSession>()
-						call.respondRedirect("https://$hostHeader/dashboard", true)
-					}
-				}
+                    call.respondHtml(
+                        Error404View(
+                            loritta,
+                            loritta.languageManager.defaultI18nContext,
+                            loritta.localeManager.locales["default"]!!, // TODO: Localization
+                            call.request.path().split("/").drop(2).joinToString("/"),
+                        ).generateHtml(),
+                        status = HttpStatusCode.NotFound
+                    )
+                }
 
-				exception<TemmieDiscordAuth.TokenExchangeException> { call, cause ->
-					if (call.request.path().startsWith("/api/v1/")) {
-						logger.warn { "Token exchange exception! Throwing a WebsiteAPIException... $cause" }
-						call.sessions.clear<LorittaJsonWebSession>()
+                exception<TemmieDiscordAuth.TokenUnauthorizedException> { call, cause ->
+                    if (call.request.path().startsWith("/api/v1/")) {
+                        logger.warn { "Unauthorized token! Throwing a WebsiteAPIException... $cause" }
+                        call.sessions.clear<LorittaJsonWebSession>()
 
-						call.respondJson(
-							WebsiteUtils.createErrorPayload(
-								loritta,
-								LoriWebCode.UNAUTHORIZED,
-								"Invalid Discord Authorization"
-							),
-							HttpStatusCode.Unauthorized
-						)
-					} else {
-						logger.warn { "Token exchange exception! Redirecting to dashboard... $cause" }
-						val hostHeader = call.request.hostFromHeader()
-						call.sessions.clear<LorittaJsonWebSession>()
-						call.respondRedirect("https://$hostHeader/dashboard", true)
-					}
-				}
+                        call.respondJson(
+                            WebsiteUtils.createErrorPayload(
+                                loritta,
+                                LoriWebCode.UNAUTHORIZED,
+                                "Invalid Discord Authorization"
+                            ),
+                            HttpStatusCode.Unauthorized
+                        )
+                    } else {
+                        logger.warn { "Unauthorized token! Redirecting to dashboard... $cause" }
+                        val hostHeader = call.request.hostFromHeader()
+                        call.sessions.clear<LorittaJsonWebSession>()
+                        call.respondRedirect("https://$hostHeader/dashboard", true)
+                    }
+                }
 
-				exception<WebsiteAPIException> { call, cause ->
-					call.alreadyHandledStatus = true
-					call.respondJson(cause.payload, cause.status)
-				}
+                exception<TemmieDiscordAuth.TokenExchangeException> { call, cause ->
+                    if (call.request.path().startsWith("/api/v1/")) {
+                        logger.warn { "Token exchange exception! Throwing a WebsiteAPIException... $cause" }
+                        call.sessions.clear<LorittaJsonWebSession>()
 
-				exception<HttpRedirectException> { call, e ->
-					call.respondRedirect(e.location, permanent = e.permanent)
-				}
+                        call.respondJson(
+                            WebsiteUtils.createErrorPayload(
+                                loritta,
+                                LoriWebCode.UNAUTHORIZED,
+                                "Invalid Discord Authorization"
+                            ),
+                            HttpStatusCode.Unauthorized
+                        )
+                    } else {
+                        logger.warn { "Token exchange exception! Redirecting to dashboard... $cause" }
+                        val hostHeader = call.request.hostFromHeader()
+                        call.sessions.clear<LorittaJsonWebSession>()
+                        call.respondRedirect("https://$hostHeader/dashboard", true)
+                    }
+                }
 
-				exception<Throwable> { call, cause ->
-					val userAgent = call.request.userAgent()
-					val trueIp = call.request.trueIp
-					val queryString = call.request.urlQueryString
-					val httpMethod = call.request.httpMethod.value
+                exception<WebsiteAPIException> { call, cause ->
+                    call.alreadyHandledStatus = true
+                    call.respondJson(cause.payload, cause.status)
+                }
 
-					logger.error(cause) { "Something went wrong when processing ${trueIp} (${userAgent}): ${httpMethod} ${call.request.path()}${queryString}" }
+                exception<HttpRedirectException> { call, e ->
+                    call.respondRedirect(e.location, permanent = e.permanent)
+                }
 
-					call.respondHtml(
-						StringBuilder().appendHTML()
-							.html {
-								head {
-									title { + "Uh, oh! Something went wrong!" }
-								}
-								body {
-									pre {
-										+ ExceptionUtils.getStackTrace(cause)
-									}
-								}
-							}
-							.toString(),
-						status = HttpStatusCode.InternalServerError
-					)
-				}
-			}
+                exception<Throwable> { call, cause ->
+                    val userAgent = call.request.userAgent()
+                    val trueIp = call.request.trueIp
+                    val queryString = call.request.urlQueryString
+                    val httpMethod = call.request.httpMethod.value
 
-			install(Sessions) {
-				val secretHashKey = hex(loritta.config.loritta.website.sessionHex)
+                    logger.error(cause) { "Something went wrong when processing ${trueIp} (${userAgent}): ${httpMethod} ${call.request.path()}${queryString}" }
 
-				cookie<LorittaJsonWebSession>(loritta.config.loritta.website.sessionName) {
-					cookie.path = "/"
-					cookie.domain = loritta.config.loritta.website.sessionDomain
-					cookie.maxAgeInSeconds = 365L * 24 * 3600 // one year
-					transform(SessionTransportTransformerMessageAuthentication(secretHashKey, "HmacSHA256"))
-				}
-			}
+                    call.respondHtml(
+                        StringBuilder().appendHTML()
+                            .html {
+                                head {
+                                    title { + "Uh, oh! Something went wrong!" }
+                                }
+                                body {
+                                    pre {
+                                        + ExceptionUtils.getStackTrace(cause)
+                                    }
+                                }
+                            }
+                            .toString(),
+                        status = HttpStatusCode.InternalServerError
+                    )
+                }
+            }
 
-			install(Compression)
+            install(Sessions) {
+                val secretHashKey = hex(loritta.config.loritta.website.sessionHex)
 
-			install(MicrometerMetrics) {
-				metricName = "lorittawebserver.ktor.http.server.requests"
-				registry = LorittaMetrics.appMicrometerRegistry
-			}
+                cookie<LorittaJsonWebSession>(loritta.config.loritta.website.sessionName) {
+                    cookie.path = "/"
+                    cookie.domain = loritta.config.loritta.website.sessionDomain
+                    cookie.maxAgeInSeconds = 365L * 24 * 3600 // one year
+                    transform(SessionTransportTransformerMessageAuthentication(secretHashKey, "HmacSHA256"))
+                }
+            }
 
-			routing {
-				static {
-					staticRootFolder = File("${config.websiteFolder}/static/")
-					files(".")
-				}
+            install(Compression)
 
-				static("/assets/css/") {
-					resources("static/assets/css/")
-				}
+            install(MicrometerMetrics) {
+                metricName = "lorittawebserver.ktor.http.server.requests"
+                registry = LorittaMetrics.appMicrometerRegistry
+            }
 
-				static("/v2/assets/css/") {
-					resources("static/v2/assets/css/")
-				}
+            routing {
+                static {
+                    staticRootFolder = File("${config.websiteFolder}/static/")
+                    files(".")
+                }
 
-				static("/lori-slippy/assets/css/") {
-					resources("static/lori-slippy/assets/css/")
-				}
+                static("/assets/css/") {
+                    resources("static/assets/css/")
+                }
 
-				static("/lori-slippy/assets/snd/") {
-					resources("static/lori-slippy/assets/snd/")
-				}
+                static("/v2/assets/css/") {
+                    resources("static/v2/assets/css/")
+                }
 
-				static("/lori-slippy/assets/img/") {
-					resources("static/lori-slippy/assets/img/")
-				}
+                static("/lori-slippy/assets/css/") {
+                    resources("static/lori-slippy/assets/css/")
+                }
 
-				File("${config.websiteFolder}/static/").listFiles().filter { it.isFile }.forEach {
-					file(it.name, it)
-				}
+                static("/lori-slippy/assets/snd/") {
+                    resources("static/lori-slippy/assets/snd/")
+                }
 
-				get("/v2/assets/js/app.js") {
-					call.respondText(
-						spicyMorenittaBundle.content(),
-						ContentType.Application.JavaScript
-					)
-				}
+                static("/lori-slippy/assets/img/") {
+                    resources("static/lori-slippy/assets/img/")
+                }
 
-				// This is needed because some routes were moved to Showtime, so accessing "/" shows a error 404 page
-				for (originalPath in FAKE_LOCALIZED_REDIRECTION_ROUTES) {
-					val pathWithoutTrailingSlash = originalPath.removeSuffix("/")
+                File("${config.websiteFolder}/static/").listFiles().filter { it.isFile }.forEach {
+                    file(it.name, it)
+                }
 
-					// This is a workaround, I don't really like it
-					// See: https://youtrack.jetbrains.com/issue/KTOR-372
-					if (pathWithoutTrailingSlash.isNotEmpty()) {
-						get(pathWithoutTrailingSlash) {
-							val acceptLanguage = call.request.header("Accept-Language") ?: "en-US"
-							val ranges = Locale.LanguageRange.parse(acceptLanguage).reversed()
-							var localeId = "en-us"
-							for (range in ranges) {
-								localeId = range.range.lowercase()
-								if (localeId == "pt-br" || localeId == "pt") {
-									localeId = "default"
-								}
-								if (localeId == "en") {
-									localeId = "en-us"
-								}
-							}
+                get("/v2/assets/js/app.js") {
+                    call.respondText(
+                        spicyMorenittaBundle.content(),
+                        ContentType.Application.JavaScript
+                    )
+                }
 
-							val locale = loritta.localeManager.getLocaleById(localeId)
+                // This is needed because some routes were moved to Showtime, so accessing "/" shows a error 404 page
+                for (originalPath in FAKE_LOCALIZED_REDIRECTION_ROUTES) {
+                    val pathWithoutTrailingSlash = originalPath.removeSuffix("/")
 
-							redirect("/${locale.path}${call.request.uri}")
-						}
-					}
+                    // This is a workaround, I don't really like it
+                    // See: https://youtrack.jetbrains.com/issue/KTOR-372
+                    if (pathWithoutTrailingSlash.isNotEmpty()) {
+                        get(pathWithoutTrailingSlash) {
+                            val acceptLanguage = call.request.header("Accept-Language") ?: "en-US"
+                            val ranges = Locale.LanguageRange.parse(acceptLanguage).reversed()
+                            var localeId = "en-us"
+                            for (range in ranges) {
+                                localeId = range.range.lowercase()
+                                if (localeId == "pt-br" || localeId == "pt") {
+                                    localeId = "default"
+                                }
+                                if (localeId == "en") {
+                                    localeId = "en-us"
+                                }
+                            }
 
-					get("$pathWithoutTrailingSlash/") {
-						val acceptLanguage = call.request.header("Accept-Language") ?: "en-US"
-						val ranges = Locale.LanguageRange.parse(acceptLanguage).reversed()
-						var localeId = "en-us"
-						for (range in ranges) {
-							localeId = range.range.lowercase()
-							if (localeId == "pt-br" || localeId == "pt") {
-								localeId = "default"
-							}
-							if (localeId == "en") {
-								localeId = "en-us"
-							}
-						}
+                            val locale = loritta.localeManager.getLocaleById(localeId)
 
-						val locale = loritta.localeManager.getLocaleById(localeId)
+                            redirect("/${locale.path}${call.request.uri}")
+                        }
+                    }
 
-						redirect("/${locale.path}${call.request.uri}")
-					}
-				}
+                    get("$pathWithoutTrailingSlash/") {
+                        val acceptLanguage = call.request.header("Accept-Language") ?: "en-US"
+                        val ranges = Locale.LanguageRange.parse(acceptLanguage).reversed()
+                        var localeId = "en-us"
+                        for (range in ranges) {
+                            localeId = range.range.lowercase()
+                            if (localeId == "pt-br" || localeId == "pt") {
+                                localeId = "default"
+                            }
+                            if (localeId == "en") {
+                                localeId = "en-us"
+                            }
+                        }
 
-				for (route in routes) {
-					if (route is LocalizedRoute) {
-						val originalPath = route.originalPath
-						val pathWithoutTrailingSlash = originalPath.removeSuffix("/")
+                        val locale = loritta.localeManager.getLocaleById(localeId)
 
-						// This is a workaround, I don't really like it
-						// See: https://youtrack.jetbrains.com/issue/KTOR-372
-						if (pathWithoutTrailingSlash.isNotEmpty()) {
-							get(pathWithoutTrailingSlash) {
-								val acceptLanguage = call.request.header("Accept-Language") ?: "en-US"
-								val ranges = Locale.LanguageRange.parse(acceptLanguage).reversed()
-								var localeId = "en-us"
-								for (range in ranges) {
-									localeId = range.range.lowercase()
-									if (localeId == "pt-br" || localeId == "pt") {
-										localeId = "default"
-									}
-									if (localeId == "en") {
-										localeId = "en-us"
-									}
-								}
+                        redirect("/${locale.path}${call.request.uri}")
+                    }
+                }
 
-								val locale = loritta.localeManager.getLocaleById(localeId)
+                for (route in routes) {
+                    if (route is LocalizedRoute) {
+                        val originalPath = route.originalPath
+                        val pathWithoutTrailingSlash = originalPath.removeSuffix("/")
 
-								redirect("/${locale.path}${call.request.uri}")
-							}
-						}
+                        // This is a workaround, I don't really like it
+                        // See: https://youtrack.jetbrains.com/issue/KTOR-372
+                        if (pathWithoutTrailingSlash.isNotEmpty()) {
+                            get(pathWithoutTrailingSlash) {
+                                val acceptLanguage = call.request.header("Accept-Language") ?: "en-US"
+                                val ranges = Locale.LanguageRange.parse(acceptLanguage).reversed()
+                                var localeId = "en-us"
+                                for (range in ranges) {
+                                    localeId = range.range.lowercase()
+                                    if (localeId == "pt-br" || localeId == "pt") {
+                                        localeId = "default"
+                                    }
+                                    if (localeId == "en") {
+                                        localeId = "en-us"
+                                    }
+                                }
 
-						get("$pathWithoutTrailingSlash/") {
-							val acceptLanguage = call.request.header("Accept-Language") ?: "en-US"
-							val ranges = Locale.LanguageRange.parse(acceptLanguage).reversed()
-							var localeId = "en-us"
-							for (range in ranges) {
-								localeId = range.range.lowercase()
-								if (localeId == "pt-br" || localeId == "pt") {
-									localeId = "default"
-								}
-								if (localeId == "en") {
-									localeId = "en-us"
-								}
-							}
+                                val locale = loritta.localeManager.getLocaleById(localeId)
 
-							val locale = loritta.localeManager.getLocaleById(localeId)
+                                redirect("/${locale.path}${call.request.uri}")
+                            }
+                        }
 
-							redirect("/${locale.path}${call.request.uri}")
-						}
-					}
+                        get("$pathWithoutTrailingSlash/") {
+                            val acceptLanguage = call.request.header("Accept-Language") ?: "en-US"
+                            val ranges = Locale.LanguageRange.parse(acceptLanguage).reversed()
+                            var localeId = "en-us"
+                            for (range in ranges) {
+                                localeId = range.range.lowercase()
+                                if (localeId == "pt-br" || localeId == "pt") {
+                                    localeId = "default"
+                                }
+                                if (localeId == "en") {
+                                    localeId = "en-us"
+                                }
+                            }
 
-					// This is a workaround, I don't really like it
-					// See: https://youtrack.jetbrains.com/issue/KTOR-372
-					if (route.path.endsWith("/")) {
-						route.registerWithPath(this, route.path.removeSuffix("/"))
-					} else if (!route.path.endsWith("/")) {
-						route.registerWithPath(this, route.path + "/")
-					}
+                            val locale = loritta.localeManager.getLocaleById(localeId)
 
-					route.register(this)
-					logger.info { "Registered ${route.getMethod().value} ${route.path} (${route::class.simpleName})" }
-				}
-			}
+                            redirect("/${locale.path}${call.request.uri}")
+                        }
+                    }
 
-			this.monitor.subscribe(RoutingRoot.RoutingCallStarted) { call: RoutingCall ->
-				call.attributes.put(TimeToProcess, System.currentTimeMillis())
-				val userAgent = call.request.userAgent()
-				val trueIp = call.request.trueIp
-				val queryString = call.request.urlQueryString
-				val httpMethod = call.request.httpMethod.value
+                    // This is a workaround, I don't really like it
+                    // See: https://youtrack.jetbrains.com/issue/KTOR-372
+                    if (route.path.endsWith("/")) {
+                        route.registerWithPath(this, route.path.removeSuffix("/"))
+                    } else if (!route.path.endsWith("/")) {
+                        route.registerWithPath(this, route.path + "/")
+                    }
 
-				logger.info { "${trueIp} (${userAgent}): ${httpMethod} ${call.request.path()}${queryString}" }
-			}
+                    route.register(this)
+                    logger.info { "Registered ${route.getMethod().value} ${route.path} (${route::class.simpleName})" }
+                }
 
-			this.monitor.subscribe(RoutingRoot.RoutingCallFinished) { call: RoutingCall ->
-				val originalStartTime = call.attributes[TimeToProcess]
+                for ((key, value) in this@LorittaWebsite.dashboardRedirects) {
+                    get(key) {
+                        val localeId = "br"
+                        val guildId = call.parameters["guildId"]
 
-				val queryString = call.request.urlQueryString
-				val userAgent = call.request.userAgent()
+                        call.respondRedirect(loritta.config.loritta.dashboard.url.removeSuffix("/") + "/$localeId${value.replace("{guildId}", guildId.toString())}", permanent = true)
+                    }
 
-				logger.info { "${call.request.trueIp} (${userAgent}): ${call.request.httpMethod.value} ${call.request.path()}${queryString} - OK! ${System.currentTimeMillis() - originalStartTime}ms" }
-			}
-		}
-		this.server = server
-		server.start(wait = true)
-	}
+                    get("/{localeId}$key") {
+                        val localeId = call.parameters.getOrFail("localeId")
+                        val guildId = call.parameters["guildId"]
 
-	fun stop() {
-		server.stop(1000L, 5000L)
-	}
+                        call.respondRedirect(loritta.config.loritta.dashboard.url.removeSuffix("/") + "/$localeId${value.replace("{guildId}", guildId.toString())}", permanent = true)
+                    }
+                }
+            }
 
-	fun restart() {
-		stop()
-		start()
-	}
+            this.monitor.subscribe(RoutingRoot.RoutingCallStarted) { call: RoutingCall ->
+                call.attributes.put(TimeToProcess, System.currentTimeMillis())
+                val userAgent = call.request.userAgent()
+                val trueIp = call.request.trueIp
+                val queryString = call.request.urlQueryString
+                val httpMethod = call.request.httpMethod.value
 
-	class WebsiteConfig(val loritta: LorittaBot) {
-		val websiteUrl: String
-			get() = loritta.config.loritta.website.url.removeSuffix("/")
-		val websiteFolder = File(loritta.config.loritta.folders.website)
-	}
+                logger.info { "${trueIp} (${userAgent}): ${httpMethod} ${call.request.path()}${queryString}" }
+            }
 
-	enum class UserPermissionLevel {
-		OWNER, ADMINISTRATOR, MANAGER, MEMBER
-	}
+            this.monitor.subscribe(RoutingRoot.RoutingCallFinished) { call: RoutingCall ->
+                val originalStartTime = call.attributes[TimeToProcess]
+
+                val queryString = call.request.urlQueryString
+                val userAgent = call.request.userAgent()
+
+                logger.info { "${call.request.trueIp} (${userAgent}): ${call.request.httpMethod.value} ${call.request.path()}${queryString} - OK! ${System.currentTimeMillis() - originalStartTime}ms" }
+            }
+        }
+        this.server = server
+        server.start(wait = true)
+    }
+
+    fun stop() {
+        server.stop(1000L, 5000L)
+    }
+
+    fun restart() {
+        stop()
+        start()
+    }
+
+    class WebsiteConfig(val loritta: LorittaBot) {
+        val websiteUrl: String
+            get() = loritta.config.loritta.website.url.removeSuffix("/")
+        val websiteFolder = File(loritta.config.loritta.folders.website)
+    }
+
+    enum class UserPermissionLevel {
+        OWNER, ADMINISTRATOR, MANAGER, MEMBER
+    }
 }

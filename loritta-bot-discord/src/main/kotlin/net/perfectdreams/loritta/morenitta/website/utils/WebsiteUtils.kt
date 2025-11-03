@@ -227,51 +227,6 @@ object WebsiteUtils {
 	suspend fun toSerializable(loritta: LorittaBot, profileDesign: ProfileDesign) = loritta.pudding.transaction { fromProfileDesignToSerializable(loritta, profileDesign.readValues) }
 	suspend fun fromProfileDesignToSerializable(loritta: LorittaBot, profileDesign: ResultRow) = loritta.pudding.transaction { ProfileDesign.wrapRow(profileDesign).toSerializable() }
 
-	suspend fun transformToDashboardConfigurationJson(
-		loritta: LorittaBot,
-		transformers: List<ConfigTransformer>,
-		user: LorittaJsonWebSession.UserIdentification,
-		guild: Guild,
-		serverConfig: ServerConfig
-	): JsonObject {
-		val guildJson = jsonObject(
-			"name" to guild.name
-		)
-
-		val selfMember = transformToJson(loritta.lorittaShards.retrieveUserById(user.id)!!)
-
-		guildJson["donationConfig"] = loritta.newSuspendedTransaction {
-			val donationConfig = serverConfig.donationConfig
-			jsonObject(
-				"customBadge" to (donationConfig?.customBadge ?: false),
-				"dailyMultiplier" to (donationConfig?.dailyMultiplier ?: false)
-			)
-		}
-
-		guildJson["reactionRoleConfigs"] = loritta.newSuspendedTransaction {
-			val reactionOptions = ReactionOption.find {
-				ReactionOptions.guildId eq guild.idLong
-			}
-
-			reactionOptions.map {
-				jsonObject(
-					"textChannelId" to it.textChannelId.toString(),
-					"messageId" to it.messageId.toString(),
-					"reaction" to it.reaction,
-					"locks" to it.locks.toList().toJsonArray(),
-					"roleIds" to it.roleIds.toList().toJsonArray()
-				)
-			}.toJsonArray()
-		}
-
-		guildJson["selfMember"] = selfMember
-
-		for (transformer in transformers)
-			guildJson[transformer.configKey] = transformer.toJson(user, guild, serverConfig)
-
-		return guildJson
-	}
-
 	fun buildAsHtml(originalString: String, onControlChar: (String) -> (Unit), onStringBuild: (String) -> (Unit)) {
 		var isControl = false
 
