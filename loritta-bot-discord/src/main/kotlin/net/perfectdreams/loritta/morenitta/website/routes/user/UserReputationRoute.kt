@@ -13,8 +13,6 @@ import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.trueIp
 import net.perfectdreams.loritta.morenitta.website.views.dashboard.user.UserReputationView
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
-import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
-import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.or
 

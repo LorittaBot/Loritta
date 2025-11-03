@@ -18,10 +18,10 @@ import net.perfectdreams.loritta.morenitta.website.routes.httpapidocs.LoriDevelo
 import net.perfectdreams.loritta.morenitta.website.routes.httpapidocs.MagicEndpoints
 import net.perfectdreams.loritta.morenitta.website.routes.httpapidocs.ParameterKind
 import net.perfectdreams.loritta.morenitta.website.views.htmxDiscordLikeLoadingButtonSetup
+import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.v1.guilds.PutGiveawayRoute
 import net.perfectdreams.loritta.publichttpapi.LoriPublicHttpApiEndpoint
 import net.perfectdreams.loritta.serializable.ColorTheme
-import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import kotlin.reflect.KTypeProjection
 import kotlin.reflect.full.createType
 import kotlin.reflect.full.isSubtypeOf
@@ -33,7 +33,7 @@ class LoriEndpointDevelopersDocsView(
     locale: BaseLocale,
     path: String,
     legacyBaseLocale: LegacyBaseLocale,
-    userIdentification: LorittaJsonWebSession.UserIdentification?,
+    userIdentification: UserSession?,
     userPremiumPlan: UserPremiumPlans,
     colorTheme: ColorTheme,
     sidebarCategories: List<LoriDevelopersDocsView.SidebarCategory>,

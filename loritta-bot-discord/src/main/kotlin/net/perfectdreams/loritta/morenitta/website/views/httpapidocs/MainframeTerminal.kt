@@ -8,7 +8,7 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.website.routes.httpapidocs.CurrentSong
-import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import java.time.Duration
 
 fun DIV.mainframeTerminal(
@@ -29,7 +29,7 @@ fun DIV.mainframeTerminal(
 fun DIV.mainframeTerminalLorifetch(
     loritta: LorittaBot,
     i18nContext: I18nContext,
-    userIdentification: LorittaJsonWebSession.UserIdentification?,
+    userIdentification: UserSession?,
     title: String,
     terminalContentId: String?,
     guildCount: Int,

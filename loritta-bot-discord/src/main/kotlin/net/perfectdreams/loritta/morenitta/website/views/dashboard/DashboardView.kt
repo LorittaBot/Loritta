@@ -18,8 +18,8 @@ import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils
 import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.openEmbeddedModalOnClick
 import net.perfectdreams.loritta.morenitta.website.utils.tsukiScript
 import net.perfectdreams.loritta.morenitta.website.views.BaseView
+import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.serializable.ColorTheme
-import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 
 abstract class DashboardView(
     internal val lorittaWebsite: LorittaWebsite,
@@ -27,7 +27,7 @@ abstract class DashboardView(
     locale: BaseLocale,
     path: String,
     internal val legacyBaseLocale: LegacyBaseLocale,
-    internal val userIdentification: LorittaJsonWebSession.UserIdentification,
+    internal val userIdentification: UserSession,
     internal val userPremiumPlan: UserPremiumPlans,
     internal val colorTheme: ColorTheme
 ) : BaseView(
@@ -117,7 +117,7 @@ abstract class DashboardView(
                                     div(classes = "user-info-wrapper") {
                                         div(classes = "user-info") {
                                             // TODO - htmx-adventures: Move this somewhere else
-                                            val userAvatarId = userIdentification.avatar
+                                            val userAvatarId = userIdentification.avatarId
                                             val avatarUrl = if (userAvatarId != null) {
                                                 val extension =
                                                     if (userAvatarId.startsWith("a_")) { // Avatares animados no Discord começam com "_a"
@@ -126,9 +126,9 @@ abstract class DashboardView(
                                                         "png"
                                                     }
 
-                                                "https://cdn.discordapp.com/avatars/${userIdentification.id}/${userAvatarId}.${extension}?size=64"
+                                                "https://cdn.discordapp.com/avatars/${userIdentification.userId}/${userAvatarId}.${extension}?size=64"
                                             } else {
-                                                val avatarId = (userIdentification.id.toLong() shr 22) % 6
+                                                val avatarId = (userIdentification.userId shr 22) % 6
 
                                                 "https://cdn.discordapp.com/embed/avatars/$avatarId.png"
                                             }

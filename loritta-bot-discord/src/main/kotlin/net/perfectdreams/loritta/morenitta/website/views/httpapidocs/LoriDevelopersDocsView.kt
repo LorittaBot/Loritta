@@ -10,9 +10,9 @@ import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.routes.httpapidocs.DocsContentMetadata
+import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.publichttpapi.LoriPublicHttpApiEndpoint
 import net.perfectdreams.loritta.serializable.ColorTheme
-import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 
 class LoriDevelopersDocsView(
     lorittaWebsite: LorittaWebsite,
@@ -20,7 +20,7 @@ class LoriDevelopersDocsView(
     locale: BaseLocale,
     path: String,
     legacyBaseLocale: LegacyBaseLocale,
-    userIdentification: LorittaJsonWebSession.UserIdentification?,
+    userIdentification: UserSession?,
     userPremiumPlan: UserPremiumPlans,
     colorTheme: ColorTheme,
     sidebarCategories: List<SidebarCategory>,

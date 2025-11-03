@@ -6,19 +6,9 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
-import io.ktor.server.sessions.*
-import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.gson
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
-import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
-import org.w3c.dom.Document
-import java.io.StringWriter
-import javax.xml.transform.OutputKeys
-import javax.xml.transform.TransformerFactory
-import javax.xml.transform.dom.DOMSource
-import javax.xml.transform.stream.StreamResult
 
 suspend fun ApplicationCall.respondJson(json: JsonElement, status: HttpStatusCode? = null) = this.respondText(ContentType.Application.Json, status) {
 	gson.toJson(json)
@@ -53,16 +43,6 @@ val ApplicationRequest.trueIp: String get() {
 				it
 		}
 }
-
-var ApplicationCall.lorittaSession: LorittaJsonWebSession
-	get() {
-		println("Get LorittaSession")
-		return this.sessions.get<LorittaJsonWebSession>() ?: LorittaJsonWebSession.empty()
-	}
-	set(value) {
-		println("Set LorittaSession")
-		this.sessions.set(value)
-	}
 
 /**
  * Returns the query strings as used in URLs (prefixed with "?")

@@ -41,7 +41,6 @@ object DefaultRoutes {
 		PostPubSubHubbubCallbackRoute(loritta),
 		PostTwitchEventSubCallbackRoute(loritta),
 		PostPerfectPaymentsCallbackRoute(loritta),
-		CreateWebhookRoute(loritta),
 
 		// Economy
 		PostTransferBalanceExternalRoute(loritta),

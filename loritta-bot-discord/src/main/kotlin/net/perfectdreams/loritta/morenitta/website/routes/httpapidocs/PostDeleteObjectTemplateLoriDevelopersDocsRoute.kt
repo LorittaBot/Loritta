@@ -11,7 +11,6 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.LocalizedRoute
 import net.perfectdreams.loritta.morenitta.website.routes.httpapidocs.LoriDevelopersDocsRoute.Companion.createObjectTemplateButton
 import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.headerHXTrigger
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.lorittaSession
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.v1.guilds.PutGiveawayRoute
 import net.perfectdreams.loritta.publichttpapi.LoriPublicHttpApiEndpoints
@@ -24,10 +23,6 @@ class PostDeleteObjectTemplateLoriDevelopersDocsRoute(loritta: LorittaBot) : Loc
         locale: BaseLocale,
         i18nContext: I18nContext
     ) {
-        val session = call.lorittaSession
-        val discordAuth = session.getDiscordAuth(loritta.config.loritta.discord.applicationId.toLong(), loritta.config.loritta.discord.clientSecret, call)
-        val userIdentification = session.getUserIdentification(loritta.config.loritta.discord.applicationId.toLong(), loritta.config.loritta.discord.clientSecret, call)
-
         val postParams = call.receiveParameters()
         val endpointId = postParams.getOrFail("endpointId")
         val clazzName = postParams.getOrFail("clazzName")

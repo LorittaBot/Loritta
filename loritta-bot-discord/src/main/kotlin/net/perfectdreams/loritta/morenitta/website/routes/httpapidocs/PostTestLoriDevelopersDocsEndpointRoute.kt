@@ -19,7 +19,6 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.LocalizedRoute
 import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.headerHXTrigger
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.lorittaSession
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.publichttpapi.LoriPublicHttpApiEndpoint
 import net.perfectdreams.loritta.publichttpapi.LoriPublicHttpApiEndpoints
@@ -51,9 +50,7 @@ class PostTestLoriDevelopersDocsEndpointRoute(loritta: LorittaBot) : LocalizedRo
         locale: BaseLocale,
         i18nContext: I18nContext
     ) {
-        val session = call.lorittaSession
-        val discordAuth = session.getDiscordAuth(loritta.config.loritta.discord.applicationId.toLong(), loritta.config.loritta.discord.clientSecret, call)
-        val userIdentification = session.getUserIdentification(loritta.config.loritta.discord.applicationId.toLong(), loritta.config.loritta.discord.clientSecret, call)
+        val session = loritta.dashboardWebServer.getSession(call)
 
         var multipartFileBody: ByteArray? = null
         val postParams: Parameters
@@ -168,7 +165,7 @@ class PostTestLoriDevelopersDocsEndpointRoute(loritta: LorittaBot) : LocalizedRo
                         div {
                             span {
                                 style = "color: #b0eb93;"
-                                text("${userIdentification?.username ?: "wumpus"}@loritta:~# ")
+                                text("${session?.username ?: "wumpus"}@loritta:~# ")
                             }
 
                             span {
@@ -183,7 +180,7 @@ class PostTestLoriDevelopersDocsEndpointRoute(loritta: LorittaBot) : LocalizedRo
         val response = http.request(requestUrl) {
             this.method = endpoint.method
             header("Authorization", authToken)
-            userAgent("${loritta.lorittaCluster.getUserAgent(loritta)} EndpointTester (User ${userIdentification?.id})")
+            userAgent("${loritta.lorittaCluster.getUserAgent(loritta)} EndpointTester (User ${session?.userId})")
             if (requestBody != null) {
                 when (requestBody) {
                     is String -> setBody(
@@ -238,7 +235,7 @@ class PostTestLoriDevelopersDocsEndpointRoute(loritta: LorittaBot) : LocalizedRo
                     div {
                         span(classes = "term-green") {
                             style = "color: #b0eb93;"
-                            text("${userIdentification?.username ?: "wumpus"}@loritta:~# ")
+                            text("${session?.username ?: "wumpus"}@loritta:~# ")
                         }
 
                         span {

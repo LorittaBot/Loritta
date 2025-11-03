@@ -20,8 +20,6 @@ import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIDisc
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
-import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
-import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 class PostDonationPaymentRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/users/donate") {
 	companion object {

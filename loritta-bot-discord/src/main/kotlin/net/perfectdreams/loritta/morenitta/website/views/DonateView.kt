@@ -10,7 +10,6 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.sweetmorenitta.utils.imgSrcSet
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.DiscordLoginUserDashboardRoute
-import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 
 class DonateView(
     loritta: LorittaBot,

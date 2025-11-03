@@ -30,7 +30,6 @@ import net.perfectdreams.loritta.morenitta.website.utils.SVGIconManager
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.*
 import net.perfectdreams.loritta.morenitta.website.views.Error404View
-import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.apache.commons.lang3.exception.ExceptionUtils
 import java.io.File
@@ -178,48 +177,6 @@ class LorittaWebsite(
                     )
                 }
 
-                exception<TemmieDiscordAuth.TokenUnauthorizedException> { call, cause ->
-                    if (call.request.path().startsWith("/api/v1/")) {
-                        logger.warn { "Unauthorized token! Throwing a WebsiteAPIException... $cause" }
-                        call.sessions.clear<LorittaJsonWebSession>()
-
-                        call.respondJson(
-                            WebsiteUtils.createErrorPayload(
-                                loritta,
-                                LoriWebCode.UNAUTHORIZED,
-                                "Invalid Discord Authorization"
-                            ),
-                            HttpStatusCode.Unauthorized
-                        )
-                    } else {
-                        logger.warn { "Unauthorized token! Redirecting to dashboard... $cause" }
-                        val hostHeader = call.request.hostFromHeader()
-                        call.sessions.clear<LorittaJsonWebSession>()
-                        call.respondRedirect("https://$hostHeader/dashboard", true)
-                    }
-                }
-
-                exception<TemmieDiscordAuth.TokenExchangeException> { call, cause ->
-                    if (call.request.path().startsWith("/api/v1/")) {
-                        logger.warn { "Token exchange exception! Throwing a WebsiteAPIException... $cause" }
-                        call.sessions.clear<LorittaJsonWebSession>()
-
-                        call.respondJson(
-                            WebsiteUtils.createErrorPayload(
-                                loritta,
-                                LoriWebCode.UNAUTHORIZED,
-                                "Invalid Discord Authorization"
-                            ),
-                            HttpStatusCode.Unauthorized
-                        )
-                    } else {
-                        logger.warn { "Token exchange exception! Redirecting to dashboard... $cause" }
-                        val hostHeader = call.request.hostFromHeader()
-                        call.sessions.clear<LorittaJsonWebSession>()
-                        call.respondRedirect("https://$hostHeader/dashboard", true)
-                    }
-                }
-
                 exception<WebsiteAPIException> { call, cause ->
                     call.alreadyHandledStatus = true
                     call.respondJson(cause.payload, cause.status)
@@ -252,17 +209,6 @@ class LorittaWebsite(
                             .toString(),
                         status = HttpStatusCode.InternalServerError
                     )
-                }
-            }
-
-            install(Sessions) {
-                val secretHashKey = hex(loritta.config.loritta.website.sessionHex)
-
-                cookie<LorittaJsonWebSession>(loritta.config.loritta.website.sessionName) {
-                    cookie.path = "/"
-                    cookie.domain = loritta.config.loritta.website.sessionDomain
-                    cookie.maxAgeInSeconds = 365L * 24 * 3600 // one year
-                    transform(SessionTransportTransformerMessageAuthentication(secretHashKey, "HmacSHA256"))
                 }
             }
 

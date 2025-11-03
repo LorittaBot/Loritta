@@ -12,7 +12,6 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.LocalizedRoute
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.lorittaSession
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.website.views.httpapidocs.LoriEndpointDevelopersDocsView.Companion.renderTestEndpointParameter
 import net.perfectdreams.loritta.publichttpapi.LoriPublicHttpApiEndpoints
@@ -25,10 +24,6 @@ class PostCreateObjectTemplateLoriDevelopersDocsRoute(loritta: LorittaBot) : Loc
         locale: BaseLocale,
         i18nContext: I18nContext
     ) {
-        val session = call.lorittaSession
-        val discordAuth = session.getDiscordAuth(loritta.config.loritta.discord.applicationId.toLong(), loritta.config.loritta.discord.clientSecret, call)
-        val userIdentification = session.getUserIdentification(loritta.config.loritta.discord.applicationId.toLong(), loritta.config.loritta.discord.clientSecret, call)
-
         val postParams = call.receiveParameters()
         val endpointId = postParams.getOrFail("endpointId")
         val prefix = postParams.getOrFail("prefix")

@@ -22,7 +22,6 @@ import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.LocalizedRoute
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.lorittaSession
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.website.views.httpapidocs.LoriDevelopersDocsView
 import net.perfectdreams.loritta.morenitta.website.views.httpapidocs.LoriEndpointDevelopersDocsView
@@ -98,18 +97,9 @@ class LoriDevelopersDocsRoute(loritta: LorittaBot) : LocalizedRoute(loritta, "/d
         if (pageToAccess == null)
             return
 
-        val session = call.lorittaSession
-        val discordAuth = session.getDiscordAuth(loritta.config.loritta.discord.applicationId.toLong(), loritta.config.loritta.discord.clientSecret, call)
-        val userIdentification = session.getUserIdentification(loritta.config.loritta.discord.applicationId.toLong(), loritta.config.loritta.discord.clientSecret, call)
-
-        val dashboardColorThemePreference = if (userIdentification != null) {
-            loritta.transaction {
-                UserWebsiteSettings.select(UserWebsiteSettings.dashboardColorThemePreference)
-                    .where { UserWebsiteSettings.id eq userIdentification.id.toLong() }
-                    .firstOrNull()
-                    ?.get(UserWebsiteSettings.dashboardColorThemePreference)
-            } ?: ColorTheme.LIGHT
-        } else ColorTheme.LIGHT
+        // TODO: Fix this! Currently we always default to the light theme
+        val session = loritta.dashboardWebServer.getSession(call)
+        val dashboardColorThemePreference = ColorTheme.LIGHT
 
         val lorifetchStats = loritta.newWebsite!!.lorifetch.statsFlow.first()
 
@@ -121,9 +111,9 @@ class LoriDevelopersDocsRoute(loritta: LorittaBot) : LocalizedRoute(loritta, "/d
                     locale,
                     getPathWithoutLocale(call),
                     loritta.getLegacyLocaleById(locale.id),
-                    userIdentification,
-                    if (userIdentification != null) {
-                        UserPremiumPlans.getPlanFromValue(loritta.getActiveMoneyFromDonations(userIdentification.id.toLong()))
+                    session,
+                    if (session != null) {
+                        UserPremiumPlans.getPlanFromValue(loritta.getActiveMoneyFromDonations(session.userId))
                     } else UserPremiumPlans.Free,
                     dashboardColorThemePreference,
                     sidebarCategories,
@@ -225,7 +215,7 @@ class LoriDevelopersDocsRoute(loritta: LorittaBot) : LocalizedRoute(loritta, "/d
                         mainframeTerminalLorifetch(
                             loritta,
                             i18nContext,
-                            userIdentification,
+                            session,
                             "Terminal",
                             null,
                             lorifetchStats.guildCount,
@@ -259,9 +249,9 @@ class LoriDevelopersDocsRoute(loritta: LorittaBot) : LocalizedRoute(loritta, "/d
                 locale,
                 getPathWithoutLocale(call),
                 loritta.getLegacyLocaleById(locale.id),
-                userIdentification,
-                if (userIdentification != null) {
-                    UserPremiumPlans.getPlanFromValue(loritta.getActiveMoneyFromDonations(userIdentification.id.toLong()))
+                session,
+                if (session != null) {
+                    UserPremiumPlans.getPlanFromValue(loritta.getActiveMoneyFromDonations(session.userId))
                 } else UserPremiumPlans.Free,
                 dashboardColorThemePreference,
                 sidebarCategories,

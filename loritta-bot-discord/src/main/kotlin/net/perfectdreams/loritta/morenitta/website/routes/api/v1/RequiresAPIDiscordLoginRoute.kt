@@ -7,11 +7,8 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.LoriWebCode
 import net.perfectdreams.loritta.morenitta.website.WebsiteAPIException
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.lorittaSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
-import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.sequins.ktor.BaseRoute
-import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 abstract class RequiresAPIDiscordLoginRoute(val loritta: LorittaBot, path: String) : BaseRoute(path) {
 	companion object {

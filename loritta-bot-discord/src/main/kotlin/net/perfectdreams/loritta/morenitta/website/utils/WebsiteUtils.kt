@@ -2,41 +2,16 @@ package net.perfectdreams.loritta.morenitta.website.utils
 
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.set
-import com.github.salomonbrys.kotson.toJsonArray
 import com.google.gson.JsonObject
 import io.ktor.http.*
-import io.ktor.server.application.*
-import io.ktor.server.request.*
 import io.ktor.util.*
-import kotlinx.html.*
-import kotlinx.html.stream.createHTML
-import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.User
-import net.dv8tion.jda.api.entities.channel.concrete.*
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.ReactionOptions
-import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.common.utils.LorittaColors
-import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.dao.ProfileDesign
-import net.perfectdreams.loritta.morenitta.dao.ServerConfig
-import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.ReactionOption
 import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
-import net.perfectdreams.loritta.morenitta.utils.LorittaDiscordOAuth2AddBotURL
-import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.morenitta.website.LoriWebCode
-import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.WebsiteAPIException
-import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.DiscordLoginUserDashboardRoute
-import net.perfectdreams.loritta.serializable.*
-import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
-import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
-import org.apache.commons.codec.digest.DigestUtils
 import org.jetbrains.exposed.sql.ResultRow
-import java.text.MessageFormat
-import kotlin.io.path.inputStream
 
 object WebsiteUtils {
 	val handledStatusBefore = AttributeKey<Boolean>("handledStatusBefore")
