@@ -76,7 +76,7 @@ class LorittaWebsiteBackend(
         append("scope", "bot identify guilds email applications.commands")
         append("permissions", 2080374975.toString())
         append("response_type", "code")
-        append("redirect_uri", "${rootConfig.loritta.website}dashboard")
+        append("redirect_uri", "https://dash.loritta.website/discord/login")
     }
 
     private val typesToCache = listOf(
