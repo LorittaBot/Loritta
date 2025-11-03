@@ -29,7 +29,6 @@ class LoriToolsCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta
 				PriceCorrectionExecutor,
 				LoriBanIpExecutor,
 				LoriUnbanIpExecutor,
-				DeleteAccountDataExecutor,
 				ChargebackRunExecutor,
 				EnableBoostExecutor,
 				DisableBoostExecutor

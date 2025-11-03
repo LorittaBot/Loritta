@@ -80,7 +80,6 @@ dependencies {
     implementation("io.micrometer:micrometer-registry-prometheus:1.13.6")
 
     implementation("com.google.code.gson:gson:2.10.1")
-    implementation("io.pebbletemplates:pebble:3.1.4")
     implementation("org.jsoup:jsoup:1.17.1")
     implementation("com.github.kevinsawicki:http-request:6.0")
 

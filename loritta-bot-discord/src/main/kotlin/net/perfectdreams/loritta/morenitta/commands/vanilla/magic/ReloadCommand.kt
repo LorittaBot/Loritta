@@ -89,16 +89,6 @@ class ReloadCommand(loritta: LorittaBot) : AbstractCommand(loritta, "reload", ca
 			return
 		}
 
-		if (arg0 == "website") {
-			LorittaWebsite.ENGINE.templateCache.invalidateAll()
-			context.reply(
-                    LorittaReply(
-                            "Views regeneradas!"
-                    )
-			)
-			return
-		}
-
 		if (arg0 == "webassets") {
 			WebsiteAssetsHashes.websiteFileHashes.clear()
 			WebsiteAssetsHashes.legacyWebsiteFileHashes.clear()

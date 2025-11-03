@@ -85,7 +85,7 @@ class CreateProfilePresetsUserDashboardRoute(website: LorittaDashboardWebServer)
                             }
 
                             textInput {
-                                maxLength = "50"
+                                maxLength = ProfilePresetsUtils.MAX_PRESET_LENGTH.toString()
                                 name = "presetName"
                             }
 

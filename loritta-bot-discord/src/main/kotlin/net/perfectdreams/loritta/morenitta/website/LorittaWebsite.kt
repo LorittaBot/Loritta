@@ -1,10 +1,5 @@
 package net.perfectdreams.loritta.morenitta.website
 
-import com.mitchellbosecke.pebble.PebbleEngine
-import com.mitchellbosecke.pebble.attributes.methodaccess.NoOpMethodAccessValidator
-import com.mitchellbosecke.pebble.cache.tag.CaffeineTagCache
-import com.mitchellbosecke.pebble.cache.template.CaffeineTemplateCache
-import com.mitchellbosecke.pebble.loader.FileLoader
 import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.server.application.*
@@ -35,6 +30,7 @@ import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.morenitta.website.utils.config.types.*
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.*
 import net.perfectdreams.loritta.morenitta.website.views.Error404View
+import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.apache.commons.lang3.exception.ExceptionUtils
 import java.io.File
@@ -59,7 +55,6 @@ class LorittaWebsite(
 		private val logger by HarmonyLoggerFactory.logger {}
 		private val TimeToProcess = AttributeKey<Long>("TimeToProcess")
 
-		lateinit var ENGINE: PebbleEngine
 		lateinit var FOLDER: String
 		lateinit var WEBSITE_URL: String
 
@@ -97,16 +92,6 @@ class LorittaWebsite(
 		// The website code expects the website URL with a trailing slash at the end
 		WEBSITE_URL = "${websiteUrl.removeSuffix("/")}/"
 		FOLDER = frontendFolder
-
-		val fl = FileLoader()
-		fl.prefix = frontendFolder
-		ENGINE = PebbleEngine.Builder().cacheActive(true) // Deixar o cache ativo ajuda na performance ao usar "extends" em templates (e não ao carregar templates de arquivos!)
-			.templateCache(CaffeineTemplateCache()) // Utilizar o cache do Caffeine em vez do padrão usando ConcurrentMapTemplateCache
-			.tagCache(CaffeineTagCache()) // Cache para tags de {% cache %} do Pebble
-			.methodAccessValidator(NoOpMethodAccessValidator())
-			.strictVariables(true)
-			.loader(fl)
-			.build()
 	}
 
 	val pathCache = ConcurrentHashMap<File, Any>()
@@ -118,25 +103,6 @@ class LorittaWebsite(
 		ContentType.Text.JavaScript,
 		ContentType.Application.JavaScript,
 		ContentType.Image.Any
-	)
-
-	val configTransformers = listOf(
-		YouTubeConfigTransformer(loritta),
-		TwitchConfigTransformer(loritta),
-		TwitterConfigTransformer(loritta),
-		TextChannelsTransformer,
-		UserDonationKeysTransformer(loritta),
-		ActiveDonationKeysTransformer(loritta),
-		GuildInfoTransformer,
-		GeneralConfigTransformer(loritta),
-		LevelUpConfigTransformer(loritta),
-		RolesTransformer,
-		DonationConfigTransformer(loritta),
-		AutoroleConfigTransformer(loritta),
-		WelcomerConfigTransformer(loritta),
-		MemberCountersTransformer(loritta),
-		ModerationConfigTransformer(loritta),
-		CustomCommandsConfigTransformer(loritta)
 	)
 
 	val processors = Processors(this)
@@ -462,11 +428,4 @@ class LorittaWebsite(
 	enum class UserPermissionLevel {
 		OWNER, ADMINISTRATOR, MANAGER, MEMBER
 	}
-}
-
-fun evaluate(file: String, variables: MutableMap<String, Any?> = mutableMapOf<String, Any?>()): String {
-	val writer = StringWriter()
-	val template = LorittaWebsite.ENGINE.getTemplate(file)
-	template.evaluate(writer, variables)
-	return writer.toString()
 }

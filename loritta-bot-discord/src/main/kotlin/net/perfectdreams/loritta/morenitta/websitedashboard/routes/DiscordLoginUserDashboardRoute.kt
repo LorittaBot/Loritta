@@ -24,7 +24,6 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.UserWebsiteSessions
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.utils.Base58
 import net.perfectdreams.loritta.morenitta.website.routes.LocalizedRoute
-import net.perfectdreams.loritta.morenitta.website.routes.dashboard.DashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.sequins.ktor.BaseRoute
 import org.jetbrains.exposed.sql.insert

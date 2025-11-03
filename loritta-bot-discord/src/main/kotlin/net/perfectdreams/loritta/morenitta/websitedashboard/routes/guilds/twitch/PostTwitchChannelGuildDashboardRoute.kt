@@ -3,8 +3,6 @@ package net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.twitc
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
-import kotlinx.html.body
-import kotlinx.html.stream.createHTML
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.entities.Guild
@@ -17,19 +15,14 @@ import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.dashboard.EmbeddedToast
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.dao.DonationKey
-import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.twitch.PutTwitchTrackRoute.AddGuildTwitchChannelResult
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.twitch.TwitchWebUtils
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.trackedProfileEditorSaveBar
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
-import net.perfectdreams.loritta.morenitta.websitedashboard.utils.configSaved
-import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
-import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondConfigSaved
-import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.*
 import net.perfectdreams.loritta.serializable.ColorTheme
+import net.perfectdreams.loritta.serializable.config.TwitchAccountTrackState
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import org.jetbrains.exposed.sql.*
 import java.time.Instant
@@ -135,5 +128,13 @@ class PostTwitchChannelGuildDashboardRoute(website: LorittaDashboardWebServer) :
                 }
             }
         }
+    }
+
+    sealed class AddGuildTwitchChannelResult {
+        @Serializable
+        class Success(val trackId: Long, val state: TwitchAccountTrackState, val valueOfTheDonationKeysEnabledOnThisGuild: Double, val premiumTracksCount: Long) : AddGuildTwitchChannelResult()
+
+        @Serializable
+        data object TooManyPremiumTracks : AddGuildTwitchChannelResult()
     }
 }

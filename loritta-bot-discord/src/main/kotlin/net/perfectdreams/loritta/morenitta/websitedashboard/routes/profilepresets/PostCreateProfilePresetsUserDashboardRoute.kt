@@ -12,9 +12,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.UserCreatedProfilePrese
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.dashboard.EmbeddedToast
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
-import net.perfectdreams.loritta.morenitta.website.routes.user.dashboard.profilepresets.PostCreateProfilePresetRoute.Companion.MAX_PRESET_LENGTH
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
-import net.perfectdreams.loritta.morenitta.website.views.dashboard.user.profilepresets.ProfilePresetsListView
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.profilePresetsSection
@@ -50,7 +48,7 @@ class PostCreateProfilePresetsUserDashboardRoute(website: LorittaDashboardWebSer
             return
         }
 
-        if (request.presetName.length !in 1..MAX_PRESET_LENGTH) {
+        if (request.presetName.length !in 1..ProfilePresetsUtils.MAX_PRESET_LENGTH) {
             call.respondHtmlFragment(status = HttpStatusCode.BadRequest) {
                 blissShowToast(
                     createEmbeddedToast(
@@ -69,7 +67,7 @@ class PostCreateProfilePresetsUserDashboardRoute(website: LorittaDashboardWebSer
                 }
                 .count()
 
-            if (totalPresets + 1 > ProfilePresetsListView.MAX_PROFILE_PRESETS)
+            if (totalPresets + 1 > ProfilePresetsUtils.MAX_PROFILE_PRESETS)
                 return@transaction Result.TooManyPresets
 
             UserCreatedProfilePresets.insert {

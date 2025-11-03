@@ -17,9 +17,6 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls
 import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls.handleI18nString
-import net.perfectdreams.loritta.morenitta.website.views.dashboard.user.DailyShopView.BackgroundItemWrapper
-import net.perfectdreams.loritta.morenitta.website.views.dashboard.user.DailyShopView.ProfileDesignItemWrapper
-import net.perfectdreams.loritta.morenitta.website.views.dashboard.user.DailyShopView.ShopItemWrapper
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.dailyshop.DailyShopResult
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.SVGIcons
