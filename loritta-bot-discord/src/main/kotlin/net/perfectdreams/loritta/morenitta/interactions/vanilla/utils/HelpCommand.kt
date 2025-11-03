@@ -43,7 +43,7 @@ class HelpCommand : SlashCommandDeclarationWrapper {
                     )
                     field(
                         "${Emotes.LoriYay} ${context.i18nContext.get(I18N_PREFIX.AddMe)}",
-                        "${context.loritta.config.loritta.website.url}dashboard"
+                        "${context.loritta.config.loritta.dashboard.url.removeSuffix("/")}/${context.i18nContext.get(I18nKeysData.Website.LocalePathId)}/"
                     )
                     field(
                         "${Emotes.LoriRich} ${context.i18nContext.get(I18N_PREFIX.Donate)}",

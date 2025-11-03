@@ -301,7 +301,7 @@ class DailyShopRefreshedProcessor(val loritta: LorittaBot) : LorittaInternalRpcP
                                                 actionRow(
                                                     Button.of(
                                                         ButtonStyle.LINK,
-                                                        "${loritta.config.loritta.website.url}dashboard/daily-shop?utm_source=discord&utm_medium=$medium&utm_campaign=daily-item-shop&utm_content=guild-${guild.idLong}",
+                                                        "${loritta.config.loritta.dashboard.url.removeSuffix("/")}/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/daily-shop?utm_source=discord&utm_medium=$medium&utm_campaign=daily-item-shop&utm_content=guild-${guild.idLong}",
                                                         i18nContext.get(I18nKeysData.Commands.Command.Profileview.LorittaDailyItemShop),
                                                         Emotes.ShoppingBags.toJDA()
                                                     )

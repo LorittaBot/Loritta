@@ -1,48 +1,22 @@
 package net.perfectdreams.loritta.morenitta.websitedashboard.routes
 
-import io.ktor.client.request.get
-import io.ktor.client.request.header
-import io.ktor.client.request.url
-import io.ktor.client.statement.bodyAsText
-import io.ktor.http.userAgent
-import io.ktor.server.application.ApplicationCall
-import kotlinx.html.body
-import kotlinx.html.div
-import kotlinx.html.h1
-import kotlinx.html.h2
-import kotlinx.html.hr
-import kotlinx.html.id
-import kotlinx.html.img
-import kotlinx.html.p
-import kotlinx.html.stream.createHTML
-import kotlinx.html.style
-import kotlinx.serialization.json.Json
+import io.ktor.server.application.*
+import kotlinx.html.*
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserFavoritedGuilds
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
-import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.configureServerEntry
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.ColorTheme
+import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import org.jetbrains.exposed.sql.selectAll
 
 class PostServerListUserDashboardRoute(website: LorittaDashboardWebServer) : RequiresUserAuthDashboardLocalizedRoute(website, "/guilds") {
-    private val PREFIX = "https://discord.com/api/v10"
-    private val TOKEN_BASE_URL = "$PREFIX/oauth2/token"
-    private val USER_AGENT = "Loritta-Morenitta-Discord-Auth/1.0"
-    private val USER_IDENTIFICATION_URL = "${PREFIX}/users/@me"
-    private val USER_GUILDS_URL = "$USER_IDENTIFICATION_URL/guilds"
-
     override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
-        val resultAsText = website.loritta.http.get {
-            url(USER_GUILDS_URL)
-            userAgent(USER_AGENT)
-            header("Authorization", "Bearer ${session.discordAccessToken}")
-        }.bodyAsText()
+        val userGuilds = session.retrieveUserGuilds()
 
         val favoritedGuilds = website.loritta.transaction {
             UserFavoritedGuilds.selectAll()
@@ -52,8 +26,6 @@ class PostServerListUserDashboardRoute(website: LorittaDashboardWebServer) : Req
                 .map { it[UserFavoritedGuilds.guildId] }
                 .toSet()
         }
-
-        val userGuilds = Json.decodeFromString<List<DiscordLoginUserDashboardRoute.DiscordGuild>>(resultAsText)
 
         val sortedAndFilteredGuilds = userGuilds
             .filter { LorittaDashboardWebServer.canManageGuild(it) }

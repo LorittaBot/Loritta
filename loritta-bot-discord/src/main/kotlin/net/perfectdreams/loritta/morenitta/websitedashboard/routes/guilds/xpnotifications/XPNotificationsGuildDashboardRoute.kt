@@ -73,10 +73,10 @@ class XPNotificationsGuildDashboardRoute(website: LorittaDashboardWebServer) : R
                 LevelUpPlaceholders.GuildIconUrlPlaceholder -> createGuildIconUrlPlaceholderGroup(i18nContext, it, guild)
                 LevelUpPlaceholders.GuildNamePlaceholder -> createGuildNamePlaceholderGroup(i18nContext, it, guild)
                 LevelUpPlaceholders.GuildSizePlaceholder -> createGuildSizePlaceholderGroup(i18nContext, it, guild)
-                LevelUpPlaceholders.UserDiscriminatorPlaceholder -> createUserDiscriminatorPlaceholderGroup(i18nContext, it, session.discriminator)
-                LevelUpPlaceholders.UserMentionPlaceholder -> createUserMentionPlaceholderGroup(i18nContext, it, session.userId, session.username, session.globalName)
-                LevelUpPlaceholders.UserNamePlaceholder -> createUserNamePlaceholderGroup(i18nContext, it, session.username, session.globalName)
-                LevelUpPlaceholders.UserTagPlaceholder -> createUserTagPlaceholderGroup(i18nContext, it, session.username)
+                LevelUpPlaceholders.UserDiscriminatorPlaceholder -> createUserDiscriminatorPlaceholderGroup(i18nContext, it, session.cachedUserIdentification.discriminator)
+                LevelUpPlaceholders.UserMentionPlaceholder -> createUserMentionPlaceholderGroup(i18nContext, it, session.userId, session.cachedUserIdentification.username, session.cachedUserIdentification.globalName)
+                LevelUpPlaceholders.UserNamePlaceholder -> createUserNamePlaceholderGroup(i18nContext, it, session.cachedUserIdentification.username, session.cachedUserIdentification.globalName)
+                LevelUpPlaceholders.UserTagPlaceholder -> createUserTagPlaceholderGroup(i18nContext, it, session.cachedUserIdentification.username)
                 LevelUpPlaceholders.LevelUpLevelPlaceholder -> createPlaceholderGroup(
                     it,
                     null,

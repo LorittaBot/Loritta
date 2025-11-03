@@ -165,7 +165,7 @@ class PostTestLoriDevelopersDocsEndpointRoute(loritta: LorittaBot) : LocalizedRo
                         div {
                             span {
                                 style = "color: #b0eb93;"
-                                text("${session?.username ?: "wumpus"}@loritta:~# ")
+                                text("${session?.cachedUserIdentification?.username ?: "wumpus"}@loritta:~# ")
                             }
 
                             span {
@@ -235,7 +235,7 @@ class PostTestLoriDevelopersDocsEndpointRoute(loritta: LorittaBot) : LocalizedRo
                     div {
                         span(classes = "term-green") {
                             style = "color: #b0eb93;"
-                            text("${session?.username ?: "wumpus"}@loritta:~# ")
+                            text("${session?.cachedUserIdentification?.username ?: "wumpus"}@loritta:~# ")
                         }
 
                         span {

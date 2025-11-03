@@ -36,12 +36,12 @@ import net.perfectdreams.loritta.morenitta.loricoolcards.StickerAlbumTemplate
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.rpc.processors.LorittaRpcProcessor
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.trueIp
+import net.perfectdreams.loritta.morenitta.websitedashboard.discord.DiscordOAuth2Guild
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.DiscordLoginUserDashboardRoute
 import net.perfectdreams.loritta.serializable.SonhosPaymentReason
 import net.perfectdreams.loritta.serializable.StoredDailyRewardSonhosTransaction
 import net.perfectdreams.loritta.serializable.requests.GetDailyRewardRequest
 import net.perfectdreams.loritta.serializable.responses.*
-import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import java.time.Instant
@@ -139,9 +139,9 @@ class GetDailyRewardProcessor(val m: LorittaWebsite) : LorittaRpcProcessor {
                                     var dailyPayout = LorittaBot.RANDOM.nextInt(1800 /* Math.max(555, 555 * (multiplier - 1)) */, ((1800 * multiplier) + 1).toInt()) // 555 (lower bound) -> 555 * sites de votação do PerfectDreams
                                     val originalPayout = dailyPayout
 
-                                    val mutualGuilds = discordAuth.getUserGuilds(loritta)
+                                    val mutualGuilds = discordAuth.retrieveUserGuilds()
 
-                                    var sponsoredBy: DiscordLoginUserDashboardRoute.DiscordGuild? = null
+                                    var sponsoredBy: DiscordOAuth2Guild? = null
                                     var multipliedBy: Double? = null
                                     var sponsoredByUserId: Long? = null
 
@@ -157,7 +157,7 @@ class GetDailyRewardProcessor(val m: LorittaWebsite) : LorittaRpcProcessor {
                                         val serverConfigs = ServerConfig.wrapRows(results)
 
                                         var bestServer: ServerConfig? = null
-                                        var bestServerInfo: DiscordLoginUserDashboardRoute.DiscordGuild? = null
+                                        var bestServerInfo: DiscordOAuth2Guild? = null
 
                                         // VIVO SPONSOR
                                         val vivoGuildId = 1102914516842446848L

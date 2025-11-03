@@ -175,7 +175,7 @@ class PostUserReputationsRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRou
 
 		val ip = call.request.trueIp
 
-        val userIdentification = session.getUserIdentification(loritta)
+        val userIdentification = session.retrieveUserIdentification()
 		mutex.withLock {
 			val lastReputationGiven = loritta.newSuspendedTransaction {
 				Reputation.find {

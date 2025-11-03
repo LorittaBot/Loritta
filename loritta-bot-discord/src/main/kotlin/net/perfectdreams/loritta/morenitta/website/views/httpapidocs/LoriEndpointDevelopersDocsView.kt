@@ -163,7 +163,7 @@ class LoriEndpointDevelopersDocsView(
                     ) {
                         div {
                             span(classes = "term-green") {
-                                text("${userIdentification?.username ?: "wumpus"}@loritta:~# ")
+                                text("${userIdentification?.cachedUserIdentification?.username ?: "wumpus"}@loritta:~# ")
                             }
 
                             text(curlRequestCLI)

@@ -47,27 +47,27 @@ class WelcomerGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                     i18nContext,
                     it,
                     session.userId,
-                    session.username,
-                    session.globalName
+                    session.cachedUserIdentification.username,
+                    session.cachedUserIdentification.globalName
                 )
 
                 JoinMessagePlaceholders.UserNamePlaceholder -> createUserNamePlaceholderGroup(
                     i18nContext,
                     it,
-                    session.username,
-                    session.globalName
+                    session.cachedUserIdentification.username,
+                    session.cachedUserIdentification.globalName
                 )
 
                 JoinMessagePlaceholders.UserDiscriminatorPlaceholder -> createUserDiscriminatorPlaceholderGroup(
                     i18nContext,
                     it,
-                    session.discriminator
+                    session.cachedUserIdentification.discriminator
                 )
 
                 JoinMessagePlaceholders.UserTagPlaceholder -> createUserTagPlaceholderGroup(
                     i18nContext,
                     it,
-                    session.username
+                    session.cachedUserIdentification.username
                 )
 
                 JoinMessagePlaceholders.GuildIconUrlPlaceholder -> createGuildIconUrlPlaceholderGroup(i18nContext, it, guild)
@@ -84,27 +84,27 @@ class WelcomerGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                     i18nContext,
                     it,
                     session.userId,
-                    session.username,
-                    session.globalName
+                    session.cachedUserIdentification.username,
+                    session.cachedUserIdentification.globalName
                 )
 
                 LeaveMessagePlaceholders.UserNamePlaceholder -> createUserNamePlaceholderGroup(
                     i18nContext,
                     it,
-                    session.username,
-                    session.globalName
+                    session.cachedUserIdentification.username,
+                    session.cachedUserIdentification.globalName
                 )
 
                 LeaveMessagePlaceholders.UserDiscriminatorPlaceholder -> createUserDiscriminatorPlaceholderGroup(
                     i18nContext,
                     it,
-                    session.discriminator
+                    session.cachedUserIdentification.discriminator
                 )
 
                 LeaveMessagePlaceholders.UserTagPlaceholder -> createUserTagPlaceholderGroup(
                     i18nContext,
                     it,
-                    session.username
+                    session.cachedUserIdentification.username
                 )
 
                 LeaveMessagePlaceholders.GuildIconUrlPlaceholder -> createGuildIconUrlPlaceholderGroup(i18nContext, it, guild)

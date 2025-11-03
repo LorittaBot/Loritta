@@ -145,7 +145,7 @@ class DailyView(
                             WebsiteUtils.buildAsHtml(
                                 i18nContext.language.textBundle.strings[I18nKeys.Daily.Attention.BuySonhos.key]!!,
                                 {
-                                    a(href = "/dashboard/sonhos-shop") {
+                                    a(href = loritta.config.loritta.dashboard.url.removeSuffix("/") + "/sonhos-shop") {
                                         +i18nContext.get(I18nKeysData.Daily.Attention.ClickHere)
                                     }
                                 },

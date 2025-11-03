@@ -23,6 +23,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.genericSa
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.guildDashLeftSidebarEntries
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.rightSidebarContentAndSaveBarWrapper
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.sectionConfig
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.simpleHeroImage
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.toggle
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.toggleableSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute

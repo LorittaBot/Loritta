@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.morenitta.websitedashboard.components
 
 import kotlinx.html.FlowContent
+import kotlinx.html.a
 import kotlinx.html.classes
 import kotlinx.html.div
 import kotlinx.html.hr
@@ -10,6 +11,7 @@ import kotlinx.html.style
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.GuildDashboardSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.SVGIcons
@@ -38,7 +40,19 @@ fun FlowContent.guildDashLeftSidebarEntries(
         text(guild.name)
     }
 
-    aDashboardSidebarEntryButton(ButtonStyle.NO_BACKGROUND_THEME_DEPENDENT_DARK_TEXT, i18nContext, "/", "Voltar ao Painel de Usuário")
+    a(classes = "discord-button ${ButtonStyle.NO_BACKGROUND_THEME_DEPENDENT_DARK_TEXT.className} text-with-icon bounce-icon-to-the-left-on-hover", href = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/") {
+        style = "width: 100%;"
+        attributes["bliss-get"] = "[href]"
+        attributes["bliss-swap:200"] = SWAP_EVERYTHING_DASHBOARD
+        attributes["bliss-push-url:200"] = "true"
+        attributes["bliss-sync"] = "#left-sidebar"
+        attributes["bliss-indicator"] = "#right-sidebar-wrapper"
+        attributes["bliss-component"] = "close-left-sidebar-on-click"
+
+        svgIcon(SVGIcons.CaretLeft)
+
+        text("Voltar ao Painel de Usuário")
+    }
 
     leftSidebarHr()
 

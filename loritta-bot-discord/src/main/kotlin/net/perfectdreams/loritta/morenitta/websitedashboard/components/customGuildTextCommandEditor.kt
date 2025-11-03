@@ -28,10 +28,10 @@ fun FlowContent.customGuildCommandTextEditor(
             CustomTextCommandPlaceholders.UserAvatarUrlPlaceholder -> createUserAvatarUrlPlaceholderGroup(i18nContext, it, session)
             CustomTextCommandPlaceholders.UserIdPlaceholder -> createUserIdPlaceholderGroup(i18nContext, it, session.userId)
             CustomTextCommandPlaceholders.GuildSizePlaceholder -> createGuildSizePlaceholderGroup(i18nContext, it, guild)
-            CustomTextCommandPlaceholders.UserDiscriminatorPlaceholder -> createUserDiscriminatorPlaceholderGroup(i18nContext, it, session.discriminator)
-            CustomTextCommandPlaceholders.UserMentionPlaceholder -> createUserMentionPlaceholderGroup(i18nContext, it, session.userId, session.username, session.globalName)
-            CustomTextCommandPlaceholders.UserNamePlaceholder -> createUserNamePlaceholderGroup(i18nContext, it, session.username, session.globalName)
-            CustomTextCommandPlaceholders.UserTagPlaceholder -> createUserTagPlaceholderGroup(i18nContext, it, session.username)
+            CustomTextCommandPlaceholders.UserDiscriminatorPlaceholder -> createUserDiscriminatorPlaceholderGroup(i18nContext, it, session.cachedUserIdentification.discriminator)
+            CustomTextCommandPlaceholders.UserMentionPlaceholder -> createUserMentionPlaceholderGroup(i18nContext, it, session.userId, session.cachedUserIdentification.username, session.cachedUserIdentification.globalName)
+            CustomTextCommandPlaceholders.UserNamePlaceholder -> createUserNamePlaceholderGroup(i18nContext, it, session.cachedUserIdentification.username, session.cachedUserIdentification.globalName)
+            CustomTextCommandPlaceholders.UserTagPlaceholder -> createUserTagPlaceholderGroup(i18nContext, it, session.cachedUserIdentification.username)
         }
     }
 

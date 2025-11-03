@@ -10,6 +10,8 @@ import net.perfectdreams.loritta.morenitta.dao.ProfileDesign
 import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
 import net.perfectdreams.loritta.morenitta.website.LoriWebCode
 import net.perfectdreams.loritta.morenitta.website.WebsiteAPIException
+import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.discord.DiscordOAuth2UserIdentification
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.DiscordLoginUserDashboardRoute
 import org.jetbrains.exposed.sql.ResultRow
 
@@ -59,7 +61,7 @@ object WebsiteUtils {
 		)
 	}
 
-    fun checkIfAccountHasMFAEnabled(loritta: LorittaBot, userIdentification: DiscordLoginUserDashboardRoute.UserIdentification): Boolean {
+    fun checkIfAccountHasMFAEnabled(loritta: LorittaBot, userIdentification: DiscordOAuth2UserIdentification): Boolean {
         // This is a security measure, to avoid "high risk" purchases.
         // We will require that users need to verify their account + have MFA enabled.
         if (!userIdentification.verified)

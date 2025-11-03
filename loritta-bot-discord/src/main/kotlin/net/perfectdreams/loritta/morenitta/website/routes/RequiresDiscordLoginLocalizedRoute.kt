@@ -27,9 +27,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
             return
         }
 
-        val userIdentification = session.getUserIdentification(loritta)
-
-		val profile = loritta.getOrCreateLorittaProfile(userIdentification.id)
+		val profile = loritta.getOrCreateLorittaProfile(session.userId)
 		val bannedState = profile.getBannedState(loritta)
 		if (bannedState != null) {
 			call.respondHtml(

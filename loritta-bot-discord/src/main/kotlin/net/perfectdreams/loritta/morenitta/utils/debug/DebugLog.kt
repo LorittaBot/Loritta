@@ -5,7 +5,6 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.listeners.EventLogListener
 import net.perfectdreams.loritta.morenitta.listeners.PreStartGatewayEventReplayListener
 import net.perfectdreams.loritta.morenitta.modules.InviteLinkModule
-import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import java.util.concurrent.ThreadPoolExecutor
 
 object DebugLog {
@@ -34,7 +33,6 @@ object DebugLog {
 			}
 		}
 		logger.info { "Active voice connections: ${loritta.voiceConnectionsManager.voiceConnections.size}" }
-		logger.info { "TemmieDiscordAuth mutexes instances: ${TemmieDiscordAuth.accessTokenMutexes.size}" }
 		logger.info { "Pudding Semaphore Permits: ${loritta.pudding.semaphore.availablePermits}" }
 		logger.info { "> Command Stuff" }
 		logger.info { "commandManager.commandMap.size: ${loritta.legacyCommandManager.commandMap.size}" }

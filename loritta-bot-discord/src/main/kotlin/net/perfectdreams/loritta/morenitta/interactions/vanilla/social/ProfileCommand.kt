@@ -129,19 +129,19 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     },
                     Button.of(
                         ButtonStyle.LINK,
-                        "${loritta.config.loritta.website.url}dashboard/profiles?utm_source=discord&utm_medium=profile-command&utm_campaign=daily-item-shop&utm_content=self-profile",
+                        "${loritta.config.loritta.dashboard.url.removeSuffix("/")}/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/profiles?utm_source=discord&utm_medium=profile-command&utm_campaign=daily-item-shop&utm_content=self-profile",
                         i18nContext.get(I18nKeysData.Commands.Command.Profileview.ChangeProfileLayout),
                         Emotes.LoriIdentificationCard.toJDA()
                     ),
                     Button.of(
                         ButtonStyle.LINK,
-                        "${loritta.config.loritta.website.url}dashboard/backgrounds?utm_source=discord&utm_medium=profile-command&utm_campaign=daily-item-shop&utm_content=self-profile",
+                        "${loritta.config.loritta.dashboard.url.removeSuffix("/")}/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/backgrounds?utm_source=discord&utm_medium=profile-command&utm_campaign=daily-item-shop&utm_content=self-profile",
                         i18nContext.get(I18nKeysData.Commands.Command.Profileview.ChangeBackground),
                         Emoji.fromUnicode("\uD83D\uDDBC\uFE0F")
                     ),
                     Button.of(
                         ButtonStyle.LINK,
-                        "${loritta.config.loritta.website.url}dashboard/daily-shop?utm_source=discord&utm_medium=profile-command&utm_campaign=daily-item-shop&utm_content=self-profile",
+                        "${loritta.config.loritta.dashboard.url.removeSuffix("/")}/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/daily-shop?utm_source=discord&utm_medium=profile-command&utm_campaign=daily-item-shop&utm_content=self-profile",
                         i18nContext.get(I18nKeysData.Commands.Command.Profileview.LorittaDailyItemShop),
                         Emotes.ShoppingBags.toJDA()
                     )

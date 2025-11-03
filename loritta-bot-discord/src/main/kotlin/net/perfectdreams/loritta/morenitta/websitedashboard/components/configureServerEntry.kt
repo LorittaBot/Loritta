@@ -22,14 +22,14 @@ import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite.UserPermissionLevel
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.discord.DiscordOAuth2Guild
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.DiscordLoginUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.SVGIcons
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.calculateGuildIconShortName
-import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 fun FlowContent.configureServerEntry(
     i18nContext: I18nContext,
-    guild: DiscordLoginUserDashboardRoute.DiscordGuild,
+    guild: DiscordOAuth2Guild,
     isFavorited: Boolean
 ) {
     val userPermissionLevel = LorittaDashboardWebServer.getUserPermissionLevel(guild)

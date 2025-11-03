@@ -21,6 +21,7 @@ import net.perfectdreams.loritta.dashboard.backend.utils.writeSseEvent
 class LorittaDashboardBackend(val config: LorittaDashboardBackendConfig) {
     companion object {
         val ALLOWED_REQUEST_HEADERS = setOf(
+            "User-Agent",
             "Cookie",
             "Bliss-Request",
             "Bliss-Trigger-Element-Id",

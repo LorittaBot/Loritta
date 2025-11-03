@@ -2,3 +2,5 @@ website:
   dashboard:
     permissions:
       title: "Permissões"
+      guildRoles: "Cargos do servidor"
+      roles: "{roleCount,plural, =0 {# cargos} one {# cargo} other {# cargos}}"

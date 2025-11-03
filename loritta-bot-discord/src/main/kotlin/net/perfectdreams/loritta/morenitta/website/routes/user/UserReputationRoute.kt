@@ -42,7 +42,7 @@ class UserReputationRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRo
 					.toList()
 		}
 
-        val userIdentification = session?.getUserIdentification(loritta)
+        val userIdentification = session?.retrieveUserIdentification()
 
 		val lastReputationGiven = if (userIdentification != null) {
 			loritta.newSuspendedTransaction {

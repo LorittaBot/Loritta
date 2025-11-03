@@ -11,12 +11,16 @@ import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DonationKeys
+import net.perfectdreams.loritta.common.utils.LorittaDiscordOAuth2AddBotURL
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.morenitta.utils.LorittaDiscordOAuth2AuthorizeScopeURL
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.ButtonStyle
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.discordButtonLink
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.defaultModalCloseButton
@@ -27,7 +31,7 @@ import org.jetbrains.exposed.sql.selectAll
 
 abstract class RequiresGuildAuthDashboardLocalizedRoute(website: LorittaDashboardWebServer, originalGuildPath: String) : RequiresUserAuthDashboardLocalizedRoute(website, "/guilds/{guildId}$originalGuildPath") {
     override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
-        val guildId = call.parameters.getOrFail("guildId")
+        val guildId = call.parameters.getOrFail("guildId").toLong()
 
         val guild = website.loritta.lorittaShards.getGuildById(guildId)
 
@@ -41,9 +45,23 @@ abstract class RequiresGuildAuthDashboardLocalizedRoute(website: LorittaDashboar
                             {
                                 text("Adicione a Loritta no servidor!")
                             },
-                            listOf {
-                                defaultModalCloseButton(i18nContext)
-                            }
+                            listOf(
+                                {
+                                    defaultModalCloseButton(i18nContext)
+                                },
+                                {
+                                    discordButtonLink(
+                                        ButtonStyle.PRIMARY,
+                                        href = net.perfectdreams.loritta.morenitta.utils.LorittaDiscordOAuth2AddBotURL(
+                                            website.loritta,
+                                            guildId,
+                                            null
+                                        ).toString()
+                                    ) {
+                                        text("Adicionar")
+                                    }
+                                }
+                            )
                         )
                     )
                 }

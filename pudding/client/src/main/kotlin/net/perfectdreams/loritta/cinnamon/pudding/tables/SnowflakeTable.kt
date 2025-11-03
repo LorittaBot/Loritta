@@ -8,3 +8,8 @@ open class SnowflakeTable(name: String = "", columnName: String = "id") : IdTabl
     override val id: Column<EntityID<Long>> = long(columnName).entityId()
     override val primaryKey = PrimaryKey(id)
 }
+
+open class UniqueSnowflakeTable(name: String = "", columnName: String = "id") : IdTable<Long>(name) {
+    override val id: Column<EntityID<Long>> = long(columnName).entityId().uniqueIndex()
+    override val primaryKey = PrimaryKey(id)
+}

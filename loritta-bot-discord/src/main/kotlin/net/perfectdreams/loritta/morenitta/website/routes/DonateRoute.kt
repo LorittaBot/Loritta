@@ -17,7 +17,7 @@ class DonateRoute(loritta: LorittaBot) : LocalizedRoute(loritta, "/donate") {
 
 	override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext) {
         val session = loritta.dashboardWebServer.getSession(call)
-        val userIdentification = session?.getUserIdentification(loritta)
+        val userIdentification = session?.retrieveUserIdentification()
 
 		val keys = jsonArray()
 
@@ -25,7 +25,7 @@ class DonateRoute(loritta: LorittaBot) : LocalizedRoute(loritta, "/donate") {
 			val donationKeys = loritta.newSuspendedTransaction {
 				// Pegar keys ativas
 				DonationKey.find {
-					(DonationKeys.expiresAt greaterEq System.currentTimeMillis()) and (DonationKeys.userId eq userIdentification.id)
+					(DonationKeys.expiresAt greaterEq System.currentTimeMillis()) and (DonationKeys.userId eq session.userId)
 				}.toMutableList()
 			}
 

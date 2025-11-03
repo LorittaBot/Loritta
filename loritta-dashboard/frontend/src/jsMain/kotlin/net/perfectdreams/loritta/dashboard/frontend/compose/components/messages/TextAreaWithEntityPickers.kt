@@ -78,7 +78,7 @@ fun TextAreaWithEntityPickers(guild: DiscordGuild, content: String, onChange: (c
     val typeaheadMatches = textAreaWrapper.matches
     if (cursorXY != null && typeaheadMatches != null) {
         Div(attrs = {
-            attr("style", "position: absolute; left: ${cursorXY.x}px; top: ${cursorXY.y}px;")
+            attr("style", "position: absolute; left: ${cursorXY.x}px; top: ${cursorXY.y + 24}px;")
             classes("message-config-tooltip", "reset-theme-variables")
         }) {
             when (typeaheadMatches) {
@@ -718,7 +718,7 @@ private class TextAreaWithEntityPickers(private var guild: DiscordGuild, private
     }
 
     private fun updateCursor() {
-        cursorXY = getCursorXY(textArea, textArea.selectionEnd ?: 0)
+        cursorXY = getCursorXY(textArea, textArea.selectionEnd)
     }
 
     fun updateData(guild: DiscordGuild, onChange: (content: String) -> Unit) {

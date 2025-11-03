@@ -14,7 +14,7 @@ fun FlowContent.prefixPreview(
     lorittaUser: User
 ) {
     discordMessageBlock(
-        session.globalName ?: session.username,
+        session.cachedUserIdentification.globalName ?: session.cachedUserIdentification.username,
         session.getEffectiveAvatarUrl(),
         false,
         false,

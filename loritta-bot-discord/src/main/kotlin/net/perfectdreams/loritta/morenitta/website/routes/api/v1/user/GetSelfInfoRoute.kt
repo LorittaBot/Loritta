@@ -24,14 +24,13 @@ class GetSelfInfoRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/users/@me")
                 LoriWebCode.UNAUTHORIZED
             )
         )
-        val userIdentification = session.getUserIdentification(loritta)
-
+ 
         val profile = loritta.getLorittaProfile(session.userId)
 
         if (profile != null) {
             loritta.newSuspendedTransaction {
-                profile.settings.discordAccountFlags = userIdentification.flags
-                profile.settings.discordPremiumType = userIdentification.premiumType
+                profile.settings.discordAccountFlags = session.cachedUserIdentification.flags
+                profile.settings.discordPremiumType = session.cachedUserIdentification.premiumType
             }
         }
 
@@ -40,16 +39,16 @@ class GetSelfInfoRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/users/@me")
                 UserIdentification.serializer(),
                 UserIdentification(
                     session.userId,
-                    session.username,
-                    session.discriminator,
-                    session.avatarId,
+                    session.cachedUserIdentification.username,
+                    session.cachedUserIdentification.discriminator,
+                    session.cachedUserIdentification.avatarId,
                     false,
-                    false,
-                    "pt-br",
-                    true,
-                    "",
-                    userIdentification.flags,
-                    userIdentification.premiumType
+                    session.cachedUserIdentification.mfaEnabled,
+                    session.cachedUserIdentification.locale,
+                    session.cachedUserIdentification.verified,
+                    session.cachedUserIdentification.email,
+                    session.cachedUserIdentification.flags,
+                    session.cachedUserIdentification.premiumType
                 )
             )
         )

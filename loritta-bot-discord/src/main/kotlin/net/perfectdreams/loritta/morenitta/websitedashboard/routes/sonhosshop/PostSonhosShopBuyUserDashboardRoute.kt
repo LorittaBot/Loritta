@@ -99,7 +99,7 @@ class PostSonhosShopBuyUserDashboardRoute(website: LorittaDashboardWebServer) : 
 
         when (result) {
             is Result.Success -> {
-                val whoDonated = session.username
+                val whoDonated = session.cachedUserIdentification.username
 
                 val grana = if (result.claimedWebsiteCoupon != null) {
                     result.bundle[SonhosBundles.price] * result.claimedWebsiteCoupon.total

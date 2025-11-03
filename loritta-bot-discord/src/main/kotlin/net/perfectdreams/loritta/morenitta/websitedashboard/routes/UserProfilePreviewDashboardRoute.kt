@@ -106,8 +106,8 @@ class UserProfilePreviewDashboardRoute(website: LorittaDashboardWebServer) : Req
 
         val senderUserData = ProfileUserInfoData(
             session.userId,
-            session.username,
-            session.discriminator,
+            session.cachedUserIdentification.username,
+            session.cachedUserIdentification.discriminator,
             avatarUrl,
             false,
             EnumSet.noneOf(UserFlag::class.java) // TODO: Fix user flags, afaik they are provided in the UserIdentification

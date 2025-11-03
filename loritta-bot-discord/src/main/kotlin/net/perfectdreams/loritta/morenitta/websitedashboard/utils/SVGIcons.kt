@@ -36,6 +36,7 @@ object SVGIcons {
     val CheckFat = register("check-fat", "/svg_icons/phosphor/bold/check-fat.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
     val CaretDown = register("caret-down", "/svg_icons/phosphor/bold/caret-down.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
     val CaretUp = register("caret-up", "/svg_icons/phosphor/bold/caret-up.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
+    val CaretLeft = register("caret-left", "/svg_icons/phosphor/bold/caret-left.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
     val ShootingStar = register("shooting-star", "/svg_icons/phosphor/fill/shooting-star.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
     val Clock = register("clock", "/svg_icons/phosphor/fill/clock.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
     val Timer = register("timer", "/svg_icons/phosphor/fill/timer.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)

@@ -47,10 +47,10 @@ class PunishmentLogGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
 
         val placeholders = PunishmentMessagePlaceholders.placeholders.map {
             when (it) {
-                PunishmentMessagePlaceholders.UserMentionPlaceholder -> createUserMentionPlaceholderGroup(i18nContext, it, session.userId, session.username, session.globalName)
-                PunishmentMessagePlaceholders.UserNamePlaceholder -> createUserNamePlaceholderGroup(i18nContext, it, session.username, session.globalName)
-                PunishmentMessagePlaceholders.UserDiscriminatorPlaceholder -> createUserDiscriminatorPlaceholderGroup(i18nContext, it, session.discriminator)
-                PunishmentMessagePlaceholders.UserTagPlaceholder -> createUserTagPlaceholderGroup(i18nContext, it, session.username)
+                PunishmentMessagePlaceholders.UserMentionPlaceholder -> createUserMentionPlaceholderGroup(i18nContext, it, session.userId, session.cachedUserIdentification.username, session.cachedUserIdentification.globalName)
+                PunishmentMessagePlaceholders.UserNamePlaceholder -> createUserNamePlaceholderGroup(i18nContext, it, session.cachedUserIdentification.username, session.cachedUserIdentification.globalName)
+                PunishmentMessagePlaceholders.UserDiscriminatorPlaceholder -> createUserDiscriminatorPlaceholderGroup(i18nContext, it, session.cachedUserIdentification.discriminator)
+                PunishmentMessagePlaceholders.UserTagPlaceholder -> createUserTagPlaceholderGroup(i18nContext, it, session.cachedUserIdentification.username)
 
                 PunishmentMessagePlaceholders.GuildIconUrlPlaceholder -> createGuildIconUrlPlaceholderGroup(i18nContext, it, guild)
                 PunishmentMessagePlaceholders.GuildNamePlaceholder -> createGuildNamePlaceholderGroup(i18nContext, it, guild)
@@ -79,7 +79,7 @@ class PunishmentLogGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
                 PunishmentMessagePlaceholders.StaffDiscriminatorPlaceholder -> createPlaceholderGroup(
                     it,
                     null,
-                    session.discriminator.padStart(4, '0'),
+                    session.cachedUserIdentification.discriminator.padStart(4, '0'),
                     RenderType.TEXT
                 )
                 PunishmentMessagePlaceholders.StaffIdPlaceholder -> createPlaceholderGroup(
@@ -91,20 +91,20 @@ class PunishmentLogGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
                 PunishmentMessagePlaceholders.StaffMentionPlaceholder -> createPlaceholderGroup(
                     it.placeholders,
                     null,
-                    "@${session.globalName ?: session.username}",
+                    "@${session.cachedUserIdentification.globalName ?: session.cachedUserIdentification.username}",
                     "<@${session.userId}>",
                     RenderType.TEXT
                 )
                 PunishmentMessagePlaceholders.StaffNamePlaceholder -> createPlaceholderGroup(
                     it,
                     null,
-                    session.globalName ?: session.username,
+                    session.cachedUserIdentification.globalName ?: session.cachedUserIdentification.username,
                     RenderType.TEXT
                 )
                 PunishmentMessagePlaceholders.StaffTagPlaceholder -> createPlaceholderGroup(
                     it,
                     null,
-                    "@${session.username}",
+                    "@${session.cachedUserIdentification.username}",
                     RenderType.TEXT
                 )
             }

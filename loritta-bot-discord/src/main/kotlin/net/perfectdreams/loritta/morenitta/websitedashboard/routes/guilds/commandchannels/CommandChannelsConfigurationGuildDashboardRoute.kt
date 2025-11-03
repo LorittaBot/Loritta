@@ -69,25 +69,25 @@ class CommandChannelsConfigurationGuildDashboardRoute(website: LorittaDashboardW
                 BlockedCommandChannelPlaceholders.UserDiscriminatorPlaceholder -> createUserDiscriminatorPlaceholderGroup(
                     i18nContext,
                     it,
-                    session.discriminator
+                    session.cachedUserIdentification.discriminator
                 )
                 BlockedCommandChannelPlaceholders.UserMentionPlaceholder -> createUserMentionPlaceholderGroup(
                     i18nContext,
                     it,
                     session.userId,
-                    session.username,
-                    session.globalName
+                    session.cachedUserIdentification.username,
+                    session.cachedUserIdentification.globalName
                 )
                 BlockedCommandChannelPlaceholders.UserNamePlaceholder -> createUserNamePlaceholderGroup(
                     i18nContext,
                     it,
-                    session.username,
-                    session.globalName
+                    session.cachedUserIdentification.username,
+                    session.cachedUserIdentification.globalName
                 )
                 BlockedCommandChannelPlaceholders.UserTagPlaceholder -> createUserTagPlaceholderGroup(
                     i18nContext,
                     it,
-                    session.username
+                    session.cachedUserIdentification.username
                 )
 
                 BlockedCommandChannelPlaceholders.UserAvatarUrlPlaceholder -> createUserAvatarUrlPlaceholderGroup(i18nContext, it, session)

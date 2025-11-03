@@ -18,7 +18,7 @@ class InviteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "invite", li
                     context.locale.getList(
                         "commands.command.invite.inviteInfo",
                         LorittaDiscordOAuth2AddBotURL(loritta).toString(),
-                        "${loritta.config.loritta.website.url}dashboard",
+                        loritta.config.loritta.dashboard.url,
                         "${loritta.config.loritta.website.url}support").joinToString("\n")
                 )
                 .setThumbnail("${loritta.config.loritta.website.url}assets/img/loritta_gabizinha_v1.png")

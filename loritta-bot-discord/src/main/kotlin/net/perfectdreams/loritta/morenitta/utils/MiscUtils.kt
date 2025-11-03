@@ -15,8 +15,9 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.LoriWebCode
 import net.perfectdreams.loritta.morenitta.website.WebsiteAPIException
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
+import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.discord.DiscordOAuth2UserIdentification
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.DiscordLoginUserDashboardRoute
-import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.json.XML
 import java.io.File
 import java.net.InetAddress
@@ -57,28 +58,7 @@ object MiscUtils {
 		return output
 	}
 
-	suspend fun verifyAccount(loritta: LorittaBot, userIdentification: TemmieDiscordAuth.UserIdentification, ip: String): AccountCheckResult {
-		if (!userIdentification.verified)
-			return AccountCheckResult.NOT_VERIFIED
-
-		val email = userIdentification.email ?: return AccountCheckResult.NOT_VERIFIED // Sem email == não verificado (?)
-
-		val domain = email.split("@")
-		if (2 > domain.size) // na verdade seria "INVALID_EMAIL" mas...
-			return AccountCheckResult.NOT_VERIFIED
-
-
-		val list = File(LorittaBot.ASSETS, "data/blacklisted-emails.txt").readLines()
-
-		val matches = list.any { it == domain[1] }
-
-		if (matches)
-			return AccountCheckResult.BAD_EMAIL
-
-		return verifyIP(loritta, ip)
-	}
-
-    suspend fun verifyAccount(loritta: LorittaBot, userIdentification: DiscordLoginUserDashboardRoute.UserIdentification, ip: String): AccountCheckResult {
+    suspend fun verifyAccount(loritta: LorittaBot, userIdentification: DiscordOAuth2UserIdentification, ip: String): AccountCheckResult {
         if (!userIdentification.verified)
             return AccountCheckResult.NOT_VERIFIED
 

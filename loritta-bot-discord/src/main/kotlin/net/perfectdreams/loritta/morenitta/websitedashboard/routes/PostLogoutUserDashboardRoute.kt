@@ -23,16 +23,12 @@ class PostLogoutUserDashboardRoute(website: LorittaDashboardWebServer) : Require
             }
         }
 
-        call.response.cookies.append(
-            Cookie(
-                LorittaDashboardWebServer.WEBSITE_SESSION_COOKIE,
-                "",
-                path = "/", // Available in any path of the domain
-                // secure = true, // Only sent via HTTPS
-                httpOnly = true, // Disable JS access
-                maxAge = 0
-            )
+        website.setLorittaSessionCookie(
+            call.response.cookies,
+            "",
+            0
         )
+
         call.response.header("Bliss-Redirect", website.loritta.config.loritta.website.url)
         call.respond(HttpStatusCode.NoContent)
     }

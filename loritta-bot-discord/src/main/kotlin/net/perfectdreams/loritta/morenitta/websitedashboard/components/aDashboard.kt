@@ -60,26 +60,3 @@ fun FlowContent.aDashboardSidebarEntry(
         sectionEntryContent(text, icon, new)
     }
 }
-
-/**
- * A dashboard left sidebar entry href link that swaps the left sidebar contents and the right sidebar contents that pretends to be a link
- */
-fun FlowContent.aDashboardSidebarEntryButton(
-    style: ButtonStyle,
-    i18nContext: I18nContext,
-    href: String,
-    text: String
-) {
-    a(classes = "entry discord-button ${style.className}", href = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}$href") {
-        attributes["bliss-get"] = "[href]"
-        attributes["bliss-swap:200"] = SWAP_EVERYTHING_DASHBOARD
-        attributes["bliss-push-url:200"] = "true"
-        attributes["bliss-sync"] = "#left-sidebar"
-        attributes["bliss-indicator"] = "#right-sidebar-wrapper"
-        attributes["bliss-component"] = "close-left-sidebar-on-click"
-
-        div(classes = "section-text") {
-            text(text)
-        }
-    }
-}

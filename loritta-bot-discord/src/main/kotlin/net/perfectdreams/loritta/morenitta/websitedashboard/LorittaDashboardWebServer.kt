@@ -12,15 +12,18 @@ import io.ktor.server.request.header
 import io.ktor.server.request.uri
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.util.date.GMTDate
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedDiscordUserIdentifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserWebsiteSessions
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite.UserPermissionLevel
+import net.perfectdreams.loritta.morenitta.websitedashboard.discord.DiscordOAuth2Guild
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.ChooseYourServerUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.DashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.DiscordLoginUserDashboardRoute
@@ -43,6 +46,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.backgrounds.P
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.dailyshop.DailyShopUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.dailyshop.PostBuyDailyShopItemUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.dailyshop.SSEDailyShopTimerUserDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.added.AddedLorittaGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.autorole.AutoroleGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.autorole.PostAddRoleToListAutoroleGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.autorole.PostRemoveRoleFromListAutoroleGuildDashboardRoute
@@ -158,10 +162,13 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.sonhosshop.Po
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.shipeffects.ShipEffectsUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.sonhosshop.SonhosShopUserDashboardRoute
 import org.apache.commons.codec.digest.DigestUtils
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.update
 import java.io.File
 import java.sql.Connection
+import java.time.Instant
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.util.Locale
@@ -177,14 +184,15 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
 
         private val logger by HarmonyLoggerFactory.logger {}
         const val WEBSITE_SESSION_COOKIE = "loritta_session"
+        const val WEBSITE_SESSION_COOKIE_MAX_AGE = 86_400 * 90 // 90 days
 
-        fun canManageGuild(g: DiscordLoginUserDashboardRoute.DiscordGuild): Boolean {
+        fun canManageGuild(g: DiscordOAuth2Guild): Boolean {
             val isAdministrator = g.permissions shr 3 and 1 == 1L
             val isManager = g.permissions shr 5 and 1 == 1L
             return g.owner || isAdministrator || isManager
         }
 
-        fun getUserPermissionLevel(g: DiscordLoginUserDashboardRoute.DiscordGuild): UserPermissionLevel {
+        fun getUserPermissionLevel(g: DiscordOAuth2Guild): UserPermissionLevel {
             val isAdministrator = g.permissions shr 3 and 1 == 1L
             val isManager = g.permissions shr 5 and 1 == 1L
 
@@ -432,9 +440,12 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
         PutXPBlockersGuildDashboardRoute(this),
 
         // Special
+        AddedLorittaGuildDashboardRoute(this),
         UserProfilePreviewDashboardRoute(this),
         UserBackgroundPreviewDashboardRoute(this),
     )
+
+    val oauth2Endpoints = DiscordOAuth2Endpoints(this.loritta)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     fun start() {
@@ -522,7 +533,7 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
         val sessionToken = call.request.cookies[WEBSITE_SESSION_COOKIE] ?: return null
 
         // We use READ COMMITED to avoid concurrent serialization exceptions when trying to UPDATE
-        val sessionData = loritta.transaction(transactionIsolation = Connection.TRANSACTION_READ_COMMITTED) {
+        val sessionDataAndCachedUserIdentification = loritta.transaction(transactionIsolation = Connection.TRANSACTION_READ_COMMITTED) {
             val data = UserWebsiteSessions.selectAll()
                 .where {
                     UserWebsiteSessions.token eq sessionToken
@@ -530,25 +541,85 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
                 .firstOrNull()
 
             if (data != null) {
-                UserWebsiteSessions.update({ UserWebsiteSessions.id eq data[UserWebsiteSessions.id] }) {
-                    it[UserWebsiteSessions.lastUsedAt] = accessTime
+                val cachedUserIdentification = CachedDiscordUserIdentifications.selectAll()
+                    .where {
+                        CachedDiscordUserIdentifications.id eq data[UserWebsiteSessions.userId]
+                    }
+                    .firstOrNull()
+
+                if (cachedUserIdentification == null) {
+                    // If we don't have any cached user identification, remove the session from the database!
+                    UserWebsiteSessions.deleteWhere {
+                        UserWebsiteSessions.id eq data[UserWebsiteSessions.id]
+                    }
+                    return@transaction null
                 }
 
-                data
+                var setCookie = false
+                if (accessTime >= data[UserWebsiteSessions.cookieSetAt].plusSeconds(data[UserWebsiteSessions.cookieMaxAge].toLong()))
+                    setCookie = true
+
+                UserWebsiteSessions.update({ UserWebsiteSessions.id eq data[UserWebsiteSessions.id] }) {
+                    it[UserWebsiteSessions.lastUsedAt] = accessTime
+
+                    if (setCookie) {
+                        it[UserWebsiteSessions.cookieSetAt] = accessTime
+                        it[UserWebsiteSessions.cookieMaxAge] = WEBSITE_SESSION_COOKIE_MAX_AGE
+                    }
+                }
+
+                Triple(data, cachedUserIdentification, setCookie)
             } else null
         }
 
-        if (sessionData == null)
+        if (sessionDataAndCachedUserIdentification == null) {
+            setLorittaSessionCookie(
+                call.response.cookies,
+                sessionToken,
+                maxAge = 0 // Remove it!
+            )
             return null
+        }
+
+        val sessionData = sessionDataAndCachedUserIdentification.first
+        val cachedUserIdentification = sessionDataAndCachedUserIdentification.second
+        val setCookie = sessionDataAndCachedUserIdentification.third
+
+        if (setCookie) {
+            setLorittaSessionCookie(
+                call.response.cookies,
+                sessionToken,
+                maxAge = WEBSITE_SESSION_COOKIE_MAX_AGE
+            )
+        }
 
         return UserSession(
-            sessionToken,
-            sessionData[UserWebsiteSessions.accessToken],
+            loritta,
+            this,
+            sessionData[UserWebsiteSessions.token],
             sessionData[UserWebsiteSessions.userId],
-            sessionData[UserWebsiteSessions.username],
-            sessionData[UserWebsiteSessions.discriminator],
-            sessionData[UserWebsiteSessions.globalName],
-            sessionData[UserWebsiteSessions.avatarId]
+            DiscordUserCredentials(
+                sessionData[UserWebsiteSessions.accessToken],
+                sessionData[UserWebsiteSessions.refreshToken],
+                sessionData[UserWebsiteSessions.refreshedAt].toInstant(),
+                sessionData[UserWebsiteSessions.expiresIn],
+            ),
+            UserSession.UserIdentification(
+                cachedUserIdentification[CachedDiscordUserIdentifications.id].value,
+                cachedUserIdentification[CachedDiscordUserIdentifications.username],
+                cachedUserIdentification[CachedDiscordUserIdentifications.discriminator],
+                cachedUserIdentification[CachedDiscordUserIdentifications.avatarId],
+                cachedUserIdentification[CachedDiscordUserIdentifications.globalName],
+                cachedUserIdentification[CachedDiscordUserIdentifications.mfaEnabled],
+                cachedUserIdentification[CachedDiscordUserIdentifications.banner],
+                cachedUserIdentification[CachedDiscordUserIdentifications.accentColor],
+                cachedUserIdentification[CachedDiscordUserIdentifications.locale],
+                cachedUserIdentification[CachedDiscordUserIdentifications.email],
+                cachedUserIdentification[CachedDiscordUserIdentifications.verified],
+                cachedUserIdentification[CachedDiscordUserIdentifications.premiumType],
+                cachedUserIdentification[CachedDiscordUserIdentifications.flags],
+                cachedUserIdentification[CachedDiscordUserIdentifications.publicFlags]
+            )
         )
     }
 
@@ -567,6 +638,22 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
         }
 
         return loritta.languageManager.getI18nContextById(localeId)
+    }
+
+    fun setLorittaSessionCookie(
+        cookies: ResponseCookies,
+        value: String,
+        maxAge: Int
+    ) {
+        cookies.append(
+            WEBSITE_SESSION_COOKIE,
+            value,
+            path = "/", // Available in any path of the domain
+            domain = loritta.config.loritta.dashboard.cookieDomain,
+            // secure = true, // Only sent via HTTPS
+            httpOnly = true, // Disable JS access
+            maxAge = maxAge.toLong()
+        )
     }
 
     fun shouldDisplayAds(call: ApplicationCall, userPremiumPlan: UserPremiumPlans, overrideAdsResult: Boolean?): Boolean {

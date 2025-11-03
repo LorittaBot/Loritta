@@ -29,7 +29,7 @@ class PostDonationPaymentRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRou
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall, session: UserSession) {
 		// This is a security measure, to avoid "high risk" purchases.
 		// We will require that users need to verify their account + have MFA enabled.
-		val refreshedUserIdentification = session.getUserIdentification(loritta)
+		val refreshedUserIdentification = session.retrieveUserIdentification()
 		if (!WebsiteUtils.checkIfAccountHasMFAEnabled(loritta, refreshedUserIdentification))
 			return
 

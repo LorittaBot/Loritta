@@ -156,7 +156,7 @@ class LorittaCommand(val m: LorittaBot) : SlashCommandDeclarationWrapper {
                     ),
                     linkButton(
                         GACampaigns.createUrlWithCampaign(
-                            m.config.loritta.dashboard.url,
+                            m.config.loritta.dashboard.url.removeSuffix("/") + "/${context.i18nContext.get(I18nKeysData.Website.LocalePathId)}/",
                             "discord",
                             "loritta-info",
                             "loritta-info-links",

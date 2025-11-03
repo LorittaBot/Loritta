@@ -30,7 +30,6 @@ import net.perfectdreams.loritta.morenitta.website.utils.SVGIconManager
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.*
 import net.perfectdreams.loritta.morenitta.website.views.Error404View
-import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.apache.commons.lang3.exception.ExceptionUtils
 import java.io.File
 import java.util.*
@@ -55,24 +54,6 @@ class LorittaWebsite(
 
         lateinit var FOLDER: String
         lateinit var WEBSITE_URL: String
-
-        fun canManageGuild(g: TemmieDiscordAuth.Guild): Boolean {
-            val isAdministrator = g.permissions shr 3 and 1 == 1L
-            val isManager = g.permissions shr 5 and 1 == 1L
-            return g.owner || isAdministrator || isManager
-        }
-
-        fun getUserPermissionLevel(g: TemmieDiscordAuth.Guild): UserPermissionLevel {
-            val isAdministrator = g.permissions shr 3 and 1 == 1L
-            val isManager = g.permissions shr 5 and 1 == 1L
-
-            return when {
-                g.owner -> UserPermissionLevel.OWNER
-                isAdministrator -> UserPermissionLevel.ADMINISTRATOR
-                isManager -> UserPermissionLevel.MANAGER
-                else -> UserPermissionLevel.MEMBER
-            }
-        }
 
         private val FAKE_LOCALIZED_REDIRECTION_ROUTES = setOf(
             "/",

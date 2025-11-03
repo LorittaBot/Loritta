@@ -13,7 +13,6 @@ dependencies {
     implementation(project(":loritta-dashboard:dashboard-common"))
     implementation(project(":loritta-serializable-commons"))
     implementation(project(":pudding:client"))
-    implementation(project(":temmie-discord-auth"))
     implementation(project(":switch-twitch"))
     implementation(project(":discord-chat-message-renderer-entities"))
     implementation(project(":lori-public-http-api-common"))

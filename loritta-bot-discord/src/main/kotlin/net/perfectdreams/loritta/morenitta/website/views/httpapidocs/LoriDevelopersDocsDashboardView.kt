@@ -109,7 +109,7 @@ abstract class LoriDevelopersDocsDashboardView(
                                         if (userIdentification != null) {
                                             div(classes = "user-info") {
                                                 // TODO - htmx-adventures: Move this somewhere else
-                                                val userAvatarId = userIdentification.avatarId
+                                                val userAvatarId = userIdentification.cachedUserIdentification.avatarId
                                                 val avatarUrl = if (userAvatarId != null) {
                                                     val extension =
                                                         if (userAvatarId.startsWith("a_")) { // Avatares animados no Discord começam com "_a"
@@ -133,12 +133,12 @@ abstract class LoriDevelopersDocsDashboardView(
                                                 div(classes = "user-tag") {
                                                     div(classes = "name") {
                                                         text(
-                                                            userIdentification.globalName ?: userIdentification.username
+                                                            userIdentification.cachedUserIdentification.globalName ?: userIdentification.cachedUserIdentification.username
                                                         )
                                                     }
 
                                                     div(classes = "discriminator") {
-                                                        text("@${userIdentification.username}")
+                                                        text("@${userIdentification.cachedUserIdentification.username}")
                                                     }
                                                 }
 

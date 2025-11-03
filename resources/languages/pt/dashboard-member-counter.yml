@@ -2,3 +2,5 @@ website:
   dashboard:
     memberCounter:
       title: "Contador de Membros"
+      guildChannels: "Canais do servidor com tópico"
+      channels: "{channelCount,plural, =0 {# canais} one {# canal} other {# canais}}"

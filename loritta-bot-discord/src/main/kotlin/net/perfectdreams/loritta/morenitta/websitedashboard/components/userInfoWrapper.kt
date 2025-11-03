@@ -32,11 +32,11 @@ fun FlowContent.userInfoWrapper(
 
             div(classes = "user-tag") {
                 div(classes = "name") {
-                    text(session.globalName ?: session.username)
+                    text(session.cachedUserIdentification.globalName ?: session.cachedUserIdentification.username)
                 }
 
                 div(classes = "discriminator") {
-                    text("@${session.username}")
+                    text("@${session.cachedUserIdentification.username}")
                 }
             }
 

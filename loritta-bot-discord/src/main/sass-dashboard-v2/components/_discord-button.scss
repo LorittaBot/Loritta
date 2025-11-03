@@ -23,6 +23,18 @@ a:has(.discord-button) {
     // Useful if the screen is tiny enough that it causes a line break within the button
     text-align: center;
 
+    &.text-with-icon {
+        display: inline-flex;
+        gap: 4px;
+        align-items: center;
+
+        svg {
+            width: 1em;
+            height: 1em;
+            translate: 0;
+        }
+    }
+
     .loading-text-wrapper {
       display: none;
       img {
@@ -135,6 +147,28 @@ a:has(.discord-button) {
         &:hover {
             background-color: rgba(0, 0, 0, 0.1);
         }
+    }
+}
+
+.bounce-icon-to-the-left-on-hover {
+    &:hover {
+        svg {
+            animation: 1s go-back-bounce infinite;
+        }
+    }
+}
+
+@keyframes go-back-bounce {
+    0% {
+        translate: 0;
+    }
+
+    50% {
+        translate: -2px;
+    }
+
+    100% {
+        translate: 0;
     }
 }
 
