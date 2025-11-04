@@ -7,6 +7,9 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.dashboard.EmbeddedToast
+import net.perfectdreams.loritta.dashboard.discordmessages.DiscordComponent
+import net.perfectdreams.loritta.dashboard.discordmessages.DiscordEmbed
+import net.perfectdreams.loritta.dashboard.discordmessages.DiscordMessage
 import net.perfectdreams.loritta.dashboard.messageeditor.MessageEditorBootstrap
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.website.components.EtherealGambiUtils.etherealGambiImg
@@ -34,6 +37,177 @@ class WelcomerGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
         val defaultJoinMessage = createMessageTemplate(
             "Padrão",
             "\uD83D\uDC49 {@user} entrou no servidor!"
+        )
+
+        val joinMessage2 = createMessageTemplate(
+            "Padrão, só que melhor",
+            "<a:lori_happy:521721811298156558> | {@user} acabou de entrar na {guild}! Agora temos {guild.size} membros!"
+        )
+
+        val joinMessage3 = createMessageTemplate(
+            "Lista de Informações",
+            """{@user}, bem-vindo(a) ao {guild}! <a:lori_happy:521721811298156558>
+                • Leia as #regras *(psiu, troque o nome do canal aqui na mensagem!)* para você poder conviver em harmonia! <:blobheart:467447056374693889>
+                • Converse no canal de #bate-papo <:lori_pac:503600573741006863>
+                • E é claro, divirta-se! <a:emojo_feriado:393751205308006421>
+
+                Aliás, continue sendo incrível! (E eu sou muito fofa! :3)
+            """.trimIndent()
+        )
+
+        val joinMessage4 = createMessageTemplate(
+            "Embed Simples",
+            DiscordMessage(
+                content = "{@user}",
+                embed = DiscordEmbed(
+                    color = -9270822,
+                    title = "👋 Seja bem-vindo(a)!",
+                    description = "Olá {@user}! Seja bem-vindo(a) ao {guild}!"
+                )
+            )
+        )
+
+        val joinMessage5 = createMessageTemplate(
+            "Embed com Avatar",
+            DiscordMessage(
+                content = "{@user}",
+                embed = DiscordEmbed(
+                    color = -9270822,
+                    title = "👋 Bem-vindo(a)!",
+                    description = "Olá {@user}, espero que você se divirta no meu servidor! <:loritta:331179879582269451>",
+                    author = DiscordEmbed.Author(
+                        "{user.tag}",
+                        iconUrl = "{user.avatar}"
+                    ),
+                    thumbnail = DiscordEmbed.EmbedUrl(
+                        "{user.avatar}"
+                    ),
+                    footer = DiscordEmbed.Footer(
+                        "ID do usuário: {user.id}"
+                    )
+                )
+            )
+        )
+
+        val joinMessage6 = createMessageTemplate(
+            "Embed com Avatar e Imagem",
+            DiscordMessage(
+                content = "{@user}",
+                embed = DiscordEmbed(
+                    color = -9270822,
+                    title = "👋 Bem-vindo(a)!",
+                    description = "Olá {@user}, espero que você se divirta no meu servidor! <:loritta:331179879582269451>",
+                    author = DiscordEmbed.Author(
+                        "{user.tag}",
+                        iconUrl = "{user.avatar}"
+                    ),
+                    thumbnail = DiscordEmbed.EmbedUrl(
+                        "{user.avatar}"
+                    ),
+                    image = DiscordEmbed.EmbedUrl(
+                        "https://media.giphy.com/media/GPQBFuG4ABACA/source.gif"
+                    ),
+                    footer = DiscordEmbed.Footer(
+                        "ID do usuário: {user.id}"
+                    )
+                )
+            )
+        )
+
+        val joinMessage7 = createMessageTemplate(
+            "Embed com Informações",
+            DiscordMessage(
+                content = "{@user}",
+                embed = DiscordEmbed(
+                    color = -14689638,
+                    title = "{user} | Bem-vindo(a)!",
+                    description = "<:lori_hug:515328576611155968> Olá, seja bem-vindo(a) ao {guild}!",
+                    fields = listOf(
+                        DiscordEmbed.Field(
+                            "\uD83D\uDC4B Sabia que...",
+                            "Atualmente temos {guild.size} membros no servidor?",
+                            true
+                        ),
+                        DiscordEmbed.Field(
+                            "🛡 Tag do Usuário",
+                            "`{user.tag}` ({user.id})",
+                            true
+                        ),
+                        DiscordEmbed.Field(
+                            "\uD83D\uDCDB Precisando de ajuda?",
+                            "Caso você tenha alguma dúvida ou problema, chame a nossa equipe!",
+                            true
+                        ),
+                        DiscordEmbed.Field(
+                            "\uD83D\uDC6E Evite punições!",
+                            "Leia as nossas #regras para evitar ser punido no servidor!",
+                            true
+                        )
+                    ),
+                    thumbnail = DiscordEmbed.EmbedUrl(
+                        "{user.avatar}"
+                    ),
+                    footer = DiscordEmbed.Footer(
+                        "{guild} • © Todos os direitos reservados."
+                    )
+                )
+            )
+        )
+
+        val joinMessage8 = createMessageTemplate(
+            "Kit Social Influencer™",
+            DiscordMessage(
+                content = "{@user}",
+                embed = DiscordEmbed(
+                    color = -2342853,
+                    title = "{user} | Bem-vindo(a)!",
+                    description = "Salve {@user}! Você acabou de entrar no servidor do {guild}, aqui você poderá se interagir com fãs do {guild}, conversar sobre suas coisas favoritas e muito mais!",
+                    fields = listOf(
+                        DiscordEmbed.Field(
+                            "\uD83D\uDCE2 Fique atento!",
+                            "Novos vídeos do {guild} serão anunciados no #vídeos-novos!",
+                            true
+                        )
+                    ),
+                    thumbnail = DiscordEmbed.EmbedUrl(
+                        "{user.avatar}"
+                    ),
+                    footer = DiscordEmbed.Footer(
+                        "{guild} • © Todos os direitos reservados."
+                    )
+                ),
+                components = listOf(
+                    DiscordComponent.DiscordActionRow(
+                        components = listOf(
+                            DiscordComponent.DiscordButton(
+                                label = "YouTube",
+                                style = 5,
+                                url = "https://www.youtube.com/@Loritta"
+                            ),
+                            DiscordComponent.DiscordButton(
+                                label = "Bluesky",
+                                style = 5,
+                                url = "https://bsky.app/profile/loritta.website"
+                            ),
+                            DiscordComponent.DiscordButton(
+                                label = "Instagram",
+                                style = 5,
+                                url = "https://www.instagram.com/lorittabot/"
+                            ),
+                            DiscordComponent.DiscordButton(
+                                label = "TikTok",
+                                style = 5,
+                                url = "https://www.tiktok.com/@lorittamorenittabot"
+                            ),
+                            DiscordComponent.DiscordButton(
+                                label = "Nosso Website",
+                                style = 5,
+                                url = "https://loritta.website/"
+                            )
+                        )
+                    )
+                )
+            )
         )
 
         val defaultLeaveMessage = createMessageTemplate(
@@ -219,7 +393,16 @@ class WelcomerGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                                                 { text("Mensagem quando alguém entrar") },
                                                 null,
                                                 MessageEditorBootstrap.TestMessageTarget.QuerySelector("[loritta-config='channelJoinId']"),
-                                                listOf(defaultJoinMessage),
+                                                listOf(
+                                                    defaultJoinMessage,
+                                                    joinMessage2,
+                                                    joinMessage3,
+                                                    joinMessage4,
+                                                    joinMessage5,
+                                                    joinMessage6,
+                                                    joinMessage7,
+                                                    joinMessage8
+                                                ),
                                                 joinMessagePlaceholders,
                                                 welcomerConfig?.joinMessage ?: defaultJoinMessage.content,
                                                 "joinMessage"

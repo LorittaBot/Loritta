@@ -6,12 +6,12 @@ import kotlinx.html.textArea
 import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.common.utils.embeds.DiscordMessage
 import net.perfectdreams.loritta.dashboard.BlissHex
 import net.perfectdreams.loritta.dashboard.discord.DiscordEmoji
 import net.perfectdreams.loritta.dashboard.discord.DiscordGuild
 import net.perfectdreams.loritta.dashboard.discord.DiscordRole
 import net.perfectdreams.loritta.dashboard.discord.TextDiscordChannel
+import net.perfectdreams.loritta.dashboard.discordmessages.DiscordMessage
 import net.perfectdreams.loritta.dashboard.discordmessages.RenderableDiscordUser
 import net.perfectdreams.loritta.dashboard.messageeditor.LorittaMessageTemplate
 import net.perfectdreams.loritta.dashboard.messageeditor.MessageEditorBootstrap
@@ -112,9 +112,14 @@ fun FlowContent.discordMessageEditor(
 fun createMessageTemplate(
     title: String,
     content: String
+) = createMessageTemplate(title, DiscordMessage(content))
+
+fun createMessageTemplate(
+    title: String,
+    content: DiscordMessage
 ) = LorittaMessageTemplate(
     title,
-    Json.encodeToString(DiscordMessage(content))
+    Json.encodeToString(content)
 )
 
 fun createPlaceholderGroup(
