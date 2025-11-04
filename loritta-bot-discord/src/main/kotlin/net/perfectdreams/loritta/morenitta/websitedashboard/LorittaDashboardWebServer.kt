@@ -24,6 +24,7 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite.UserPermissionLevel
 import net.perfectdreams.loritta.morenitta.websitedashboard.discord.DiscordOAuth2Guild
+import net.perfectdreams.loritta.morenitta.websitedashboard.discord.DiscordOAuth2UserIdentification
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.ChooseYourServerUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.DashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.DiscordLoginUserDashboardRoute
@@ -166,6 +167,7 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.update
+import org.jetbrains.exposed.sql.upsert
 import java.io.File
 import java.sql.Connection
 import java.time.Instant
@@ -659,6 +661,33 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
             httpOnly = true, // Disable JS access
             maxAge = maxAge.toLong()
         )
+    }
+
+    fun updateCachedDiscordUserIdentification(userIdentification: DiscordOAuth2UserIdentification) {
+        val now = OffsetDateTime.now(ZoneOffset.UTC)
+
+        CachedDiscordUserIdentifications.upsert(
+            CachedDiscordUserIdentifications.id,
+            onUpdateExclude = listOf(CachedDiscordUserIdentifications.createdAt)
+        ) {
+            it[CachedDiscordUserIdentifications.createdAt] = now
+            it[CachedDiscordUserIdentifications.updatedAt] = now
+
+            it[CachedDiscordUserIdentifications.id] = userIdentification.id
+            it[CachedDiscordUserIdentifications.username] = userIdentification.username
+            it[CachedDiscordUserIdentifications.globalName] = userIdentification.globalName
+            it[CachedDiscordUserIdentifications.discriminator] = userIdentification.discriminator
+            it[CachedDiscordUserIdentifications.avatarId] = userIdentification.avatar
+            it[CachedDiscordUserIdentifications.email] = userIdentification.email
+            it[CachedDiscordUserIdentifications.mfaEnabled] = userIdentification.mfaEnabled
+            it[CachedDiscordUserIdentifications.accentColor] = userIdentification.accentColor
+            it[CachedDiscordUserIdentifications.locale] = userIdentification.locale
+            it[CachedDiscordUserIdentifications.verified] = userIdentification.verified
+            it[CachedDiscordUserIdentifications.email] = userIdentification.email
+            it[CachedDiscordUserIdentifications.flags] = userIdentification.flags
+            it[CachedDiscordUserIdentifications.premiumType] = userIdentification.premiumType
+            it[CachedDiscordUserIdentifications.publicFlags] = userIdentification.publicFlags
+        }
     }
 
     fun shouldDisplayAds(call: ApplicationCall, userPremiumPlan: UserPremiumPlans, overrideAdsResult: Boolean?): Boolean {

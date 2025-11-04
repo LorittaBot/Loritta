@@ -12,6 +12,7 @@ import io.ktor.http.content.TextContent
 import io.ktor.http.formUrlEncode
 import io.ktor.http.userAgent
 import kotlinx.serialization.json.Json
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserWebsiteSessions
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.websitedashboard.discord.DiscordOAuth2Authorization
@@ -32,6 +33,7 @@ class UserSession(
 ) {
     companion object {
         const val USER_AGENT = "Loritta-Morenitta-Discord-Auth/2.0"
+        private val logger by HarmonyLoggerFactory.logger {}
     }
 
     fun getEffectiveAvatarUrl(): String {
@@ -57,28 +59,64 @@ class UserSession(
     suspend fun retrieveUserIdentification(): DiscordOAuth2UserIdentification {
         refreshTokenIfExpired()
 
-        val userIdentificationAsText = loritta.http.get {
+        val userIdentificationHttpResponse = loritta.http.get {
             url(dashboardWebServer.oauth2Endpoints.UserIdentificationEndpoint)
             userAgent(USER_AGENT)
 
             header("Authorization", "Bearer ${this@UserSession.discordUserCredentials.accessToken}")
-        }.bodyAsText()
+        }
 
-        val userIdentification = Json.decodeFromString<DiscordOAuth2UserIdentification>(userIdentificationAsText)
-        return userIdentification
+        val userIdentificationAsText = userIdentificationHttpResponse.bodyAsText()
+
+        try {
+            val userIdentification = Json.decodeFromString<DiscordOAuth2UserIdentification>(userIdentificationAsText)
+
+            dashboardWebServer.loritta.transaction {
+                dashboardWebServer.updateCachedDiscordUserIdentification(userIdentification)
+            }
+            
+            this.cachedUserIdentification = UserIdentification(
+                userIdentification.id,
+                userIdentification.username,
+                userIdentification.discriminator,
+                userIdentification.avatar,
+                userIdentification.globalName,
+                userIdentification.mfaEnabled,
+                userIdentification.banner,
+                userIdentification.accentColor,
+                userIdentification.locale,
+                userIdentification.email,
+                userIdentification.verified,
+                userIdentification.premiumType,
+                userIdentification.flags,
+                userIdentification.publicFlags
+            )
+
+            return userIdentification
+        } catch (e: Exception) {
+            logger.warn(e) { "Failed to retrieve user identification of ${userId}! Response status was ${userIdentificationHttpResponse.status} and response body was $userIdentificationAsText" }
+            throw e
+        }
     }
 
     suspend fun retrieveUserGuilds(): List<DiscordOAuth2Guild> {
         refreshTokenIfExpired()
 
-        val resultAsText = loritta.http.get {
+        val userGuildsHttpResponse = loritta.http.get {
             url(dashboardWebServer.oauth2Endpoints.UserGuildsEndpoint)
             userAgent(USER_AGENT)
             header("Authorization", "Bearer ${this@UserSession.discordUserCredentials.accessToken}")
-        }.bodyAsText()
+        }
 
-        val userGuilds = Json.decodeFromString<List<DiscordOAuth2Guild>>(resultAsText)
-        return userGuilds
+        val userGuildsAsText = userGuildsHttpResponse.bodyAsText()
+
+        try {
+            val userGuilds = Json.decodeFromString<List<DiscordOAuth2Guild>>(userGuildsAsText)
+            return userGuilds
+        } catch (e: Exception) {
+            logger.warn(e) { "Failed to retrieve user guilds of ${userId}! Response status was ${userGuildsHttpResponse.status} and response body was $userGuildsAsText" }
+            throw e
+        }
     }
 
     suspend fun refreshTokenIfExpired() {
@@ -102,24 +140,31 @@ class UserSession(
             setBody(TextContent(parameters.formUrlEncode(), ContentType.Application.FormUrlEncoded))
         }
 
-        val autorization = Json.decodeFromString<DiscordOAuth2Authorization>(authorizationHttpResponse.bodyAsText())
+        val authorizationAsText = authorizationHttpResponse.bodyAsText()
 
-        loritta.transaction {
-            UserWebsiteSessions.update({ UserWebsiteSessions.token eq this@UserSession.websiteToken }) {
-                it[UserWebsiteSessions.refreshedAt] = generatedAt
-                it[UserWebsiteSessions.lastUsedAt] = generatedAt
-                it[UserWebsiteSessions.tokenType] = autorization.tokenType
-                it[UserWebsiteSessions.accessToken] = autorization.accessToken
-                it[UserWebsiteSessions.expiresIn] = autorization.expiresIn
-                it[UserWebsiteSessions.refreshToken] = autorization.refreshToken
-                it[UserWebsiteSessions.scope] = autorization.scope.split(" ")
+        try {
+            val authorization = Json.decodeFromString<DiscordOAuth2Authorization>(authorizationAsText)
+
+            loritta.transaction {
+                UserWebsiteSessions.update({ UserWebsiteSessions.token eq this@UserSession.websiteToken }) {
+                    it[UserWebsiteSessions.refreshedAt] = generatedAt
+                    it[UserWebsiteSessions.lastUsedAt] = generatedAt
+                    it[UserWebsiteSessions.tokenType] = authorization.tokenType
+                    it[UserWebsiteSessions.accessToken] = authorization.accessToken
+                    it[UserWebsiteSessions.expiresIn] = authorization.expiresIn
+                    it[UserWebsiteSessions.refreshToken] = authorization.refreshToken
+                    it[UserWebsiteSessions.scope] = authorization.scope.split(" ")
+                }
             }
-        }
 
-        this.discordUserCredentials.accessToken = autorization.accessToken
-        this.discordUserCredentials.refreshToken = autorization.refreshToken
-        this.discordUserCredentials.expiresIn = autorization.expiresIn
-        this.discordUserCredentials.refreshedAt = generatedAt.toInstant()
+            this.discordUserCredentials.accessToken = authorization.accessToken
+            this.discordUserCredentials.refreshToken = authorization.refreshToken
+            this.discordUserCredentials.expiresIn = authorization.expiresIn
+            this.discordUserCredentials.refreshedAt = generatedAt.toInstant()
+        } catch (e: Exception) {
+            logger.warn(e) { "Failed to refresh the access token of ${userId}! Response status was ${authorizationHttpResponse.status} and response body was $authorizationAsText" }
+            throw e
+        }
     }
 
     data class UserIdentification(

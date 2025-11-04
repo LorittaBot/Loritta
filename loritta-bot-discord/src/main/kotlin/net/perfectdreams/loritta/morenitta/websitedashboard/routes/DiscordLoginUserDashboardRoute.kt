@@ -139,28 +139,7 @@ class DiscordLoginUserDashboardRoute(val website: LorittaDashboardWebServer) : B
                 createNewSession()
             }
 
-            CachedDiscordUserIdentifications.upsert(
-                CachedDiscordUserIdentifications.id,
-                onUpdateExclude = listOf(CachedDiscordUserIdentifications.createdAt)
-            ) {
-                it[CachedDiscordUserIdentifications.createdAt] = now
-                it[CachedDiscordUserIdentifications.updatedAt] = now
-
-                it[CachedDiscordUserIdentifications.id] = userIdentification.id
-                it[CachedDiscordUserIdentifications.username] = userIdentification.username
-                it[CachedDiscordUserIdentifications.globalName] = userIdentification.globalName
-                it[CachedDiscordUserIdentifications.discriminator] = userIdentification.discriminator
-                it[CachedDiscordUserIdentifications.avatarId] = userIdentification.avatar
-                it[CachedDiscordUserIdentifications.email] = userIdentification.email
-                it[CachedDiscordUserIdentifications.mfaEnabled] = userIdentification.mfaEnabled
-                it[CachedDiscordUserIdentifications.accentColor] = userIdentification.accentColor
-                it[CachedDiscordUserIdentifications.locale] = userIdentification.locale
-                it[CachedDiscordUserIdentifications.verified] = userIdentification.verified
-                it[CachedDiscordUserIdentifications.email] = userIdentification.email
-                it[CachedDiscordUserIdentifications.flags] = userIdentification.flags
-                it[CachedDiscordUserIdentifications.premiumType] = userIdentification.premiumType
-                it[CachedDiscordUserIdentifications.publicFlags] = userIdentification.publicFlags
-            }
+            website.updateCachedDiscordUserIdentification(userIdentification)
 
             return@transaction newSessionToken
         }
