@@ -185,6 +185,7 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
         private val logger by HarmonyLoggerFactory.logger {}
         const val WEBSITE_SESSION_COOKIE = "loritta_session"
         const val WEBSITE_SESSION_COOKIE_MAX_AGE = 86_400 * 90 // 90 days
+        const val WEBSITE_SESSION_COOKIE_REFRESH = 86_400 * 30 // 30 days
 
         fun canManageGuild(g: DiscordOAuth2Guild): Boolean {
             val isAdministrator = g.permissions shr 3 and 1 == 1L
@@ -555,8 +556,12 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
                     return@transaction null
                 }
 
+                val timeToRefreshCookie = data[UserWebsiteSessions.cookieSetAt]
+                    .plusSeconds(data[UserWebsiteSessions.cookieMaxAge].toLong())
+                    .minusSeconds(WEBSITE_SESSION_COOKIE_REFRESH.toLong())
+
                 var setCookie = false
-                if (accessTime >= data[UserWebsiteSessions.cookieSetAt].plusSeconds(data[UserWebsiteSessions.cookieMaxAge].toLong()))
+                if (accessTime >= timeToRefreshCookie)
                     setCookie = true
 
                 UserWebsiteSessions.update({ UserWebsiteSessions.id eq data[UserWebsiteSessions.id] }) {
