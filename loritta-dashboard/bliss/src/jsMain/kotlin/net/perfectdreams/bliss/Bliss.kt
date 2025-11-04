@@ -1061,8 +1061,6 @@ object Bliss {
         // Just like reswaps, we expect that it overrides ANYTHING and EVERYTHING, no matter the response code!
         var pushUrlValue = httpRequest.headers.get("Bliss-Push-Url")
 
-        println("pushUrlValue: $pushUrlValue")
-
         if (pushUrlValue == null) {
             // We do this way because we can select the responses based on the status response, sweet!
             // The default will be "nothing", to avoid weird errors (like client or server errors) being pushed
@@ -1072,12 +1070,16 @@ object Bliss {
             }
         }
 
+        println("pushUrlValue (raw): $pushUrlValue")
+
         if (pushUrlValue != null) {
             val realPushUrl = if (pushUrlValue == "true") {
                 requestUrl
             } else {
                 pushUrlValue
             }
+
+            println("pushUrlValue (parsed): $realPushUrl")
 
             val state = unsafeJso<dynamic> {
                 this.blessed = true
