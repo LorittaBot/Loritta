@@ -125,6 +125,18 @@ object DashboardDailyShopUtils {
     }
 
     /**
+     * Queries when the current daily shop was generated
+     */
+    fun queryCurrentDailyShopGeneratedAt(): Long {
+        val generatedAt = DailyShops.select(DailyShops.generatedAt)
+            .orderBy(DailyShops.generatedAt, SortOrder.DESC)
+            .limit(1)
+            .first()[DailyShops.generatedAt]
+
+        return generatedAt
+    }
+
+    /**
      * Gets when Loritta's Item Shop resets, in epoch millis
      */
     fun getShopResetsEpochMilli(): Long {

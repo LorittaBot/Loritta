@@ -37,28 +37,26 @@ class SSEDailyShopTimerUserDashboardRoute(website: LorittaDashboardWebServer) : 
         // Hacky!
         val locale = website.loritta.localeManager.getLocaleById("default")
 
-        val currentDailyShop = website.loritta.transaction {
-            DashboardDailyShopUtils.queryDailyShopResult(
-                website.loritta,
-                session.userId,
-                dreamStorageServiceNamespace = website.loritta.dreamStorageService.getCachedNamespaceOrRetrieve()
-            )
+        var lastDailyShopGeneratedAt = website.loritta.transaction {
+            DashboardDailyShopUtils.queryCurrentDailyShopGeneratedAt()
         }
-
-        var lastDailyShopGeneratedAt = currentDailyShop.generatedAt
         var lastGeneratedText: String? = null
 
         call.respondBytesWriter(contentType = ContentType.Text.EventStream) {
             while (true) {
-                val currentDailyShop = website.loritta.transaction {
-                    DashboardDailyShopUtils.queryDailyShopResult(
-                        website.loritta,
-                        session.userId,
-                        dreamStorageServiceNamespace = website.loritta.dreamStorageService.getCachedNamespaceOrRetrieve()
-                    )
+                val currentDailyShopGeneratedAt = website.loritta.transaction {
+                    DashboardDailyShopUtils.queryCurrentDailyShopGeneratedAt()
                 }
 
-                if (lastDailyShopGeneratedAt != currentDailyShop.generatedAt) {
+                if (lastDailyShopGeneratedAt != currentDailyShopGeneratedAt) {
+                    val currentDailyShop = website.loritta.transaction {
+                        DashboardDailyShopUtils.queryDailyShopResult(
+                            website.loritta,
+                            session.userId,
+                            dreamStorageServiceNamespace = website.loritta.dreamStorageService.getCachedNamespaceOrRetrieve()
+                        )
+                    }
+
                     lastDailyShopGeneratedAt = currentDailyShop.generatedAt
 
                     // A bit hacky but hey, there's nothing a lot we can do rn
