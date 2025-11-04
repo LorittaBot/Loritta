@@ -18,7 +18,7 @@ fun FlowContent.trackedBlueskyChannelEditorWithProfile(
 ) {
     fieldWrappers {
         fieldWrapper {
-            trackedProfileHeader(profile.effectiveName, profile.avatar)
+            simpleImageWithTextHeader(profile.effectiveName, profile.avatar, true)
         }
 
         fieldWrappers {

@@ -6,8 +6,10 @@ import io.ktor.server.response.*
 import io.ktor.server.util.*
 import kotlinx.html.FlowContent
 import kotlinx.html.div
+import kotlinx.html.h1
 import kotlinx.html.hr
 import kotlinx.html.id
+import kotlinx.html.img
 import kotlinx.html.numberInput
 import kotlinx.html.option
 import kotlinx.html.textArea
@@ -29,6 +31,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebS
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.*
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.SVGIconUtils
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissEvent
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
@@ -93,6 +96,15 @@ class MemberCounterChannelGuildDashboardRoute(website: LorittaDashboardWebServer
                             if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
                                 blissEvent("resyncState", "[bliss-component='save-bar']")
                                 blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Configuração redefinida!"))
+                            }
+
+                            val channelIcon = SVGIconUtils.getSVGIconForChannel(guild, channel)
+
+                            simpleImageWithTextHeader(
+                                channel.name,
+                                channelIcon
+                            ) {
+                                attr("style", "color: var(--loritta-blue);")
                             }
 
                             sectionConfig {

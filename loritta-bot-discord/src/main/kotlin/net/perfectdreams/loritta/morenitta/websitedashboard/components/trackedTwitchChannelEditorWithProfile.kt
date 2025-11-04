@@ -17,7 +17,7 @@ fun FlowContent.trackedTwitchChannelEditorWithProfile(
 ) {
     fieldWrappers {
         fieldWrapper {
-            trackedProfileHeader(twitchUser.displayName, twitchUser.profileImageUrl)
+            simpleImageWithTextHeader(twitchUser.displayName, twitchUser.profileImageUrl, true)
 
             when (state) {
                 TwitchAccountTrackState.AUTHORIZED -> {

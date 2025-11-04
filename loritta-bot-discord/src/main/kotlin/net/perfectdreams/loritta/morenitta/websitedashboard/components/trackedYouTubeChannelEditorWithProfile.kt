@@ -17,7 +17,7 @@ fun FlowContent.trackedYouTubeChannelEditorWithProfile(
 ) {
     fieldWrappers {
         fieldWrapper {
-            trackedProfileHeader(channel.name, channel.avatarUrl)
+            simpleImageWithTextHeader(channel.name, channel.avatarUrl, true)
         }
 
         fieldWrappers {

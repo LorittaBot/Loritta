@@ -1049,7 +1049,7 @@ aside#that-wasnt-very-cash-money-of-you-fixed-sidebar-reserved-space {
     }
 }
 
-.tracked-profile-header {
+.simple-image-with-text-header {
     display: flex;
     align-items: center;
     gap: 16px;
@@ -1057,7 +1057,15 @@ aside#that-wasnt-very-cash-money-of-you-fixed-sidebar-reserved-space {
     img {
         width: 64px;
         height: 64px;
-        border-radius: 999999px;
+
+        &.round-corners {
+            border-radius: 999999px;
+        }
+    }
+
+    svg {
+        width: 64px;
+        height: 64px;
     }
 }
 

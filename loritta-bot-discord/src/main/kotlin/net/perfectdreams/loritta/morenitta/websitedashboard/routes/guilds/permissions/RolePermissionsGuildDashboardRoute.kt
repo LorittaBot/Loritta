@@ -6,7 +6,9 @@ import io.ktor.server.response.*
 import io.ktor.server.util.*
 import kotlinx.html.hr
 import kotlinx.html.html
+import kotlinx.html.img
 import kotlinx.html.stream.createHTML
+import kotlinx.html.style
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerRolePermissions
@@ -23,6 +25,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebS
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.*
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.SVGIcons
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissEvent
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
@@ -30,6 +33,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.selectAll
+import java.awt.Color
 
 class RolePermissionsGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/permissions/{roleId}") {
     override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans) {
@@ -46,6 +50,9 @@ class RolePermissionsGuildDashboardRoute(website: LorittaDashboardWebServer) : R
                 ServerRolePermissions.guild eq guild.idLong and (ServerRolePermissions.roleId eq role.idLong)
             }.map { it[ServerRolePermissions.permission] }.toSet()
         }
+
+        val roleIcon = role.icon
+        val roleColor = role.color ?: Color(153, 170, 181)
 
         call.respondHtml {
             dashboardBase(
@@ -74,6 +81,23 @@ class RolePermissionsGuildDashboardRoute(website: LorittaDashboardWebServer) : R
                             if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
                                 blissEvent("resyncState", "[bliss-component='save-bar']")
                                 blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Configuração redefinida!"))
+                            }
+
+                            if (roleIcon != null && !roleIcon.isEmoji) {
+                                simpleImageWithTextHeader(
+                                    role.name,
+                                    roleIcon.iconUrl!!,
+                                    false
+                                ) {
+                                    style = "object-fit: contain;"
+                                }
+                            } else {
+                                simpleImageWithTextHeader(
+                                    role.name,
+                                    SVGIcons.RoleShield
+                                ) {
+                                    attr("style", "color: rgb(${roleColor.red}, ${roleColor.green}, ${roleColor.blue});")
+                                }
                             }
 
                             sectionConfig {
