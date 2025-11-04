@@ -46,54 +46,58 @@ fun FlowContent.trackedTwitchChannelsSection(
                     "Qual canal você deseja adicionar?",
                     true,
                     {
-                        discordButton(ButtonStyle.PRIMARY) {
-                            openModalOnClick(
-                                createEmbeddedModal(
-                                    "Siga as instruções para autorizar a sua conta",
-                                    true,
-                                    {
-                                        div {
-                                            attributes["bliss-component"] = "twitch-callback-listener"
-                                            attributes["twitch-oauth2-url"] = "https://id.twitch.tv/oauth2/authorize?client_id=${loritta.config.loritta.twitch.clientId}&redirect_uri=${loritta.config.loritta.twitch.redirectUri}&response_type=code"
-                                            attributes["twitch-dashboard-url"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/twitch/add"
-                                        }
-                                    },
-                                    listOf {
-                                        defaultModalCloseButton(i18nContext)
-                                    }
-                                )
-                            )
-                            text("Quero adicionar o meu canal")
-                        }
+                        div {
+                            style = "display: flex; flex-direction: column; gap: 8px;"
 
-                        discordButton(ButtonStyle.PRIMARY) {
-                            openModalOnClick(
-                                createEmbeddedModal(
-                                    "Adicionar canal de outra pessoa",
-                                    true,
-                                    {
-                                        textInput {
-                                            name = "channelLink"
-                                            placeholder = "https://www.twitch.tv/lorittamorenitta"
-                                        }
-                                    },
-                                    listOf(
+                            discordButton(ButtonStyle.PRIMARY) {
+                                openModalOnClick(
+                                    createEmbeddedModal(
+                                        "Siga as instruções para autorizar a sua conta",
+                                        true,
                                         {
-                                            defaultModalCloseButton(i18nContext)
-                                        },
-                                        {
-                                            discordButton(ButtonStyle.PRIMARY) {
-                                                attributes["bliss-get"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/twitch/add"
-                                                attributes["bliss-include-query"] = ".modal [name='channelLink']"
-                                                attributes["bliss-swap:200"] = SWAP_EVERYTHING_DASHBOARD
-
-                                                text("Continuar")
+                                            div {
+                                                attributes["bliss-component"] = "twitch-callback-listener"
+                                                attributes["twitch-oauth2-url"] = "https://id.twitch.tv/oauth2/authorize?client_id=${loritta.config.loritta.twitch.clientId}&redirect_uri=${loritta.config.loritta.twitch.redirectUri}&response_type=code"
+                                                attributes["twitch-dashboard-url"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/twitch/add"
                                             }
+                                        },
+                                        listOf {
+                                            defaultModalCloseButton(i18nContext)
                                         }
                                     )
                                 )
-                            )
-                            text("Quero adicionar o canal de outra pessoa")
+                                text("Quero adicionar o meu canal")
+                            }
+
+                            discordButton(ButtonStyle.PRIMARY) {
+                                openModalOnClick(
+                                    createEmbeddedModal(
+                                        "Adicionar canal de outra pessoa",
+                                        true,
+                                        {
+                                            textInput {
+                                                name = "channelLink"
+                                                placeholder = "https://www.twitch.tv/lorittamorenitta"
+                                            }
+                                        },
+                                        listOf(
+                                            {
+                                                defaultModalCloseButton(i18nContext)
+                                            },
+                                            {
+                                                discordButton(ButtonStyle.PRIMARY) {
+                                                    attributes["bliss-get"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/twitch/add"
+                                                    attributes["bliss-include-query"] = ".modal [name='channelLink']"
+                                                    attributes["bliss-swap:200"] = SWAP_EVERYTHING_DASHBOARD
+
+                                                    text("Continuar")
+                                                }
+                                            }
+                                        )
+                                    )
+                                )
+                                text("Quero adicionar o canal de outra pessoa")
+                            }
                         }
                     },
                     listOf {
