@@ -23,7 +23,7 @@ fun FlowContent.trackedYouTubeChannelEditor(
     fieldWrappers {
         fieldWrapper {
             fieldInformation("Canal onde será enviado as mensagens")
-  
+
             channelSelectMenu(
                 guild,
                 channelId

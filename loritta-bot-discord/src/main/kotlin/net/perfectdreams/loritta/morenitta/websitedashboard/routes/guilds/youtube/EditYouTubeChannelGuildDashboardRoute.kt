@@ -57,7 +57,7 @@ class EditYouTubeChannelGuildDashboardRoute(website: LorittaDashboardWebServer) 
                 call.respondHtml {
                     dashboardBase(
                         i18nContext,
-                        i18nContext.get(DashboardI18nKeysData.CustomCommands.Title),
+                        i18nContext.get(DashboardI18nKeysData.Youtube.Title),
                         session,
                         theme,
                         shimejiSettings,
