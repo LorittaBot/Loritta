@@ -46,7 +46,7 @@ class TwitchCallbackListenerComponent(val m: LorittaDashboardFrontend) : BlissCo
                     listOf(
                         Bliss.SwapRequest(
                             setOf(HttpStatusCode.OK),
-                            "#right-sidebar-contents -> #right-sidebar-contents (innerHTML)"
+                            "#right-sidebar-contents (innerHTML) -> #right-sidebar-contents (innerHTML)"
                         )
                     ),
                     listOf()

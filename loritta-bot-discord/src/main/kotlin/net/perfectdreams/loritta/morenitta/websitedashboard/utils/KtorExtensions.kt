@@ -55,3 +55,17 @@ suspend fun ApplicationCall.respondHtmlFragment(status: HttpStatusCode? = null, 
         status = status
     )
 }
+
+fun PathBuilder(path: String, queryParameters: ParametersBuilder.() -> (Unit)): String {
+    val query = Parameters.build {
+        queryParameters()
+    }.formUrlEncode() // safely URL-encodes keys/values
+
+    return buildString {
+        append(path)
+        if (query.isNotEmpty()) {
+            append('?')
+            append(query)
+        }
+    }
+}

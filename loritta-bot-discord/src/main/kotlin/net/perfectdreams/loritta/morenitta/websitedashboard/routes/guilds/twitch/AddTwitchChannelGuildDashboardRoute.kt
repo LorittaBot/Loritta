@@ -29,6 +29,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebS
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.*
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.PathBuilder
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseAllModals
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowModal
@@ -153,10 +154,10 @@ class AddTwitchChannelGuildDashboardRoute(website: LorittaDashboardWebServer) : 
 
         call.response.header(
             "Bliss-Push-Url",
-            URLBuilder("/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/twitch/add?userId=${twitchUser.id}").apply {
-                this.parameters.append("userId", twitchUser.id.toString())
-                this.parameters.append("enablePremiumTrack", enablePremiumTrack.toString())
-            }.buildString()
+            PathBuilder("/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/twitch/add") {
+                this.append("userId", twitchUser.id.toString())
+                this.append("enablePremiumTrack", enablePremiumTrack.toString())
+            }
         )
 
         call.respondHtml {
