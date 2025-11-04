@@ -79,7 +79,7 @@ class DeleteTwitchChannelGuildDashboardRoute(website: LorittaDashboardWebServer)
                         i18nContext,
                         guild,
                         trackedProfiles.map {
-                            val profileInfo = profilesInfo[it[TrackedTwitchAccounts.id].value]
+                            val profileInfo = profilesInfo[it[TrackedTwitchAccounts.twitchUserId]]
 
                             TrackedProfile(
                                 profileInfo?.login,

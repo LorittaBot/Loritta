@@ -121,22 +121,26 @@ class TwitchGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGu
 
                     hr {}
 
-                    trackedTwitchChannelsSection(
-                        website.loritta,
-                        i18nContext,
-                        guild,
-                        twitchConfig.trackedTwitchAccounts.map {
-                            val profileInfo = it.twitchUser
+                    div {
+                        id = "section-config"
 
-                            TrackedProfile(
-                                profileInfo?.login,
-                                profileInfo?.profileImageUrl,
-                                it.trackedInfo.twitchUserId.toString(),
-                                it.trackedInfo.id,
-                                it.trackedInfo.channelId,
-                            )
-                        }
-                    )
+                        trackedTwitchChannelsSection(
+                            website.loritta,
+                            i18nContext,
+                            guild,
+                            twitchConfig.trackedTwitchAccounts.map {
+                                val profileInfo = it.twitchUser
+
+                                TrackedProfile(
+                                    profileInfo?.login,
+                                    profileInfo?.profileImageUrl,
+                                    it.trackedInfo.twitchUserId.toString(),
+                                    it.trackedInfo.id,
+                                    it.trackedInfo.channelId,
+                                )
+                            }
+                        )
+                    }
 
                     hr {}
 
@@ -152,73 +156,14 @@ class TwitchGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGu
                         }
                     }
 
-                    cardsWithHeader {
-                        cardHeader {
-                            cardHeaderInfo {
-                                cardHeaderTitle {
-                                    text("Canais com Acompanhamento Premium")
-                                }
+                    div {
+                        id = "premium-track-config"
 
-                                cardHeaderDescription {
-                                    text(i18nContext.get(I18nKeysData.Website.Dashboard.Twitch.Channels(twitchConfig.premiumTrackTwitchAccounts.size)))
-                                }
-                            }
-                        }
-
-                        if (twitchConfig.premiumTrackTwitchAccounts.isNotEmpty()) {
-                            div(classes = "cards") {
-                                for (profile in twitchConfig.premiumTrackTwitchAccounts) {
-                                    div(classes = "card") {
-                                        style = "flex-direction: row; align-items: center; gap: 0.5em;"
-
-                                        div {
-                                            style = "flex-grow: 1; display: flex;\n" +
-                                                    "  align-items: center;\n" +
-                                                    "  flex-direction: row;\n" +
-                                                    "  gap: 16px;"
-
-                                            img(src = profile.twitchUser?.profileImageUrl) {
-                                                style = "border-radius: 99999px;"
-                                                width = "48"
-                                                height = "48"
-                                            }
-
-                                            div {
-                                                style = "display: flex; flex-direction: column;"
-
-                                                div {
-                                                    span {
-                                                        style = "font-weight: bold;"
-
-                                                        text(profile.twitchUser?.displayName ?: "???")
-                                                    }
-                                                }
-
-                                                div {
-                                                    text(profile.trackedInfo.twitchUserId.toString())
-                                                }
-                                            }
-                                        }
-
-                                        div {
-                                            style = "display: grid;grid-template-columns: 1fr;grid-column-gap: 0.5em;"
-
-                                            discordButton(ButtonStyle.NO_BACKGROUND_THEME_DEPENDENT_DARK_TEXT) {
-                                                openModalOnClick(
-                                                    createEmbeddedConfirmDeletionModal(i18nContext) {
-                                                        attributes["bliss-delete"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/twitch/premium-tracks/${profile.trackedInfo.id}"
-                                                    }
-                                                )
-
-                                                text("Excluir")
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        } else {
-                            emptySection(i18nContext)
-                        }
+                        trackedPremiumTwitchChannelsSection(
+                            i18nContext,
+                            guild,
+                            twitchConfig.premiumTrackTwitchAccounts
+                        )
                     }
                 }
             )
