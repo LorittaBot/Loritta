@@ -349,14 +349,22 @@ class LorittaWebsite(
                         val localeId = "br"
                         val guildId = call.parameters["guildId"]
 
-                        call.respondRedirect(loritta.config.loritta.dashboard.url.removeSuffix("/") + "/$localeId${value.replace("{guildId}", guildId.toString())}", permanent = true)
+                        var queryString = call.request.queryString()
+                        if (queryString.isNotEmpty())
+                            queryString = "?$queryString"
+
+                        call.respondRedirect(loritta.config.loritta.dashboard.url.removeSuffix("/") + "/$localeId${value.replace("{guildId}", guildId.toString())}$queryString", permanent = true)
                     }
 
                     get("/{localeId}$key") {
                         val localeId = call.parameters.getOrFail("localeId")
                         val guildId = call.parameters["guildId"]
 
-                        call.respondRedirect(loritta.config.loritta.dashboard.url.removeSuffix("/") + "/$localeId${value.replace("{guildId}", guildId.toString())}", permanent = true)
+                        var queryString = call.request.queryString()
+                        if (queryString.isNotEmpty())
+                            queryString = "?$queryString"
+
+                        call.respondRedirect(loritta.config.loritta.dashboard.url.removeSuffix("/") + "/$localeId${value.replace("{guildId}", guildId.toString())}$queryString", permanent = true)
                     }
                 }
             }
