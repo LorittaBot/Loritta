@@ -303,7 +303,7 @@ nav#mobile-left-sidebar {
     z-index: 10;
     align-items: center;
     justify-content: space-between;
-    box-shadow: rgba(0, 101, 255, 0.3) 0px 0px 15px; // Shadow
+    border-bottom: 1px solid oklch(from var(--loritta-blue) calc(l - 0.1) c calc(h + 20));
     color: white;
 
     @include bp('medium') {
