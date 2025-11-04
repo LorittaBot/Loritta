@@ -36,6 +36,8 @@ class PutXPRewardsGuildDashboardRoute(website: LorittaDashboardWebServer) : Requ
 
             val levelConfig = serverConfig.levelConfig ?: LevelConfig.new {
                 this.roleGiveType = RoleGiveType.STACK
+                this.noXpChannels = listOf()
+                this.noXpRoles = listOf()
             }
 
             // Main
