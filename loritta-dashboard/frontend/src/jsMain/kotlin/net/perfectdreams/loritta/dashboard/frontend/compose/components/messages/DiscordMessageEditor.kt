@@ -475,8 +475,8 @@ fun DiscordMessageEditor(
 
                                 FieldWrapper {
                                     FieldInformation {
-                                    FieldLabel("Título")
-                                        }
+                                        FieldLabel("Título")
+                                    }
 
                                     TextAreaWithEntityPickers(targetGuild, embed.title ?: "") {
                                         embed.title = it.ifEmpty { null }
@@ -820,7 +820,10 @@ fun DiscordMessageEditor(
                 }
             }
 
-            Div(attrs = { classes("details-content") }) {
+            Div(attrs = {
+                classes("details-content")
+                attr("style", "overflow: auto;")}) {
+
                 Table(attrs = {
                     // Make the table always use all available width
                     attr("style", "width: 100%;")
