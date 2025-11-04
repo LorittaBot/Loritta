@@ -14,6 +14,7 @@ import io.ktor.http.userAgent
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.response.respondRedirect
 import kotlinx.serialization.json.Json
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedDiscordUserIdentifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserWebsiteSessions
 import net.perfectdreams.loritta.i18n.I18nKeysData
@@ -31,6 +32,10 @@ import java.time.OffsetDateTime
 import java.time.ZoneOffset
 
 class DiscordLoginUserDashboardRoute(val website: LorittaDashboardWebServer) : BaseRoute("/discord/login") {
+    companion object {
+        private val logger by HarmonyLoggerFactory.logger {}
+    }
+
     override suspend fun onRequest(call: ApplicationCall) {
         val accessCode = call.request.queryParameters["code"]
         val guildId = call.request.queryParameters["guild_id"]
@@ -56,7 +61,7 @@ class DiscordLoginUserDashboardRoute(val website: LorittaDashboardWebServer) : B
             setBody(TextContent(parameters.formUrlEncode(), ContentType.Application.FormUrlEncoded))
         }.bodyAsText()
 
-        println("Auth Result: $resultAsText")
+        logger.info { "Authentication Result: $resultAsText" }
 
         val result = Json.decodeFromString<DiscordOAuth2Authorization>(resultAsText)
 
@@ -69,6 +74,8 @@ class DiscordLoginUserDashboardRoute(val website: LorittaDashboardWebServer) : B
 
             header("Authorization", "Bearer ${result.accessToken}")
         }.bodyAsText()
+
+        logger.info { "User Identification Result: $userIdentificationAsText" }
 
         val userIdentification = Json.decodeFromString<DiscordOAuth2UserIdentification>(userIdentificationAsText)
 

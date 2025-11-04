@@ -10,7 +10,7 @@ class DiscordOAuth2Endpoints(val loritta: LorittaBot) {
         return baseUrl.removeSuffix("/")
     }
 
-    val OAuth2TokenEndpoint = "${discordBaseUrl()}/token/oauth2"
+    val OAuth2TokenEndpoint = "${discordBaseUrl()}/api/oauth2/token"
     val UserIdentificationEndpoint = "${discordBaseUrl()}/api/v10/users/@me"
     val UserGuildsEndpoint = "${discordBaseUrl()}/api/v10/users/@me/guilds"
 }
