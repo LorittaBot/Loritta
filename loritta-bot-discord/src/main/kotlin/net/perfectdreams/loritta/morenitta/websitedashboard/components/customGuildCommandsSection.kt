@@ -16,6 +16,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.UserCreatedProfilePrese
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.CustomGuildCommands
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.customcommands.CustomCommandsUtils
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedConfirmDeletionModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.defaultModalCloseButton
@@ -36,6 +37,9 @@ fun FlowContent.customGuildCommands(i18nContext: I18nContext, guild: Guild, cust
             }
 
             discordButtonLink(ButtonStyle.SUCCESS, href = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/custom-commands/create?type=text") {
+                if (customCommands.size >= CustomCommandsUtils.MAX_CUSTOM_COMMANDS)
+                    attributes["aria-disabled"] = "true"
+                
                 swapRightSidebarContentsAttributes()
 
                 text("Criar Comando")
