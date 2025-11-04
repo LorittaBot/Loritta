@@ -612,14 +612,19 @@ nav#left-sidebar {
                 display: flex;
                 flex-direction: column;
                 flex-grow: 1;
+                min-width: 0; // Required for the text to overflow
 
                 > .name {
                     font-weight: bold;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
                 }
 
                 > .discriminator {
                     opacity: 0.8;
                     font-size: 0.75em;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
                 }
             }
         }
