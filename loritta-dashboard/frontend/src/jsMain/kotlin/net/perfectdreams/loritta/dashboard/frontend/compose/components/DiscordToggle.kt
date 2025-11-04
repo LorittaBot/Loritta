@@ -45,19 +45,23 @@ fun DiscordToggle(
     classes("toggle-wrapper")
 }) {
     Div(attrs = {
-        classes("toggle-information")
+        classes("field-information-with-control")
     }) {
         Div(attrs = {
-            classes("toggle-title")
+            classes("field-information")
         }) {
-            title()
-        }
-
-        if (description != null) {
             Div(attrs = {
-                classes("toggle-description")
+                classes("field-title")
             }) {
-                description()
+                title()
+            }
+
+            if (description != null) {
+                Div(attrs = {
+                    classes("field-description")
+                }) {
+                    description()
+                }
             }
         }
     }
