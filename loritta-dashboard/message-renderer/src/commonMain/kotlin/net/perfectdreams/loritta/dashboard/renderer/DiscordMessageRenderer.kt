@@ -429,6 +429,61 @@ fun FlowContent.transformedDiscordText(
 ) {
     val convertedFromMarkdown = parser.parse(input) as ChatRootNode // Should ALWAYS be a chat root node!
 
+    fun renderBufferedText(text: String) {
+        val buffer = StringBuilder()
+
+        fun FlowContent.renderNodesAndClearBuffer() {
+            val result = buffer.toString()
+            val nodes = parseStringToNodes(result)
+            for (node in nodes) {
+                when (node) {
+                    is MessagePlaceholderNode -> {
+                        var matchedPlaceholderGroup: MessageEditorMessagePlaceholderGroup? = null
+
+                        for (placeholderGroup in placeholderGroups) {
+                            if (placeholderGroup.placeholders.any { it.name == node.placeholder }) {
+                                matchedPlaceholderGroup = placeholderGroup
+                                break
+                            }
+                        }
+
+                        // TODO: Add a hover tooltip when you hover a placeholder, to show what placeholder triggers it
+                        if (matchedPlaceholderGroup != null) {
+                            when (matchedPlaceholderGroup.renderType) {
+                                // TODO: Convert text with URL
+                                MessageEditorMessagePlaceholderGroup.RenderType.TEXT -> text(matchedPlaceholderGroup.replaceWithFrontend)
+                                MessageEditorMessagePlaceholderGroup.RenderType.MENTION -> {
+                                    span(classes = "discord-mention") {
+                                        text(matchedPlaceholderGroup.replaceWithFrontend)
+                                    }
+                                }
+                            }
+                        } else {
+                            // Unknown placeholder!
+                            span(classes = "discord-mention") {
+                                style = "--mention-color: rgb(237, 66, 69);"
+                                text("Placeholder inválido!")
+                            }
+                        }
+                    }
+                    is MessageTextNode -> text(node.text)
+                }
+            }
+            buffer.clear()
+        }
+
+        for (character in text) {
+            if (character == '\n') {
+                renderNodesAndClearBuffer()
+                br {}
+            } else {
+                buffer.append(character.toString())
+            }
+        }
+
+        renderNodesAndClearBuffer()
+    }
+
     // Based on the original DiscordMessageRenderer used for Loritta's "Save Message" feature
     fun FlowContent.traverseNodesAndRender(element: MarkdownNode) {
         when (element) {
@@ -548,58 +603,7 @@ fun FlowContent.transformedDiscordText(
             is LeafMarkdownNode -> {
                 when (element) {
                     is TextNode -> {
-                        val buffer = StringBuilder()
-
-                        fun FlowContent.renderNodesAndClearBuffer() {
-                            val result = buffer.toString()
-                            val nodes = parseStringToNodes(result)
-                            for (node in nodes) {
-                                when (node) {
-                                    is MessagePlaceholderNode -> {
-                                        var matchedPlaceholderGroup: MessageEditorMessagePlaceholderGroup? = null
-
-                                        for (placeholderGroup in placeholderGroups) {
-                                            if (placeholderGroup.placeholders.any { it.name == node.placeholder }) {
-                                                matchedPlaceholderGroup = placeholderGroup
-                                                break
-                                            }
-                                        }
-
-                                        // TODO: Add a hover tooltip when you hover a placeholder, to show what placeholder triggers it
-                                        if (matchedPlaceholderGroup != null) {
-                                            when (matchedPlaceholderGroup.renderType) {
-                                                // TODO: Convert text with URL
-                                                MessageEditorMessagePlaceholderGroup.RenderType.TEXT -> text(matchedPlaceholderGroup.replaceWithFrontend)
-                                                MessageEditorMessagePlaceholderGroup.RenderType.MENTION -> {
-                                                    span(classes = "discord-mention") {
-                                                        text(matchedPlaceholderGroup.replaceWithFrontend)
-                                                    }
-                                                }
-                                            }
-                                        } else {
-                                            // Unknown placeholder!
-                                            span(classes = "discord-mention") {
-                                                style = "--mention-color: rgb(237, 66, 69);"
-                                                text("Placeholder inválido!")
-                                            }
-                                        }
-                                    }
-                                    is MessageTextNode -> text(node.text)
-                                }
-                            }
-                            buffer.clear()
-                        }
-
-                        for (character in element.text) {
-                            if (character == '\n') {
-                                renderNodesAndClearBuffer()
-                                br {}
-                            } else {
-                                buffer.append(character.toString())
-                            }
-                        }
-
-                        renderNodesAndClearBuffer()
+                        renderBufferedText(element.text)
                     }
 
                     is LinkNode -> {
@@ -609,7 +613,7 @@ fun FlowContent.transformedDiscordText(
                     }
 
                     is CodeTextNode -> {
-                        text(element.text)
+                        renderBufferedText(element.text)
                     }
 
                     is DiscordEmojiEntityNode -> {
