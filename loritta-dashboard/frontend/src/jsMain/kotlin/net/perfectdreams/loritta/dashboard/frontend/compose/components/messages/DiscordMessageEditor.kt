@@ -515,16 +515,16 @@ fun DiscordMessageEditor(
 
                                     VerticalList(attrs = {
                                         attr(
-                                            "style", "border: 1px solid var(--input-border-color);\n" +
-                                                    "  border-radius: var(--first-level-border-radius);\n" +
+                                            "style", "border: 1px solid var(--card-border-color);\n" +
+                                                    "  border-radius: var(--nice-border-radius);\n" +
                                                     "  padding: 1em;"
                                         )
                                     }) {
                                         for ((index, field) in embed.fields.withIndex()) {
                                             FieldWrappers(attrs = {
                                                 attr(
-                                                    "style", "border: 1px solid var(--input-border-color);\n" +
-                                                            "  border-radius: var(--first-level-border-radius);\n" +
+                                                    "style", "border: 1px solid var(--card-border-color);\n" +
+                                                            "  border-radius: var(--nice-border-radius);\n" +
                                                             "  padding: 1em;"
                                                 )
                                             }) {
@@ -888,16 +888,16 @@ fun ActionRowEditor(m: LorittaDashboardFrontend, component: MutableDiscordMessag
 
         VerticalList(attrs = {
             attr(
-                "style", "border: 1px solid var(--input-border-color);\n" +
-                        "  border-radius: var(--first-level-border-radius);\n" +
+                "style", "border: 1px solid var(--card-border-color);\n" +
+                        "  border-radius: var(--nice-border-radius);\n" +
                         "  padding: 1em;"
             )
         }) {
             for (childComponent in component.components) {
                 Div(attrs = {
                     attr(
-                        "style", "border: 1px solid var(--input-border-color);\n" +
-                                "  border-radius: var(--first-level-border-radius);\n" +
+                        "style", "border: 1px solid var(--card-border-color);\n" +
+                                "  border-radius: var(--nice-border-radius);\n" +
                                 "  padding: 1em;"
                     )
                 }) {
