@@ -14,6 +14,7 @@ import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseAllModals
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.configSaved
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
@@ -45,7 +46,7 @@ class PutLorittaSpawnerSettingsUserDashboardRoute(website: LorittaDashboardWebSe
         }
 
         call.respondHtmlFragment {
-            blissCloseModal()
+            blissCloseAllModals()
 
             configSaved(i18nContext)
         }

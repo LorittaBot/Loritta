@@ -15,6 +15,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebS
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.profilePresetsSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresUserAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseAllModals
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
@@ -52,7 +53,7 @@ class DeleteProfilePresetUserDashboardRoute(website: LorittaDashboardWebServer) 
                 call.respondHtmlFragment {
                     profilePresetsSection(i18nContext, result.profilePresets)
 
-                    blissCloseModal()
+                    blissCloseAllModals()
 
                     blissShowToast(
                         createEmbeddedToast(

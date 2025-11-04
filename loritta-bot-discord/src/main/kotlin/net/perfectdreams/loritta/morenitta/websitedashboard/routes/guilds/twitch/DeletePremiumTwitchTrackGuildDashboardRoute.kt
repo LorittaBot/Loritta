@@ -16,6 +16,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebS
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.trackedPremiumTwitchChannelsSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseAllModals
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
@@ -62,7 +63,7 @@ class DeletePremiumTwitchTrackGuildDashboardRoute(website: LorittaDashboardWebSe
                 )
 
                 call.respondHtmlFragment(status = HttpStatusCode.OK) {
-                    blissCloseModal()
+                    blissCloseAllModals()
 
                     blissShowToast(
                         createEmbeddedToast(

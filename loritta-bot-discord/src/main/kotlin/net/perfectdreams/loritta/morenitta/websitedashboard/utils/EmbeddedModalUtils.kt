@@ -187,6 +187,15 @@ fun FlowContent.blissCloseModal() {
 }
 
 /**
+ * Adds a "close all modals" to the DOM
+ */
+fun FlowContent.blissCloseAllModals() {
+    script(type = "application/json") {
+        attributes["bliss-close-all-modals"] = "true"
+    }
+}
+
+/**
  * Creates the default generic "close modal" button
  */
 fun FlowContent.defaultModalCloseButton(i18nContext: I18nContext, text: StringI18nData = I18nKeysData.Website.Dashboard.Modal.Close) {

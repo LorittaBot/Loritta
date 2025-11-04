@@ -18,6 +18,7 @@ import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseAllModals
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissSoundEffect
@@ -45,7 +46,7 @@ class PostDashboardThemeGuildUserDashboardRoute(website: LorittaDashboardWebServ
         }
 
         call.respondHtmlFragment {
-            blissCloseModal()
+            blissCloseAllModals()
 
             blissShowToast(
                 createEmbeddedToast(

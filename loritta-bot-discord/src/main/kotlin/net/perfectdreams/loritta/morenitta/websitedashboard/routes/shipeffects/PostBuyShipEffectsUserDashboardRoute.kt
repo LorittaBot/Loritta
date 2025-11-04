@@ -29,6 +29,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebS
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.shipEffectsBribes
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresUserAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseAllModals
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
@@ -139,7 +140,7 @@ class PostBuyShipEffectsUserDashboardRoute(website: LorittaDashboardWebServer) :
                         )
                     )
 
-                    blissCloseModal()
+                    blissCloseAllModals()
                 }
             }
             is Result.Success -> {
@@ -148,6 +149,8 @@ class PostBuyShipEffectsUserDashboardRoute(website: LorittaDashboardWebServer) :
                     .mapNotNull { website.loritta.pudding.users.getCachedUserInfoById(it) }
 
                 call.respondHtmlFragment(status = HttpStatusCode.OK) {
+                    blissCloseAllModals()
+
                     blissShowModal(
                         createEmbeddedModal(
                             i18nContext.get(I18nKeysData.Website.Dashboard.ShipEffects.EffectApplied.Title),

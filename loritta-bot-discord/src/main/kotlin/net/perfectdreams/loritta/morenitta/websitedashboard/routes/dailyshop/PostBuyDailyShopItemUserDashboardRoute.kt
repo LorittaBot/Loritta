@@ -20,6 +20,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebS
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.dailyShopItems
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresUserAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseAllModals
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
@@ -222,7 +223,7 @@ class PostBuyDailyShopItemUserDashboardRoute(website: LorittaDashboardWebServer)
         when (result) {
             Result.ItemNotInItemShop -> {
                 call.respondHtmlFragment(status = HttpStatusCode.BadRequest) {
-                    blissCloseModal()
+                    blissCloseAllModals()
                     blissShowToast(
                         createEmbeddedToast(
                             EmbeddedToast.Type.WARN,
@@ -236,7 +237,7 @@ class PostBuyDailyShopItemUserDashboardRoute(website: LorittaDashboardWebServer)
             }
             Result.NotEnoughSonhos -> {
                 call.respondHtmlFragment(status = HttpStatusCode.PaymentRequired) {
-                    blissCloseModal()
+                    blissCloseAllModals()
                     blissShowToast(
                         createEmbeddedToast(
                             EmbeddedToast.Type.WARN,
@@ -248,7 +249,7 @@ class PostBuyDailyShopItemUserDashboardRoute(website: LorittaDashboardWebServer)
             }
             Result.YouAlreadyHaveThisItem -> {
                 call.respondHtmlFragment(status = HttpStatusCode.Conflict) {
-                    blissCloseModal()
+                    blissCloseAllModals()
                     blissShowToast(
                         createEmbeddedToast(
                             EmbeddedToast.Type.WARN,
@@ -260,7 +261,7 @@ class PostBuyDailyShopItemUserDashboardRoute(website: LorittaDashboardWebServer)
             }
             is Result.Success -> {
                 call.respondHtmlFragment(status = HttpStatusCode.OK) {
-                    blissCloseModal()
+                    blissCloseAllModals()
                     blissShowToast(
                         createEmbeddedToast(
                             EmbeddedToast.Type.SUCCESS,

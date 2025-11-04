@@ -30,6 +30,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebS
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.backgrounds.PostUploadBackgroundUserDashboardRoute.UploadBackgroundRequest
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseAllModals
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
@@ -148,7 +149,7 @@ class PostBadgeImageGuildDashboardRoute(website: LorittaDashboardWebServer) : Re
             }
 
             call.respondHtmlFragment {
-                blissCloseModal()
+                blissCloseAllModals()
                 blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Insígnia personalizada enviada!"))
             }
         } else {

@@ -26,6 +26,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.rightSide
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.trackedNewProfileEditorSaveBar
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.trackedYouTubeChannelEditorWithProfile
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseAllModals
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
@@ -54,7 +55,7 @@ class AddYouTubeChannelGuildDashboardRoute(website: LorittaDashboardWebServer) :
                         },
                         {
                             if (call.request.headers["Bliss-Trigger-Element-Id"] == "add-profile") {
-                                blissCloseModal()
+                                blissCloseAllModals()
                                 blissShowToast(
                                     createEmbeddedToast(
                                         EmbeddedToast.Type.SUCCESS,

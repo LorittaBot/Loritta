@@ -22,6 +22,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.TrackedProfile
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.trackedYouTubeChannelsSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseAllModals
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
@@ -81,7 +82,7 @@ class DeleteYouTubeChannelGuildDashboardRoute(website: LorittaDashboardWebServer
                         }
                     )
 
-                    blissCloseModal()
+                    blissCloseAllModals()
 
                     blissShowToast(
                         createEmbeddedToast(

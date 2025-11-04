@@ -104,6 +104,21 @@ class LorittaDashboardFrontend {
         }
 
         Bliss.registerDocumentParsedEventListener { parsedDocument ->
+            // The "close modals" should ALWAYS be processed first, this way we can do something like this:
+            // 1. Request to close all modals
+            // 2. Request to open a new modal
+            val closeModalHack = parsedDocument.querySelectorAll("[bliss-close-modal]")
+            for (element in closeModalHack.asList()) {
+                element.remove()
+                this.modalManager.closeModal()
+            }
+
+            val closeAllModalsHack = parsedDocument.querySelectorAll("[bliss-close-all-modals]")
+            for (element in closeAllModalsHack.asList()) {
+                element.remove()
+                this.modalManager.closeAllModals()
+            }
+
             val showToastHack = parsedDocument.querySelectorAll("[bliss-show-toast]")
             for (element in showToastHack.asList()) {
                 val content = element.getAttribute("bliss-toast") ?: error("Missing bliss-toast attribute on a bliss-show-toast!")
@@ -120,18 +135,6 @@ class LorittaDashboardFrontend {
                 element.remove()
 
                 this.modalManager.openModal(modal)
-            }
-
-            val closeModalHack = parsedDocument.querySelectorAll("[bliss-close-modal]")
-            for (element in closeModalHack.asList()) {
-                element.remove()
-                this.modalManager.closeModal()
-            }
-
-            val closeAllModalsHack = parsedDocument.querySelectorAll("[bliss-close-all-modals]")
-            for (element in closeAllModalsHack.asList()) {
-                element.remove()
-                this.modalManager.closeAllModals()
             }
 
             val playSoundEffectHack = parsedDocument.querySelectorAll("[bliss-sound-effect]").asList()

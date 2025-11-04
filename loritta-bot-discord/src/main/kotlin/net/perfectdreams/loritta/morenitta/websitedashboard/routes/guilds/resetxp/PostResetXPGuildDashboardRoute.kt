@@ -14,6 +14,7 @@ import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseAllModals
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissSoundEffect
@@ -31,7 +32,7 @@ class PostResetXPGuildDashboardRoute(website: LorittaDashboardWebServer) : Requi
         }
 
         call.respondHtmlFragment {
-            blissCloseModal()
+            blissCloseAllModals()
             blissSoundEffect("configSaved")
             blissShowToast(
                 createEmbeddedToast(

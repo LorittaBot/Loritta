@@ -25,6 +25,7 @@ import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresUserAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseAllModals
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
@@ -138,7 +139,7 @@ class PostUploadBackgroundUserDashboardRoute(website: LorittaDashboardWebServer)
             }
 
             call.respondHtmlFragment {
-                blissCloseModal()
+                blissCloseAllModals()
                 blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Background personalizado enviado!"))
             }
         } else {

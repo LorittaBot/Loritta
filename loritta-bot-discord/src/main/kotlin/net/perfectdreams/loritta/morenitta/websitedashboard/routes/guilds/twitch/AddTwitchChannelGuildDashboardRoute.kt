@@ -29,6 +29,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebS
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.*
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseAllModals
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
@@ -172,10 +173,9 @@ class AddTwitchChannelGuildDashboardRoute(website: LorittaDashboardWebServer) : 
                 },
                 {
                     // TODO: This shouldn't be here i think
-                    blissCloseModal()
+                    blissCloseAllModals()
 
                     if (call.request.headers["Bliss-Trigger-Element-Id"] == "add-profile") {
-                        blissCloseModal()
                         blissShowToast(
                             createEmbeddedToast(
                                 EmbeddedToast.Type.SUCCESS,
