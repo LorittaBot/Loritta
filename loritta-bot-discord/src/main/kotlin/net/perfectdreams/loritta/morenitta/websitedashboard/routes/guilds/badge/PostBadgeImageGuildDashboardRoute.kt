@@ -57,7 +57,7 @@ class PostBadgeImageGuildDashboardRoute(website: LorittaDashboardWebServer) : Re
     }
 
     override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans) {
-        val request = Json.decodeFromString<UploadBackgroundRequest>(call.receiveText()).file.first()
+        val request = Json.decodeFromString<UploadBadgeImageRequest>(call.receiveText()).file.first()
 
         if (!guildPremiumPlan.hasCustomBadge) {
             call.respondHtmlFragment(status = HttpStatusCode.BadRequest) {
