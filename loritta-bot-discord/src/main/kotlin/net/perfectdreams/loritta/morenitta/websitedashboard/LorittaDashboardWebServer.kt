@@ -633,7 +633,7 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
     fun getI18nContextFromCall(call: ApplicationCall): I18nContext {
         val acceptLanguage = call.request.header("Accept-Language") ?: "en-US"
         val ranges = Locale.LanguageRange.parse(acceptLanguage).reversed()
-        var localeId = "en-us"
+        var localeId = "en"
         for (range in ranges) {
             localeId = range.range.lowercase()
             if (localeId == "pt-br" || localeId == "pt") {
