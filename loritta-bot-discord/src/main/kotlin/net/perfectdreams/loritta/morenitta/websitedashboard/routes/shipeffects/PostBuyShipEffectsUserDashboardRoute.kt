@@ -179,7 +179,7 @@ class PostBuyShipEffectsUserDashboardRoute(website: LorittaDashboardWebServer) :
                         )
                     )
                     blissSoundEffect("configSaved")
-                    
+
                     shipEffectsBribes(i18nContext, session, result.activeShipEffects, resolvedUsers)
                 }
             }
