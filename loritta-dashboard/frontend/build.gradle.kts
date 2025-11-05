@@ -4,9 +4,9 @@ import org.jetbrains.kotlin.gradle.dsl.JsModuleKind
 plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
-    id("org.jetbrains.compose") version "1.9.0-beta01"
-    id("org.jetbrains.kotlin.plugin.compose") version "2.2.0"
-    id("org.jetbrains.kotlin.plugin.js-plain-objects") version "2.2.0"
+    id("org.jetbrains.compose")
+    id("org.jetbrains.kotlin.plugin.compose")
+    id("org.jetbrains.kotlin.plugin.js-plain-objects")
 }
 
 repositories {
@@ -42,7 +42,7 @@ kotlin {
                 implementation("org.jetbrains.kotlin-wrappers:kotlin-browser:2025.9.4")
                 implementation("org.jetbrains.kotlin-wrappers:kotlin-js:2025.9.4")
 
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
+                implementation(libs.kotlinx.serialization.json)
 
                 implementation("org.jetbrains.kotlinx:kotlinx-html-js:0.12.0")
 

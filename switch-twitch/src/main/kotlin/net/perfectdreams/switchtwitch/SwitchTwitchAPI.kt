@@ -7,7 +7,8 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import io.ktor.client.*
-import io.ktor.client.engine.cio.*
+import io.ktor.client.engine.java.Java
+import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -15,7 +16,6 @@ import io.ktor.http.content.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -39,8 +39,12 @@ class SwitchTwitchAPI(
         private const val TOKEN_BASE_URL = "$PREFIX/oauth2/token"
         private const val USER_AGENT = "SocialRelayer-Loritta-Morenitta-Twitch-Auth/1.0"
         private val logger = KotlinLogging.logger {}
-        val http = HttpClient(CIO) {
+        val http = HttpClient(Java) {
             this.expectSuccess = false
+            install(HttpTimeout) {
+                this.requestTimeoutMillis = 25_000
+                this.connectTimeoutMillis = 5_000
+            }
         }
 
         suspend fun fromAuthCode(clientId: String, clientSecret: String, authCode: String, redirectUri: String): SwitchTwitchAPI {

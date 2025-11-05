@@ -10,7 +10,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
 import io.ktor.client.*
-import io.ktor.client.engine.apache.*
+import io.ktor.client.engine.java.Java
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.*
@@ -155,6 +155,7 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.measureTime
+import kotlin.time.toJavaDuration
 
 /**
  * Loritta's main class, where everything (and anything) can happen!
@@ -277,41 +278,21 @@ class LorittaBot(
 	val commandMap = DiscordCommandMap(this)
 	val assets = JVMLorittaAssets(this)
 	var legacyLocales = mapOf<String, LegacyBaseLocale>()
-	val http = HttpClient(Apache) {
+	val http = HttpClient(Java) {
 		this.expectSuccess = false
 		install(Logging)
-
-		engine {
-			this.socketTimeout = 25_000
-			this.connectTimeout = 25_000
-			this.connectionRequestTimeout = 25_000
-
-			customizeClient {
-				// Maximum number of socket connections.
-				this.setMaxConnTotal(100)
-
-				// Maximum number of requests for a specific endpoint route.
-				this.setMaxConnPerRoute(100)
-			}
-		}
+        install(HttpTimeout) {
+            this.connectTimeoutMillis = 5_000
+            this.requestTimeoutMillis = 25_000
+        }
 	}
-	val httpWithoutTimeout = HttpClient(Apache) {
+	val httpWithoutTimeout = HttpClient(Java) {
 		this.expectSuccess = false
 		install(Logging)
-
-		engine {
-			this.socketTimeout = 60_000
-			this.connectTimeout = 60_000
-			this.connectionRequestTimeout = 60_000
-
-			customizeClient {
-				// Maximum number of socket connections.
-				this.setMaxConnTotal(100)
-
-				// Maximum number of requests for a specific endpoint route.
-				this.setMaxConnPerRoute(100)
-			}
-		}
+        install(HttpTimeout) {
+            this.connectTimeoutMillis = 60_000
+            this.requestTimeoutMillis = 60_000
+        }
 	}
 	val dreamStorageService = DreamStorageServiceClient(
 		config.loritta.dreamStorageService.url,

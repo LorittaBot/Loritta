@@ -28,7 +28,7 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(project(":loritta-placeholders"))
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
+                implementation(libs.kotlinx.serialization.json)
             }
         }
     }

@@ -123,7 +123,6 @@ kotlin {
 
                 // Stuff used by the old stuff in this module
                 api("com.fasterxml.jackson.core:jackson-databind:2.9.8")
-                api("io.ktor:ktor-client-apache:${Versions.KTOR}")
 
                 // Used for caching
                 api("com.github.ben-manes.caffeine:caffeine:3.2.0")
@@ -162,7 +161,7 @@ kotlin {
             dependencies {
                 api(kotlin("stdlib-js"))
                 api(npm("canvas", "2.6.1"))
-                api("io.ktor:ktor-client-js:${Versions.KTOR}")
+                api(libs.ktor.client.js)
 
                 // Internationalization
                 api("net.perfectdreams.i18nhelper.formatters:intl-messageformat-js:${libs.versions.i18nhelper.get()}")

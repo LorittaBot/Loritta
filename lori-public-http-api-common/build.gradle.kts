@@ -4,5 +4,5 @@ plugins {
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
-    implementation("io.ktor:ktor-server-core:${Versions.KTOR}")
+    implementation(libs.ktor.server.core)
 }

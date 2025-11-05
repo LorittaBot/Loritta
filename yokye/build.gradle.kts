@@ -8,11 +8,10 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
 
     // Ktor
-    implementation("io.ktor:ktor-client-core:${Versions.KTOR}")
-    implementation("io.ktor:ktor-client-cio:${Versions.KTOR}")
+    implementation(libs.ktor.client.java)
 
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.2")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor:1.7.2")
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.kotlinx.serialization.cbor)
     // https://mvnrepository.com/artifact/com.upokecenter/cbor
     implementation("com.upokecenter:cbor:5.0.0-alpha2")
 

@@ -18,11 +18,11 @@ dependencies {
     implementation(libs.logback.classic)
 
     // Ktor
-    implementation("io.ktor:ktor-server-netty:${Versions.KTOR}")
-    implementation("io.ktor:ktor-server-html-builder:${Versions.KTOR}")
-    implementation("io.ktor:ktor-server-caching-headers:${Versions.KTOR}")
-    implementation("io.ktor:ktor-server-compression:${Versions.KTOR}")
-    implementation("io.ktor:ktor-server-status-pages:${Versions.KTOR}")
+    implementation(libs.ktor.server.netty)
+    implementation(libs.ktor.server.htmlBuilder)
+    implementation(libs.ktor.server.cachingHeaders)
+    implementation(libs.ktor.server.compression)
+    implementation(libs.ktor.server.statusPages)
 
     // KotlinX HTML
     implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.12.0")

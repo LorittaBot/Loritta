@@ -4,8 +4,11 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     java
-    kotlin("jvm") version Versions.KOTLIN apply false
-    kotlin("plugin.serialization") version Versions.KOTLIN
+    kotlin("jvm") version libs.versions.kotlin apply false
+    kotlin("plugin.serialization") version libs.versions.kotlin
+    id("org.jetbrains.compose") version libs.versions.compose
+    id("org.jetbrains.kotlin.plugin.compose") version libs.versions.kotlin apply false
+    id("org.jetbrains.kotlin.plugin.js-plain-objects") version libs.versions.kotlin apply false
 }
 
 allprojects {

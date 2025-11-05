@@ -13,7 +13,7 @@ dependencies {
     implementation(libs.exposed.core)
     implementation(libs.exposed.jdbc)
     implementation(libs.exposed.javatime)
-    implementation("io.ktor:ktor-client-cio:${Versions.KTOR}")
+    implementation(libs.ktor.client.cio)
 }
 
 tasks.test {

@@ -12,7 +12,7 @@ dependencies {
     implementation("net.perfectdreams.harmony.logging:harmonylogging-slf4j:1.0.2")
     implementation("ch.qos.logback:logback-classic:1.5.19")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-hocon:1.9.0")
+    implementation(libs.kotlinx.serialization.hocon)
 }
 
 jib {

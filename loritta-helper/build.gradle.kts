@@ -32,17 +32,17 @@ dependencies {
 
     implementation(libs.deviousjda)
     implementation("com.github.freya022:jda-ktx:8929de93af")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
-    api("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.6.1")
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.jdk8)
     implementation("com.github.ben-manes.caffeine:caffeine:3.0.6")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-hocon:1.3.2")
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.kotlinx.serialization.hocon)
 
     // Sequins
     implementation("net.perfectdreams.sequins.text:text-utils:1.0.0")
 
     // Used to serialize state on components
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.3.2")
+    implementation(libs.kotlinx.serialization.protobuf)
     // Used to serialize state on components
     implementation("io.github.netvl.ecoji:ecoji:1.0.0")
 

@@ -31,7 +31,7 @@ kotlin {
                 implementation(project(":loritta-dashboard:dashboard-common"))
                 implementation(project(":discord-chat-markdown-parser"))
                 implementation("org.jetbrains.kotlinx:kotlinx-html:0.12.0")
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.9.0")
+                implementation(libs.kotlinx.serialization.core)
             }
         }
     }

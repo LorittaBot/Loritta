@@ -12,7 +12,7 @@ kotlin {
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.7.1")
+    implementation(libs.kotlinx.serialization.core)
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:${Versions.KOTLINX_DATE_TIME}")
 
     // Discord

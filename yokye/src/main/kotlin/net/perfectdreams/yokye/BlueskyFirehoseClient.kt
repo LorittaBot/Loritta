@@ -2,7 +2,8 @@ package net.perfectdreams.yokye
 
 import com.upokecenter.cbor.CBORObject
 import io.ktor.client.*
-import io.ktor.client.engine.cio.*
+import io.ktor.client.engine.java.Java
+import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.websocket.*
 import io.ktor.client.request.*
 import io.ktor.websocket.*
@@ -13,10 +14,15 @@ import java.time.Instant
 
 class BlueskyFirehoseClient {
     companion object {
-        private val client = HttpClient(CIO) {
+        private val client = HttpClient(Java) {
             install(WebSockets) {
                 // We DON'T WANT to use the pingInterval, because we already do our own "ping at home" that automatically restarts the session if we haven't received an event for a looong time
                 pingInterval = null
+            }
+
+            install(HttpTimeout) {
+                this.requestTimeoutMillis = 25_000
+                this.connectTimeoutMillis = 5_000
             }
         }
         private val logger = KotlinLogging.logger {}

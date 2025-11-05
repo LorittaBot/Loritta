@@ -15,7 +15,7 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(project(":discord-chat-markdown-parser"))
     implementation(project(":discord-chat-message-renderer-entities"))
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.7.1")
+    implementation(libs.kotlinx.serialization.json)
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.cio)
     implementation(libs.ktor.client.core)
@@ -25,9 +25,9 @@ dependencies {
     implementation("com.google.guava:guava:33.2.1-jre")
 
     // Kotlin Coroutines
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.KOTLIN_COROUTINES}")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:${Versions.KOTLIN_COROUTINES}")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-debug:${Versions.KOTLIN_COROUTINES}")
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.jdk8)
+    implementation(libs.kotlinx.coroutines.debug)
 
     // Used for logs - MojangStyleFileAppenderAndRollover
     implementation("com.github.luben:zstd-jni:1.5.5-6")

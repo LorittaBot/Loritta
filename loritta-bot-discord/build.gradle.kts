@@ -29,9 +29,9 @@ dependencies {
     implementation("com.charleskorn.kaml:kaml:0.80.1")
 
     // Kotlin Coroutines
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.KOTLIN_COROUTINES}")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:${Versions.KOTLIN_COROUTINES}")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-debug:${Versions.KOTLIN_COROUTINES}")
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.jdk8)
+    implementation(libs.kotlinx.coroutines.debug)
 
     implementation("com.google.guava:guava:32.1.3-jre")
     implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.12.0")
@@ -62,19 +62,18 @@ dependencies {
     implementation("org.apache.commons:commons-collections4:4.4")
 
     // Ktor
-    implementation("io.ktor:ktor-server-core:${Versions.KTOR}")
-    implementation("io.ktor:ktor-server-cio:${Versions.KTOR}")
-    implementation("io.ktor:ktor-server-netty:${Versions.KTOR}")
-    implementation("io.ktor:ktor-websockets:${Versions.KTOR}")
-    implementation("io.ktor:ktor-client-core:${Versions.KTOR}")
-    implementation("io.ktor:ktor-client-apache:${Versions.KTOR}")
-    implementation("io.ktor:ktor-client-cio:${Versions.KTOR}")
-    implementation("io.ktor:ktor-server-status-pages:${Versions.KTOR}")
-    implementation("io.ktor:ktor-server-caching-headers:${Versions.KTOR}")
-    implementation("io.ktor:ktor-server-sessions:${Versions.KTOR}")
-    implementation("io.ktor:ktor-server-compression:${Versions.KTOR}")
-    implementation("io.ktor:ktor-server-metrics-micrometer:${Versions.KTOR}")
-    implementation("io.ktor:ktor-client-logging:${Versions.KTOR}")
+    implementation(libs.ktor.websockets)
+    implementation(libs.ktor.server.core)
+    implementation(libs.ktor.server.cio)
+    implementation(libs.ktor.server.netty)
+    implementation(libs.ktor.server.statusPages)
+    implementation(libs.ktor.server.cachingHeaders)
+    implementation(libs.ktor.server.compression)
+    implementation(libs.ktor.server.metricsMicrometer)
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.java)
+    implementation(libs.ktor.client.cio)
+    implementation(libs.ktor.client.logging)
     implementation("io.micrometer:micrometer-registry-prometheus:1.13.6")
 
     implementation("com.google.code.gson:gson:2.10.1")
@@ -96,7 +95,7 @@ dependencies {
     // Sequins
     implementation("net.perfectdreams.sequins.text:text-utils:1.0.1")
 
-    implementation("net.perfectdreams.randomroleplaypictures:client:1.0.1")
+    implementation("net.perfectdreams.randomroleplaypictures:client:1.0.2")
     implementation("org.gagravarr:vorbis-java-core:0.8")
 
     // GalleryOfDreams client

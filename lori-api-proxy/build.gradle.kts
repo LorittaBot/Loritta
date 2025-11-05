@@ -12,11 +12,11 @@ dependencies {
     implementation(project(":lori-public-http-api-common"))
 
     // Ktor
-    implementation("io.ktor:ktor-server-core:${Versions.KTOR}")
-    implementation("io.ktor:ktor-server-cio:${Versions.KTOR}")
-    implementation("io.ktor:ktor-client-core:${Versions.KTOR}")
-    implementation("io.ktor:ktor-client-cio:${Versions.KTOR}")
-    implementation("io.ktor:ktor-server-metrics-micrometer:${Versions.KTOR}")
+    implementation(libs.ktor.server.core)
+    implementation(libs.ktor.server.cio)
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.cio)
+    implementation(libs.ktor.server.metricsMicrometer)
 
     implementation("io.micrometer:micrometer-registry-prometheus:1.13.6")
 

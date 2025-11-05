@@ -1,8 +1,8 @@
 plugins {
 	kotlin("multiplatform")
 	kotlin("plugin.serialization")
-	id("org.jetbrains.compose") version "1.8.0-beta01"
-	id("org.jetbrains.kotlin.plugin.compose") version Versions.KOTLIN
+	id("org.jetbrains.compose")
+	id("org.jetbrains.kotlin.plugin.compose")
 }
 
 repositories {
@@ -48,8 +48,8 @@ kotlin {
 				implementation(project(":loritta-serializable-commons"))
 				implementation("org.jetbrains.kotlinx:kotlinx-html-js:0.7.3")
 				implementation(project(":discord-chat-markdown-parser"))
-				api("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.KOTLIN_SERIALIZATION}")
-				api("io.ktor:ktor-client-js:${Versions.KTOR}")
+                implementation(libs.kotlinx.serialization.json)
+                implementation(libs.ktor.client.js)
 				implementation("app.softwork:kotlinx-uuid-core:0.0.17")
 				// api(npm("htmx.org", "2.0.2"))
 				api(npm("hyperscript.org", "0.9.12"))
