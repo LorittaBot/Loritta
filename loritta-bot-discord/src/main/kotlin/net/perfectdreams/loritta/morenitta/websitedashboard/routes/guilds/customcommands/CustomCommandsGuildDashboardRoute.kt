@@ -30,7 +30,7 @@ import org.jetbrains.exposed.sql.selectAll
 class CustomCommandsGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/custom-commands") {
     override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans) {
         val customCommands = website.loritta.transaction {
-            CustomGuildCommands.selectAll()
+            CustomGuildCommands.select(CustomGuildCommands.id, CustomGuildCommands.label)
                 .where {
                     CustomGuildCommands.guild eq guild.idLong and (CustomGuildCommands.enabled eq true)
                 }
