@@ -13,6 +13,7 @@ import io.ktor.http.formUrlEncode
 import io.ktor.http.userAgent
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.response.respondRedirect
+import io.ktor.util.toMap
 import kotlinx.serialization.json.Json
 import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedDiscordUserIdentifications
@@ -41,7 +42,7 @@ class DiscordLoginUserDashboardRoute(val website: LorittaDashboardWebServer) : B
         val guildId = call.request.queryParameters["guild_id"]
 
         if (accessCode == null)
-            error("Missing auth code!")
+            error("Missing auth code! Request query parameters were ${call.request.queryParameters.toMap()}")
 
         // Attempt to authorize the user!
 
