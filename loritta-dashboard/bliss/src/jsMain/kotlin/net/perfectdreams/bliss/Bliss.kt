@@ -5,6 +5,8 @@ package net.perfectdreams.bliss
 import js.array.asList
 import js.errors.TypeError
 import js.objects.unsafeJso
+import js.typedarrays.Int8Array
+import js.typedarrays.asByteArray
 import js.typedarrays.toByteArray
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
@@ -18,6 +20,7 @@ import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
+import web.blob.arrayBuffer
 import web.blob.bytes
 import web.cssom.ClassName
 import web.dom.Document
@@ -769,7 +772,9 @@ object Bliss {
                         val array = mutableListOf<JsonObject>()
 
                         for (file in files) {
-                            val fileAsBytes = file.bytes().toByteArray()
+                            // DO NOT USE file.bytes().toByteArray() because THAT DOES NOT WORK IN CHROMIUM BROWSERS!!
+                            val fileAsBytes = Int8Array(file.arrayBuffer())
+                                .asByteArray()
                             val fileName = file.name
 
                             array.add(
