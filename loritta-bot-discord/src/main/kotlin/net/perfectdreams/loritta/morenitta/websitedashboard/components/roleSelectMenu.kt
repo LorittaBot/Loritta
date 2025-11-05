@@ -4,6 +4,7 @@ import kotlinx.html.FlowContent
 import kotlinx.html.SELECT
 import kotlinx.html.body
 import kotlinx.html.div
+import kotlinx.html.img
 import kotlinx.html.option
 import kotlinx.html.select
 import kotlinx.html.span
@@ -36,6 +37,7 @@ fun FlowContent.roleSelectMenu(
                 continue
 
             val roleColor = role.color ?: Color(153, 170, 181)
+            val roleIcon = role.icon
 
             option {
                 this.attributes["fancy-select-menu-label"] = createHTML(false)
@@ -43,8 +45,14 @@ fun FlowContent.roleSelectMenu(
                         div {
                             style = "display: flex; gap: 4px; align-items: center;"
 
-                            svgIcon(SVGIcons.RoleShield) {
-                                attr("style", "width: 1.25em; height: 1.25em; color: rgb(${roleColor.red}, ${roleColor.green}, ${roleColor.blue});")
+                            if (roleIcon != null && !roleIcon.isEmoji) {
+                                img(src = roleIcon.iconUrl) {
+                                    style = "width: 1.25em; height: 1.25em; object-fit: contain;"
+                                }
+                            } else {
+                                svgIcon(SVGIcons.RoleShield) {
+                                    attr("style", "width: 1.25em; height: 1.25em; color: rgb(${roleColor.red}, ${roleColor.green}, ${roleColor.blue});")
+                                }
                             }
 
                             text(role.name)
