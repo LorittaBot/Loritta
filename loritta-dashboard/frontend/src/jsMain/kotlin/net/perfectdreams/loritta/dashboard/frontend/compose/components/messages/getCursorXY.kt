@@ -75,6 +75,9 @@ fun getCursorXY(input: HTMLTextAreaElement, selectionPoint: Int): CursorXY {
     val x = taRect.left + (spanRect.left - divRect.left) - input.scrollLeft
     val y = taRect.top + (spanRect.top - divRect.top) - input.scrollTop
 
+    // And remove the mirror!
+    div.remove()
+
     return CursorXY(
         x.toInt(),
         y.toInt()
