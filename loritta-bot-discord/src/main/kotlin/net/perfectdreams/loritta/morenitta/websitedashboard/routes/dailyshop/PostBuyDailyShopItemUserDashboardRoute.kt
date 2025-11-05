@@ -23,6 +23,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresUserA
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseAllModals
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissSoundEffect
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.*
@@ -269,7 +270,7 @@ class PostBuyDailyShopItemUserDashboardRoute(website: LorittaDashboardWebServer)
                             null
                         )
                     )
-
+                    blissSoundEffect("configSaved")
                     dailyShopItems(i18nContext, locale, result.dailyShopResult, galleryOfDreamsResponse)
                 }
             }

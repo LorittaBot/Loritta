@@ -33,6 +33,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseAllM
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissSoundEffect
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.defaultModalCloseButton
@@ -150,7 +151,6 @@ class PostBuyShipEffectsUserDashboardRoute(website: LorittaDashboardWebServer) :
 
                 call.respondHtmlFragment(status = HttpStatusCode.OK) {
                     blissCloseAllModals()
-
                     blissShowModal(
                         createEmbeddedModal(
                             i18nContext.get(I18nKeysData.Website.Dashboard.ShipEffects.EffectApplied.Title),
@@ -178,7 +178,8 @@ class PostBuyShipEffectsUserDashboardRoute(website: LorittaDashboardWebServer) :
                             )
                         )
                     )
-
+                    blissSoundEffect("configSaved")
+                    
                     shipEffectsBribes(i18nContext, session, result.activeShipEffects, resolvedUsers)
                 }
             }
