@@ -39,7 +39,7 @@ fun FlowContent.customGuildCommands(i18nContext: I18nContext, guild: Guild, cust
             discordButtonLink(ButtonStyle.SUCCESS, href = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/custom-commands/create?type=text") {
                 if (customCommands.size >= CustomCommandsUtils.MAX_CUSTOM_COMMANDS)
                     attributes["aria-disabled"] = "true"
-                
+
                 swapRightSidebarContentsAttributes()
 
                 text("Criar Comando")
@@ -48,7 +48,7 @@ fun FlowContent.customGuildCommands(i18nContext: I18nContext, guild: Guild, cust
 
         if (customCommands.isNotEmpty()) {
             div(classes = "cards") {
-                for (customCommand in customCommands) {
+                for (customCommand in customCommands.sortedBy { it[CustomGuildCommands.label] }) {
                     div(classes = "card") {
                         style = "flex-direction: row; align-items: center; gap: 0.5em;"
 
