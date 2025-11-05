@@ -17,6 +17,7 @@ import net.perfectdreams.loritta.dashboard.frontend.compose.components.RawHtml
 import net.perfectdreams.loritta.dashboard.frontend.compose.components.messages.DiscordMessageEditor
 import net.perfectdreams.loritta.dashboard.frontend.compose.components.messages.JsonForDiscordMessages
 import net.perfectdreams.loritta.dashboard.frontend.compose.components.messages.TargetChannelResult
+import net.perfectdreams.loritta.dashboard.frontend.modals.Modal
 import net.perfectdreams.loritta.dashboard.frontend.utils.SVGIconManager
 import net.perfectdreams.loritta.dashboard.messageeditor.MessageEditorBootstrap
 import net.perfectdreams.loritta.dashboard.renderer.discordMessageRenderer
@@ -56,6 +57,7 @@ class DiscordMessageEditorComponent(val m: LorittaDashboardFrontend) : BlissComp
         buttonEditorTarget.addEventHandler(PointerEvent.CLICK) {
             m.modalManager.openModalWithOnlyCloseButton(
                 "Editor de Mensagem",
+                Modal.Size.LARGE,
                 {
                     DiscordMessageEditor(
                         m,

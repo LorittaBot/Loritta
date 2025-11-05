@@ -7,6 +7,7 @@ import kotlinx.html.style
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.dashboard.EmbeddedModal
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
@@ -44,6 +45,7 @@ fun FlowContent.userInfoWrapper(
                 openModalOnClick(
                     createEmbeddedModal(
                         i18nContext.get(DashboardI18nKeysData.ThemeSelector.SelectATheme),
+                        EmbeddedModal.Size.MEDIUM,
                         true,
                         {
                             div(classes = "theme-selector") {

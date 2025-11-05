@@ -9,26 +9,24 @@ import net.perfectdreams.loritta.dashboard.BlissHex
 import net.perfectdreams.loritta.dashboard.EmbeddedModal
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.website.components.LoadingSectionComponents
-import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.defaultModalCloseButton
-import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.openEmbeddedModalOnClick
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.ButtonStyle
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.discordButton
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.discordButtonLink
-import java.util.*
-import kotlin.collections.set
 
 /**
  * Creates an embedded modal
  */
 fun createEmbeddedModal(
     title: String,
+    size: EmbeddedModal.Size,
     canBeClosedByClickingOutsideTheWindow: Boolean,
     body: DIV.() -> (Unit),
     buttons: List<FlowContent.() -> (Unit)>
 ): EmbeddedModal {
     return EmbeddedModal(
         title,
+        size,
         canBeClosedByClickingOutsideTheWindow,
         createHTML(false).div { body() },
         buttons.map { createHTML(false).span { it() } }
@@ -43,6 +41,7 @@ fun createEmbeddedConfirmPurchaseModal(
 ): EmbeddedModal {
     return createEmbeddedModal(
         i18nContext.get(I18nKeysData.Website.Dashboard.PurchaseModal.Title),
+        EmbeddedModal.Size.MEDIUM,
         true,
         {
             style = "text-align: center;"
@@ -97,6 +96,7 @@ fun createEmbeddedConfirmPurchaseModal(
 fun createEmbeddedNotEnoughSonhosModal(i18nContext: I18nContext, price: Long): EmbeddedModal {
     return createEmbeddedModal(
         i18nContext.get(I18nKeysData.Website.Dashboard.YouDontHaveEnoughSonhosModal.Title),
+        EmbeddedModal.Size.MEDIUM,
         true,
         {
             div {
@@ -115,6 +115,7 @@ fun createEmbeddedConfirmDeletionModal(
 ): EmbeddedModal {
     return createEmbeddedModal(
         "Você tem certeza?",
+        EmbeddedModal.Size.MEDIUM,
         true,
         {
             text("Você quer deletar meeesmo?")
@@ -137,6 +138,7 @@ fun createEmbeddedConfirmDeletionModal(
 fun createEmbeddedDisableAdBlockModal(i18nContext: I18nContext): EmbeddedModal {
     return createEmbeddedModal(
         i18nContext.get(I18nKeysData.Website.Dashboard.DisableAdBlock.Title),
+        EmbeddedModal.Size.MEDIUM,
         true,
         {
             div {

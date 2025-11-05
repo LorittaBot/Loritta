@@ -14,6 +14,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.DonationKeys
 import net.perfectdreams.loritta.common.utils.LorittaDiscordOAuth2AddBotURL
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.dashboard.EmbeddedModal
 import net.perfectdreams.loritta.morenitta.utils.LorittaDiscordOAuth2AuthorizeScopeURL
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
@@ -41,6 +42,7 @@ abstract class RequiresGuildAuthDashboardLocalizedRoute(website: LorittaDashboar
                     blissShowModal(
                         createEmbeddedModal(
                             "Adicionar a Loritta",
+                            EmbeddedModal.Size.MEDIUM,
                             true,
                             {
                                 text("Adicione a Loritta no servidor!")
@@ -116,6 +118,7 @@ abstract class RequiresGuildAuthDashboardLocalizedRoute(website: LorittaDashboar
                 blissShowModal(
                     createEmbeddedModal(
                         "Sem Permissão",
+                        EmbeddedModal.Size.MEDIUM,
                         true,
                         {
                             text("Você não tem permissão para acessar as configurações deste servidor!")

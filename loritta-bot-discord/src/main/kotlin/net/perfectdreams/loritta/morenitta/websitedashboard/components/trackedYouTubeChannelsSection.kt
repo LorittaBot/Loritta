@@ -1,31 +1,16 @@
 package net.perfectdreams.loritta.morenitta.websitedashboard.components
 
 import kotlinx.html.FlowContent
-import kotlinx.html.classes
-import kotlinx.html.div
-import kotlinx.html.h1
-import kotlinx.html.hr
 import kotlinx.html.id
-import kotlinx.html.img
-import kotlinx.html.p
-import kotlinx.html.span
-import kotlinx.html.style
 import kotlinx.html.textInput
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.pudding.tables.UserCreatedProfilePresets
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.CustomGuildCommands
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.TrackedYouTubeAccounts
+import net.perfectdreams.loritta.dashboard.EmbeddedModal
 import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.youtube.YouTubeChannel
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
-import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedConfirmDeletionModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.defaultModalCloseButton
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.openModalOnClick
-import org.jetbrains.exposed.sql.ResultRow
 
 fun FlowContent.trackedYouTubeChannelsSection(
     i18nContext: I18nContext,
@@ -41,6 +26,7 @@ fun FlowContent.trackedYouTubeChannelsSection(
             openModalOnClick(
                 createEmbeddedModal(
                     "Adicionar Canal",
+                    EmbeddedModal.Size.MEDIUM,
                     true,
                     {
                         textInput {

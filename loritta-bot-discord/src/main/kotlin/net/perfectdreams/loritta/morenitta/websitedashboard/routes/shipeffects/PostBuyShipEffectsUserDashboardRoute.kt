@@ -19,6 +19,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.ShipEffects
 import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
 import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.dashboard.EmbeddedModal
 import net.perfectdreams.loritta.dashboard.EmbeddedToast
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.i18n.I18nKeysData
@@ -154,6 +155,7 @@ class PostBuyShipEffectsUserDashboardRoute(website: LorittaDashboardWebServer) :
                     blissShowModal(
                         createEmbeddedModal(
                             i18nContext.get(I18nKeysData.Website.Dashboard.ShipEffects.EffectApplied.Title),
+                            EmbeddedModal.Size.MEDIUM,
                             true,
                             {
                                 val randomPicture = listOf(

@@ -40,6 +40,10 @@ class ModalManager(val m: LorittaDashboardFrontend) {
 
         openModal(
             modal.title,
+            when (modal.size) {
+                EmbeddedModal.Size.MEDIUM -> Modal.Size.MEDIUM
+                EmbeddedModal.Size.LARGE -> Modal.Size.LARGE
+            },
             modal.canBeClosedByClickingOutsideTheWindow,
             {
                 RawHtml(modal.bodyHtml)
@@ -50,21 +54,25 @@ class ModalManager(val m: LorittaDashboardFrontend) {
 
     fun openModalWithOnlyCloseButton(
         title: String,
+        size: Modal.Size,
         body: @Composable (Modal) -> (Unit)
     ) {
         openModalWithCloseButton(
             title,
+            size,
             body
         )
     }
 
     fun openModalWithCloseButton(
         title: String,
+        size: Modal.Size,
         body: @Composable (Modal) -> (Unit),
         vararg buttons: @Composable (Modal) -> (Unit)
     ) {
         openModal(
             title,
+            size,
             true,
             body,
             { modal ->
@@ -82,6 +90,7 @@ class ModalManager(val m: LorittaDashboardFrontend) {
 
     fun openModal(
         title: String,
+        size: Modal.Size,
         canBeClosedByClickingOutsideTheWindow: Boolean,
         body: @Composable (Modal) -> (Unit),
         vararg buttons: @Composable (Modal) -> (Unit)
@@ -90,6 +99,7 @@ class ModalManager(val m: LorittaDashboardFrontend) {
             Modal(
                 this@ModalManager,
                 title,
+                size,
                 canBeClosedByClickingOutsideTheWindow,
                 body,
                 buttons.toMutableList()
@@ -122,7 +132,13 @@ class ModalManager(val m: LorittaDashboardFrontend) {
                     }) {
                         key(activeModal) {
                             Div(attrs = {
-                                classes("modal")
+                                classes(
+                                    "modal",
+                                    when (activeModal.size) {
+                                        Modal.Size.MEDIUM -> "medium-modal"
+                                        Modal.Size.LARGE -> "large-modal"
+                                    }
+                                )
                             }) {
                                 Div(attrs = {
                                     classes("content")

@@ -8,6 +8,7 @@ import net.perfectdreams.loritta.dashboard.frontend.compose.components.DiscordBu
 import net.perfectdreams.loritta.dashboard.frontend.compose.components.DiscordButtonType
 import net.perfectdreams.loritta.dashboard.frontend.compose.components.RawHtml
 import net.perfectdreams.loritta.dashboard.frontend.compose.components.SVGIcon
+import net.perfectdreams.loritta.dashboard.frontend.modals.Modal
 import net.perfectdreams.loritta.dashboard.frontend.utils.SVGIconManager
 import org.jetbrains.compose.web.attributes.ButtonType
 import org.jetbrains.compose.web.attributes.type
@@ -72,6 +73,7 @@ fun ColorPicker(
 
                 m.modalManager.openModalWithCloseButton(
                     "Selecionar Cor",
+                    Modal.Size.MEDIUM,
                     {
                         // This needs to be here to avoid the color being "remembered" after closing the color
                         val colorAsRGB = Color(

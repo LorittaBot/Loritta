@@ -8,6 +8,7 @@ import kotlinx.html.img
 import kotlinx.html.style
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.dashboard.EmbeddedModal
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.defaultModalCloseButton
@@ -60,6 +61,7 @@ fun FlowContent.backgroundItemInfo(
                 openModalOnClick(
                     createEmbeddedModal(
                         "Background Personalizado",
+                        EmbeddedModal.Size.MEDIUM,
                         true,
                         {
                             fileInput {

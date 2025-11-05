@@ -5,6 +5,7 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.utils.math.MathUtils
+import net.perfectdreams.loritta.dashboard.EmbeddedModal
 import net.perfectdreams.loritta.i18n.I18nKeys
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls
@@ -100,6 +101,7 @@ fun FlowContent.sonhosBundle(
             openModalOnClick(
                 createEmbeddedModal(
                     i18nContext.get(I18nKeysData.Website.Dashboard.BeforeBuyingTermsModal.Title),
+                    EmbeddedModal.Size.MEDIUM,
                     true,
                     {
                         p {

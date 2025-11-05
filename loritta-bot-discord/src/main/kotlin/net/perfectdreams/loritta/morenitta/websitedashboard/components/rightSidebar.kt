@@ -4,6 +4,7 @@ import kotlinx.html.*
 import kotlinx.serialization.json.Json
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.dashboard.BlissHex
+import net.perfectdreams.loritta.dashboard.EmbeddedModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedDisableAdBlockModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedModal
@@ -44,6 +45,7 @@ fun FlowContent.rightSidebar(
                             openModalOnClick(
                                 createEmbeddedModal(
                                     i18nContext.get(DashboardI18nKeysData.ThankYouMoneyModal.Title),
+                                    EmbeddedModal.Size.MEDIUM,
                                     true,
                                     {
                                         div {

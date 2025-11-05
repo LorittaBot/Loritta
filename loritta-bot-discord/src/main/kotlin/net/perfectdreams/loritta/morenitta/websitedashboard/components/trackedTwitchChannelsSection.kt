@@ -19,6 +19,7 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserCreatedProfilePresets
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.CustomGuildCommands
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.TrackedYouTubeAccounts
+import net.perfectdreams.loritta.dashboard.EmbeddedModal
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.youtube.YouTubeChannel
@@ -44,6 +45,7 @@ fun FlowContent.trackedTwitchChannelsSection(
             openModalOnClick(
                 createEmbeddedModal(
                     "Qual canal você deseja adicionar?",
+                    EmbeddedModal.Size.MEDIUM,
                     true,
                     {
                         div {
@@ -53,6 +55,7 @@ fun FlowContent.trackedTwitchChannelsSection(
                                 openModalOnClick(
                                     createEmbeddedModal(
                                         "Siga as instruções para autorizar a sua conta",
+                                        EmbeddedModal.Size.MEDIUM,
                                         true,
                                         {
                                             div {
@@ -73,6 +76,7 @@ fun FlowContent.trackedTwitchChannelsSection(
                                 openModalOnClick(
                                     createEmbeddedModal(
                                         "Adicionar canal de outra pessoa",
+                                        EmbeddedModal.Size.MEDIUM,
                                         true,
                                         {
                                             textInput {

@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.TrackedBlueskyAccounts
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.TrackedYouTubeAccounts
+import net.perfectdreams.loritta.dashboard.EmbeddedModal
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.bluesky.BlueskyProfile
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
@@ -34,6 +35,7 @@ fun FlowContent.trackedBlueskyProfilesSection(
             openModalOnClick(
                 createEmbeddedModal(
                     "Adicionar Conta",
+                    EmbeddedModal.Size.MEDIUM,
                     true,
                     {
                         textInput {

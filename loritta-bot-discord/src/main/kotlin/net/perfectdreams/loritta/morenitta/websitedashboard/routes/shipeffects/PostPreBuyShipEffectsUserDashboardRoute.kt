@@ -9,6 +9,7 @@ import kotlinx.serialization.json.Json
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ShipEffects
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.dashboard.EmbeddedModal
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
@@ -71,6 +72,7 @@ class PostPreBuyShipEffectsUserDashboardRoute(website: LorittaDashboardWebServer
                 blissShowModal(
                     createEmbeddedModal(
                         i18nContext.get(I18nKeysData.Website.Dashboard.ShipEffects.SimilarActiveEffect.Title),
+                        EmbeddedModal.Size.MEDIUM,
                         true,
                         {
                             p {

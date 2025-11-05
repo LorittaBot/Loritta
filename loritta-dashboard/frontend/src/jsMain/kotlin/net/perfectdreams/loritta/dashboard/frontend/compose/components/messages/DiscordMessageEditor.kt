@@ -17,6 +17,7 @@ import net.perfectdreams.loritta.dashboard.frontend.LorittaDashboardFrontend
 import net.perfectdreams.loritta.dashboard.frontend.compose.components.*
 import net.perfectdreams.loritta.dashboard.frontend.compose.components.colorpicker.Color
 import net.perfectdreams.loritta.dashboard.frontend.compose.components.colorpicker.ColorPicker
+import net.perfectdreams.loritta.dashboard.frontend.modals.Modal
 import net.perfectdreams.loritta.dashboard.frontend.toasts.Toast
 import net.perfectdreams.loritta.dashboard.frontend.utils.Details
 import net.perfectdreams.loritta.dashboard.frontend.utils.SVGIconManager
@@ -89,6 +90,7 @@ fun DiscordMessageEditor(
                         onClick {
                             m.modalManager.openModalWithOnlyCloseButton(
                                 "Templates de Mensagens",
+                                Modal.Size.MEDIUM,
                             ) { templatesModal ->
                                 Text("Sem criatividade? Então pegue um template!")
 
@@ -100,6 +102,7 @@ fun DiscordMessageEditor(
                                                 onClick {
                                                     m.modalManager.openModalWithCloseButton(
                                                         "Você realmente quer substituir?",
+                                                        Modal.Size.MEDIUM,
                                                         {
                                                             Text(
                                                                 "Ao aplicar o template, a sua mensagem atual será perdida! A não ser se você tenha copiado ela para outro lugar, aí vida que segue né."
@@ -146,6 +149,7 @@ fun DiscordMessageEditor(
                         onClick {
                             m.modalManager.openModalWithOnlyCloseButton(
                                 "Importar",
+                                Modal.Size.MEDIUM,
                             ) { importModal ->
                                 Text("Qual mensagem você deseja importar?")
 
@@ -158,6 +162,7 @@ fun DiscordMessageEditor(
 
                                                 m.modalManager.openModalWithCloseButton(
                                                     "Embed do Carl-bot (Embed em JSON)",
+                                                    Modal.Size.MEDIUM,
                                                     {
                                                         TextArea {
                                                             onInput {

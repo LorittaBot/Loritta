@@ -14,6 +14,7 @@ import kotlinx.serialization.json.put
 import net.perfectdreams.galleryofdreams.common.data.api.GalleryOfDreamsDataResponse
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.dashboard.EmbeddedModal
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls
 import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls.handleI18nString
@@ -83,6 +84,7 @@ fun FlowContent.dailyShopItems(
 
             val modal = createEmbeddedModal(
                 itemName,
+                EmbeddedModal.Size.MEDIUM,
                 true,
                 {
                     div(classes = "loritta-item-preview-wrapper") {
