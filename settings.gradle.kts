@@ -7,51 +7,6 @@ pluginManagement {
     }
 }
 
-dependencyResolutionManagement {
-    versionCatalogs {
-        create("libs") {
-            // Just because a variable is unused here, does NOT mean that it is unused in a project!
-            val kotlinXSerialization = version("kotlinx-serialization", "1.8.1")
-            val ktor = version("ktor", "3.1.3")
-            val exposed = version("exposed", "0.60.0")
-            val i18nHelper = version("i18nhelper", "0.0.6-SNAPSHOT")
-            val i18nHelperPlugin = version("i18nhelperplugin", "0.0.6-SNAPSHOT")
-            val logback = version("logback", "1.5.18")
-            val kotlinxCoroutines = version("kotlinx-coroutines", "1.10.2")
-            val jib = version("jib", "3.4.3")
-
-            library("deviousjda", "com.github.LorittaBot", "DeviousJDA").version("ab69faa133")
-
-            library("kotlinx-coroutines-core", "org.jetbrains.kotlinx", "kotlinx-coroutines-core").version(kotlinxCoroutines)
-            library("kotlinx-coroutines-debug", "org.jetbrains.kotlinx", "kotlinx-coroutines-debug").version(kotlinxCoroutines)
-
-            library("kotlin-logging", "io.github.microutils", "kotlin-logging").version("2.1.23")
-
-            library("kotlinx-serialization-core", "org.jetbrains.kotlinx", "kotlinx-serialization-core").versionRef(kotlinXSerialization)
-            library("kotlinx-serialization-json", "org.jetbrains.kotlinx", "kotlinx-serialization-json").versionRef(kotlinXSerialization)
-            library("kotlinx-serialization-protobuf", "org.jetbrains.kotlinx", "kotlinx-serialization-protobuf").versionRef(kotlinXSerialization)
-            library("kotlinx-serialization-hocon", "org.jetbrains.kotlinx", "kotlinx-serialization-hocon").versionRef(kotlinXSerialization)
-            library("ktor-server-core", "io.ktor", "ktor-server-core").versionRef(ktor)
-            library("ktor-server-netty", "io.ktor", "ktor-server-netty").versionRef(ktor)
-            library("ktor-server-cio", "io.ktor", "ktor-server-cio").versionRef(ktor)
-            library("ktor-client-core", "io.ktor", "ktor-client-core").versionRef(ktor)
-            library("ktor-client-js", "io.ktor", "ktor-client-js").versionRef(ktor)
-            library("ktor-client-cio", "io.ktor", "ktor-client-cio").versionRef(ktor)
-            library("ktor-server-sessions", "io.ktor", "ktor-server-sessions").versionRef(ktor)
-
-            library("exposed-core", "org.jetbrains.exposed", "exposed-core").versionRef(exposed)
-            library("exposed-jdbc", "org.jetbrains.exposed", "exposed-jdbc").versionRef(exposed)
-            library("exposed-javatime", "org.jetbrains.exposed", "exposed-java-time").versionRef(exposed)
-            library("exposed-dao", "org.jetbrains.exposed", "exposed-dao").versionRef(exposed)
-
-            library("logback-classic", "ch.qos.logback", "logback-classic").versionRef(logback)
-
-            library("hikaricp", "com.zaxxer", "HikariCP").version("6.3.0")
-            library("postgresqljdbcdriver", "org.postgresql", "postgresql").version("42.7.6")
-        }
-    }
-}
-
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.7.0"
 }
