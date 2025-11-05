@@ -17,6 +17,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresUserA
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseAllModals
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissSoundEffect
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.ColorTheme
@@ -58,7 +59,7 @@ class PostApplyProfilePresetUserDashboardRoute(website: LorittaDashboardWebServe
                             "Predefinição aplicada!"
                         )
                     )
-
+                    blissSoundEffect("configSaved")
                     blissCloseAllModals()
                 }
             }

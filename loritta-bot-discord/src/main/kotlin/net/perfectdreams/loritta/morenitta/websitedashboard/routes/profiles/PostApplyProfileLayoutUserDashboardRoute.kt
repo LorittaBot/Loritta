@@ -17,6 +17,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.profileDesignItemInfo
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresUserAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissSoundEffect
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.Background
@@ -45,7 +46,7 @@ class PostApplyProfileLayoutUserDashboardRoute(website: LorittaDashboardWebServe
 
         call.respondHtmlFragment {
             blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Layout de Perfil aplicado!"))
-
+            blissSoundEffect("configSaved")
             profileDesignItemInfo(i18nContext, locale, result.activeProfileDesignId, result.activeProfileDesignId, result.activeBackgroundId)
         }
     }

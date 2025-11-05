@@ -18,6 +18,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.backgroundItemInfo
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresUserAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissSoundEffect
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.Background
@@ -58,7 +59,7 @@ class PostApplyBackgroundUserDashboardRoute(website: LorittaDashboardWebServer) 
 
         call.respondHtmlFragment {
             blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Background aplicado!"))
-
+            blissSoundEffect("configSaved")
             backgroundItemInfo(i18nContext, locale, result.activeBackgroundId, result.activeProfileDesignId, result.activeBackgroundId)
         }
     }
