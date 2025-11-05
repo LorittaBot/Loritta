@@ -142,7 +142,7 @@ class LorittaDashboardFrontend {
                 val sfx = element.getAttribute("bliss-sound-effect")!!
                 element.remove()
                 when (sfx) {
-                    "configSaved" -> this.soundEffects.configSaved.play(1.0)
+                    "configSaved" -> this.soundEffects.configSaved.play(0.5)
                     else -> error("Unknown SFX \"$sfx\"!")
                 }
             }
