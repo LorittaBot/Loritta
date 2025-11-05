@@ -72,7 +72,7 @@ suspend fun main() {
 }
 
 suspend fun generateCards(config: LoriCoolCardsGeneratorProductionStickersConfig) {
-    val folderName = "production_v13_befopti"
+    val folderName = "production_v15_befopti"
     val http = HttpClient {}
 
     println("Max memory: ${Runtime.getRuntime().maxMemory()}")
@@ -145,7 +145,9 @@ suspend fun generateCards(config: LoriCoolCardsGeneratorProductionStickersConfig
         ReactionEventBadge.Christmas2024ReactionEventSuperBadge(pudding),
         ReactionEventBadge.Anniversary2025ReactionEventBadge(pudding),
         ReactionEventBadge.Anniversary2025ReactionEventSuperBadge(pudding),
-        TopLoveLetterBadge(pudding)
+        TopLoveLetterBadge(pudding),
+        ReactionEventBadge.Halloween2025ReactionEventBadge(pudding),
+        ReactionEventBadge.Halloween2025ReactionEventSuperBadge(pudding)
     )
 
     // Badges that requires a "Loritta" instance, so, to avoid changing the badges too much, we just pretend that the badge is valid and carry on with our lives

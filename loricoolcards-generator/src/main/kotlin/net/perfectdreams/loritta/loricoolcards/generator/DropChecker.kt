@@ -10,6 +10,7 @@ import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.minus
 import org.jetbrains.exposed.sql.alias
+import org.jetbrains.exposed.sql.and
 import java.io.File
 import java.time.Duration
 import kotlin.time.toJavaDuration
@@ -38,12 +39,7 @@ suspend fun main() {
         Pair("Sté", 400683515873591296L),
         Pair("Breno", 196798877725229057L),
         Pair("Power", 123170274651668480L),
-        Pair("Suspeito", 1122698122662006834L),
-        Pair("Suspeito2", 759208002300936212L),
-        Pair("Suspeito3", 252157358749253632L),
-        Pair("Suspeito4", 798549768137474058L),
-        Pair("Suspeito5", 879724516065046598L),
-        Pair("Suspeito6", 345001852716318721L)
+        Pair("Suspeito", 1420768300945768601L)
     )
 
     for (id in ids) {
@@ -58,7 +54,7 @@ suspend fun main() {
                     (CollectedReactionEventPoints.collectedAt - ReactionEventDrops.createdAt).alias("timeDifference")
                 )
                 .where {
-                    ReactionEventPlayers.userId eq id.second
+                    ReactionEventPlayers.userId eq id.second and (ReactionEventDrops.event eq "Halloween2025")
                 }
                 .orderBy(CollectedReactionEventPoints.collectedAt, SortOrder.ASC)
                 .toList()
@@ -79,20 +75,22 @@ suspend fun main() {
             lastChannelData = row
         }
 
-        println(id.first + " (${id.second}):")
-        println("Total Switches: ${switches.size}")
-        println("Less than 1s switches: ${switches.filter { 1_000 > it.toMillis() }.size}")
-        println("Less than 2s switches: ${switches.filter { 2_000 > it.toMillis() }.size}")
-        println("Less than 3s switches: ${switches.filter { 3_000 > it.toMillis() }.size}")
-        println("Less than 4s switches: ${switches.filter { 4_000 > it.toMillis() }.size}")
-        println("Less than 5s switches: ${switches.filter { 5_000 > it.toMillis() }.size}")
-        println("Quickest Switch: ${switches.min()}")
-        println("Longest Switch: ${switches.max()}")
-        println("Average Switch: ${switches.average()}")
-        println("Median Switch: ${switches.median()}")
-        println("Average Switch (Less than 1s): ${switches.filter { 1_000 > it.toMillis() }.average()}")
-        println("Median Switch (Less than 1s): ${switches.filter { 1_000 > it.toMillis() }.median()}")
-        println()
+        println(id.first + " (${id.second}) (Total: ${stuff.size}):")
+        if (stuff.isNotEmpty()) {
+            println("Total Switches: ${switches.size}")
+            println("Less than 1s switches: ${switches.filter { 1_000 > it.toMillis() }.size}")
+            println("Less than 2s switches: ${switches.filter { 2_000 > it.toMillis() }.size}")
+            println("Less than 3s switches: ${switches.filter { 3_000 > it.toMillis() }.size}")
+            println("Less than 4s switches: ${switches.filter { 4_000 > it.toMillis() }.size}")
+            println("Less than 5s switches: ${switches.filter { 5_000 > it.toMillis() }.size}")
+            println("Quickest Switch: ${switches.min()}")
+            println("Longest Switch: ${switches.max()}")
+            println("Average Switch: ${switches.average()}")
+            println("Median Switch: ${switches.median()}")
+            println("Average Switch (Less than 1s): ${switches.filter { 1_000 > it.toMillis() }.average()}")
+            println("Median Switch (Less than 1s): ${switches.filter { 1_000 > it.toMillis() }.median()}")
+            println()
+        }
     }
 }
 

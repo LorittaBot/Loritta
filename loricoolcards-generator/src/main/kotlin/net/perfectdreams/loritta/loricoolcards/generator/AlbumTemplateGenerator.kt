@@ -13,7 +13,7 @@ data class TemplatingSlots(
 
 fun main() {
     // val pagePrefix = "/prototype/v10/"
-    val pagePrefix = "/production/v13/"
+    val pagePrefix = "/production/v15/"
 
     val stickersToBePlaced = (1..510).toMutableList()
 
@@ -449,11 +449,11 @@ fun main() {
         StickerAlbumTemplate(
             stickerPackImageUrl = "https://stuff.loritta.website/loricoolcards/production/v1/buying-booster-pack.gif",
             unknownStickerImageUrl = "https://stuff.loritta.website/loricoolcards/production/v1/sticker-unknownsticker-animated.gif",
-            sonhosPrice = 25_000,
-            sonhosReward = 2_500_000,
+            sonhosPrice = 15_000,
+            sonhosReward = 1_000_000,
             stickersInPack = 5,
-            boosterPacksOnDailyReward = 7,
-            boosterPacksPurchaseAvailableAfter = Instant.parse("2025-09-25T03:00:00+00"),
+            boosterPacksOnDailyReward = 5,
+            boosterPacksPurchaseAvailableAfter = Instant.parse("2025-11-01T03:00:00+00"),
             stickerProbabilityWeights = mapOf(
                 CardRarity.COMMON to 1.0,
                 CardRarity.UNCOMMON to 1.0,
@@ -462,14 +462,14 @@ fun main() {
                 CardRarity.LEGENDARY to 1.0,
                 CardRarity.MYTHIC to 1.0,
             ),
-            minimumBoosterPacksToTrade = 7,
+            minimumBoosterPacksToTrade = 5,
             minimumBoosterPacksToTradeBySonhos = 102,
             minimumBoosterPacksToGive = 102,
             pages = pages,
         )
     )
 
-    println("INSERT INTO loricoolcardsevents (event_name, starts_at, ends_at, template) VALUES ('Top 500 Sonhadores (Temporada 13)', '2025-09-01 03:00:00+00', '2025-10-01 03:00:00+00', '$resultAsJson');")
+    println("INSERT INTO loricoolcardsevents (event_name, starts_at, ends_at, template) VALUES ('Top 500 Sonhadores (Temporada 15)', '2025-11-01T03:00:00+00', '2025-12-01 03:00:00+00', '$resultAsJson');")
     if (false) {
         println(
             "UPDATE loricoolcardsevents SET template = '${resultAsJson}' WHERE id = 23;"
