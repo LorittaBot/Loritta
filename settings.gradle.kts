@@ -72,11 +72,6 @@ include(":loritta-bot-discord")
 // ===[ SPICY MORENITTA ]===
 include(":web:spicy-morenitta")
 
-// ===[ EMBED EDITOR ]===
-include(":web:embed-editor:embed-renderer")
-include(":web:embed-editor:embed-editor-crosswindow")
-include(":web:embed-editor:embed-renderer")
-
 // ===[ LORITTA'S WEBSITE ]===
 include(":loritta-website:web-common")
 include(":loritta-website:loritta-website-backend")
