@@ -45,7 +45,7 @@ fun FlowContent.userInfoWrapper(
                 openModalOnClick(
                     createEmbeddedModal(
                         i18nContext.get(DashboardI18nKeysData.ThemeSelector.SelectATheme),
-                        EmbeddedModal.Size.MEDIUM,
+                        EmbeddedModal.Size.SMALL,
                         true,
                         {
                             div(classes = "theme-selector") {

@@ -41,6 +41,7 @@ class ModalManager(val m: LorittaDashboardFrontend) {
         openModal(
             modal.title,
             when (modal.size) {
+                EmbeddedModal.Size.SMALL -> Modal.Size.SMALL
                 EmbeddedModal.Size.MEDIUM -> Modal.Size.MEDIUM
                 EmbeddedModal.Size.LARGE -> Modal.Size.LARGE
             },
@@ -135,6 +136,7 @@ class ModalManager(val m: LorittaDashboardFrontend) {
                                 classes(
                                     "modal",
                                     when (activeModal.size) {
+                                        Modal.Size.SMALL -> "small-modal"
                                         Modal.Size.MEDIUM -> "medium-modal"
                                         Modal.Size.LARGE -> "large-modal"
                                     }

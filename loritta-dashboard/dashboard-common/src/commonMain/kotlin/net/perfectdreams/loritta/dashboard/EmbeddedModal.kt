@@ -11,6 +11,7 @@ data class EmbeddedModal(
     val buttonsHtml: List<String>
 ) {
     enum class Size {
+        SMALL,
         MEDIUM,
         LARGE
     }

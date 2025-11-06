@@ -23,6 +23,10 @@
         margin-top: auto;
         margin-bottom: auto;
 
+        &.small-modal {
+            width: min(92vw, 480px);
+        }
+
         &.large-modal {
             width: min(92vw, 1280px);
         }

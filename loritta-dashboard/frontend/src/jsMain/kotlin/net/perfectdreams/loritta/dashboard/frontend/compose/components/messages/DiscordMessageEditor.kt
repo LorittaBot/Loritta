@@ -90,7 +90,7 @@ fun DiscordMessageEditor(
                         onClick {
                             m.modalManager.openModalWithOnlyCloseButton(
                                 "Templates de Mensagens",
-                                Modal.Size.MEDIUM,
+                                Modal.Size.SMALL,
                             ) { templatesModal ->
                                 Text("Sem criatividade? Então pegue um template!")
 
@@ -149,7 +149,7 @@ fun DiscordMessageEditor(
                         onClick {
                             m.modalManager.openModalWithOnlyCloseButton(
                                 "Importar",
-                                Modal.Size.MEDIUM,
+                                Modal.Size.SMALL,
                             ) { importModal ->
                                 Text("Qual mensagem você deseja importar?")
 
