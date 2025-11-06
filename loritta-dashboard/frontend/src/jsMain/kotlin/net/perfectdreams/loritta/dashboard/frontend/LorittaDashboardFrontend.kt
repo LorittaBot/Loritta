@@ -45,6 +45,7 @@ class LorittaDashboardFrontend {
     fun start() {
         INSTANCE = this
 
+        println("Howdy from Kotlin ${KotlinVersion.CURRENT}! :3")
         println("AdBlock checks:")
         println("Is user using uBlock Origin? ${isUserUsingUBlockOrigin()}")
         println("Is user using EasyList? ${isUserUsingEasyList()}")
