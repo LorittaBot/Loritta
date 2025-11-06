@@ -229,7 +229,7 @@ class XPNotificationsGuildDashboardRoute(website: LorittaDashboardWebServer) : R
 
                                                 fieldWrapper {
                                                     toggle(
-                                                        false,
+                                                        announcement?.get(LevelAnnouncementConfigs.onlyIfUserReceivedRoles) ?: false,
                                                         "onlyIfUserReceivedRoles",
                                                         true,
                                                         {
