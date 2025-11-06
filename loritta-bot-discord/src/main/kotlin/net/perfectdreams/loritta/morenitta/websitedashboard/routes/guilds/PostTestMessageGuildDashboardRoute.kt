@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
@@ -34,6 +35,10 @@ import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import java.util.concurrent.TimeUnit
 
 class PostTestMessageGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/test-message") {
+    companion object {
+        private val logger by HarmonyLoggerFactory.logger {}
+    }
+
     // THE HACKIEST HACK YOU EVER HACKED
     private val messageSendCooldown = Caffeine.newBuilder().expireAfterAccess(30L, TimeUnit.SECONDS).maximumSize(100).build<Long, Long>().asMap()
 
@@ -128,6 +133,7 @@ class PostTestMessageGuildDashboardRoute(website: LorittaDashboardWebServer) : R
         try {
             channel.sendMessage(patchedMessage.build()).await()
         } catch (e: Exception) {
+            logger.warn(e) { "Something went wrong while trying to send a test message to the channel ${channel.id} in guild ${guild.id}! Message is ${request.message}" }
             call.respondHtmlFragment(status = HttpStatusCode.BadRequest) {
                 blissShowToast(
                     createEmbeddedToast(
