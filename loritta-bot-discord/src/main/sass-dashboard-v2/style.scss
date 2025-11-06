@@ -108,6 +108,7 @@ $mobile-version: 1279px;
     --background-color: hsl(210, 5%, 98.5%);
     --pure-background-color: #ffffff;
     --content-text-color: #333333;
+    --content-divider-color: hsl(210, 5%, 93.5%);
 
     // ===[ SIDEBAR ENTRIES ]===
     // This is the BACKGROUND COLOR hover color
@@ -168,6 +169,7 @@ $mobile-version: 1279px;
     --pure-background-color: #000000;
     --content-text-color: hsl(210, 0%, 85%);
     --soft-border-color: rgba(255, 255, 255, 0.1);
+    --content-divider-color: hsl(270, 5%, 15%);
 
     // ===[ LEFT SIDEBAR ]===
     --left-sidebar-background-color: hsl(270, 5%, 7%);
@@ -673,7 +675,7 @@ section#right-sidebar {
 
         hr {
             box-sizing: content-box;
-            background: rgba(0, 0, 0, 0.05);
+            background: var(--content-divider-color);
             border: 0;
             height: 1px;
         }
