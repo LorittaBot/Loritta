@@ -44,10 +44,6 @@ include(":loritta-dashboard:loritta-shimeji-common")
 include(":loritta-dashboard:dashboard-common")
 include(":loritta-dashboard:frontend")
 
-// ===[ LOTRUNFO ]===
-include(":lotrunfo:lotrunfo-backend")
-include(":lotrunfo:lotrunfo-frontend")
-
 // ===[ MISC ]===
 include(":loritta-helper")
 include(":switch-twitch")

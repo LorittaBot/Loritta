@@ -107,8 +107,8 @@ dependencies {
 
     implementation("net.sf.trove4j:core:3.1.0")
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.5.0-M1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.5.0-M1")
+    testImplementation(kotlin("test-junit5"))
+    testImplementation("org.junit.platform:junit-platform-launcher:1.14.1")
     testImplementation("io.mockk:mockk:1.9.3")
     testImplementation("org.assertj:assertj-core:3.12.2")
 }

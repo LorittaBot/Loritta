@@ -70,14 +70,14 @@ dependencies {
     implementation("net.perfectdreams.exposedpowerutils:postgres-java-time:1.2.1")
     api("net.perfectdreams.exposedpowerutils:exposed-power-utils:1.2.1")
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.2")
-
     implementation("io.ktor:ktor-client-cio:3.1.3")
 
     implementation("org.apache.commons:commons-text:1.9")
 
     implementation("com.github.luben:zstd-jni:1.5.5-6")
+
+    testImplementation(kotlin("test-junit5"))
+    testImplementation("org.junit.platform:junit-platform-launcher:1.14.1")
 }
 
 jib {
