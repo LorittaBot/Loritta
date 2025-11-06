@@ -39,8 +39,8 @@ kotlin {
                 implementation("net.perfectdreams.compose.htmldreams:html-core:1.9.0-beta01")
                 implementation(compose.runtime)
 
-                implementation("org.jetbrains.kotlin-wrappers:kotlin-browser:2025.9.4")
-                implementation("org.jetbrains.kotlin-wrappers:kotlin-js:2025.9.4")
+                implementation(libs.kotlinWrappers.browser)
+                implementation(libs.kotlinWrappers.js)
 
                 implementation(libs.kotlinx.serialization.json)
 

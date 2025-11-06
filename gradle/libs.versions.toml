@@ -9,6 +9,7 @@ logback = "1.5.18"
 kotlinx-coroutines = "1.10.2"
 jib = "3.4.5"
 compose = "1.10.0-beta01"
+kotlinWrappers = "2025.11.3"
 
 [libraries]
 deviousjda = { module = "com.github.LorittaBot:DeviousJDA", version = "ab69faa133" }
@@ -19,6 +20,9 @@ kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-t
 kotlinx-coroutines-debug = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-debug", version.ref = "kotlinx-coroutines" }
 
 kotlin-logging = { module = "io.github.microutils:kotlin-logging", version = "2.1.23" }
+
+kotlinWrappers-browser = { module = "org.jetbrains.kotlin-wrappers:kotlin-browser", version = "kotlinWrappers" }
+kotlinWrappers-js = { module = "org.jetbrains.kotlin-wrappers:kotlin-js", version = "kotlinWrappers" }
 
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
