@@ -26,7 +26,7 @@ fun FlowContent.trackedYouTubeChannelsSection(
             openModalOnClick(
                 createEmbeddedModal(
                     "Adicionar Canal",
-                    EmbeddedModal.Size.MEDIUM,
+                    EmbeddedModal.Size.SMALL,
                     true,
                     {
                         textInput {

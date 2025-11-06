@@ -35,7 +35,7 @@ fun FlowContent.trackedBlueskyProfilesSection(
             openModalOnClick(
                 createEmbeddedModal(
                     "Adicionar Conta",
-                    EmbeddedModal.Size.MEDIUM,
+                    EmbeddedModal.Size.SMALL,
                     true,
                     {
                         textInput {

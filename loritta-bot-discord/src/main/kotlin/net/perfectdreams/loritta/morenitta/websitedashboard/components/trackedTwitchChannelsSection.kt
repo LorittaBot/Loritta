@@ -45,7 +45,7 @@ fun FlowContent.trackedTwitchChannelsSection(
             openModalOnClick(
                 createEmbeddedModal(
                     "Qual canal você deseja adicionar?",
-                    EmbeddedModal.Size.MEDIUM,
+                    EmbeddedModal.Size.SMALL,
                     true,
                     {
                         div {
@@ -55,7 +55,7 @@ fun FlowContent.trackedTwitchChannelsSection(
                                 openModalOnClick(
                                     createEmbeddedModal(
                                         "Siga as instruções para autorizar a sua conta",
-                                        EmbeddedModal.Size.MEDIUM,
+                                        EmbeddedModal.Size.SMALL,
                                         true,
                                         {
                                             div {
@@ -76,7 +76,7 @@ fun FlowContent.trackedTwitchChannelsSection(
                                 openModalOnClick(
                                     createEmbeddedModal(
                                         "Adicionar canal de outra pessoa",
-                                        EmbeddedModal.Size.MEDIUM,
+                                        EmbeddedModal.Size.SMALL,
                                         true,
                                         {
                                             textInput {
