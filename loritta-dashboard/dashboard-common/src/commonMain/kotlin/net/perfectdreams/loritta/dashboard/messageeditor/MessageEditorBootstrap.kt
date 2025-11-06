@@ -11,6 +11,7 @@ data class MessageEditorBootstrap(
     val templates: List<LorittaMessageTemplate>,
     val placeholders: List<MessageEditorMessagePlaceholderGroup>,
     val guild: DiscordGuild,
+    val testMessageEndpoint: String,
     val testMessageTarget: TestMessageTarget,
     val verifiedIconRawHtml: String,
     val eyeDropperIconRawHtml: String,

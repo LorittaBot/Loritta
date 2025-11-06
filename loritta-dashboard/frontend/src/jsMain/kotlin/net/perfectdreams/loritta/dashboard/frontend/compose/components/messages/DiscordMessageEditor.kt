@@ -60,6 +60,7 @@ fun DiscordMessageEditor(
     templates: List<LorittaMessageTemplate>,
     placeholderGroups: List<MessageEditorMessagePlaceholderGroup>,
     targetGuild: DiscordGuild,
+    testMessageEndpoint: String,
     targetChannel: TargetChannelResult,
     renderableSelfUser: RenderableDiscordUser,
     verifiedIconRawHtml: SVGIconManager.SVGIcon,
@@ -260,8 +261,7 @@ fun DiscordMessageEditor(
                                     Bliss.executeAjax(
                                         null,
                                         HttpMethod.Post,
-                                        // TODO: Fix this!
-                                        "/br/guilds/268353819409252352/test-message",
+                                        testMessageEndpoint,
                                         mapOf(),
                                         null,
                                         null,

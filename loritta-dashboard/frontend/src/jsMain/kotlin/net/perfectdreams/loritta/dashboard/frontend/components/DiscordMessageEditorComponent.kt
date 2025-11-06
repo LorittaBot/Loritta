@@ -64,6 +64,7 @@ class DiscordMessageEditorComponent(val m: LorittaDashboardFrontend) : BlissComp
                         bootstrap.templates,
                         bootstrap.placeholders,
                         bootstrap.guild,
+                        bootstrap.testMessageEndpoint,
                         when (val target = bootstrap.testMessageTarget) {
                             is MessageEditorBootstrap.TestMessageTarget.QuerySelector -> {
                                 val targetElement = document.querySelector(target.querySelector)

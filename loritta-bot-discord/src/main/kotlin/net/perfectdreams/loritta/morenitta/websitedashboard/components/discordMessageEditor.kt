@@ -17,6 +17,7 @@ import net.perfectdreams.loritta.dashboard.messageeditor.LorittaMessageTemplate
 import net.perfectdreams.loritta.dashboard.messageeditor.MessageEditorBootstrap
 import net.perfectdreams.loritta.dashboard.messageeditor.MessageEditorMessagePlaceholderGroup
 import net.perfectdreams.loritta.dashboard.messageeditor.MessageEditorMessagePlaceholderGroup.RenderType
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.SVGIcons
 import net.perfectdreams.loritta.placeholders.LorittaPlaceholder
@@ -94,6 +95,7 @@ fun FlowContent.discordMessageEditor(
                                 )
                             }
                         ),
+                        "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/test-message",
                         target,
                         SVGIcons.CheckFat.html.toString(),
                         SVGIcons.EyeDropper.html.toString(),
