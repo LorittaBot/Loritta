@@ -4,6 +4,7 @@ import io.ktor.server.application.*
 import io.ktor.server.request.receiveText
 import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.Member
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildCommandConfigs
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
@@ -22,7 +23,7 @@ import org.jetbrains.exposed.sql.upsert
 import java.util.*
 
 class PutCommandsGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/commands") {
-    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans) {
+    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans, member: Member) {
         // This requires a bit of trickery
         // The frontend sends a "map" String -> Bool, the String is the UUID of each command
         val map = Json.decodeFromString<Map<String, Boolean>>(call.receiveText())

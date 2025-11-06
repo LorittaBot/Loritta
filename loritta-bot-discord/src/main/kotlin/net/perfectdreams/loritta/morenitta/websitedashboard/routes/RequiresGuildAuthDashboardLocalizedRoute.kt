@@ -7,15 +7,14 @@ import io.ktor.server.response.respondText
 import io.ktor.server.util.getOrFail
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DonationKeys
-import net.perfectdreams.loritta.common.utils.LorittaDiscordOAuth2AddBotURL
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.dashboard.EmbeddedModal
-import net.perfectdreams.loritta.morenitta.utils.LorittaDiscordOAuth2AuthorizeScopeURL
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
@@ -95,7 +94,7 @@ abstract class RequiresGuildAuthDashboardLocalizedRoute(website: LorittaDashboar
         }
 
         if (member.isOwner || member.hasPermission(Permission.ADMINISTRATOR) || member.hasPermission(Permission.MANAGE_SERVER)) {
-            onAuthenticatedGuildRequest(call, i18nContext, session, userPremiumPlan, theme, shimejiSettings, guild, guildPremiumPlan)
+            onAuthenticatedGuildRequest(call, i18nContext, session, userPremiumPlan, theme, shimejiSettings, guild, guildPremiumPlan, member)
         } else {
             onUnauthenticatedGuildRequest(call, i18nContext, session, theme)
         }
@@ -109,7 +108,8 @@ abstract class RequiresGuildAuthDashboardLocalizedRoute(website: LorittaDashboar
         theme: ColorTheme,
         shimejiSettings: LorittaShimejiSettings,
         guild: Guild,
-        guildPremiumPlan: ServerPremiumPlans
+        guildPremiumPlan: ServerPremiumPlans,
+        member: Member
     )
 
     suspend fun onUnauthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, theme: ColorTheme) {

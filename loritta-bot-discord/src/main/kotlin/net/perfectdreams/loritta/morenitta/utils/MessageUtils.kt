@@ -42,525 +42,541 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.isValidUrl
 import net.perfectdreams.loritta.morenitta.utils.placeholders.RenderableMessagePlaceholder
 
 object MessageUtils {
-	private val logger by HarmonyLoggerFactory.logger {}
-	private val CHAT_EMOJI_REGEX = Regex("(?<!<a?):([A-z0-9_]+):")
+    private val logger by HarmonyLoggerFactory.logger {}
+    private val CHAT_EMOJI_REGEX = Regex("(?<!<a?):([A-z0-9_]+):")
 
-	/**
-	 * Watermarks the message with a user mention, to avoid ToS issues affecting Loritta with "anonymous message sends"
-	 *
-	 * While [watermarkSayMessage] watermarks the end of the message or watermarks the footer of a message, this
-	 * watermarks the beginning of the message, no matter if it has a embed or not.
-	 *
-	 * @param message       the message content itself, can be a Discord Message in JSON format as String
-	 * @param locale        the locale of the guild
-	 * @param guild         the guild that caused the message to be sent
-	 * @param watermarkType the string containing the watermark type of the message
-	 * @return              a Discord Message in JSON format as a String with a watermarked
-	 */
-	fun watermarkModuleMessage(message: String, locale: BaseLocale, guild: Guild, watermarkType: String): String {
-		val jsonObject = try {
-			JsonParser.parseString(message).obj
-		} catch (ex: Exception) {
-			// If it is not a valid JSON Message, let's create a JSON with the message content
-			jsonObject(
-				"content" to message
-			)
-		}
+    /**
+     * Watermarks the message with a user mention, to avoid ToS issues affecting Loritta with "anonymous message sends"
+     *
+     * While [watermarkSayMessage] watermarks the end of the message or watermarks the footer of a message, this
+     * watermarks the beginning of the message, no matter if it has a embed or not.
+     *
+     * @param message       the message content itself, can be a Discord Message in JSON format as String
+     * @param locale        the locale of the guild
+     * @param guild         the guild that caused the message to be sent
+     * @param watermarkType the string containing the watermark type of the message
+     * @return              a Discord Message in JSON format as a String with a watermarked
+     */
+    fun watermarkModuleMessage(message: String, locale: BaseLocale, guild: Guild, watermarkType: String): String {
+        val jsonObject = try {
+            JsonParser.parseString(message).obj
+        } catch (ex: Exception) {
+            // If it is not a valid JSON Message, let's create a JSON with the message content
+            jsonObject(
+                "content" to message
+            )
+        }
 
-		val watermarkMessage = "> ${Emotes.LORI_COFFEE} *${locale["loritta.moduleDirectMessageConfiguredBy", "${guild.name} `(${guild.id})`", watermarkType]}*\n\n"
-		val originalContent = jsonObject["content"]
-			.nullString ?: ""
+        val watermarkMessage = "> ${Emotes.LORI_COFFEE} *${locale["loritta.moduleDirectMessageConfiguredBy", "${guild.name} `(${guild.id})`", watermarkType]}*\n\n"
+        val originalContent = jsonObject["content"]
+            .nullString ?: ""
 
-		jsonObject["content"] = watermarkMessage + originalContent.substringIfNeeded(
-			range = 0 until (2000 - watermarkMessage.length)
-		)
+        jsonObject["content"] = watermarkMessage + originalContent.substringIfNeeded(
+            range = 0 until (2000 - watermarkMessage.length)
+        )
 
-		return jsonObject.toString()
-	}
+        return jsonObject.toString()
+    }
 
-	/**
-	 * Watermarks the message with a user mention, to avoid ToS issues affecting Loritta with "anonymous message sends"
-	 *
-	 * @param message          the message content itself, can be a Discord Message in JSON format as String
-	 * @param watermarkForUser the user that this message is going to be watermarked with
-	 * @param watermarkText    the text that should be watermarked for, {0} will be replaced with the user's mention
-	 * @return                 a Discord Message in JSON format as a String with a watermarked
-	 */
-	fun watermarkSayMessage(message: String, watermarkForUser: User, watermarkText: String): String {
-		val jsonObject = try {
-			JsonParser.parseString(message).obj
-		} catch (ex: Exception) {
-			// If it is not a valid JSON Message, let's create a JSON with the message content
-			jsonObject(
-				"content" to message
-			)
-		}
+    /**
+     * Watermarks the message with a user mention, to avoid ToS issues affecting Loritta with "anonymous message sends"
+     *
+     * @param message          the message content itself, can be a Discord Message in JSON format as String
+     * @param watermarkForUser the user that this message is going to be watermarked with
+     * @param watermarkText    the text that should be watermarked for, {0} will be replaced with the user's mention
+     * @return                 a Discord Message in JSON format as a String with a watermarked
+     */
+    fun watermarkSayMessage(message: String, watermarkForUser: User, watermarkText: String): String {
+        val jsonObject = try {
+            JsonParser.parseString(message).obj
+        } catch (ex: Exception) {
+            // If it is not a valid JSON Message, let's create a JSON with the message content
+            jsonObject(
+                "content" to message
+            )
+        }
 
-		var isWatermarked = false
+        var isWatermarked = false
 
-		val messageEmbed = jsonObject["embed"]
-			.nullObj
+        val messageEmbed = jsonObject["embed"]
+            .nullObj
 
-		if (messageEmbed != null) {
-			val footer = messageEmbed["footer"]
-				.nullObj
+        if (messageEmbed != null) {
+            val footer = messageEmbed["footer"]
+                .nullObj
 
-			if (footer == null) {
-				// If the message has an embed, but doesn't have a footer, place the watermark on the embed's footer!
-				isWatermarked = true
-				messageEmbed["footer"] = jsonObject(
-					"text" to watermarkForUser.name + "#" + watermarkForUser.discriminator + " (${watermarkForUser.idLong})",
-					"icon_url" to watermarkForUser.effectiveAvatarUrl
-				)
-			}
-		}
+            if (footer == null) {
+                // If the message has an embed, but doesn't have a footer, place the watermark on the embed's footer!
+                isWatermarked = true
+                messageEmbed["footer"] = jsonObject(
+                    "text" to watermarkForUser.name + "#" + watermarkForUser.discriminator + " (${watermarkForUser.idLong})",
+                    "icon_url" to watermarkForUser.effectiveAvatarUrl
+                )
+            }
+        }
 
-		if (!isWatermarked) {
-			// If the message isn't watermarked yet, let's place the watermark on the content itself
-			isWatermarked = true
-			val watermarkMessage = "\n\n${Emotes.LORI_COFFEE} *${watermarkText.format(watermarkForUser.asMention)}*"
-			val originalContent = jsonObject["content"]
-				.nullString ?: ""
+        if (!isWatermarked) {
+            // If the message isn't watermarked yet, let's place the watermark on the content itself
+            isWatermarked = true
+            val watermarkMessage = "\n\n${Emotes.LORI_COFFEE} *${watermarkText.format(watermarkForUser.asMention)}*"
+            val originalContent = jsonObject["content"]
+                .nullString ?: ""
 
-			jsonObject["content"] = originalContent.substringIfNeeded(
-				range = 0 until (2000 - watermarkMessage.length)
-			) + watermarkMessage
-		}
+            jsonObject["content"] = originalContent.substringIfNeeded(
+                range = 0 until (2000 - watermarkMessage.length)
+            ) + watermarkMessage
+        }
 
-		return jsonObject.toString()
-	}
+        return jsonObject.toString()
+    }
 
-	fun <T : MessagePlaceholder> generateMessage(message: String, guild: Guild?, section: SectionPlaceholders<T>, customTokensBuilder: (T) -> (String), safe: Boolean = true): MessageCreateData {
-		val customTokens = mutableListOf<RenderableMessagePlaceholder>()
-		section.placeholders.forEach {
-			val placeholderValue = customTokensBuilder.invoke(it)
-			customTokens.add(RenderableMessagePlaceholder(it, placeholderValue))
-		}
-		return generateMessage(message, guild, customTokens, safe)
-	}
+    fun <T : MessagePlaceholder> generateMessage(message: String, guild: Guild?, section: SectionPlaceholders<T>, customTokensBuilder: (T) -> (String), safe: Boolean = true): MessageCreateData {
+        val customTokens = mutableListOf<RenderableMessagePlaceholder>()
+        section.placeholders.forEach {
+            val placeholderValue = customTokensBuilder.invoke(it)
+            customTokens.add(RenderableMessagePlaceholder(it, placeholderValue))
+        }
+        return generateMessage(message, guild, customTokens, safe)
+    }
 
-	fun generateMessage(message: String, guild: Guild?, customTokens: List<RenderableMessagePlaceholder> = listOf(), safe: Boolean = true): MessageCreateData {
-		val originalDiscordMessage = try {
-			JsonIgnoreUnknownKeys.decodeFromString<DiscordMessage>(message)
-		} catch (e: SerializationException) {
-			DiscordMessage(content = message) // If the message is null, use the message as the content!
-		} catch (e: IllegalStateException) {
-			DiscordMessage(content = message) // This may be triggered when a message has invalid message components
-		}
+    fun generateMessage(message: String, guild: Guild?, customTokens: List<RenderableMessagePlaceholder> = listOf(), safe: Boolean = true): MessageCreateData {
+        val tokensAsMap = mutableMapOf<String, String>()
 
-		fun recursiveComponentReplacer(component: DiscordComponent): DiscordComponent {
-			return when (component) {
-				is DiscordComponent.DiscordActionRow -> {
-					with(component) {
-						component.copy(
-							components = this.components.map { recursiveComponentReplacer(it) }
-						)
-					}
-				}
+        for (token in customTokens) {
+            for (name in token.placeholder.names) {
+                tokensAsMap[name.placeholder.name] = token.replaceWith
+            }
+        }
 
-				is DiscordComponent.DiscordButton -> {
-					with(component) {
-						component.copy(
-							label = processStringAndReplaceTokens(this.label, 80, guild, customTokens),
-							url = replaceTokens(this.url, guild, customTokens)
-						)
-					}
-				}
-			}
-		}
+        return generateMessage(message, guild, tokensAsMap, safe)
+    }
 
-		// Let's replace all the tokens!
-		val discordMessage = with(originalDiscordMessage) {
-			copy(
-				content = processStringAndReplaceTokens(content, 2000, guild, customTokens),
-				embed = embed?.let {
-					with(it) {
-						this.copy(
-							author = with(author) {
-								this?.copy(
-									name = processStringAndReplaceTokens(this.name, 256, guild, customTokens),
-									url = processUrlIfNotNull(replaceTokensIfNotNull(url, guild, customTokens)),
-									iconUrl = processUrlIfNotNull(
-										replaceTokensIfNotNull(
-											iconUrl,
-											guild,
-											customTokens
-										)
-									)
-								)
-							},
-							title = processStringAndReplaceTokensIfNotNull(title, 256, guild, customTokens),
-							description = processStringAndReplaceTokensIfNotNull(
-								description,
-								4096,
-								guild,
-								customTokens
-							),
-							url = processUrlIfNotNull(replaceTokensIfNotNull(url, guild, customTokens)),
-							footer = with(footer) {
-								this?.copy(
-									text = processStringAndReplaceTokens(text, 2048, guild, customTokens),
-									iconUrl = processImageUrlIfNotNull(
-										replaceTokensIfNotNull(
-											iconUrl,
-											guild,
-											customTokens
-										)
-									)
-								)
-							},
-							image = with(image) {
-								this?.copy(
-									url = processImageUrl(replaceTokens(url, guild, customTokens))
-								)
-							},
-							thumbnail = with(thumbnail) {
-								this?.copy(
-									url = processImageUrl(replaceTokens(url, guild, customTokens))
-								)
-							},
-							fields = fields.map {
-								it.copy(
-									name = processStringAndReplaceTokens(it.name, 256, guild, customTokens),
-									value = processStringAndReplaceTokens(it.value, 1024, guild, customTokens),
-									inline = it.inline
-								)
-							}
-						)
-					}
-				},
-				components = components?.map { recursiveComponentReplacer(it) }
-			)
-		}
+    fun generateMessage(
+        message: String,
+        guild: Guild?,
+        customTokens: Map<String, String>,
+        safe: Boolean
+    ): MessageCreateData {
+        val originalDiscordMessage = try {
+            JsonIgnoreUnknownKeys.decodeFromString<DiscordMessage>(message)
+        } catch (e: SerializationException) {
+            DiscordMessage(content = message) // If the message is null, use the message as the content!
+        } catch (e: IllegalStateException) {
+            DiscordMessage(content = message) // This may be triggered when a message has invalid message components
+        }
 
-		val messageBuilder = MessageCreateBuilder()
-		messageBuilder.setContent(discordMessage.content)
-		val discordEmbed = discordMessage.embed
-		if (discordEmbed != null) {
-			val embed = EmbedBuilder()
-				.setAuthor(discordEmbed.author?.name, discordEmbed.author?.url, discordEmbed.author?.iconUrl)
-				.setTitle(discordEmbed.title, discordEmbed.url)
-				.setDescription(discordEmbed.description)
-				.setThumbnail(discordEmbed.thumbnail?.url)
-				.setImage(discordEmbed.image?.url)
-				.setFooter(discordEmbed.footer?.text, discordEmbed.footer?.iconUrl)
+        fun recursiveComponentReplacer(component: DiscordComponent): DiscordComponent {
+            return when (component) {
+                is DiscordComponent.DiscordActionRow -> {
+                    with(component) {
+                        component.copy(
+                            components = this.components.map { recursiveComponentReplacer(it) }
+                        )
+                    }
+                }
 
-			for (field in discordEmbed.fields) {
-				embed.addField(field.name, field.value, field.inline)
-			}
+                is DiscordComponent.DiscordButton -> {
+                    with(component) {
+                        component.copy(
+                            label = processStringAndReplaceTokens(this.label, 80, guild, customTokens),
+                            url = replaceTokens(this.url, guild, customTokens)
+                        )
+                    }
+                }
+            }
+        }
 
-			val color = discordEmbed.color
-			if (color != null)
-				embed.setColor(color)
+        // Let's replace all the tokens!
+        val discordMessage = with(originalDiscordMessage) {
+            copy(
+                content = processStringAndReplaceTokens(content, 2000, guild, customTokens),
+                embed = embed?.let {
+                    with(it) {
+                        this.copy(
+                            author = with(author) {
+                                this?.copy(
+                                    name = processStringAndReplaceTokens(this.name, 256, guild, customTokens),
+                                    url = processUrlIfNotNull(replaceTokensIfNotNull(url, guild, customTokens)),
+                                    iconUrl = processUrlIfNotNull(
+                                        replaceTokensIfNotNull(
+                                            iconUrl,
+                                            guild,
+                                            customTokens
+                                        )
+                                    )
+                                )
+                            },
+                            title = processStringAndReplaceTokensIfNotNull(title, 256, guild, customTokens),
+                            description = processStringAndReplaceTokensIfNotNull(
+                                description,
+                                4096,
+                                guild,
+                                customTokens
+                            ),
+                            url = processUrlIfNotNull(replaceTokensIfNotNull(url, guild, customTokens)),
+                            footer = with(footer) {
+                                this?.copy(
+                                    text = processStringAndReplaceTokens(text, 2048, guild, customTokens),
+                                    iconUrl = processImageUrlIfNotNull(
+                                        replaceTokensIfNotNull(
+                                            iconUrl,
+                                            guild,
+                                            customTokens
+                                        )
+                                    )
+                                )
+                            },
+                            image = with(image) {
+                                this?.copy(
+                                    url = processImageUrl(replaceTokens(url, guild, customTokens))
+                                )
+                            },
+                            thumbnail = with(thumbnail) {
+                                this?.copy(
+                                    url = processImageUrl(replaceTokens(url, guild, customTokens))
+                                )
+                            },
+                            fields = fields.map {
+                                it.copy(
+                                    name = processStringAndReplaceTokens(it.name, 256, guild, customTokens),
+                                    value = processStringAndReplaceTokens(it.value, 1024, guild, customTokens),
+                                    inline = it.inline
+                                )
+                            }
+                        )
+                    }
+                },
+                components = components?.map { recursiveComponentReplacer(it) }
+            )
+        }
 
-			try {
-				messageBuilder.setEmbeds(embed.build())
-			} catch (e: Exception) {
-				// Creating a empty embed can cause errors, so we just wrap it in a try .. catch block and hope
-				// for the best!
-			}
-		}
+        val messageBuilder = MessageCreateBuilder()
+        messageBuilder.setContent(discordMessage.content)
+        val discordEmbed = discordMessage.embed
+        if (discordEmbed != null) {
+            val embed = EmbedBuilder()
+                .setAuthor(discordEmbed.author?.name, discordEmbed.author?.url, discordEmbed.author?.iconUrl)
+                .setTitle(discordEmbed.title, discordEmbed.url)
+                .setDescription(discordEmbed.description)
+                .setThumbnail(discordEmbed.thumbnail?.url)
+                .setImage(discordEmbed.image?.url)
+                .setFooter(discordEmbed.footer?.text, discordEmbed.footer?.iconUrl)
 
-		// This code must be refactored later due to Components V2
-		fun recursiveComponentConverter(component: DiscordComponent): Component {
-			return when (component) {
-				is DiscordComponent.DiscordActionRow -> {
-					// ActionRows cannot have other ActionRows within them so whatever
-					ActionRow.of(component.components.map { recursiveComponentConverter(it) as ActionRowChildComponent })
-				}
+            for (field in discordEmbed.fields) {
+                embed.addField(field.name, field.value, field.inline)
+            }
 
-				is DiscordComponent.DiscordButton -> {
-					// We ONLY support link buttons
-					Button.of(
-						ButtonStyle.LINK,
-						component.url,
-						component.label
-					)
-				}
-			}
-		}
+            val color = discordEmbed.color
+            if (color != null)
+                embed.setColor(color)
 
-		val components = discordMessage.components
-		if (components != null) {
-			for (component in components) {
-				// The first component must be a layout component (also known as... ActionRow)
-				// If it isn't, then the JSON is invalid!
-				messageBuilder.addComponents(recursiveComponentConverter(component) as ActionRow) // Always MUST be an ActionRow here
-			}
-		}
+            try {
+                messageBuilder.setEmbeds(embed.build())
+            } catch (e: Exception) {
+                // Creating a empty embed can cause errors, so we just wrap it in a try .. catch block and hope
+                // for the best!
+            }
+        }
 
-		return messageBuilder.build()
-	}
+        // This code must be refactored later due to Components V2
+        fun recursiveComponentConverter(component: DiscordComponent): Component {
+            return when (component) {
+                is DiscordComponent.DiscordActionRow -> {
+                    // ActionRows cannot have other ActionRows within them so whatever
+                    ActionRow.of(component.components.map { recursiveComponentConverter(it) as ActionRowChildComponent })
+                }
 
-	// This is still used by "legacy" (let's be honest, it ain't legacy lmao) modules and commands
-	// Let's remap it to the new version!
-	fun generateMessage(message: String, sources: List<Any>?, guild: Guild?, customTokens: Map<String, String> = mutableMapOf(), safe: Boolean = true): MessageCreateData {
-		val tokens = mutableMapOf<String, String?>()
-		tokens.putAll(customTokens)
+                is DiscordComponent.DiscordButton -> {
+                    // We ONLY support link buttons
+                    Button.of(
+                        ButtonStyle.LINK,
+                        component.url,
+                        component.label
+                    )
+                }
+            }
+        }
 
-		if (sources != null) {
-			for (source in sources) {
-				if (source is User) {
-					tokens[Placeholders.USER_MENTION.name] = source.asMention
-					tokens[Placeholders.USER_NAME_SHORT.name] = source.globalName ?: source.name
-					tokens[Placeholders.USER_NAME.name] = source.globalName ?: source.name
-					tokens[Placeholders.USER_DISCRIMINATOR.name] = source.discriminator
-					tokens[Placeholders.USER_ID.name] = source.id
-					tokens[Placeholders.USER_AVATAR_URL.name] = source.effectiveAvatarUrl
-					tokens[Placeholders.USER_TAG.name] = "@${source.name.escapeMentions()}"
+        val components = discordMessage.components
+        if (components != null) {
+            for (component in components) {
+                // The first component must be a layout component (also known as... ActionRow)
+                // If it isn't, then the JSON is invalid!
+                messageBuilder.addComponents(recursiveComponentConverter(component) as ActionRow) // Always MUST be an ActionRow here
+            }
+        }
 
-					tokens[Placeholders.Deprecated.USER_DISCRIMINATOR.name] = source.discriminator
-					tokens[Placeholders.Deprecated.USER_ID.name] = source.id
-					tokens[Placeholders.Deprecated.USER_AVATAR_URL.name] = source.effectiveAvatarUrl
-				}
-				if (source is Member) {
-					tokens[Placeholders.USER_MENTION.name] = source.asMention
-					tokens[Placeholders.USER_NAME_SHORT.name] = source.user.globalName ?: source.user.name
-					tokens[Placeholders.USER_NAME.name] = source.user.globalName ?: source.user.name
-					tokens[Placeholders.USER_DISCRIMINATOR.name] = source.user.discriminator
-					tokens[Placeholders.USER_ID.name] = source.id
-					tokens[Placeholders.USER_TAG.name] = "@${source.user.name.escapeMentions()}"
-					tokens[Placeholders.USER_AVATAR_URL.name] = source.user.effectiveAvatarUrl
-					tokens[Placeholders.USER_NICKNAME.name] = source.effectiveName
+        return messageBuilder.build()
+    }
 
-					tokens[Placeholders.Deprecated.USER_DISCRIMINATOR.name] = source.user.discriminator
-					tokens[Placeholders.Deprecated.USER_ID.name] = source.id
-					tokens[Placeholders.Deprecated.USER_AVATAR_URL.name] = source.user.effectiveAvatarUrl
-					tokens[Placeholders.Deprecated.USER_NICKNAME.name] = source.effectiveName
-				}
-				if (source is Guild) {
-					val guildSize = source.memberCount.toString()
-					val mentionOwner = source.owner?.asMention ?: "???"
-					val owner = source.owner?.effectiveName ?: "???"
+    // This is still used by "legacy" (let's be honest, it ain't legacy lmao) modules and commands
+    // Let's remap it to the new version!
+    fun generateMessage(message: String, sources: List<Any>?, guild: Guild?, customTokens: Map<String, String> = mutableMapOf(), safe: Boolean = true): MessageCreateData {
+        val tokens = mutableMapOf<String, String?>()
+        tokens.putAll(customTokens)
+
+        if (sources != null) {
+            for (source in sources) {
+                if (source is User) {
+                    tokens[Placeholders.USER_MENTION.name] = source.asMention
+                    tokens[Placeholders.USER_NAME_SHORT.name] = source.globalName ?: source.name
+                    tokens[Placeholders.USER_NAME.name] = source.globalName ?: source.name
+                    tokens[Placeholders.USER_DISCRIMINATOR.name] = source.discriminator
+                    tokens[Placeholders.USER_ID.name] = source.id
+                    tokens[Placeholders.USER_AVATAR_URL.name] = source.effectiveAvatarUrl
+                    tokens[Placeholders.USER_TAG.name] = "@${source.name.escapeMentions()}"
+
+                    tokens[Placeholders.Deprecated.USER_DISCRIMINATOR.name] = source.discriminator
+                    tokens[Placeholders.Deprecated.USER_ID.name] = source.id
+                    tokens[Placeholders.Deprecated.USER_AVATAR_URL.name] = source.effectiveAvatarUrl
+                }
+                if (source is Member) {
+                    tokens[Placeholders.USER_MENTION.name] = source.asMention
+                    tokens[Placeholders.USER_NAME_SHORT.name] = source.user.globalName ?: source.user.name
+                    tokens[Placeholders.USER_NAME.name] = source.user.globalName ?: source.user.name
+                    tokens[Placeholders.USER_DISCRIMINATOR.name] = source.user.discriminator
+                    tokens[Placeholders.USER_ID.name] = source.id
+                    tokens[Placeholders.USER_TAG.name] = "@${source.user.name.escapeMentions()}"
+                    tokens[Placeholders.USER_AVATAR_URL.name] = source.user.effectiveAvatarUrl
+                    tokens[Placeholders.USER_NICKNAME.name] = source.effectiveName
+
+                    tokens[Placeholders.Deprecated.USER_DISCRIMINATOR.name] = source.user.discriminator
+                    tokens[Placeholders.Deprecated.USER_ID.name] = source.id
+                    tokens[Placeholders.Deprecated.USER_AVATAR_URL.name] = source.user.effectiveAvatarUrl
+                    tokens[Placeholders.Deprecated.USER_NICKNAME.name] = source.effectiveName
+                }
+                if (source is Guild) {
+                    val guildSize = source.memberCount.toString()
+                    val mentionOwner = source.owner?.asMention ?: "???"
+                    val owner = source.owner?.effectiveName ?: "???"
 
 
-					tokens[Placeholders.GUILD_NAME_SHORT.name] = source.name
-					tokens[Placeholders.GUILD_NAME.name] = source.name
-					tokens[Placeholders.GUILD_SIZE.name] = guildSize
-					tokens[Placeholders.GUILD_ICON_URL.name] = source.iconUrl?.replace("jpg", "png")
+                    tokens[Placeholders.GUILD_NAME_SHORT.name] = source.name
+                    tokens[Placeholders.GUILD_NAME.name] = source.name
+                    tokens[Placeholders.GUILD_SIZE.name] = guildSize
+                    tokens[Placeholders.GUILD_ICON_URL.name] = source.iconUrl?.replace("jpg", "png")
 
-					// Deprecated stuff
-					tokens["guildsize"] = guildSize
-					tokens["guild-size"] = guildSize
-					tokens["@owner"] = mentionOwner
-					tokens["owner"] = owner
-					tokens["guild-icon-url"] = source.iconUrl?.replace("jpg", "png")
-				}
-				if (source is GuildChannel) {
-					tokens["channel"] = source.name
-					tokens["channel-id"] = source.id
-				}
-				if (source is TextChannel) {
-					tokens["@channel"] = source.asMention
-				}
-			}
-		}
+                    // Deprecated stuff
+                    tokens["guildsize"] = guildSize
+                    tokens["guild-size"] = guildSize
+                    tokens["@owner"] = mentionOwner
+                    tokens["owner"] = owner
+                    tokens["guild-icon-url"] = source.iconUrl?.replace("jpg", "png")
+                }
+                if (source is GuildChannel) {
+                    tokens["channel"] = source.name
+                    tokens["channel-id"] = source.id
+                }
+                if (source is TextChannel) {
+                    tokens["@channel"] = source.asMention
+                }
+            }
+        }
 
-		return generateMessage(
-			message,
-			guild,
-			tokens.filter { it.value != null }.map {
-				RenderableMessagePlaceholder(
-					GenericPlaceholders.Placeholder(
-						listOf(LorittaPlaceholder(it.key).toVisiblePlaceholder())
-					),
-					it.value!!
-				)
-			}
-		)
-	}
+        return generateMessage(
+            message,
+            guild,
+            tokens.filter { it.value != null }.map {
+                RenderableMessagePlaceholder(
+                    GenericPlaceholders.Placeholder(
+                        listOf(LorittaPlaceholder(it.key).toVisiblePlaceholder())
+                    ),
+                    it.value!!
+                )
+            }
+        )
+    }
 
-	// This is the refactored version
-	fun <T : MessagePlaceholder> generateMessageOrFallbackIfInvalid(i18nContext: I18nContext, message: String, guild: Guild?, section: SectionPlaceholders<T>, customTokensBuilder: (T) -> (String), generationErrorMessageI18nKey: StringI18nData, safe: Boolean = true): MessageCreateData {
-		val customTokens = mutableListOf<RenderableMessagePlaceholder>()
-		section.placeholders.forEach {
-			val placeholderValue = customTokensBuilder.invoke(it)
-			customTokens.add(RenderableMessagePlaceholder(it, placeholderValue))
-		}
-		return generateMessageOrFallbackIfInvalid(
-			i18nContext,
-			message,
-			guild,
-			customTokens,
-			generationErrorMessageI18nKey,
-			safe
-		)
-	}
+    // This is the refactored version
+    fun <T : MessagePlaceholder> generateMessageOrFallbackIfInvalid(i18nContext: I18nContext, message: String, guild: Guild?, section: SectionPlaceholders<T>, customTokensBuilder: (T) -> (String), generationErrorMessageI18nKey: StringI18nData, safe: Boolean = true): MessageCreateData {
+        val customTokens = mutableListOf<RenderableMessagePlaceholder>()
+        section.placeholders.forEach {
+            val placeholderValue = customTokensBuilder.invoke(it)
+            customTokens.add(RenderableMessagePlaceholder(it, placeholderValue))
+        }
+        return generateMessageOrFallbackIfInvalid(
+            i18nContext,
+            message,
+            guild,
+            customTokens,
+            generationErrorMessageI18nKey,
+            safe
+        )
+    }
 
-	fun generateMessageOrFallbackIfInvalid(
-		i18nContext: I18nContext,
-		message: String,
-		guild: Guild?,
-		customTokens: List<RenderableMessagePlaceholder> = listOf(),
-		generationErrorMessageI18nKey: StringI18nData,
-		safe: Boolean = true
-	) = generateMessageOrFallbackIfInvalid(
-		i18nContext,
-		message,
-		guild,
-		customTokens,
-		i18nContext.get(generationErrorMessageI18nKey),
-		safe
-	)
+    fun generateMessageOrFallbackIfInvalid(
+        i18nContext: I18nContext,
+        message: String,
+        guild: Guild?,
+        customTokens: List<RenderableMessagePlaceholder> = listOf(),
+        generationErrorMessageI18nKey: StringI18nData,
+        safe: Boolean = true
+    ) = generateMessageOrFallbackIfInvalid(
+        i18nContext,
+        message,
+        guild,
+        customTokens,
+        i18nContext.get(generationErrorMessageI18nKey),
+        safe
+    )
 
-	fun generateMessageOrFallbackIfInvalid(
-		i18nContext: I18nContext,
-		message: String,
-		guild: Guild?,
-		customTokens: List<RenderableMessagePlaceholder> = listOf(),
-		generationErrorMessage: String,
-		safe: Boolean = true
-	): MessageCreateData {
-		return try {
-			generateMessage(
-				message,
-				guild,
-				customTokens,
-				safe
-			)
-		} catch (e: Exception) {
-			logger.warn(e) { "Something went wrong while trying to generate message! Falling back..." }
-			createFallbackMessage(i18nContext, generationErrorMessage)
-		}
-	}
+    fun generateMessageOrFallbackIfInvalid(
+        i18nContext: I18nContext,
+        message: String,
+        guild: Guild?,
+        customTokens: List<RenderableMessagePlaceholder> = listOf(),
+        generationErrorMessage: String,
+        safe: Boolean = true
+    ): MessageCreateData {
+        return try {
+            generateMessage(
+                message,
+                guild,
+                customTokens,
+                safe
+            )
+        } catch (e: Exception) {
+            logger.warn(e) { "Something went wrong while trying to generate message! Falling back..." }
+            createFallbackMessage(i18nContext, generationErrorMessage)
+        }
+    }
 
-	// This is the legacy version
-	fun generateMessageOrFallbackIfInvalid(
-		i18nContext: I18nContext,
-		message: String,
-		sources: List<Any>?,
-		guild: Guild?,
-		customTokens: Map<String, String> = mutableMapOf(),
-		generationErrorMessageI18nKey: StringI18nData,
-		safe: Boolean = true
-	) = generateMessageOrFallbackIfInvalid(
-		i18nContext,
-		message,
-		sources,
-		guild,
-		customTokens,
-		i18nContext.get(generationErrorMessageI18nKey),
-		safe
-	)
+    // This is the legacy version
+    fun generateMessageOrFallbackIfInvalid(
+        i18nContext: I18nContext,
+        message: String,
+        sources: List<Any>?,
+        guild: Guild?,
+        customTokens: Map<String, String> = mutableMapOf(),
+        generationErrorMessageI18nKey: StringI18nData,
+        safe: Boolean = true
+    ) = generateMessageOrFallbackIfInvalid(
+        i18nContext,
+        message,
+        sources,
+        guild,
+        customTokens,
+        i18nContext.get(generationErrorMessageI18nKey),
+        safe
+    )
 
-	fun generateMessageOrFallbackIfInvalid(i18nContext: I18nContext, message: String, sources: List<Any>?, guild: Guild?, customTokens: Map<String, String> = mutableMapOf(), generationErrorMessage: String, safe: Boolean = true): MessageCreateData {
-		return try {
-			generateMessage(
-				message,
-				sources,
-				guild,
-				customTokens,
-				safe
-			)
-		} catch (e: Exception) {
-			logger.warn(e) { "Something went wrong while trying to generate message! Falling back..." }
-			createFallbackMessage(i18nContext, generationErrorMessage)
-		}
-	}
+    fun generateMessageOrFallbackIfInvalid(i18nContext: I18nContext, message: String, sources: List<Any>?, guild: Guild?, customTokens: Map<String, String> = mutableMapOf(), generationErrorMessage: String, safe: Boolean = true): MessageCreateData {
+        return try {
+            generateMessage(
+                message,
+                sources,
+                guild,
+                customTokens,
+                safe
+            )
+        } catch (e: Exception) {
+            logger.warn(e) { "Something went wrong while trying to generate message! Falling back..." }
+            createFallbackMessage(i18nContext, generationErrorMessage)
+        }
+    }
 
-	/**
-	 * Creates a fallback message for when [MessageUtils.generateMessage] fails to generate due to an error in the message
-	 */
-	private fun createFallbackMessage(i18nContext: I18nContext, generationErrorMessage: String): MessageCreateData {
-		return MessageCreate {
-			embed {
-				title = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob} ${i18nContext.get(I18nKeysData.InvalidMessages.InvalidMessage)}"
-				description = i18nContext.get(I18nKeysData.InvalidMessages.Base(generationErrorMessage))
-				color = LorittaColors.LorittaRed.rgb
-				footer(i18nContext.get(I18nKeysData.InvalidMessages.IsItTooLateNowToSaySorry))
-			}
+    /**
+     * Creates a fallback message for when [MessageUtils.generateMessage] fails to generate due to an error in the message
+     */
+    private fun createFallbackMessage(i18nContext: I18nContext, generationErrorMessage: String): MessageCreateData {
+        return MessageCreate {
+            embed {
+                title = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob} ${i18nContext.get(I18nKeysData.InvalidMessages.InvalidMessage)}"
+                description = i18nContext.get(I18nKeysData.InvalidMessages.Base(generationErrorMessage))
+                color = LorittaColors.LorittaRed.rgb
+                footer(i18nContext.get(I18nKeysData.InvalidMessages.IsItTooLateNowToSaySorry))
+            }
 
-			actionRow(
-				linkButton(
-					GACampaigns.createUrlWithCampaign(
-						"https://dash.loritta.website/", // woo, hardcoded!
-						"discord",
-						"loritta-info",
-						"loritta-info-links",
-						"dashboard"
-					).toString(),
-					i18nContext.get(I18nKeysData.Commands.Command.Loritta.Info.Dashboard),
-					net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriReading
-				)
-			)
-		}
-	}
+            actionRow(
+                linkButton(
+                    GACampaigns.createUrlWithCampaign(
+                        "https://dash.loritta.website/", // woo, hardcoded!
+                        "discord",
+                        "loritta-info",
+                        "loritta-info-links",
+                        "dashboard"
+                    ).toString(),
+                    i18nContext.get(I18nKeysData.Commands.Command.Loritta.Info.Dashboard),
+                    net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriReading
+                )
+            )
+        }
+    }
 
-	private fun replaceTokens(text: String, guild: Guild?, customTokens: List<RenderableMessagePlaceholder>): String {
-		var message = text
+    private fun replaceTokens(text: String, guild: Guild?, customTokens: Map<String, String>): String {
+        var message = text
 
-		for ((token, value) in customTokens)
-			for (name in token.names.map { it.placeholder.name })
-				message = message.replace("{$name}", value)
+        for ((key, value) in customTokens)
+            message = message.replace("{$key}", value)
 
-		// Para evitar pessoas perguntando "porque os emojis não funcionam???", nós iremos dar replace automaticamente em algumas coisas
-		// para que elas simplesmente "funcionem:tm:"
-		// Ou seja, se no chat do Discord aparece corretamente, é melhor que na própria Loritta também apareça, não é mesmo?
-		if (guild != null) {
-			val emojis = guild.emojis
+        // Para evitar pessoas perguntando "porque os emojis não funcionam???", nós iremos dar replace automaticamente em algumas coisas
+        // para que elas simplesmente "funcionem:tm:"
+        // Ou seja, se no chat do Discord aparece corretamente, é melhor que na própria Loritta também apareça, não é mesmo?
+        if (guild != null) {
+            val emojis = guild.emojis
 
-			// Emojis are kinda tricky, we need to match
-			// :lori_clown:
-			// but not
-			// <:lori_clown:950111543574536212>
-			// but that's hard, so how can we do this?
-			// ...
-			// with the power of RegEx of course! :3
-			message = message.replace(CHAT_EMOJI_REGEX) {
-				val emojiName = it.groupValues[1]
-				val guildEmoji = emojis.firstOrNull { it.name == emojiName }
-				if (guildEmoji != null) {
-					buildString {
-						append("<")
-						if (guildEmoji.isAnimated)
-							append("a")
-						append(":")
-						append(guildEmoji.name)
-						append(":")
-						append(guildEmoji.id)
-						append(">")
-					}
-				} else {
-					it.value // Emoji wasn't found, so let's keep it as is
-				}
-			}
+            // Emojis are kinda tricky, we need to match
+            // :lori_clown:
+            // but not
+            // <:lori_clown:950111543574536212>
+            // but that's hard, so how can we do this?
+            // ...
+            // with the power of RegEx of course! :3
+            message = message.replace(CHAT_EMOJI_REGEX) {
+                val emojiName = it.groupValues[1]
+                val guildEmoji = emojis.firstOrNull { it.name == emojiName }
+                if (guildEmoji != null) {
+                    buildString {
+                        append("<")
+                        if (guildEmoji.isAnimated)
+                            append("a")
+                        append(":")
+                        append(guildEmoji.name)
+                        append(":")
+                        append(guildEmoji.id)
+                        append(">")
+                    }
+                } else {
+                    it.value // Emoji wasn't found, so let's keep it as is
+                }
+            }
 
-			// Before we did replace channel names/roles with proper mentions in the message
-			// However, that causes a lot of issues: What if there's a role WITHOUT a name? Then every "@" is replaced!
-			// What if someone wants to link Loritta's YouTube channel? Then the message will replace "@Loritta" with the role mention!
-			// That's baaaaad, so let's just... not do it.
-		}
+            // Before we did replace channel names/roles with proper mentions in the message
+            // However, that causes a lot of issues: What if there's a role WITHOUT a name? Then every "@" is replaced!
+            // What if someone wants to link Loritta's YouTube channel? Then the message will replace "@Loritta" with the role mention!
+            // That's baaaaad, so let's just... not do it.
+        }
 
-		return message
-	}
+        return message
+    }
 
-	private fun replaceTokensIfNotNull(text: String?, guild: Guild?, customTokens: List<RenderableMessagePlaceholder>) = text?.let { replaceTokens(text, guild, customTokens) }
+    private fun replaceTokensIfNotNull(text: String?, guild: Guild?, customTokens: Map<String, String>) = text?.let { replaceTokens(text, guild, customTokens) }
 
-	private fun processStringAndReplaceTokens(text: String, maxSize: Int, guild: Guild?, customTokens: List<RenderableMessagePlaceholder>) = processString(replaceTokens(text, guild, customTokens), maxSize)
+    private fun processStringAndReplaceTokens(text: String, maxSize: Int, guild: Guild?, customTokens: Map<String, String>) = processString(replaceTokens(text, guild, customTokens), maxSize)
 
-	private fun processStringAndReplaceTokensIfNotNull(text: String?, maxSize: Int, guild: Guild?, customTokens: List<RenderableMessagePlaceholder>) = text?.let { processString(replaceTokens(it, guild, customTokens), maxSize) }
+    private fun processStringAndReplaceTokensIfNotNull(text: String?, maxSize: Int, guild: Guild?, customTokens: Map<String, String>) = text?.let { processString(replaceTokens(it, guild, customTokens), maxSize) }
 
-	private fun processStringIfNotNull(text: String?, maxSize: Int) = text?.let { processString(it, maxSize) }
+    private fun processStringIfNotNull(text: String?, maxSize: Int) = text?.let { processString(it, maxSize) }
 
-	private fun processString(text: String, maxSize: Int) = text.substringIfNeeded(0 until maxSize)
+    private fun processString(text: String, maxSize: Int) = text.substringIfNeeded(0 until maxSize)
 
-	private fun processImageUrl(url: String): String {
-		if (!url.isValidUrl())
-			return Constants.INVALID_IMAGE_URL
-		return url
-	}
+    private fun processImageUrl(url: String): String {
+        if (!url.isValidUrl())
+            return Constants.INVALID_IMAGE_URL
+        return url
+    }
 
-	private fun processImageUrlIfNotNull(url: String?): String? {
-		if (url != null && !url.isValidUrl())
-			return Constants.INVALID_IMAGE_URL
-		return url
-	}
+    private fun processImageUrlIfNotNull(url: String?): String? {
+        if (url != null && !url.isValidUrl())
+            return Constants.INVALID_IMAGE_URL
+        return url
+    }
 
-	private fun processUrlIfNotNull(url: String?): String? {
-		if (url != null && !url.isValidUrl())
-			return null
-		return url
-	}
+    private fun processUrlIfNotNull(url: String?): String? {
+        if (url != null && !url.isValidUrl())
+            return null
+        return url
+    }
 }
 
 /**
@@ -571,12 +587,12 @@ object MessageUtils {
  * @return         the message object for chaining
  */
 fun Message.onReactionAdd(context: CommandContext, function: suspend (MessageReactionAddEvent) -> Unit): Message {
-	val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
-	val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
+    val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
+    val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
 
-	val functions = context.loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, context.userHandle.idLong) }
-	functions.onReactionAdd = function
-	return this
+    val functions = context.loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, context.userHandle.idLong) }
+    functions.onReactionAdd = function
+    return this
 }
 
 /**
@@ -587,12 +603,12 @@ fun Message.onReactionAdd(context: CommandContext, function: suspend (MessageRea
  * @return         the message object for chaining
  */
 fun Message.onReactionAdd(context: DiscordCommandContext, function: suspend (MessageReactionAddEvent) -> Unit): Message {
-	val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
-	val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
+    val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
+    val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
 
-	val functions = context.loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, context.user.idLong) }
-	functions.onReactionAdd = function
-	return this
+    val functions = context.loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, context.user.idLong) }
+    functions.onReactionAdd = function
+    return this
 }
 
 /**
@@ -603,12 +619,12 @@ fun Message.onReactionAdd(context: DiscordCommandContext, function: suspend (Mes
  * @return         the message object for chaining
  */
 fun Message.onReactionAdd(context: UnleashedContext, function: suspend (MessageReactionAddEvent) -> Unit): Message {
-	val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
-	val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
+    val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
+    val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
 
-	val functions = context.loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, context.user.idLong) }
-	functions.onReactionAdd = function
-	return this
+    val functions = context.loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, context.user.idLong) }
+    functions.onReactionAdd = function
+    return this
 }
 
 /**
@@ -619,12 +635,12 @@ fun Message.onReactionAdd(context: UnleashedContext, function: suspend (MessageR
  * @return         the message object for chaining
  */
 fun Message.onReactionRemove(context: CommandContext, function: suspend (MessageReactionRemoveEvent) -> Unit): Message {
-	val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
-	val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
+    val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
+    val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
 
-	val functions = context.loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, context.userHandle.idLong) }
-	functions.onReactionRemove = function
-	return this
+    val functions = context.loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, context.userHandle.idLong) }
+    functions.onReactionRemove = function
+    return this
 }
 
 /**
@@ -635,12 +651,12 @@ fun Message.onReactionRemove(context: CommandContext, function: suspend (Message
  * @return         the message object for chaining
  */
 fun Message.onReactionAddByAuthor(context: CommandContext, function: suspend (MessageReactionAddEvent) -> Unit): Message {
-	val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
-	val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
+    val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
+    val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
 
-	val functions = context.loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, context.userHandle.idLong) }
-	functions.onReactionAddByAuthor = function
-	return this
+    val functions = context.loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, context.userHandle.idLong) }
+    functions.onReactionAddByAuthor = function
+    return this
 }
 
 /**
@@ -651,12 +667,12 @@ fun Message.onReactionAddByAuthor(context: CommandContext, function: suspend (Me
  * @return         the message object for chaining
  */
 fun Message.onReactionAddByAuthor(loritta: LorittaBot, userId: Long, function: suspend (MessageReactionAddEvent) -> Unit): Message {
-	val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
-	val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
+    val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
+    val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
 
-	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(null, this.channel.idLong, userId) }
-	functions.onReactionAddByAuthor = function
-	return this
+    val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(null, this.channel.idLong, userId) }
+    functions.onReactionAddByAuthor = function
+    return this
 }
 
 /**
@@ -667,12 +683,12 @@ fun Message.onReactionAddByAuthor(loritta: LorittaBot, userId: Long, function: s
  * @return         the message object for chaining
  */
 fun Message.onReactionRemoveByAuthor(context: CommandContext, function: suspend (MessageReactionRemoveEvent) -> Unit): Message {
-	val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
-	val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
+    val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
+    val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
 
-	val functions = context.loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, context.userHandle.idLong) }
-	functions.onReactionRemoveByAuthor = function
-	return this
+    val functions = context.loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, context.userHandle.idLong) }
+    functions.onReactionRemoveByAuthor = function
+    return this
 }
 
 /**
@@ -683,12 +699,12 @@ fun Message.onReactionRemoveByAuthor(context: CommandContext, function: suspend 
  * @return         the message object for chaining
  */
 fun Message.onResponse(context: CommandContext, function: suspend (LorittaMessageEvent) -> Unit): Message {
-	val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
-	val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
+    val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
+    val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
 
-	val functions = context.loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, context.userHandle.idLong) }
-	functions.onResponse = function
-	return this
+    val functions = context.loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, context.userHandle.idLong) }
+    functions.onResponse = function
+    return this
 }
 
 /**
@@ -699,12 +715,12 @@ fun Message.onResponse(context: CommandContext, function: suspend (LorittaMessag
  * @return         the message object for chaining
  */
 fun Message.onResponseByAuthor(context: CommandContext, function: suspend (LorittaMessageEvent) -> Unit): Message {
-	val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
-	val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
+    val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
+    val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
 
-	val functions = context.loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, context.userHandle.idLong) }
-	functions.onResponseByAuthor = function
-	return this
+    val functions = context.loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, context.userHandle.idLong) }
+    functions.onResponseByAuthor = function
+    return this
 }
 
 /**
@@ -715,12 +731,12 @@ fun Message.onResponseByAuthor(context: CommandContext, function: suspend (Lorit
  * @return         the message object for chaining
  */
 fun Message.onMessageReceived(context: CommandContext, function: suspend (LorittaMessageEvent) -> Unit): Message {
-	val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
-	val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
+    val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
+    val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
 
-	val functions = context.loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, context.userHandle.idLong) }
-	functions.onMessageReceived = function
-	return this
+    val functions = context.loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, context.userHandle.idLong) }
+    functions.onMessageReceived = function
+    return this
 }
 
 /**
@@ -731,9 +747,9 @@ fun Message.onMessageReceived(context: CommandContext, function: suspend (Loritt
  * @return         the message object for chaining
  */
 fun Message.onReactionAddByAuthor(context: DiscordCommandContext, function: suspend (MessageReactionAddEvent) -> Unit): Message {
-	val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
-	val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
-	return onReactionAddByAuthor(context.loritta, context.user.idLong, guildId, channelId, function)
+    val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
+    val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
+    return onReactionAddByAuthor(context.loritta, context.user.idLong, guildId, channelId, function)
 }
 
 /**
@@ -744,9 +760,9 @@ fun Message.onReactionAddByAuthor(context: DiscordCommandContext, function: susp
  * @return         the message object for chaining
  */
 fun Message.onReactionAddByAuthor(context: UnleashedContext, function: suspend (MessageReactionAddEvent) -> Unit): Message {
-	val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
-	val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
-	return onReactionAddByAuthor(context.loritta, context.user.idLong, guildId, channelId, function)
+    val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
+    val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
+    return onReactionAddByAuthor(context.loritta, context.user.idLong, guildId, channelId, function)
 }
 
 
@@ -759,9 +775,9 @@ fun Message.onReactionAddByAuthor(context: UnleashedContext, function: suspend (
  * @return          the message object for chaining
  */
 fun Message.onReactionAddByAuthor(loritta: LorittaBot, userId: Long, guildId: Long?, channelId: Long?, function: suspend (MessageReactionAddEvent) -> Unit): Message {
-	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, userId) }
-	functions.onReactionAddByAuthor = function
-	return this
+    val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, userId) }
+    functions.onReactionAddByAuthor = function
+    return this
 }
 
 /**
@@ -772,11 +788,11 @@ fun Message.onReactionAddByAuthor(loritta: LorittaBot, userId: Long, guildId: Lo
  * @return         the message object for chaining
  */
 fun Message.onReactionByAuthor(context: DiscordCommandContext, function: suspend (GenericMessageReactionEvent) -> Unit): Message {
-	val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
-	val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
+    val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
+    val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
 
-	onReactionByAuthor(context.loritta, context.user.idLong, guildId, channelId, function)
-	return this
+    onReactionByAuthor(context.loritta, context.user.idLong, guildId, channelId, function)
+    return this
 }
 
 /**
@@ -789,9 +805,9 @@ fun Message.onReactionByAuthor(context: DiscordCommandContext, function: suspend
  * @return          the message object for chaining
  */
 fun Message.onReactionByAuthor(loritta: LorittaBot, userId: Long, guildId: Long?, channelId: Long?, function: suspend (GenericMessageReactionEvent) -> Unit): Message {
-	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, userId) }
-	functions.onReactionByAuthor = function
-	return this
+    val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, userId) }
+    functions.onReactionByAuthor = function
+    return this
 }
 
 /**
@@ -804,9 +820,9 @@ fun Message.onReactionByAuthor(loritta: LorittaBot, userId: Long, guildId: Long?
  * @return         the message object for chaining
  */
 fun Message.onResponseByAuthor(loritta: LorittaBot, userId: Long, guildId: Long?, channelId: Long?, function: suspend (LorittaMessageEvent) -> Unit): Message {
-	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, userId) }
-	functions.onResponseByAuthor = function
-	return this
+    val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, userId) }
+    functions.onResponseByAuthor = function
+    return this
 }
 
 /**
@@ -817,12 +833,12 @@ fun Message.onResponseByAuthor(loritta: LorittaBot, userId: Long, guildId: Long?
  * @return         the message object for chaining
  */
 fun Message.onResponseByAuthor(context: DiscordCommandContext, function: suspend (LorittaMessageEvent) -> Unit): Message {
-	val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
-	val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
+    val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
+    val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
 
-	val functions = context.loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, context.user.idLong) }
-	functions.onResponseByAuthor = function
-	return this
+    val functions = context.loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, context.user.idLong) }
+    functions.onResponseByAuthor = function
+    return this
 }
 
 /**
@@ -833,30 +849,30 @@ fun Message.onResponseByAuthor(context: DiscordCommandContext, function: suspend
  * @return         the message object for chaining
  */
 fun Message.onResponseByAuthor(context: UnleashedContext, function: suspend (LorittaMessageEvent) -> Unit): Message {
-	val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
-	val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
+    val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
+    val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
 
-	val functions = context.loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, context.user.idLong) }
-	functions.onResponseByAuthor = function
-	return this
+    val functions = context.loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, context.user.idLong) }
+    functions.onResponseByAuthor = function
+    return this
 }
 
 /**
  * Removes all interaction functions associated with [this]
  */
 fun Message.removeAllFunctions(loritta: LorittaBot): Message {
-	loritta.messageInteractionCache.remove(this.idLong)
-	return this
+    loritta.messageInteractionCache.remove(this.idLong)
+    return this
 }
 
 class MessageInteractionFunctions(val guildId: Long?, val channelId: Long?, val originalAuthor: Long) {
-	// Caso guild == null, quer dizer que foi uma mensagem recebida via DM!
-	var onReactionAdd: (suspend (MessageReactionAddEvent) -> Unit)? = null
-	var onReactionRemove: (suspend (MessageReactionRemoveEvent) -> Unit)? = null
-	var onReactionAddByAuthor: (suspend (MessageReactionAddEvent) -> Unit)? = null
-	var onReactionRemoveByAuthor: (suspend (MessageReactionRemoveEvent) -> Unit)? = null
-	var onReactionByAuthor: (suspend (GenericMessageReactionEvent) -> Unit)? = null
-	var onResponse: (suspend (LorittaMessageEvent) -> Unit)? = null
-	var onResponseByAuthor: (suspend (LorittaMessageEvent) -> Unit)? = null
-	var onMessageReceived: (suspend (LorittaMessageEvent) -> Unit)? = null
+    // Caso guild == null, quer dizer que foi uma mensagem recebida via DM!
+    var onReactionAdd: (suspend (MessageReactionAddEvent) -> Unit)? = null
+    var onReactionRemove: (suspend (MessageReactionRemoveEvent) -> Unit)? = null
+    var onReactionAddByAuthor: (suspend (MessageReactionAddEvent) -> Unit)? = null
+    var onReactionRemoveByAuthor: (suspend (MessageReactionRemoveEvent) -> Unit)? = null
+    var onReactionByAuthor: (suspend (GenericMessageReactionEvent) -> Unit)? = null
+    var onResponse: (suspend (LorittaMessageEvent) -> Unit)? = null
+    var onResponseByAuthor: (suspend (LorittaMessageEvent) -> Unit)? = null
+    var onMessageReceived: (suspend (LorittaMessageEvent) -> Unit)? = null
 }

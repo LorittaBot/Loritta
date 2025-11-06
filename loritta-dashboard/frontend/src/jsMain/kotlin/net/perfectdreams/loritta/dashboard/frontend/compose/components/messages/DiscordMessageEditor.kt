@@ -6,7 +6,17 @@ import kotlinx.coroutines.launch
 import kotlinx.html.div
 import kotlinx.html.stream.createHTML
 import kotlinx.serialization.SerializationException
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonNull
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.addJsonObject
+import kotlinx.serialization.json.buildJsonArray
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
+import net.perfectdreams.bliss.Bliss
+import net.perfectdreams.bliss.HttpMethod
 import net.perfectdreams.loritta.dashboard.discord.DiscordGuild
 import net.perfectdreams.loritta.dashboard.discordmessages.DiscordComponent
 import net.perfectdreams.loritta.dashboard.discordmessages.DiscordEmbed
@@ -243,14 +253,39 @@ fun DiscordMessageEditor(
                         if (targetChannel is TargetChannelResult.ChannelNotSelected) {
                             disabled()
                         } else {
-                            disabled()
-                            /* onClick {
+                            onClick {
                                 GlobalScope.launch {
                                     m.toastManager.showToast(Toast.Type.INFO, "Enviando mensagem...")
 
-                                    // TODO (bliss-dash): Use bliss directly maybe?
+                                    Bliss.executeAjax(
+                                        null,
+                                        HttpMethod.Post,
+                                        // TODO: Fix this!
+                                        "/br/guilds/268353819409252352/test-message",
+                                        mapOf(),
+                                        null,
+                                        null,
+                                        mapOf(),
+                                        mapOf(
+                                            "channelId" to when (targetChannel) {
+                                                TargetChannelResult.ChannelNotSelected -> error("Should NEVER happen!")
+                                                TargetChannelResult.DirectMessageTarget -> JsonNull
+                                                is TargetChannelResult.GuildMessageChannelTarget -> JsonPrimitive(targetChannel.id)
+                                            },
+                                            "message" to JsonPrimitive(rawMessage),
+                                            "placeholders" to buildJsonObject {
+                                                for (placeholderGroup in placeholderGroups) {
+                                                    for (placeholder in placeholderGroup.placeholders) {
+                                                        put(placeholder.name, placeholderGroup.replaceWithBackend)
+                                                    }
+                                                }
+                                            }
+                                        ),
+                                        listOf(),
+                                        listOf()
+                                    )
                                 }
-                            } */
+                            }
                         }
                     }
                 ) {

@@ -14,6 +14,18 @@
     }
 }
 
+// If a modal is open, we do NOT want the toasts to be displayed like there is a save bar on top,
+// because the save bar does NOT display above the modal
+body {
+   &.modal-open {
+       .toast-list {
+           &.save-bar-active {
+               bottom: 1em;
+           }
+       }
+   }
+}
+
 .toast {
     right: 0;
     bottom: 0;

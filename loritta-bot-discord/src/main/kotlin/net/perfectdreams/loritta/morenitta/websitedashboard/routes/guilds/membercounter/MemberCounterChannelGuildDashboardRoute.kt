@@ -6,14 +6,13 @@ import io.ktor.server.response.*
 import io.ktor.server.util.*
 import kotlinx.html.FlowContent
 import kotlinx.html.div
-import kotlinx.html.h1
 import kotlinx.html.hr
 import kotlinx.html.id
-import kotlinx.html.img
 import kotlinx.html.numberInput
 import kotlinx.html.option
 import kotlinx.html.textArea
 import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.MemberCounterChannelConfigs
@@ -41,7 +40,7 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.selectAll
 
 class MemberCounterChannelGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/member-counter/{channelId}") {
-    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans) {
+    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans, member: Member) {
         val channel = guild.getGuildMessageChannelById(call.parameters.getOrFail("channelId").toLong()) as? StandardGuildMessageChannel
 
         if (channel == null) {
