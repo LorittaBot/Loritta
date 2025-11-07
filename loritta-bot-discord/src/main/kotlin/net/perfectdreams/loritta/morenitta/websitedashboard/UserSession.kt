@@ -125,17 +125,16 @@ class UserSession(
     }
 
     suspend fun refreshToken() {
-        val basic = "Basic " + Base64.getEncoder().encodeToString("${loritta.config.loritta.discord.applicationId}:${loritta.config.loritta.discord.clientSecret}".toByteArray())
-
         val parameters = Parameters.build {
             append("grant_type", "refresh_token")
             append("refresh_token", this@UserSession.discordUserCredentials.refreshToken)
+            append("client_id", loritta.config.loritta.discord.applicationId.toString())
+            append("client_secret", loritta.config.loritta.discord.clientSecret)
         }
 
         val generatedAt = OffsetDateTime.now(ZoneOffset.UTC)
         val authorizationHttpResponse = loritta.http.post {
             url(dashboardWebServer.oauth2Endpoints.OAuth2TokenEndpoint)
-            header("Authorization", basic)
 
             setBody(TextContent(parameters.formUrlEncode(), ContentType.Application.FormUrlEncoded))
         }

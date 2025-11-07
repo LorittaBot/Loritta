@@ -16,7 +16,7 @@ class DiscordUserCredentials(
 
     fun isAccessTokenExpired(): Boolean {
         val now = Instant.now()
-        val expiresAt = now.plusSeconds(this.expiresIn - EXPIRATION_MARGIN.inWholeSeconds)
+        val expiresAt = refreshedAt.plusSeconds(this.expiresIn - EXPIRATION_MARGIN.inWholeSeconds)
 
         return now >= expiresAt
     }
