@@ -1,14 +1,13 @@
 package net.perfectdreams.loritta.morenitta.websitedashboard
 
-import io.ktor.http.ContentType
-import io.ktor.http.HttpMethod
+import CustomBrandingGuildDashboardRoute
+import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
-import io.ktor.server.http.content.staticResources
-import io.ktor.server.netty.Netty
+import io.ktor.server.http.content.*
+import io.ktor.server.netty.*
 import io.ktor.server.plugins.compression.*
-import io.ktor.server.request.header
-import io.ktor.server.request.uri
+import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -23,19 +22,7 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite.UserPermissionLevel
 import net.perfectdreams.loritta.morenitta.websitedashboard.discord.DiscordOAuth2Guild
 import net.perfectdreams.loritta.morenitta.websitedashboard.discord.DiscordOAuth2UserIdentification
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.ChooseYourServerUserDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.DashboardLocalizedRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.DiscordLoginUserDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.PostFavoriteGuildUserDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.PocketLorittaUserDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.PostDashboardThemeGuildUserDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.PostLogoutUserDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.PostServerListUserDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.PostUnfavoriteGuildUserDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.PutLorittaSpawnerSettingsUserDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.TwitchAccountCallbackRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.UserBackgroundPreviewDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.UserProfilePreviewDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.*
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.apikeys.APIKeysUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.apikeys.PostGenerateAPIKeyUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.backgrounds.BackgroundsUserDashboardRoute
@@ -54,39 +41,24 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.autoro
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.badge.BadgeGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.badge.PostBadgeImageGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.badge.PutBadgeGuildDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.bluesky.AddBlueskyProfileGuildDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.bluesky.BlueskyGuildDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.bluesky.DeleteBlueskyProfileGuildDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.bluesky.EditBlueskyProfileGuildDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.bluesky.PostBlueskyProfileGuildDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.bluesky.PutBlueskyProfileGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.bluesky.*
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.bomdiaecia.BomDiaECiaGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.bomdiaecia.PutBomDiaECiaGuildDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.commandchannels.PostAddChannelToListCommandChannelsConfigurationGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.commandchannels.CommandChannelsConfigurationGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.commandchannels.PostAddChannelToListCommandChannelsConfigurationGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.commandchannels.PostRemoveChannelFromListCommandChannelsConfigurationGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.commandchannels.PutCommandChannelsConfigurationGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.commands.CommandsGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.commands.PutCommandsGuildDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.customcommands.CreateCustomCommandGuildDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.customcommands.CustomCommandsGuildDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.customcommands.DeleteCustomCommandsGuildDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.customcommands.EditCustomCommandGuildDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.customcommands.PostCustomCommandsGuildDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.customcommands.PutCustomCommandsGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.custombranding.PutCustomBrandingGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.customcommands.*
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.dailymultiplier.DailyMultiplierGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.dailymultiplier.PutDailyMultiplierGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.dailyshoptrinkets.DailyShopTrinketsGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.dailyshoptrinkets.PutDailyShopTrinketsGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.eventlog.EventLogGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.eventlog.PutEventLogGuildDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.xprewards.PostAddRoleRewardGuildDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.xprewards.PostRemoveRoleRewardGuildDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.xprewards.XPRewardsGuildDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.xprewards.PostXP2LevelGuildDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.xprewards.PutXPRewardsGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.gamersafer.GamerSaferGuildDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.overview.OverviewConfigurationGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.inviteblocker.InviteBlockerGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.inviteblocker.PostAddChannelToListInviteBlockerGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.inviteblocker.PostRemoveChannelFromListInviteBlockerGuildDashboardRoute
@@ -95,16 +67,17 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.member
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.membercounter.MemberCounterGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.membercounter.PostMemberCounterPreviewGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.membercounter.PutMemberCounterChannelGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.overview.OverviewConfigurationGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.permissions.PermissionsGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.permissions.PutRolePermissionsGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.permissions.RolePermissionsGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.prefixedcommands.PostPrefixedCommandsPrefixPreviewGuildDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.punishmentlog.PunishmentLogGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.prefixedcommands.PrefixedCommandsGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.prefixedcommands.PutPrefixedCommandsGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.premiumkeys.PostActivatePremiumKeyGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.premiumkeys.PostDeactivatePremiumKeyGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.premiumkeys.PremiumKeysGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.punishmentlog.PunishmentLogGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.punishmentlog.PutPunishmentLogGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.quirkymode.PutQuirkyModeGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.quirkymode.QuirkyModeGuildDashboardRoute
@@ -112,45 +85,25 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.reacti
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.reactionevents.ReactionEventsGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.resetxp.PostResetXPGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.resetxp.ResetXPGuildDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.starboard.PutStarboardGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.starboard.PostStarboardStorytimeGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.starboard.PutStarboardGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.starboard.StarboardGuildDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.twitch.AddTwitchChannelGuildDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.twitch.DeletePremiumTwitchTrackGuildDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.twitch.DeleteTwitchChannelGuildDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.twitch.EditTwitchChannelGuildDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.twitch.PostTwitchChannelGuildDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.twitch.PutTwitchChannelGuildDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.twitch.TwitchGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.twitch.*
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.warnactions.PostAddWarnActionGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.warnactions.PostRemoveWarnActionGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.warnactions.PutWarnActionsGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.warnactions.WarnActionsGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.welcomer.PutWelcomerGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.welcomer.WelcomerGuildDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.xpblockers.PostAddChannelXPBlockersGuildDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.xpblockers.PostAddRoleXPBlockersGuildDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.xpblockers.PostRemoveChannelXPBlockersGuildDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.xpblockers.PostRemoveRoleXPBlockersGuildDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.xpblockers.PutXPBlockersGuildDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.xpblockers.XPBlockersGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.xpblockers.*
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.xpnotifications.PutXPNotificationsGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.xpnotifications.XPNotificationsGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.xprates.PostAddRoleRateGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.xprates.PutXPRatesGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.xprates.XPRatesGuildDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.xprewards.PostRemoveRoleRateGuildDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.youtube.AddYouTubeChannelGuildDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.youtube.DeleteYouTubeChannelGuildDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.youtube.EditYouTubeChannelGuildDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.youtube.PostYouTubeChannelGuildDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.youtube.PutYouTubeChannelGuildDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.youtube.YouTubeGuildDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.profilepresets.CreateProfilePresetsUserDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.profilepresets.DeleteProfilePresetUserDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.profilepresets.PostApplyProfilePresetUserDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.profilepresets.PostCreateProfilePresetsUserDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.profilepresets.ProfilePresetsUserDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.xprewards.*
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.youtube.*
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.profilepresets.*
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.profiles.GetProfileLayoutUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.profiles.PostApplyProfileLayoutUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.profiles.ProfilesUserDashboardRoute
@@ -163,9 +116,9 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.reputations.V
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.shipeffects.PostBuyShipEffectsUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.shipeffects.PostPreBuyShipEffectsUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.shipeffects.PostShipEffectsUserDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.sonhosshop.PostSonhosShopBuyUserDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.sonhosshop.PostSonhosShopApplyCouponUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.shipeffects.ShipEffectsUserDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.sonhosshop.PostSonhosShopApplyCouponUserDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.sonhosshop.PostSonhosShopBuyUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.sonhosshop.SonhosShopUserDashboardRoute
 import org.apache.commons.codec.digest.DigestUtils
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -177,7 +130,7 @@ import java.io.File
 import java.sql.Connection
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
-import java.util.Locale
+import java.util.*
 import kotlin.io.path.readText
 
 /**
@@ -460,6 +413,10 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
         PostTestMessageGuildDashboardRoute(this),
         UserProfilePreviewDashboardRoute(this),
         UserBackgroundPreviewDashboardRoute(this),
+
+        // Custom Branding
+        CustomBrandingGuildDashboardRoute(this),
+        PutCustomBrandingGuildDashboardRoute(this),
     )
 
     val oauth2Endpoints = DiscordOAuth2Endpoints(this.loritta)

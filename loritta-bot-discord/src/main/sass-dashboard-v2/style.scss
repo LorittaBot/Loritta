@@ -1135,3 +1135,21 @@ aside#that-wasnt-very-cash-money-of-you-fixed-sidebar-reserved-space {
     background-color: var(--background-color);
     color: var(--content-text-color);
 }
+
+.edit-image-overlay {
+    cursor: pointer;
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 600;
+    color: white;
+    opacity: 0;
+    transition: opacity 200ms ease-out;
+}
+
+.edit-image-overlay:hover {
+    opacity: 1;
+}
