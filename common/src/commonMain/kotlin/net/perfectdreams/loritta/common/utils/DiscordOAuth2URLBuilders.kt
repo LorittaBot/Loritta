@@ -8,8 +8,8 @@ import kotlinx.serialization.json.put
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
-private val LORITTA_AUTHORIZATION_SCOPES = listOf("identify", "guilds", "email")
-private val LORITTA_ADD_BOT_SCOPES = LORITTA_AUTHORIZATION_SCOPES + listOf("bot", "applications.commands")
+val LORITTA_AUTHORIZATION_SCOPES = listOf("identify", "guilds", "email")
+val LORITTA_ADD_BOT_SCOPES = LORITTA_AUTHORIZATION_SCOPES + listOf("bot", "applications.commands")
 
 /**
  * Builds a Discord OAuth2 authorization URL

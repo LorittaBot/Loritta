@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.morenitta.websitedashboard.components
 
 import io.ktor.http.Url
+import kotlinx.html.BODY
 import kotlinx.html.FlowContent
 import kotlinx.html.HTML
 import kotlinx.html.body
@@ -37,20 +38,10 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.utils.dashboardTitle
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.defaultModalCloseButton
 import net.perfectdreams.loritta.serializable.ColorTheme
 
-fun HTML.dashboardBase(
+fun HTML.websiteBase(
     i18nContext: I18nContext,
     title: String,
-    session: UserSession,
-    theme: ColorTheme,
-    shimejiSettings: LorittaShimejiSettings,
-    userPremiumPlan: UserPremiumPlans,
-    // null = use as is
-    // true = always display ads
-    // false = never display ads
-    // used for the sonhos shop!
-    overrideAdsDisplay: Boolean?,
-    leftSidebarEntries: FlowContent.() -> Unit,
-    rightSidebarContent: FlowContent.() -> Unit,
+    body: BODY.() -> Unit
 ) {
     // See these HTML tags! https://blog.jim-nielsen.com/2025/dont-forget-these-html-tags/
     lang = i18nContext.get(I18nKeysData.Website.Bcp47Locale)
@@ -90,10 +81,29 @@ fun HTML.dashboardBase(
         script(src = "/assets/js/frontend.js?v=${LorittaDashboardWebServer.assets.jsBundle.hash}") {
             defer = true
         }
-
     }
 
     body {
+        body()
+    }
+}
+
+fun HTML.dashboardBase(
+    i18nContext: I18nContext,
+    title: String,
+    session: UserSession,
+    theme: ColorTheme,
+    shimejiSettings: LorittaShimejiSettings,
+    userPremiumPlan: UserPremiumPlans,
+    // null = use as is
+    // true = always display ads
+    // false = never display ads
+    // used for the sonhos shop!
+    overrideAdsDisplay: Boolean?,
+    leftSidebarEntries: FlowContent.() -> Unit,
+    rightSidebarContent: FlowContent.() -> Unit,
+) {
+    websiteBase(i18nContext, title) {
         canvas(classes = "loritta-game-canvas") {
             attributes["bliss-component"] = "loritta-shimeji"
             attributes["loritta-shimeji-settings"] = BlissHex.encodeToHexString(Json.encodeToString(shimejiSettings))

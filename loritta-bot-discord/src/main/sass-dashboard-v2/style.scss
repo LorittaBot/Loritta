@@ -1124,3 +1124,14 @@ aside#that-wasnt-very-cash-money-of-you-fixed-sidebar-reserved-space {
         top: 0;
     }
 }
+
+.full-screen-error {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-width: 100vw;
+    min-height: 100vh;
+    background-color: var(--background-color);
+    color: var(--content-text-color);
+}
