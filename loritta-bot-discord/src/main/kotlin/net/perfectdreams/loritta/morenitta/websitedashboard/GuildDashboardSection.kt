@@ -30,5 +30,6 @@ enum class GuildDashboardSection {
     LORITTA_TRINKETS_SHOP,
     PREMIUM_KEYS,
     DAILY_MULTIPLIER,
-    CUSTOM_BADGE
+    CUSTOM_BADGE,
+    CUSTOM_BRANDING
 }
