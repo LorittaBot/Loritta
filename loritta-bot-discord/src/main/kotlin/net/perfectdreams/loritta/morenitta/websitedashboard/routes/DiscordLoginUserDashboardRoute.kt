@@ -113,7 +113,7 @@ class DiscordLoginUserDashboardRoute(val website: LorittaDashboardWebServer) : B
         if (resultAsJson.containsKey("error")) {
             val error = resultAsJson["error"]!!.jsonPrimitive.content
             val errorDescription = resultAsJson["error_description"]?.jsonPrimitive?.content
-            logger.info { "User authentication failed! Error was $error" }
+            logger.info { "User authentication failed! Error was $error, error description was $errorDescription" }
 
             respondUserFriendlyAuthenticationFailed(
                 call,
