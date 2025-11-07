@@ -61,7 +61,7 @@ fun FlowContent.userDashLeftSidebarEntries(
 
     aDashboardSidebarEntry(i18nContext, "/profiles", i18nContext.get(DashboardI18nKeysData.ProfileDesigns.Title), SVGIcons.IdentificationCard, selectedUserSection == UserDashboardSection.PROFILE_DESIGNS, false)
     aDashboardSidebarEntry(i18nContext, "/backgrounds", i18nContext.get(DashboardI18nKeysData.Backgrounds.Title), SVGIcons.Images, selectedUserSection == UserDashboardSection.PROFILE_BACKGROUND, false)
-    aDashboardSidebarEntry(i18nContext, "/profile-presets", i18nContext.get(DashboardI18nKeysData.ProfilePresets.Title), SVGIcons.BoxArrowUp, selectedUserSection == UserDashboardSection.PROFILE_PRESETS, true)
+    aDashboardSidebarEntry(i18nContext, "/profile-presets", i18nContext.get(DashboardI18nKeysData.ProfilePresets.Title), SVGIcons.BoxArrowUp, selectedUserSection == UserDashboardSection.PROFILE_PRESETS, false)
     aDashboardSidebarEntry(i18nContext, "/daily-shop", i18nContext.get(DashboardI18nKeysData.DailyShop.Title), SVGIcons.ShoppingBag, selectedUserSection == UserDashboardSection.TRINKETS_SHOP, false)
     sectionEntry(selected = false) {
         openModalOnClick(
@@ -180,6 +180,7 @@ fun FlowContent.userDashLeftSidebarEntries(
     }
 
     aDashboardSidebarEntry(i18nContext, "/ship-effects", i18nContext.get(DashboardI18nKeysData.ShipEffects.Title), SVGIcons.Heart, selectedUserSection == UserDashboardSection.SHIP_EFFECTS, false)
+    aDashboardSidebarEntry(i18nContext, "/reputations", i18nContext.get(DashboardI18nKeysData.Reputations.Title), SVGIcons.Certificate, selectedUserSection == UserDashboardSection.REPUTATIONS, true)
     aDashboardSidebarEntry(i18nContext, "/api-keys", i18nContext.get(DashboardI18nKeysData.ApiKeys.Title), SVGIcons.Code, selectedUserSection == UserDashboardSection.API_KEYS, false)
     sectionEntry(href = lorittaBot.config.loritta.website.url.removeSuffix("/") + "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guidelines", selected = false) {
         sectionEntryContent("Diretrizes da Comunidade", SVGIcons.Asterisk, false)

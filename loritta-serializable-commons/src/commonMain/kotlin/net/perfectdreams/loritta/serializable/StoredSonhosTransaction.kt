@@ -185,3 +185,6 @@ data class StoredChargebackedSonhosBundleTransaction(val triggeredByUserId: Long
 
 @Serializable
 data object StoredVacationModeLeaveTransaction : StoredSonhosTransaction()
+
+@Serializable
+data class StoredReputationDeletedTransaction(val reputationId: Long) : StoredSonhosTransaction()

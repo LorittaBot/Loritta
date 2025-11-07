@@ -37,6 +37,7 @@ object SVGIcons {
     val CaretDown = register("caret-down", "/svg_icons/phosphor/bold/caret-down.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
     val CaretUp = register("caret-up", "/svg_icons/phosphor/bold/caret-up.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
     val CaretLeft = register("caret-left", "/svg_icons/phosphor/bold/caret-left.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
+    val CaretRight = register("caret-right", "/svg_icons/phosphor/bold/caret-right.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
     val ShootingStar = register("shooting-star", "/svg_icons/phosphor/fill/shooting-star.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
     val Clock = register("clock", "/svg_icons/phosphor/fill/clock.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
     val Timer = register("timer", "/svg_icons/phosphor/fill/timer.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
@@ -49,6 +50,9 @@ object SVGIcons {
     val SortDescending = register("sort-descending", "/svg_icons/phosphor/bold/sort-descending.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
     val EyeDropper = register("eyedropper", "/svg_icons/phosphor/fill/eyedropper.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
     val SquaresFour = register("squares-four", "/svg_icons/phosphor/fill/squares-four.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
+    val Certificate = register("certificate", "/svg_icons/phosphor/fill/certificate.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
+    val ArrowUp = register("arrow-up", "/svg_icons/phosphor/bold/arrow-up.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
+    val ArrowDown = register("arrow-down", "/svg_icons/phosphor/bold/arrow-down.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
 
     val SlashCommand = register("slash-command", "/svg_icons/discord/slash-command.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
     val TextChannel = register("text-channel", "/svg_icons/discord/text-channel.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)

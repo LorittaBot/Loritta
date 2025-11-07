@@ -422,3 +422,13 @@ data class VacationModeLeaveTransaction(
     override val user: UserId,
     val sonhos: Long
 ) : SonhosTransaction()
+
+@Serializable
+data class ReputationDeletedTransaction(
+    override val id: Long,
+    override val transactionType: TransactionType,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val sonhos: Long,
+    val reputationId: Long
+) : SonhosTransaction()

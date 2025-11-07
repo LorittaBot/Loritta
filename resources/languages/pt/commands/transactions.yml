@@ -147,6 +147,10 @@ types:
     restoredMarriageAutomatic: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para restaurar o casamento (automático)"
     boughtMarriageStoreItem: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} em itens na loja de casados"
     loveLetter: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para enviar uma cartinha de amor no casamento"
+  reputations:
+    title: "Reputações"
+    description: "Transações relacionadas as reputações da Loritta"
+    reputationDeleted: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para remover uma reputação enviada"
   vacationMode:
     title: "Modo Férias"
     description: "Transações relacionadas ao sistema de férias da Loritta"

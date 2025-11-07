@@ -2,7 +2,7 @@ label: "rep"
 description: "Comandos relacionandos com o sistema de reputação"
 
 give:
-  label: "give"
+  label: "dar"
   description: "Dê reputação para outro usuário!"
   repSelf: "Você não pode dar reputação para si mesmo, bobinho!"
   wait: "Você pode dar uma nova reputação **{time}**!"
@@ -14,14 +14,10 @@ give:
       description: "O usuário que você deseja dar a reputação"
 
 delete:
-  label: "delete"
+  label: "deletar"
   description: "Deleta uma reputação recebida por você"
-  successfullyDeleted: "Sucesso! A reputação foi deletada do seu histórico!"
-  reputationNotFound: "Essa reputação não existe no seu histórico, lembre-se, você só pode deletar reputações recebidas por você!"
-
-  options:
-    rep:
-      description: "A reputação que você deseja deletar, digite para filtrar"
+  viewRepsAndDelete: "Você pode ver as suas reputações e deletar elas no meu website! {dashboardUrl}"
+  deleteReasons: "Você pode deletar reputações que você recebeu sem tirar sonhos do bolso, mas se você quiser deletar uma reputação que foi enviada por você, você terá que pagar {sonhosEmoji} **{sonhosBetQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}**!"
 
 'on':
   label: "ligar"

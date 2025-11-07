@@ -7,6 +7,7 @@ enum class UserDashboardSection {
     PROFILE_BACKGROUND,
     PROFILE_PRESETS,
     SHIP_EFFECTS,
+    REPUTATIONS,
     API_KEYS,
     TRINKETS_SHOP,
     SONHOS_SHOP

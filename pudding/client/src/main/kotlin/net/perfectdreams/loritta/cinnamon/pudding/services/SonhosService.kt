@@ -350,6 +350,8 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
 
                         is StoredChargebackedSonhosBundleTransaction -> createUsingReflection(ChargebackedSonhosBundleTransaction::class, stored.triggeredByUserId)
 
+                        is StoredReputationDeletedTransaction -> createUsingReflection(ReputationDeletedTransaction::class, stored.reputationId)
+
                         is StoredEmojiFightBetSonhosTransaction -> {
                             val emojiFightMatchmakingResult = emojiFightMatchmakingResults.first { it[EmojiFightMatchmakingResults.id].value == stored.emojiFightMatchmakingResultsId }
 

@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
+import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingReputation
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Reputations
@@ -38,6 +39,7 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.stripLinks
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import net.perfectdreams.loritta.morenitta.utils.substringIfNeeded
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.reputations.ReputationsUtils
 import net.perfectdreams.loritta.serializable.Reputation
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
@@ -191,96 +193,16 @@ class RepCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     }
 
     class DeleteRepExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
-        inner class Options : ApplicationCommandOptions() {
-            val rep = string("rep", I18N_PREFIX.Delete.Options.Rep.Description) {
-                autocomplete { context ->
-                    val reputations = loritta.transaction {
-                        Reputations.selectAll()
-                            .where {
-                                Reputations.receivedById eq context.event.user.idLong and (Reputations.content.like("%${context.event.focusedOption.value.replace("%", "")}%"))
-                            }
-                            .orderBy(Reputations.receivedAt, SortOrder.DESC)
-                            .limit(DiscordResourceLimits.Command.Options.ChoicesCount)
-                            .map {
-                                // TODO: This is from Pudding's Service class, we moved it here because it is a extension method there, can't we refactor this?
-                                PuddingReputation(
-                                    loritta.pudding,
-                                    Reputation(
-                                        it[Reputations.id].value,
-                                        it[Reputations.givenById],
-                                        it[Reputations.givenByIp],
-                                        it[Reputations.givenByEmail],
-                                        it[Reputations.receivedById],
-                                        it[Reputations.receivedAt],
-                                        it[Reputations.content],
-                                    )
-                                )
-                            }
-                    }
-
-                    return@autocomplete reputations
-                        .associate { formatReputation(it, context) to it.id.toString() }
-                        .entries
-                        .associate { it.key to it.value }
-                }
-            }
-
-            private suspend fun formatReputation(reputation: PuddingReputation, context: AutocompleteContext): String {
-                return buildString {
-                    val givenAtTime = Instant.fromEpochMilliseconds(reputation.receivedAt)
-                        .toLocalDateTime(Constants.LORITTA_TIMEZONE.toKotlinTimeZone())
-
-                    val year = givenAtTime.year
-                    val month = givenAtTime.month.value.toString().padStart(2, '0')
-                    val day = givenAtTime.dayOfMonth.toString().padStart(2, '0')
-                    val hour = givenAtTime.hour.toString().padStart(2, '0')
-                    val minute = givenAtTime.minute.toString().padStart(2, '0')
-
-                    append("[$day/$month/$year $hour:$minute] ")
-
-                    HarmonyLoggerFactory.logger {}.value.info { "RepCommand#retrieveUserInfoById - UserId: ${reputation.givenById}" }
-                    val user = context.loritta.lorittaShards.retrieveUserInfoById(reputation.givenById)
-                    if (user == null)
-                        append("Unknown: ")
-                    else
-                        append("${user.name}: ")
-
-                    val reputationContent = reputation.content
-                    if (reputationContent != null) {
-                        append(
-                            reputationContent.stripCodeMarks()
-                                // Strip new lines and replace them with " "
-                                .stripLinks()
-                                .replace(Regex("[\\r\\n]"), " ")
-                                .substringIfNeeded(0..250)
-                        )
-                    } else {
-                        append("*vazio*")
-                    }
-                }.shortenAndStripCodeBackticks(DiscordResourceLimits.Command.Options.Description.Length)
-            }
-        }
-
-        override val options = Options()
-
         override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
-            val reputation = context.loritta.pudding.reputations.getReputation(args[options.rep].toLong())
+            context.reply(false) {
+                styled(
+                    context.i18nContext.get(I18nKeysData.Commands.Command.Rep.Delete.ViewRepsAndDelete(loritta.config.loritta.dashboard.url.removeSuffix("/") + "/${context.i18nContext.get(I18nKeysData.Website.LocalePathId)}/reputations")),
+                    Emotes.LoriSmile
+                )
 
-            if (reputation == null || reputation.receivedById != context.user.id.toLong()) {
-                context.fail(true) {
-                    this.styled(
-                        context.i18nContext.get(I18N_PREFIX.Delete.ReputationNotFound),
-                        Emotes.Error
-                    )
-                }
-            }
-
-            reputation.delete()
-
-            context.reply(true) {
-                this.styled(
-                    context.i18nContext.get(I18N_PREFIX.Delete.SuccessfullyDeleted),
-                    Emotes.LoriHappy
+                styled(
+                    context.i18nContext.get(I18nKeysData.Commands.Command.Rep.Delete.DeleteReasons(SonhosUtils.getSonhosEmojiOfQuantity(ReputationsUtils.REMOVE_SENT_REPUTATION_PRICE), ReputationsUtils.REMOVE_SENT_REPUTATION_PRICE)),
+                    Emotes.LoriLurk
                 )
             }
         }
@@ -288,8 +210,8 @@ class RepCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
         override suspend fun convertToInteractionsArguments(
             context: LegacyMessageCommandContext,
             args: List<String>
-        ): Map<OptionReference<*>, Any?>? {
-            TODO("Not yet implemented")
+        ): Map<OptionReference<*>, Any?> {
+            return emptyMap()
         }
     }
 

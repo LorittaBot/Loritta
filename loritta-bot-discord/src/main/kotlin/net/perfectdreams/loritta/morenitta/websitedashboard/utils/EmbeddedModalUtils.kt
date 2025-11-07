@@ -41,7 +41,7 @@ fun createEmbeddedConfirmPurchaseModal(
 ): EmbeddedModal {
     return createEmbeddedModal(
         i18nContext.get(I18nKeysData.Website.Dashboard.PurchaseModal.Title),
-        EmbeddedModal.Size.MEDIUM,
+        EmbeddedModal.Size.SMALL,
         true,
         {
             style = "text-align: center;"
@@ -115,7 +115,7 @@ fun createEmbeddedConfirmDeletionModal(
 ): EmbeddedModal {
     return createEmbeddedModal(
         "Você tem certeza?",
-        EmbeddedModal.Size.MEDIUM,
+        EmbeddedModal.Size.SMALL,
         true,
         {
             text("Você quer deletar meeesmo?")

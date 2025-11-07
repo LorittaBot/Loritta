@@ -14,6 +14,7 @@ import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.*
 import net.perfectdreams.loritta.publichttpapi.LoriPublicHttpApiEndpoints
 import net.perfectdreams.loritta.serializable.MarriageRestoreAutomaticTransaction
+import net.perfectdreams.loritta.serializable.ReputationDeletedTransaction
 import net.perfectdreams.loritta.serializable.UserId
 import java.time.Instant
 import kotlin.time.Duration.Companion.seconds
@@ -454,6 +455,14 @@ class GetUserTransactionsRoute(m: LorittaBot) : LoriPublicAPIRoute(
                 )
 
                 is net.perfectdreams.loritta.serializable.MarriageRestoreAutomaticTransaction -> MarriageRestoreAutomaticTransaction(
+                    transaction.id,
+                    transaction.transactionType,
+                    transaction.timestamp,
+                    transaction.user,
+                    transaction.sonhos
+                )
+
+                is ReputationDeletedTransaction -> ReputationDeletedLeaveTransaction(
                     transaction.id,
                     transaction.transactionType,
                     transaction.timestamp,
@@ -915,6 +924,16 @@ class GetUserTransactionsRoute(m: LorittaBot) : LoriPublicAPIRoute(
 
     @Serializable
     data class VacationModeLeaveTransaction(
+        override val id: Long,
+        override val transactionType: TransactionType,
+        override val timestamp: kotlinx.datetime.Instant,
+        @Serializable(UserIdAsStringSerializer::class)
+        override val user: UserId,
+        val sonhos: Long
+    ) : SonhosTransaction()
+
+    @Serializable
+    data class ReputationDeletedLeaveTransaction(
         override val id: Long,
         override val transactionType: TransactionType,
         override val timestamp: kotlinx.datetime.Instant,

@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.morenitta.websitedashboard
 import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
 import io.ktor.server.application.*
-import io.ktor.server.cio.*
 import io.ktor.server.engine.*
 import io.ktor.server.http.content.staticResources
 import io.ktor.server.netty.Netty
@@ -12,7 +11,6 @@ import io.ktor.server.request.header
 import io.ktor.server.request.uri
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import io.ktor.util.date.GMTDate
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.i18nhelper.core.I18nContext
@@ -156,6 +154,12 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.profilepreset
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.profiles.GetProfileLayoutUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.profiles.PostApplyProfileLayoutUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.profiles.ProfilesUserDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.reputations.DeleteReputationUserDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.reputations.GivenReputationsUserDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.reputations.ReceivedReputationsUserDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.reputations.ReputationsUserDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.reputations.ViewGivenReputationUserDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.reputations.ViewReceivedReputationUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.shipeffects.PostBuyShipEffectsUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.shipeffects.PostPreBuyShipEffectsUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.shipeffects.PostShipEffectsUserDashboardRoute
@@ -171,7 +175,6 @@ import org.jetbrains.exposed.sql.update
 import org.jetbrains.exposed.sql.upsert
 import java.io.File
 import java.sql.Connection
-import java.time.Instant
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.util.Locale
@@ -282,6 +285,15 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
         GetBackgroundUserDashboardRoute(this),
         PostApplyBackgroundUserDashboardRoute(this),
         PostUploadBackgroundUserDashboardRoute(this),
+
+        // Reputations
+        ReputationsUserDashboardRoute(this),
+        GivenReputationsUserDashboardRoute(this),
+        ViewGivenReputationUserDashboardRoute(this),
+        DeleteReputationUserDashboardRoute(this),
+        ReceivedReputationsUserDashboardRoute(this),
+        ViewGivenReputationUserDashboardRoute(this),
+        ViewReceivedReputationUserDashboardRoute(this),
 
         // Starboard
         StarboardGuildDashboardRoute(this),

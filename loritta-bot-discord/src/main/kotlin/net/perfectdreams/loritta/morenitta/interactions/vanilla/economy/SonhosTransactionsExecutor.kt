@@ -330,6 +330,9 @@ class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandE
 
                         is VacationModeLeaveTransaction -> VacationModeLeaveSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
 
+                        // ===[ REPUTATION DELETE ]===
+                        is ReputationDeletedTransaction -> ReputationDeleteTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+
                         // This should never happen because we do a left join with a "isNotNull" check
                         is UnknownSonhosTransaction -> UnknownSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
                     }
