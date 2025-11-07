@@ -8,6 +8,7 @@ import io.ktor.server.application.*
 import io.ktor.server.response.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserWebsiteSessions
 import net.perfectdreams.loritta.common.utils.LORITTA_AUTHORIZATION_SCOPES
@@ -58,7 +59,7 @@ class DiscordLoginUserDashboardRoute(val website: LorittaDashboardWebServer) : B
                     authorizationFailedFullScreenError(
                         website.loritta,
                         i18nContext,
-                        if (errorDescription == "The resource owner or authorization server denied the request") {
+                        if (error == "access_denied" && errorDescription == "The resource owner or authorization server denied the request") {
                             i18nContext.get(I18nKeysData.Website.Dashboard.AuthorizationFailedFullScreenError.Errors.ResourceOwnerOrAuthorizationServerDeniedTheRequest)
                         } else errorDescription ?: error
                     )
@@ -101,7 +102,13 @@ class DiscordLoginUserDashboardRoute(val website: LorittaDashboardWebServer) : B
 
         logger.info { "Authentication Result: $resultAsText" }
 
-        if (Json.parseToJsonElement(resultAsText).jsonObject.containsKey("error")) {
+        val resultAsJson = Json.parseToJsonElement(resultAsText).jsonObject
+
+        if (resultAsJson.containsKey("error")) {
+            val error = resultAsJson["error"]!!.jsonPrimitive.content
+            val errorDescription = resultAsJson["error_description"]?.jsonPrimitive?.content
+            logger.info { "User authentication failed! Error was $error" }
+
             call.respondHtml(status = HttpStatusCode.Unauthorized) {
                 websiteBase(
                     i18nContext,
@@ -110,7 +117,9 @@ class DiscordLoginUserDashboardRoute(val website: LorittaDashboardWebServer) : B
                     authorizationFailedFullScreenError(
                         website.loritta,
                         i18nContext,
-                        i18nContext.get(I18nKeysData.Website.Dashboard.AuthorizationFailedFullScreenError.Errors.InvalidAuthenticationCode)
+                        if (error == "invalid_grant" && errorDescription == "Invalid \"code\" in request.") {
+                            i18nContext.get(I18nKeysData.Website.Dashboard.AuthorizationFailedFullScreenError.Errors.InvalidAuthenticationCode)
+                        } else errorDescription ?: error
                     )
                 }
             }
@@ -123,6 +132,8 @@ class DiscordLoginUserDashboardRoute(val website: LorittaDashboardWebServer) : B
         val authorizedScopes = result.scope.split(" ")
         val hasAllRequiredScopes = LORITTA_AUTHORIZATION_SCOPES.all { it in authorizedScopes }
         if (!hasAllRequiredScopes) {
+            logger.info { "User authentication failed! We need $LORITTA_AUTHORIZATION_SCOPES but user only authorized $authorizedScopes" }
+
             call.respondHtml(status = HttpStatusCode.Unauthorized) {
                 websiteBase(
                     i18nContext,
