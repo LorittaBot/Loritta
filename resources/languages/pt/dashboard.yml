@@ -151,4 +151,5 @@ website:
         invalidAuthenticationCode: "Código de autenticação inválido"
         missingAuthenticationCode: "Código de autenticação ausente"
         missingScopes: "A conta foi autorizada, mas o usuário não me deu acesso a todos os escopos necessários"
+        discordInternalServerError: "Ocorreu um erro nos servidores do Discord durante a autorização"
       tryAgain: "Tentar Novamente"

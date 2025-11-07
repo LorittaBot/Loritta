@@ -7,6 +7,7 @@ import io.ktor.http.content.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
@@ -88,16 +89,35 @@ class DiscordLoginUserDashboardRoute(val website: LorittaDashboardWebServer) : B
             append("redirect_uri", "${website.loritta.config.loritta.dashboard.url}/discord/login")
         }
 
-        val resultAsText = website.loritta.http.post {
+        val oauth2TokenHttpResponse = website.loritta.http.post {
             url(website.oauth2Endpoints.OAuth2TokenEndpoint)
             userAgent(UserSession.USER_AGENT)
 
             setBody(TextContent(parameters.formUrlEncode(), ContentType.Application.FormUrlEncoded))
-        }.bodyAsText()
+        }
 
-        logger.info { "Authentication Result: $resultAsText" }
+        logger.info { "Authentication Result (Status Code: ${oauth2TokenHttpResponse.status}): $oauth2TokenHttpResponse" }
 
-        val resultAsJson = Json.parseToJsonElement(resultAsText).jsonObject
+        if (oauth2TokenHttpResponse.status == HttpStatusCode.InternalServerError) {
+            logger.info { "User authentication failed! Discord sent a internal server error during OAuth2 token request" }
+
+            call.respondHtml(status = HttpStatusCode.Unauthorized) {
+                websiteBase(
+                    i18nContext,
+                    i18nContext.get(I18nKeysData.Website.Dashboard.AuthorizationFailedFullScreenError.Title),
+                ) {
+                    authorizationFailedFullScreenError(
+                        website.loritta,
+                        i18nContext,
+                        i18nContext.get(I18nKeysData.Website.Dashboard.AuthorizationFailedFullScreenError.Errors.DiscordInternalServerError)
+                    )
+                }
+            }
+            return
+        }
+
+        val oauth2TokenResultAsText = oauth2TokenHttpResponse.bodyAsText()
+        val resultAsJson = Json.parseToJsonElement(oauth2TokenResultAsText).jsonObject
 
         if (resultAsJson.containsKey("error")) {
             val error = resultAsJson["error"]!!.jsonPrimitive.content
@@ -121,7 +141,7 @@ class DiscordLoginUserDashboardRoute(val website: LorittaDashboardWebServer) : B
             return
         }
 
-        val result = Json.decodeFromString<DiscordOAuth2Authorization>(resultAsText)
+        val result = Json.decodeFromJsonElement<DiscordOAuth2Authorization>(resultAsJson)
 
         // When testing this: Remember that Discord "persists" your previously authorized scopes
         val authorizedScopes = result.scope.split(" ")
@@ -147,15 +167,34 @@ class DiscordLoginUserDashboardRoute(val website: LorittaDashboardWebServer) : B
         // We also want to get the user's information and associate it with the session
         // This way, we can avoid doing round trips every time when sending requests "on behalf" of the user
         // Because we already have the user's IDs!
-        val userIdentificationAsText = website.loritta.http.get {
+        val userIdentificationHttpResponse = website.loritta.http.get {
             url(website.oauth2Endpoints.UserIdentificationEndpoint)
             userAgent(UserSession.USER_AGENT)
 
             header("Authorization", "Bearer ${result.accessToken}")
-        }.bodyAsText()
+        }
 
-        logger.info { "User Identification Result: $userIdentificationAsText" }
+        val userIdentificationAsText = userIdentificationHttpResponse.bodyAsText()
+        logger.info { "User Identification Result (${userIdentificationHttpResponse.status}): $userIdentificationAsText" }
 
+        if (oauth2TokenHttpResponse.status == HttpStatusCode.InternalServerError) {
+            logger.info { "User authentication failed! Discord sent a internal server error during user identification request" }
+
+            call.respondHtml(status = HttpStatusCode.Unauthorized) {
+                websiteBase(
+                    i18nContext,
+                    i18nContext.get(I18nKeysData.Website.Dashboard.AuthorizationFailedFullScreenError.Title),
+                ) {
+                    authorizationFailedFullScreenError(
+                        website.loritta,
+                        i18nContext,
+                        i18nContext.get(I18nKeysData.Website.Dashboard.AuthorizationFailedFullScreenError.Errors.DiscordInternalServerError)
+                    )
+                }
+            }
+            return
+        }
+        
         val userIdentification = Json.decodeFromString<DiscordOAuth2UserIdentification>(userIdentificationAsText)
 
         val now = OffsetDateTime.now(ZoneOffset.UTC)
