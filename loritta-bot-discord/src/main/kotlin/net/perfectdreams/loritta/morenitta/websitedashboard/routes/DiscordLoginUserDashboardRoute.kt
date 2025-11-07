@@ -42,41 +42,40 @@ class DiscordLoginUserDashboardRoute(val website: LorittaDashboardWebServer) : B
 
         val i18nContext = website.getI18nContextFromCall(call)
 
+        suspend fun respondUserFriendlyAuthenticationFailed(call: ApplicationCall, message: String) {
+            call.respondHtml(status = HttpStatusCode.Unauthorized) {
+                websiteBase(
+                    i18nContext,
+                    i18nContext.get(I18nKeysData.Website.Dashboard.AuthorizationFailedFullScreenError.Title),
+                ) {
+                    authorizationFailedFullScreenError(
+                        website.loritta,
+                        i18nContext,
+                        message
+                    )
+                }
+            }
+        }
+
         if (error != null) {
             // oof, something went wrong!
             val errorDescription = call.request.queryParameters["error_description"]
 
             logger.info { "User authentication failed! Error was $error, error description was $errorDescription" }
-            call.respondHtml(status = HttpStatusCode.Unauthorized) {
-                websiteBase(
-                    i18nContext,
-                    i18nContext.get(I18nKeysData.Website.Dashboard.AuthorizationFailedFullScreenError.Title),
-                ) {
-                    authorizationFailedFullScreenError(
-                        website.loritta,
-                        i18nContext,
-                        if (error == "access_denied" && errorDescription == "The resource owner or authorization server denied the request") {
-                            i18nContext.get(I18nKeysData.Website.Dashboard.AuthorizationFailedFullScreenError.Errors.ResourceOwnerOrAuthorizationServerDeniedTheRequest)
-                        } else errorDescription ?: error
-                    )
-                }
-            }
+            respondUserFriendlyAuthenticationFailed(
+                call,
+                if (error == "access_denied" && errorDescription == "The resource owner or authorization server denied the request") {
+                    i18nContext.get(I18nKeysData.Website.Dashboard.AuthorizationFailedFullScreenError.Errors.ResourceOwnerOrAuthorizationServerDeniedTheRequest)
+                } else errorDescription ?: error
+            )
             return
         }
 
         if (accessCode == null) {
-            call.respondHtml(status = HttpStatusCode.Unauthorized) {
-                websiteBase(
-                    i18nContext,
-                    i18nContext.get(I18nKeysData.Website.Dashboard.AuthorizationFailedFullScreenError.Title),
-                ) {
-                    authorizationFailedFullScreenError(
-                        website.loritta,
-                        i18nContext,
-                        i18nContext.get(I18nKeysData.Website.Dashboard.AuthorizationFailedFullScreenError.Errors.MissingAuthenticationCode)
-                    )
-                }
-            }
+            respondUserFriendlyAuthenticationFailed(
+                call,
+                i18nContext.get(I18nKeysData.Website.Dashboard.AuthorizationFailedFullScreenError.Errors.MissingAuthenticationCode)
+            )
             return
         }
 
@@ -101,18 +100,10 @@ class DiscordLoginUserDashboardRoute(val website: LorittaDashboardWebServer) : B
         if (oauth2TokenHttpResponse.status == HttpStatusCode.InternalServerError) {
             logger.info { "User authentication failed! Discord sent a internal server error during OAuth2 token request" }
 
-            call.respondHtml(status = HttpStatusCode.Unauthorized) {
-                websiteBase(
-                    i18nContext,
-                    i18nContext.get(I18nKeysData.Website.Dashboard.AuthorizationFailedFullScreenError.Title),
-                ) {
-                    authorizationFailedFullScreenError(
-                        website.loritta,
-                        i18nContext,
-                        i18nContext.get(I18nKeysData.Website.Dashboard.AuthorizationFailedFullScreenError.Errors.DiscordInternalServerError)
-                    )
-                }
-            }
+            respondUserFriendlyAuthenticationFailed(
+                call,
+                i18nContext.get(I18nKeysData.Website.Dashboard.AuthorizationFailedFullScreenError.Errors.DiscordInternalServerError)
+            )
             return
         }
 
@@ -124,20 +115,12 @@ class DiscordLoginUserDashboardRoute(val website: LorittaDashboardWebServer) : B
             val errorDescription = resultAsJson["error_description"]?.jsonPrimitive?.content
             logger.info { "User authentication failed! Error was $error" }
 
-            call.respondHtml(status = HttpStatusCode.Unauthorized) {
-                websiteBase(
-                    i18nContext,
-                    i18nContext.get(I18nKeysData.Website.Dashboard.AuthorizationFailedFullScreenError.Title),
-                ) {
-                    authorizationFailedFullScreenError(
-                        website.loritta,
-                        i18nContext,
-                        if (error == "invalid_grant" && errorDescription == "Invalid \"code\" in request.") {
-                            i18nContext.get(I18nKeysData.Website.Dashboard.AuthorizationFailedFullScreenError.Errors.InvalidAuthenticationCode)
-                        } else errorDescription ?: error
-                    )
-                }
-            }
+            respondUserFriendlyAuthenticationFailed(
+                call,
+                if (error == "invalid_grant" && errorDescription == "Invalid \"code\" in request.") {
+                    i18nContext.get(I18nKeysData.Website.Dashboard.AuthorizationFailedFullScreenError.Errors.InvalidAuthenticationCode)
+                } else errorDescription ?: error
+            )
             return
         }
 
@@ -149,18 +132,10 @@ class DiscordLoginUserDashboardRoute(val website: LorittaDashboardWebServer) : B
         if (!hasAllRequiredScopes) {
             logger.info { "User authentication failed! We need $LORITTA_AUTHORIZATION_SCOPES but user only authorized $authorizedScopes" }
 
-            call.respondHtml(status = HttpStatusCode.Unauthorized) {
-                websiteBase(
-                    i18nContext,
-                    i18nContext.get(I18nKeysData.Website.Dashboard.AuthorizationFailedFullScreenError.Title),
-                ) {
-                    authorizationFailedFullScreenError(
-                        website.loritta,
-                        i18nContext,
-                        i18nContext.get(I18nKeysData.Website.Dashboard.AuthorizationFailedFullScreenError.Errors.MissingScopes)
-                    )
-                }
-            }
+            respondUserFriendlyAuthenticationFailed(
+                call,
+                i18nContext.get(I18nKeysData.Website.Dashboard.AuthorizationFailedFullScreenError.Errors.MissingScopes)
+            )
             return
         }
 
@@ -180,21 +155,13 @@ class DiscordLoginUserDashboardRoute(val website: LorittaDashboardWebServer) : B
         if (oauth2TokenHttpResponse.status == HttpStatusCode.InternalServerError) {
             logger.info { "User authentication failed! Discord sent a internal server error during user identification request" }
 
-            call.respondHtml(status = HttpStatusCode.Unauthorized) {
-                websiteBase(
-                    i18nContext,
-                    i18nContext.get(I18nKeysData.Website.Dashboard.AuthorizationFailedFullScreenError.Title),
-                ) {
-                    authorizationFailedFullScreenError(
-                        website.loritta,
-                        i18nContext,
-                        i18nContext.get(I18nKeysData.Website.Dashboard.AuthorizationFailedFullScreenError.Errors.DiscordInternalServerError)
-                    )
-                }
-            }
+            respondUserFriendlyAuthenticationFailed(
+                call,
+                i18nContext.get(I18nKeysData.Website.Dashboard.AuthorizationFailedFullScreenError.Errors.DiscordInternalServerError)
+            )
             return
         }
-        
+
         val userIdentification = Json.decodeFromString<DiscordOAuth2UserIdentification>(userIdentificationAsText)
 
         val now = OffsetDateTime.now(ZoneOffset.UTC)
