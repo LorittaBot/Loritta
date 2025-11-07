@@ -54,38 +54,38 @@ fun FlowContent.reputations(
                         page
                     )
                 }
-
-                div {
-                    style = "display: flex; gap: 16px; justify-content: space-between;"
-
-                    discordButtonLink(ButtonStyle.NO_BACKGROUND_THEME_DEPENDENT_DARK_TEXT, href = if (page == 1) null else "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/reputations/$path?page=${page - 1}") {
-                        classes += "text-with-icon"
-                        if (page == 1) {
-                            attributes["aria-disabled"] = "true"
-                        } else {
-                            swapRightSidebarContentsAttributes()
-                        }
-
-                        svgIcon(SVGIcons.CaretLeft)
-
-                        text("Voltar")
-                    }
-
-                    discordButtonLink(ButtonStyle.NO_BACKGROUND_THEME_DEPENDENT_DARK_TEXT, href = if (page >= totalPages) null else "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/reputations/$path?page=${page + 1}") {
-                        classes += "text-with-icon"
-                        if (page >= totalPages) {
-                            attributes["aria-disabled"] = "true"
-                        } else {
-                            swapRightSidebarContentsAttributes()
-                        }
-                        svgIcon(SVGIcons.CaretRight)
-
-                        text("Próximo")
-                    }
-                }
             }
         } else {
             emptySection(i18nContext)
+        }
+
+        div {
+            style = "display: flex; gap: 16px; justify-content: space-between;"
+
+            discordButtonLink(ButtonStyle.NO_BACKGROUND_THEME_DEPENDENT_DARK_TEXT, href = if (page == 1) null else "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/reputations/$path?page=${page - 1}") {
+                classes += "text-with-icon"
+                if (page == 1) {
+                    attributes["aria-disabled"] = "true"
+                } else {
+                    swapRightSidebarContentsAttributes()
+                }
+
+                svgIcon(SVGIcons.CaretLeft)
+
+                text("Voltar")
+            }
+
+            discordButtonLink(ButtonStyle.NO_BACKGROUND_THEME_DEPENDENT_DARK_TEXT, href = if (page >= totalPages) null else "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/reputations/$path?page=${page + 1}") {
+                classes += "text-with-icon"
+                if (page >= totalPages) {
+                    attributes["aria-disabled"] = "true"
+                } else {
+                    swapRightSidebarContentsAttributes()
+                }
+                svgIcon(SVGIcons.CaretRight)
+
+                text("Próximo")
+            }
         }
     }
 }
