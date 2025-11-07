@@ -31,7 +31,7 @@ dependencies {
     implementation("io.github.microutils:kotlin-logging:2.1.21")
 
     implementation(libs.deviousjda)
-    implementation("com.github.freya022:jda-ktx:8929de93af")
+    implementation(libs.jdaKtx)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.jdk8)
     implementation("com.github.ben-manes.caffeine:caffeine:3.0.6")

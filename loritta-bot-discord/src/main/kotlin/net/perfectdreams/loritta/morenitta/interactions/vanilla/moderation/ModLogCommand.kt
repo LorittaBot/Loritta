@@ -111,10 +111,10 @@ class ModLogCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 this.useComponentsV2 = true
 
                 this.components += Container {
-                    this.accentColor = LorittaColors.LorittaRed.rgb
+                    this.accentColorRaw = LorittaColors.LorittaRed.rgb
 
-                    +Section(Thumbnail(user.effectiveAvatarUrl)) {
-                        +TextDisplay(
+                    this.components += Section(Thumbnail(user.effectiveAvatarUrl)) {
+                        this.components += TextDisplay(
                             buildString {
                                 append("### ${context.i18nContext.get(I18N_PREFIX.Title(user.effectiveName))}")
                                 append(" — ${context.i18nContext.get(I18N_PREFIX.Page(page + 1))}")

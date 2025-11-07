@@ -53,6 +53,7 @@ permissions:
   createScheduledEvents: "Criar eventos"
   messageSendPolls: "Criar Enquetes"
   useExternalApplications: "Usar Aplicativos Externos"
+  pinMessages: "Fixar mensagens"
   unknownPermission: "Permissão desconhecida"
 guildFeatures:
   inviteSplash: "Fundo de convite"

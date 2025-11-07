@@ -355,10 +355,10 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
                                                 this.useComponentsV2 = true
 
                                                 this.components += Container {
-                                                    this.accentColor = LorittaColors.LorittaAqua.rgb
+                                                    this.accentColorRaw = LorittaColors.LorittaAqua.rgb
 
-                                                    +Section(Thumbnail(event.author.effectiveAvatarUrl)) {
-                                                        +TextDisplay(
+                                                    this.components += Section(Thumbnail(event.author.effectiveAvatarUrl)) {
+                                                        this.components += TextDisplay(
                                                             buildString {
                                                                 appendLine(i18nContext.get(I18nKeysData.Commands.Command.Notifymessage.UserSentMessage(event.author.asUserNameCodeBlockPreviewTag(), event.channel.asMention)))
                                                                 appendLine()

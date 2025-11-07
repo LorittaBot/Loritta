@@ -182,7 +182,7 @@ class MarriageAffinityDecayTask(val m: LorittaBot) : NamedRunnableCoroutine {
                             this.useComponentsV2 = true
 
                             this.components += Container {
-                                +TextDisplay(
+                                this.components += TextDisplay(
                                     buildString {
                                         appendLine("### ${Emotes.LoriHeart} Uma Segunda Chance para o Amor!")
                                         appendLine("A afinidade do seu casamento chegou a zero, levando ao fim do seu casamento...")
@@ -210,7 +210,7 @@ class MarriageAffinityDecayTask(val m: LorittaBot) : NamedRunnableCoroutine {
                             this.useComponentsV2 = true
 
                             this.components += Container {
-                                +TextDisplay(
+                                this.components += TextDisplay(
                                     buildString {
                                         appendLine("### ${Emotes.LoriSob} Seu Casamento Acabou...")
                                         appendLine("Infelizmente o seu casamento acabou por falta de afinidade...")

@@ -129,51 +129,51 @@ sealed class NotificationsSetupScreen(val m: LorittaBot) {
                 this.useComponentsV2 = true
 
                 this.components += Container {
-                    this.accentColor = LorittaColors.LorittaAqua.rgb
+                    this.accentColorRaw = LorittaColors.LorittaAqua.rgb
 
-                    +TextDisplay(
+                    this.components += TextDisplay(
                         buildString {
                             appendLine("### ${Emotes.LoriMegaphone} ${context.i18nContext.get(SETUP_I18N_PREFIX.Title)}")
                             appendLine(context.i18nContext.get(SETUP_I18N_PREFIX.ChooseWhichNotification))
                         })
 
-                    +Section(dailyReminderToggle) {
-                        +OptionExplanationCombo(
+                    this.components += Section(dailyReminderToggle) {
+                        this.components += OptionExplanationCombo(
                             context.i18nContext.get(SETUP_I18N_PREFIX.Types.DailyReminder.Title),
                             context.i18nContext.get(SETUP_I18N_PREFIX.Types.DailyReminder.Description)
                         )
                     }
 
-                    +Section(marriageExpirationReminderToggle) {
-                        +OptionExplanationCombo(
+                    this.components += Section(marriageExpirationReminderToggle) {
+                        this.components += OptionExplanationCombo(
                             context.i18nContext.get(SETUP_I18N_PREFIX.Types.MarriageExpirationReminder.Title),
                             context.i18nContext.get(SETUP_I18N_PREFIX.Types.MarriageExpirationReminder.Description)
                         )
                     }
 
-                    +Section(marriageExpiredReminderToggle) {
-                        +OptionExplanationCombo(
+                    this.components += Section(marriageExpiredReminderToggle) {
+                        this.components += OptionExplanationCombo(
                             context.i18nContext.get(SETUP_I18N_PREFIX.Types.MarriageExpired.Title),
                             context.i18nContext.get(SETUP_I18N_PREFIX.Types.MarriageExpired.Description)
                         )
                     }
 
-                    +Section(marriageRenewedReminderToggle) {
-                        +OptionExplanationCombo(
+                    this.components += Section(marriageRenewedReminderToggle) {
+                        this.components += OptionExplanationCombo(
                             context.i18nContext.get(SETUP_I18N_PREFIX.Types.MarriageRenewed.Title),
                             context.i18nContext.get(SETUP_I18N_PREFIX.Types.MarriageRenewed.Description)
                         )
                     }
 
-                    +Section(marriageLoveLetterToggle) {
-                        +OptionExplanationCombo(
+                    this.components += Section(marriageLoveLetterToggle) {
+                        this.components += OptionExplanationCombo(
                             context.i18nContext.get(SETUP_I18N_PREFIX.Types.MarriageLoveLetter.Title),
                             context.i18nContext.get(SETUP_I18N_PREFIX.Types.MarriageLoveLetter.Description)
                         )
                     }
 
-                    +Section(experienceLevelUpToggle) {
-                        +OptionExplanationCombo(
+                    this.components += Section(experienceLevelUpToggle) {
+                        this.components += OptionExplanationCombo(
                             context.i18nContext.get(SETUP_I18N_PREFIX.Types.ExperienceLevelUp.Title),
                             context.i18nContext.get(SETUP_I18N_PREFIX.Types.ExperienceLevelUp.Description)
                         )

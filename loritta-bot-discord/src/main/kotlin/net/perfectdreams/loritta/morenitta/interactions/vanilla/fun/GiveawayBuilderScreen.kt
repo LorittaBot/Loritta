@@ -91,11 +91,7 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
 
             it.sendModal(
                 context.i18nContext.get(SETUP_I18N_PREFIX.ModalTitle),
-                listOf(
-                    ActionRow.of(
-                        option.toJDA()
-                    )
-                )
+                listOf(option.toJDA())
             ) { it, args ->
                 val value = args[option] ?: ""
 
@@ -519,21 +515,21 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
                 this.useComponentsV2 = true
 
                 this.components += Container {
-                    this.accentColor = builder.color.rgb
+                    this.accentColorRaw = builder.color.rgb
 
-                    +TextDisplay("### ${Emotes.Art} ${context.i18nContext.get(SETUP_I18N_PREFIX.Appearance)}")
+                    this.components += TextDisplay("### ${Emotes.Art} ${context.i18nContext.get(SETUP_I18N_PREFIX.Appearance)}")
 
-                    +Section(
+                    this.components += Section(
                         editGiveawayNameButton
                     ) {
-                        +OptionExplanationCombo(
+                        this.components += OptionExplanationCombo(
                             context.i18nContext.get(SETUP_I18N_PREFIX.GiveawayName),
                             value = builder.name
                         )
                     }
 
-                    +Section(editGiveawayDescriptionButton) {
-                        +OptionExplanationCombo(
+                    this.components += Section(editGiveawayDescriptionButton) {
+                        this.components += OptionExplanationCombo(
                             context.i18nContext.get(SETUP_I18N_PREFIX.GiveawayDescription),
                             value = builder.description
                         )
@@ -542,8 +538,8 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
                     val imageUrl = builder.imageUrl
                     val thumbnailUrl = builder.thumbnailUrl
 
-                    +Section(editGiveawayImageButton) {
-                        +OptionExplanationCombo(
+                    this.components += Section(editGiveawayImageButton) {
+                        this.components += OptionExplanationCombo(
                             context.i18nContext.get(SETUP_I18N_PREFIX.GiveawayEmbedImage),
                             value = if (imageUrl != null) {
                                 imageUrl
@@ -554,13 +550,13 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
                     }
 
                     if (imageUrl != null) {
-                        +MediaGallery {
+                        this.components += MediaGallery {
                             this.item(imageUrl)
                         }
                     }
 
-                    +Section(editGiveawayThumbnailButton) {
-                        +OptionExplanationCombo(
+                    this.components += Section(editGiveawayThumbnailButton) {
+                        this.components += OptionExplanationCombo(
                             context.i18nContext.get(SETUP_I18N_PREFIX.GiveawayThumbnailImage),
                             value = if (thumbnailUrl != null) {
                                 thumbnailUrl
@@ -571,13 +567,13 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
                     }
 
                     if (thumbnailUrl != null) {
-                        +MediaGallery {
+                        this.components += MediaGallery {
                             this.item(thumbnailUrl)
                         }
                     }
 
-                    +Section(editGiveawayColorButton) {
-                        +TextDisplay(
+                    this.components += Section(editGiveawayColorButton) {
+                        this.components += TextDisplay(
                             "**${context.i18nContext.get(SETUP_I18N_PREFIX.GiveawayEmbedColor)}**\n${
                                 String.format(
                                     "#%02x%02x%02x",
@@ -737,48 +733,49 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
                 this.useComponentsV2 = true
 
                 this.components += Container {
-                    this.accentColor = builder.color.rgb
+                    this.accentColorRaw = builder.color.rgb
 
-                    +TextDisplay("### ${Emotes.LoriCoffee} ${context.i18nContext.get(SETUP_I18N_PREFIX.General)}")
+                    this.components += TextDisplay("### ${Emotes.LoriCoffee} ${context.i18nContext.get(SETUP_I18N_PREFIX.General)}")
 
-                    +Section(editGiveawayQuantityOfWinnersButton) {
-                        +OptionExplanationCombo(
+                    this.components += Section(editGiveawayQuantityOfWinnersButton) {
+                        this.components += OptionExplanationCombo(
                             context.i18nContext.get(SETUP_I18N_PREFIX.GiveawayWinners.Title),
                             value = builder.numberOfWinners.toString()
                         )
                     }
 
-                    +Section(editGiveawayDurationButton) {
+                    this.components += Section(editGiveawayDurationButton) {
                         val epoch = TimeUtils.convertToLocalDateTimeRelativeToNow(builder.duration)
 
-                        +OptionExplanationCombo(
+                        this.components += OptionExplanationCombo(
                             context.i18nContext.get(SETUP_I18N_PREFIX.GiveawayDuration.Title),
                             context.i18nContext.get(SETUP_I18N_PREFIX.GiveawayDuration.Description),
                             value = "${builder.duration} (${DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(epoch.toInstant())})"
                         )
                     }
 
-                    +Section(editGiveawayReactionButton) {
-                        +OptionExplanationCombo(
+                    this.components += Section(editGiveawayReactionButton) {
+                        this.components += OptionExplanationCombo(
                             context.i18nContext.get(SETUP_I18N_PREFIX.GiveawayEmoji.Title),
                             context.i18nContext.get(SETUP_I18N_PREFIX.GiveawayEmoji.Description),
                             builder.reaction
                         )
                     }
 
-                    +OptionExplanationCombo(
+                    this.components += OptionExplanationCombo(
                         context.i18nContext.get(SETUP_I18N_PREFIX.RolesThatTheWinnersWillWin.Title),
                         context.i18nContext.get(SETUP_I18N_PREFIX.RolesThatTheWinnersWillWin.Description)
                     )
 
-                    +row(
+                    this.components += row(
                         rolesToBeGivenToTheWinners
                     )
 
-                    +OptionExplanationCombo(
+                    this.components += OptionExplanationCombo(
                         context.i18nContext.get(SETUP_I18N_PREFIX.GiveawayChannel.Title)
                     )
-                    +row(
+
+                    this.components += row(
                         channelSelectMenu
                     )
                 }
@@ -852,37 +849,37 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
                 this.useComponentsV2 = true
 
                 this.components += Container {
-                    this.accentColor = builder.color.rgb
+                    this.accentColorRaw = builder.color.rgb
 
-                    +TextDisplay("### ${m.emojiManager.get(LorittaEmojis.Role)} ${context.i18nContext.get(SETUP_I18N_PREFIX.AllowedAndDeniedRoles)}")
+                    this.components += TextDisplay("### ${m.emojiManager.get(LorittaEmojis.Role)} ${context.i18nContext.get(SETUP_I18N_PREFIX.AllowedAndDeniedRoles)}")
 
-                    +OptionExplanationCombo(context.i18nContext.get(SETUP_I18N_PREFIX.AllowedRoles.Title))
-                    +row(
+                    this.components += OptionExplanationCombo(context.i18nContext.get(SETUP_I18N_PREFIX.AllowedRoles.Title))
+                    this.components += row(
                         channel1SelectMenu
                     )
 
-                    +Section(toggleAllowedRolesIsAndCondition) {
-                        +OptionExplanationCombo(
+                    this.components += Section(toggleAllowedRolesIsAndCondition) {
+                        this.components += OptionExplanationCombo(
                             context.i18nContext.get(SETUP_I18N_PREFIX.AllowedRolesIsAndCondition.Title),
                             context.i18nContext.get(SETUP_I18N_PREFIX.AllowedRolesIsAndCondition.Description)
                         )
                     }
 
-                    +OptionExplanationCombo(context.i18nContext.get(SETUP_I18N_PREFIX.DeniedRoles.Title))
-                    +row(
+                    this.components += OptionExplanationCombo(context.i18nContext.get(SETUP_I18N_PREFIX.DeniedRoles.Title))
+                    this.components += row(
                         channel2SelectMenu
                     )
 
-                    +Section(toggleDeniedRolesIsAndCondition) {
-                        +OptionExplanationCombo(
+                    this.components += Section(toggleDeniedRolesIsAndCondition) {
+                        this.components += OptionExplanationCombo(
                             context.i18nContext.get(SETUP_I18N_PREFIX.DeniedRolesIsAndCondition.Title),
                             context.i18nContext.get(SETUP_I18N_PREFIX.DeniedRolesIsAndCondition.Description)
                         )
                     }
 
-                    +Separator(true, Separator.Spacing.SMALL)
+                    this.components += Separator(isDivider = true, spacing = Separator.Spacing.SMALL)
 
-                    +TextDisplay(
+                    this.components += TextDisplay(
                         buildString {
                             val allowedRolesIds = builder.allowedRolesIds?.ifEmpty { null }
                             val deniedRolesIds = builder.deniedRolesIds?.ifEmpty { null }
@@ -993,7 +990,7 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
                             it.deferEdit().editOriginal(MessageEdit { apply(ExtraEntries(m).render(context, builder)) }).await()
                         }
                     ) {
-                        +TextDisplay(
+                        this.components += TextDisplay(
                             buildString {
                                 appendLine("**${context.i18nContext.get(SETUP_I18N_PREFIX.ExtraEntriesEntry.Title("<@&${extraEntry.roleId}>", extraEntry.roleId.toString()))}**")
                                 appendLine(context.i18nContext.get(SETUP_I18N_PREFIX.ExtraEntriesEntry.ExtraEntries(extraEntry.weight)))
@@ -1007,9 +1004,9 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
                 this.useComponentsV2 = true
 
                 this.components += Container {
-                    this.accentColor = builder.color.rgb
+                    this.accentColorRaw = builder.color.rgb
 
-                    +TextDisplay(
+                    this.components += TextDisplay(
                         buildString {
                             appendLine("### ${Emotes.LoriRich} ${context.i18nContext.get(SETUP_I18N_PREFIX.ExtraEntries)}")
                             var isFirst = true
@@ -1023,21 +1020,21 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
                     )
 
                     if (sections.isEmpty()) {
-                        +TextDisplay("*${context.i18nContext.get(I18nKeysData.Commands.Command.Transactions.NoTransactionsFunnyMessages).random()}*")
+                        this.components += TextDisplay("*${context.i18nContext.get(I18nKeysData.Commands.Command.Transactions.NoTransactionsFunnyMessages).random()}*")
                     } else {
                         for (section in sections) {
-                            +section
+                            this.components += section
                         }
                     }
 
-                    +Separator(true, Separator.Spacing.SMALL)
+                    this.components += Separator(isDivider = true, spacing = Separator.Spacing.SMALL)
 
-                    +row(
+                    this.components += row(
                         addNewExtraEntry
                     )
 
-                    +Section(toggleExtraEntriesShouldStack) {
-                        +OptionExplanationCombo(
+                    this.components += Section(toggleExtraEntriesShouldStack) {
+                        this.components += OptionExplanationCombo(
                             context.i18nContext.get(SETUP_I18N_PREFIX.ExtraEntriesShouldStack.Title),
                             context.i18nContext.get(SETUP_I18N_PREFIX.ExtraEntriesShouldStack.Description),
                         )
@@ -1188,20 +1185,20 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
                 this.useComponentsV2 = true
 
                 this.components += Container {
-                    this.accentColor = builder.color.rgb
-                    +TextDisplay("### ${Emotes.LoriRich} ${context.i18nContext.get(SETUP_I18N_PREFIX.AddExtraEntry)}")
+                    this.accentColorRaw = builder.color.rgb
+                    this.components += TextDisplay("### ${Emotes.LoriRich} ${context.i18nContext.get(SETUP_I18N_PREFIX.AddExtraEntry)}")
 
-                    +OptionExplanationCombo(
+                    this.components += OptionExplanationCombo(
                         context.i18nContext.get(SETUP_I18N_PREFIX.ExtraEntryRole.Title),
                         context.i18nContext.get(SETUP_I18N_PREFIX.ExtraEntryRole.Description),
                     )
 
-                    +row(
+                    this.components += row(
                         extraEntryRoleSelector
                     )
 
-                    +Section(editWeightButton) {
-                        +OptionExplanationCombo(
+                    this.components += Section(editWeightButton) {
+                        this.components += OptionExplanationCombo(
                             context.i18nContext.get(SETUP_I18N_PREFIX.ExtraEntryQuantity.Title),
                             if (builder.extraEntriesShouldStack) {
                                 context.i18nContext.get(SETUP_I18N_PREFIX.ExtraEntryQuantity.DescriptionStacked(builder.extraEntryBuilder.weight))
@@ -1211,7 +1208,7 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
                         )
                     }
 
-                    +row(
+                    this.components += row(
                         addNewExtraEntry
                     )
                 }
@@ -1239,11 +1236,11 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
                 this.useComponentsV2 = true
 
                 this.components += Container {
-                    this.accentColor = builder.color.rgb
-                    +TextDisplay("### ${Emotes.LoriDerp} ${context.i18nContext.get(SETUP_I18N_PREFIX.Miscellaneous)}")
+                    this.accentColorRaw = builder.color.rgb
+                    this.components += TextDisplay("### ${Emotes.LoriDerp} ${context.i18nContext.get(SETUP_I18N_PREFIX.Miscellaneous)}")
 
-                    +Section(toggleNeedsToGetDailyBeforeParticipating) {
-                        +OptionExplanationCombo(
+                    this.components += Section(toggleNeedsToGetDailyBeforeParticipating) {
+                        this.components += OptionExplanationCombo(
                             context.i18nContext.get(SETUP_I18N_PREFIX.NeedsToGetDailyBeforeParticipating.Title),
                             context.i18nContext.get(SETUP_I18N_PREFIX.NeedsToGetDailyBeforeParticipating.Description),
                         )
@@ -1303,7 +1300,7 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
 
                     context.sendModal(
                         context.i18nContext.get(SETUP_I18N_PREFIX.ModalTitle),
-                        listOf(ActionRow.of(option.toJDA()))
+                        listOf(option.toJDA())
                     ) { context, args ->
                         val name = args[option]
                         val hook = context.deferEdit()
@@ -1368,12 +1365,12 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
                 this.useComponentsV2 = true
 
                 this.components += Container {
-                    this.accentColor = builder.color.rgb
+                    this.accentColorRaw = builder.color.rgb
 
-                    +TextDisplay("### ${Emotes.Sparkles} ${context.i18nContext.get(SETUP_I18N_PREFIX.Template.CreatedTemplates)}")
+                    this.components += TextDisplay("### ${Emotes.Sparkles} ${context.i18nContext.get(SETUP_I18N_PREFIX.Template.CreatedTemplates)}")
 
                     for (template in templates) {
-                        +Section(
+                        this.components += Section(
                             m.interactivityManager.buttonForUser(
                                 context.user,
                                 context.alwaysEphemeral,
@@ -1383,7 +1380,7 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
                                 it.deferEdit().editOriginal(MessageEdit { apply(ViewGiveawayTemplate(m, template).render(context, builder)) }).await()
                             }
                         ) {
-                            +TextDisplay(
+                            this.components += TextDisplay(
                                 buildString {
                                     appendLine("**${template.name}**")
                                 }
@@ -1391,9 +1388,9 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
                         }
                     }
 
-                    +Separator(true, Separator.Spacing.SMALL)
+                    this.components += Separator(isDivider = true, spacing = Separator.Spacing.SMALL)
 
-                    +row(
+                    this.components += row(
                         saveGiveawayAsTemplate
                     )
                 }
@@ -1422,17 +1419,17 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
                 this.useComponentsV2 = true
 
                 this.components += Container {
-                    this.accentColor = builder.color.rgb
+                    this.accentColorRaw = builder.color.rgb
 
-                    +TextDisplay("### ${Emotes.Sparkles} Template ${giveawayInformation.name}")
+                    this.components += TextDisplay("### ${Emotes.Sparkles} Template ${giveawayInformation.name}")
 
-                    +Section(
+                    this.components += Section(
                         Thumbnail(userInfo?.effectiveAvatarUrl ?: "https://cdn.discordapp.com/embed/avatars/0.png")
                     ) {
-                        + TextDisplay(context.i18nContext.get(SETUP_I18N_PREFIX.Template.TemplateCreatedBy("<@${giveawayInformation.createdById}>", giveawayInformation.createdById.toString())))
+                        this.components += TextDisplay(context.i18nContext.get(SETUP_I18N_PREFIX.Template.TemplateCreatedBy("<@${giveawayInformation.createdById}>", giveawayInformation.createdById.toString())))
                     }
 
-                    +row(
+                    this.components += row(
                         m.interactivityManager.buttonForUser(
                             context.user,
                             context.alwaysEphemeral,
@@ -1512,11 +1509,11 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
                 this.useComponentsV2 = true
 
                 this.components += Container {
-                    this.accentColor = builder.color.rgb
+                    this.accentColorRaw = builder.color.rgb
 
-                    +TextDisplay(context.i18nContext.get(SETUP_I18N_PREFIX.Template.AreYouSureYouWantToDeleteTheTemplate))
+                    this.components += TextDisplay(context.i18nContext.get(SETUP_I18N_PREFIX.Template.AreYouSureYouWantToDeleteTheTemplate))
 
-                    +row(
+                    this.components += row(
                         m.interactivityManager.buttonForUser(
                             context.user,
                             context.alwaysEphemeral,

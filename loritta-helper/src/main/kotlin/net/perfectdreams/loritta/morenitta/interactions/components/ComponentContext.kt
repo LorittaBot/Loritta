@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.morenitta.interactions.components
 import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.interactions.components.replyModal
 import net.dv8tion.jda.api.components.Component
+import net.dv8tion.jda.api.components.ModalTopLevelComponent
 import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction
@@ -53,12 +54,14 @@ class ComponentContext(
             Component.Type.FILE_DISPLAY -> TODO()
             Component.Type.SEPARATOR -> TODO()
             Component.Type.CONTAINER -> TODO()
+            Component.Type.LABEL -> TODO()
+            Component.Type.FILE_UPLOAD -> TODO()
         }
     }
 
     suspend fun sendModal(
         title: String,
-        components: List<ActionRow>,
+        components: List<ModalTopLevelComponent>,
         callback: suspend (ModalContext, ModalArguments) -> (Unit)
     ) {
         val unleashedComponentId = UnleashedComponentId(UUID.randomUUID())

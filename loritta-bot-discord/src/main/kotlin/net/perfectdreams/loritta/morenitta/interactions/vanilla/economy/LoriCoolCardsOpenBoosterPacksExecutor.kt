@@ -207,13 +207,13 @@ class LoriCoolCardsOpenBoosterPacksExecutor(val loritta: LorittaBot, private val
                                 "${currentCard.card[LoriCoolCardsEventCards.rarity].emoji} **[NOVO!]** $cardId - $title"
                             }
 
-                            + TextDisplay("### $embedLikeTitle")
+                            this.components += TextDisplay("### $embedLikeTitle")
 
-                            + MediaGallery {
+                            this.components += MediaGallery {
                                 this.item(cardReceivedImageUrl)
                             }
 
-                            + TextDisplay(
+                            this.components += TextDisplay(
                                 "${context.i18nContext.get(I18N_PREFIX.NowYouHaveXStickersOfThisType(currentCard.howManyCardsOfThisCardIdWeHave))}\n${
                                     context.i18nContext.get(
                                         I18N_PREFIX.AlbumProgress(
@@ -224,7 +224,7 @@ class LoriCoolCardsOpenBoosterPacksExecutor(val loritta: LorittaBot, private val
                                 }"
                             )
 
-                            this.accentColor = currentCard.card[LoriCoolCardsEventCards.rarity].color.rgb
+                            this.accentColorRaw = currentCard.card[LoriCoolCardsEventCards.rarity].color.rgb
                         }
 
                         val nextStickerButton = UnleashedButton.of(
@@ -292,9 +292,9 @@ class LoriCoolCardsOpenBoosterPacksExecutor(val loritta: LorittaBot, private val
                                     this.useComponentsV2 = true
 
                                     this.components += Container {
-                                        accentColor = LorittaColors.LorittaAqua.rgb
+                                        this.accentColorRaw = LorittaColors.LorittaAqua.rgb
 
-                                        + TextDisplay("### ${Emotes.LoriCoolSticker} ${context.i18nContext.get(I18N_PREFIX.Summary)}")
+                                        this.components += TextDisplay("### ${Emotes.LoriCoolSticker} ${context.i18nContext.get(I18N_PREFIX.Summary)}")
                                         val description = buildString {
                                             groupedCards.take(25).forEach {
                                                 val cardReference = it.second.first().card
@@ -310,9 +310,9 @@ class LoriCoolCardsOpenBoosterPacksExecutor(val loritta: LorittaBot, private val
                                             }
                                         }
 
-                                        + TextDisplay(description)
+                                        this.components += TextDisplay(description)
 
-                                        + row(
+                                        this.components += row(
                                             if (result.alreadyStickedCardsCount != lastStickerOfThePacks.totalAlbumCompletionCount) {
                                                 // If the number is different, then it means that we have new stickers to be sticked!
                                                 loritta.interactivityManager
@@ -329,9 +329,9 @@ class LoriCoolCardsOpenBoosterPacksExecutor(val loritta: LorittaBot, private val
                                             }
                                         )
 
-                                        + Separator(true, Separator.Spacing.SMALL)
+                                        this.components += Separator(isDivider = true, spacing = Separator.Spacing.SMALL)
 
-                                        + TextDisplay(
+                                        this.components += TextDisplay(
                                             buildString {
                                                 appendLine("**Progresso do Álbum:** ${lastStickerOfThePacks.totalAlbumCompletionCount}/${result.albumCardsCount} figurinhas (+${lastStickerOfThePacks.totalAlbumCompletionCount - result.totalAlbumCompletionCountBeforeBuying})")
                                                 appendLine("**Progresso do Álbum:** ${result.alreadyStickedCardsCount}/${result.albumCardsCount} figurinhas coladas")
@@ -339,7 +339,7 @@ class LoriCoolCardsOpenBoosterPacksExecutor(val loritta: LorittaBot, private val
                                             }
                                         )
 
-                                        + TextDisplay("-# ${context.i18nContext.get(I18nKeysData.Commands.Command.Loricoolcards.Open.YouOpenedXStickerPacks(result.boosterPacksCount))}")
+                                        this.components += TextDisplay("-# ${context.i18nContext.get(I18nKeysData.Commands.Command.Loricoolcards.Open.YouOpenedXStickerPacks(result.boosterPacksCount))}")
                                     }
                                 }
                             }

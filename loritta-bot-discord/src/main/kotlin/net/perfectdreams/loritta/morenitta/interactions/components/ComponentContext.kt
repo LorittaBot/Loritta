@@ -6,6 +6,7 @@ import dev.minn.jda.ktx.messages.InlineMessage
 import dev.minn.jda.ktx.messages.MessageEdit
 import dev.minn.jda.ktx.messages.MessageEditBuilder
 import net.dv8tion.jda.api.components.Component
+import net.dv8tion.jda.api.components.ModalTopLevelComponent
 import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.entities.Message
@@ -98,7 +99,7 @@ class ComponentContext(
                         if (it is ActionRow) {
                             this.actionRow(
                                 it.components.map {
-                                    if (it is Button && event.componentId == it.id)
+                                    if (it is Button && event.componentId == it.customId)
                                         it.withEmoji(loadingEmoji.toJDA())
                                     else
                                         it
@@ -161,12 +162,14 @@ class ComponentContext(
             Component.Type.FILE_DISPLAY -> TODO()
             Component.Type.SEPARATOR -> TODO()
             Component.Type.CONTAINER -> TODO()
+            Component.Type.LABEL -> TODO()
+            Component.Type.FILE_UPLOAD -> TODO()
         }
     }
 
     suspend fun sendModal(
         title: String,
-        components: List<ActionRow>,
+        components: List<ModalTopLevelComponent>,
         callback: suspend (ModalContext, ModalArguments) -> (Unit)
     ) {
         val unleashedComponentId = UnleashedComponentId(UUID.randomUUID())

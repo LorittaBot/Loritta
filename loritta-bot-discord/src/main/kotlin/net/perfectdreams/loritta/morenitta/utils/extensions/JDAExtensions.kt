@@ -392,6 +392,7 @@ fun Permission.getI18nKey() = when (this) {
     CREATE_SCHEDULED_EVENTS -> I18nKeys.Permissions.CreateScheduledEvents
     MESSAGE_SEND_POLLS -> I18nKeys.Permissions.MessageSendPolls
     USE_EXTERNAL_APPLICATIONS -> I18nKeys.Permissions.UseExternalApplications
+    PIN_MESSAGES -> I18nKeys.Permissions.PinMessages
     UNKNOWN -> I18nKeys.Permissions.UnknownPermission
 }
 

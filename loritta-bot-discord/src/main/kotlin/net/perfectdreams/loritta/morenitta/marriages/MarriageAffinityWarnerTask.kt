@@ -89,7 +89,7 @@ class MarriageAffinityWarnerTask(val m: LorittaBot, val t: Long) : NamedRunnable
                             this.useComponentsV2 = true
 
                             this.components += Container {
-                                +TextDisplay(
+                                this.components += TextDisplay(
                                     buildString {
                                         appendLine("### ${Emotes.MarriageRing} Taxa de Afinidade do Casamento")
                                         appendLine("Assim como uma chama, você precisa cuidar da afinidade do seu casamento para ela se manter acesa. Naturalmente, a afinidade diminui 2 pontos a cada dia.")

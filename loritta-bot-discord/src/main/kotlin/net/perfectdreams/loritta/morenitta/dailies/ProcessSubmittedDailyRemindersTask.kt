@@ -139,9 +139,9 @@ class ProcessSubmittedDailyRemindersTask(val m: LorittaBot) {
                                         this.useComponentsV2 = true
 
                                         this.components += Container {
-                                            this.accentColor = LorittaColors.LorittaAqua.rgb
+                                            this.accentColorRaw = LorittaColors.LorittaAqua.rgb
 
-                                            +TextDisplay(
+                                            this.components += TextDisplay(
                                                 buildString {
                                                     appendLine(
                                                         buildString {
@@ -161,7 +161,7 @@ class ProcessSubmittedDailyRemindersTask(val m: LorittaBot) {
                                                 }
                                             )
 
-                                            +ActionRow.of(
+                                            this.components += ActionRow.of(
                                                 Button.of(
                                                     ButtonStyle.LINK,
                                                     GACampaigns.dailyWebRewardDiscordCampaignUrl(
@@ -173,11 +173,11 @@ class ProcessSubmittedDailyRemindersTask(val m: LorittaBot) {
                                                 ).withEmoji(Emotes.Sonhos3.toJDA())
                                             )
 
-                                            +MediaGallery {
+                                            this.components += MediaGallery {
                                                 this.item("https://stuff.loritta.website/loritta-daily-yafyr.png")
                                             }
 
-                                            +TextDisplay("-# ${i18nContext.get(I18nKeysData.DailyRewardReminder.YouReceivedThisMessageBecauseYouGotDailyRewardYesterday)} ${Emotes.LoriFlushed}")
+                                            this.components += TextDisplay("-# ${i18nContext.get(I18nKeysData.DailyRewardReminder.YouReceivedThisMessageBecauseYouGotDailyRewardYesterday)} ${Emotes.LoriFlushed}")
                                         }
                                     }
                                 ).await()

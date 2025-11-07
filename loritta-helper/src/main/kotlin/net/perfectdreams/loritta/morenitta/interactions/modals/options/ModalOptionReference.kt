@@ -1,6 +1,9 @@
 package net.perfectdreams.loritta.morenitta.interactions.modals.options
 
+import dev.minn.jda.ktx.interactions.components.Label
 import net.dv8tion.jda.api.components.ActionComponent
+import net.dv8tion.jda.api.components.label.Label
+import net.dv8tion.jda.api.components.label.LabelChildComponent
 import net.dv8tion.jda.api.components.textinput.TextInput
 import net.dv8tion.jda.api.components.textinput.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.ModalMapping
@@ -16,7 +19,7 @@ sealed class DiscordModalOptionReference<T>(
 
     abstract fun get(option: ModalMapping): T
 
-    abstract fun toJDA(): ActionComponent
+    abstract fun toJDA(): Label
 }
 
 class StringDiscordModalOptionReference<T>(
@@ -24,32 +27,56 @@ class StringDiscordModalOptionReference<T>(
     val style: TextInputStyle,
     val value: String?,
     required: Boolean,
-    val placeholder: String?
+    val placeholder: String?,
+    val range: IntRange?
 ) : DiscordModalOptionReference<T>(label, required) {
     override fun get(option: ModalMapping): T {
-        return option.asString as T
+        val value = option.asString
+
+        // Discord, when using an optional option, sends down a "" string when the user has not filled it with anything
+        //
+        // To make the behavior consistent between slash command args and modal args, we will manually send down null if
+        // we detect that the parameter is blank
+        if (!required && value.isBlank())
+            return null as T
+
+        return value as T
     }
 
-    override fun toJDA() = TextInput.create(
-        name,
-        label,
-        style
-    ).setValue(value).setPlaceholder(placeholder).setRequired(required).build()
+    override fun toJDA() = Label {
+        this.label = this@StringDiscordModalOptionReference.label
+        this.child = TextInput.create(
+            name,
+            style
+            // label,
+        ).setValue(value)
+            .setPlaceholder(placeholder)
+            .setRequired(required)
+            .apply {
+                if (range != null) {
+                    setMinLength(range.first)
+                    setMaxLength(range.last)
+                }
+            }
+            .build()
+    }
 }
 
 // ===[ BUILDERS ]===
-fun modalString(label: String, style: TextInputStyle, value: String? = null, placeholder: String? = null) = StringDiscordModalOptionReference<String>(
+fun modalString(label: String, style: TextInputStyle, value: String? = null, placeholder: String? = null, range: IntRange? = null) = StringDiscordModalOptionReference<String>(
     label,
     style,
     value,
     true,
-    placeholder
+    placeholder,
+    range
 )
 
-fun optionalModalString(label: String, style: TextInputStyle, value: String? = null, placeholder: String? = null) = StringDiscordModalOptionReference<String?>(
+fun optionalModalString(label: String, style: TextInputStyle, value: String? = null, placeholder: String? = null, range: IntRange? = null) = StringDiscordModalOptionReference<String?>(
     label,
     style,
     value,
     false,
-    placeholder
+    placeholder,
+    range
 )

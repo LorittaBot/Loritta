@@ -619,9 +619,9 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                 this.useComponentsV2 = true
 
                 this.components += Container {
-                    this.accentColor = LorittaColors.LorittaPink.rgb
+                    this.accentColorRaw = LorittaColors.LorittaPink.rgb
 
-                    + TextDisplay(
+                    this.components += TextDisplay(
                         buildString {
                             appendLine("### ${Emotes.LoriHeartCombo1}${Emotes.LoriHeartCombo2} ${context.i18nContext.get(I18N_PREFIX.View.UserMarriage(userLookup.asMention))}")
                             if (equippedBadge != null) {
@@ -1111,10 +1111,10 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                                         this.useComponentsV2 = true
 
                                         this.components += Container {
-                                            +Section(
+                                            this.components += Section(
                                                 Thumbnail(messenger.second)
                                             ) {
-                                                +TextDisplay(
+                                                this.components += TextDisplay(
                                                     buildString {
                                                         appendLine("### ${Emotes.LoveLetter} ${context.i18nContext.get(I18N_PREFIX.Letter.PrivateMessage.ALoveLetter)}")
                                                         for (line in context.i18nContext.get(I18N_PREFIX.Letter.PrivateMessage.Intro(messenger.first))) {
@@ -1130,12 +1130,12 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                                         }
 
                                         this.components += Container {
-                                            this.accentColor = LorittaColors.LorittaPink.rgb
+                                            this.accentColorRaw = LorittaColors.LorittaPink.rgb
 
-                                            +Section(
+                                            this.components += Section(
                                                 Thumbnail(context.user.effectiveAvatarUrl)
                                             ) {
-                                                +TextDisplay(
+                                                this.components += TextDisplay(
                                                     buildString {
                                                         for (line in message.lines()) {
                                                             appendLine("> $line")
@@ -1147,7 +1147,7 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                                         }
 
                                         this.components += Container {
-                                            +TextDisplay(
+                                            this.components += TextDisplay(
                                                 buildString {
                                                     if (result.receivedAffinityPoints) {
                                                         appendLine(context.i18nContext.get(I18N_PREFIX.Letter.PrivateMessage.AfterReadingTheLetterAffinity(LOVE_LETTER_AFFINITY, result.affinity, result.affinityRank)))
@@ -1215,12 +1215,12 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                 this.useComponentsV2 = true
 
                 this.components += Container {
-                    this.accentColor = LorittaColors.LorittaPink.rgb
+                    this.accentColorRaw = LorittaColors.LorittaPink.rgb
 
-                    +Section(
+                    this.components += Section(
                         Thumbnail("https://stuff.loritta.website/ship/loritta.png")
                     ) {
-                        + TextDisplay(
+                        this.components += TextDisplay(
                             buildString {
                                 appendLine("### ${Emotes.LoveLetter} ${context.i18nContext.get(I18N_PREFIX.Letter.LoveLetter)}")
                                 appendLine()

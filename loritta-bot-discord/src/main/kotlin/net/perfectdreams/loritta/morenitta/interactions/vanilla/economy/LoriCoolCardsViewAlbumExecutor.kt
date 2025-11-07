@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy
 import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.messages.InlineMessage
 import dev.minn.jda.ktx.messages.MessageEdit
+import kotlinx.coroutines.future.await
 import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.components.buttons.ButtonStyle

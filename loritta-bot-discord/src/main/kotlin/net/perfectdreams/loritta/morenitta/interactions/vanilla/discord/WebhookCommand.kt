@@ -6,6 +6,7 @@ import club.minnced.discord.webhook.send.WebhookEmbedBuilder
 import club.minnced.discord.webhook.send.WebhookMessageBuilder
 import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.generics.getChannel
+import kotlinx.coroutines.future.await
 import kotlinx.serialization.json.*
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel

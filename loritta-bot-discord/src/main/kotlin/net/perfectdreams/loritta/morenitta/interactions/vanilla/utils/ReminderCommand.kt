@@ -234,11 +234,11 @@ class ReminderCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
                 this.useComponentsV2 = true
 
                 this.components += Container {
-                    this.accentColor = Color(255, 179, 43).rgb
-                    +TextDisplay("### <a:lori_notification:394165039227207710> ${context.locale["$LOCALE_PREFIX.yourReminders"]} (${totalReminders})")
+                    this.accentColorRaw = Color(255, 179, 43).rgb
+                    this.components += TextDisplay("### <a:lori_notification:394165039227207710> ${context.locale["$LOCALE_PREFIX.yourReminders"]} (${totalReminders})")
 
                     for (reminder in reminders) {
-                        +Section(
+                        this.components += Section(
                             loritta.interactivityManager
                                 .buttonForUser(
                                     context.user,
@@ -261,13 +261,13 @@ class ReminderCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
                                     it.editMessage(true) {
                                         this.useComponentsV2 = true
                                         this.components += Container {
-                                            this.accentColor = Color(255, 179, 43).rgb
+                                            this.accentColorRaw = Color(255, 179, 43).rgb
                                             if (guildIconUrl != null) {
-                                                +Section(Thumbnail(guildIconUrl)) {
-                                                    +TextDisplay(text)
+                                                this.components += Section(Thumbnail(guildIconUrl)) {
+                                                    this.components += TextDisplay(text)
                                                 }
                                             } else {
-                                                +TextDisplay(text)
+                                                this.components += TextDisplay(text)
                                             }
                                         }
 
@@ -316,7 +316,7 @@ class ReminderCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
                                     }
                                 }
                         ) {
-                            +TextDisplay(
+                            this.components += TextDisplay(
                                 buildString {
                                     appendLine("**${reminder.content.substringIfNeeded(0..100)}**")
                                     appendLine( "-# ${DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(reminder.remindAt)}")

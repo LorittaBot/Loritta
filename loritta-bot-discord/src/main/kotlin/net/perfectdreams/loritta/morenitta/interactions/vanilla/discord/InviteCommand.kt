@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.discord
 
-import dev.minn.jda.ktx.coroutines.await
+import kotlinx.coroutines.future.await
 import net.dv8tion.jda.api.entities.Invite
 import net.dv8tion.jda.api.components.buttons.Button
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled

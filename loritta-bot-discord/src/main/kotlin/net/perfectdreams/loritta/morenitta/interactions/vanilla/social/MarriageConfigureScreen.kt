@@ -72,11 +72,7 @@ sealed class MarriageConfigureScreen(val m: LorittaBot, val marriageId: Long) {
 
             it.sendModal(
                 context.i18nContext.get(SETUP_I18N_PREFIX.ModalTitle),
-                listOf(
-                    ActionRow.of(
-                        option.toJDA()
-                    )
-                )
+                listOf(option.toJDA())
             ) { it, args ->
                 val value = args[option] ?: ""
 
@@ -161,26 +157,26 @@ sealed class MarriageConfigureScreen(val m: LorittaBot, val marriageId: Long) {
                 this.useComponentsV2 = true
 
                 this.components += Container {
-                    this.accentColor = LorittaColors.LorittaPink.rgb
+                    this.accentColorRaw = LorittaColors.LorittaPink.rgb
 
-                    +TextDisplay("### ${Emotes.MarriageRing} ${context.i18nContext.get(I18N_PREFIX.Configure.General)}")
+                    this.components += TextDisplay("### ${Emotes.MarriageRing} ${context.i18nContext.get(I18N_PREFIX.Configure.General)}")
 
-                    +Section(
+                    this.components += Section(
                         editGiveawayNameButton
                     ) {
-                        +OptionExplanationCombo(
+                        this.components += OptionExplanationCombo(
                             context.i18nContext.get(I18N_PREFIX.Configure.CoupleTitle.Title),
                             context.i18nContext.get(I18N_PREFIX.Configure.CoupleTitle.Description),
                             value = marriage[UserMarriages.coupleName] ?: "*${context.i18nContext.get(I18N_PREFIX.Configure.CoupleTitle.NotSet)}*"
                         )
                     }
 
-                    +OptionExplanationCombo(
+                    this.components += OptionExplanationCombo(
                         context.i18nContext.get(I18N_PREFIX.Configure.EquippedBadge.Title),
                         context.i18nContext.get(I18N_PREFIX.Configure.EquippedBadge.Description)
                     )
 
-                    +ActionRow.of(
+                    this.components += ActionRow.of(
                         m.interactivityManager.stringSelectMenuForUser(
                             context.user,
                             context.alwaysEphemeral,

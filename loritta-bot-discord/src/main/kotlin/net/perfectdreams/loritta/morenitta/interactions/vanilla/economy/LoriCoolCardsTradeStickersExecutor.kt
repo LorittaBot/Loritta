@@ -265,7 +265,7 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
 
                         context.sendModal(
                             context.i18nContext.get(I18N_PREFIX.TradeModal.StickerTrade),
-                            listOf(ActionRow.of(stickerListOption.toJDA()))
+                            listOf(stickerListOption.toJDA())
                         ) { context, args ->
                             val deferEdit = context.deferEdit()
                             val stickerFancyIdsList = args[stickerListOption].split(",").map { it.trim() }
@@ -437,7 +437,7 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
 
                         context.sendModal(
                             context.i18nContext.get(I18N_PREFIX.TradeModal.StickerTrade),
-                            listOf(ActionRow.of(stickerCountOption.toJDA())),
+                            listOf(stickerCountOption.toJDA()),
                         ) { context, args ->
                             val deferEdit = context.deferEdit()
                             val stickersFillCountRaw = args[stickerCountOption]
@@ -633,7 +633,7 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
 
                         context.sendModal(
                             context.i18nContext.get(I18N_PREFIX.TradeModal.StickerTrade),
-                            listOf(ActionRow.of(sonhosQuantityOption.toJDA()))
+                            listOf(sonhosQuantityOption.toJDA())
                         ) { context, args ->
                             val deferEdit = context.deferEdit()
 

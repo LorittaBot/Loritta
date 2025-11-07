@@ -91,7 +91,7 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
                         it.sendModal(
                             it.i18nContext.get(I18nKeysData.Commands.Command.Profileview.ChangeAboutMe),
-                            listOf(ActionRow.of(aboutMeOption.toJDA()))
+                            listOf(aboutMeOption.toJDA())
                         ) { it, args ->
                             val hook = it.deferEdit()
 

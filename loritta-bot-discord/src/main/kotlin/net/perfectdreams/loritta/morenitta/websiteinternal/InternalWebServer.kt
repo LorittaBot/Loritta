@@ -317,7 +317,7 @@ class InternalWebServer(val m: LorittaBot) {
                             }
 
                             this.components += Container {
-                                + TextDisplay("""
+                                this.components += TextDisplay("""
                                     # <:lori_cool_sticker_v3:1228015067644035133> Figurittas da Loritta - ${event[LoriCoolCardsEvents.eventName]}
                                     
                                     Colecione figurinhas, troque figurinhas com outras pessoas e complete o seu álbum para ganhar **${template.sonhosReward} SONHOS**, um **DESIGN DE PERFIL** e **UMA BADGE**!
@@ -330,7 +330,7 @@ class InternalWebServer(val m: LorittaBot) {
                                     this.item("https://cdn.discordapp.com/attachments/1268382385280651336/1302000141493862473/img2.gif?ex=68089edf&is=68074d5f&hm=bec9ff4854d0578ea9c0eae935ec3e29f07f1021532a22a619513c3286215d99&")
                                 }
 
-                                + TextDisplay("""
+                                this.components += TextDisplay("""
                                     As figurinhas tem um design diferente para cada raridade, cada figurinha mostra o nome da pessoa, o background e a badge equipada dela.
                                     ## <:lori_card:956402937666633769> Conseguindo Pacotinhos de Figurinhas
                                     
@@ -348,7 +348,7 @@ class InternalWebServer(val m: LorittaBot) {
                                     this.item("https://cdn.discordapp.com/attachments/1268382385280651336/1302000933017878568/img4.gif?ex=68089f9c&is=68074e1c&hm=23245a180b43359dc472d37c0871eee8f116013a8f950007c5c2654c41a0eb07&")
                                 }
 
-                                + TextDisplay("""
+                                this.components += TextDisplay("""
                                     Após conseguir pacotinhos de figurinhas, você precisa abrir os pacotes usando ${m.commandMentions.loriCoolCardsOpen} e, após abrir, você pode colá-las usando ${m.commandMentions.loriCoolCardsStick} ou apertando no botão de colar as figurinhas após abrir os pacotes.
               
                                     Ao colar as 510 figurinhas no álbum, você ganha as recompensas do evento!
@@ -378,7 +378,7 @@ class InternalWebServer(val m: LorittaBot) {
                             this.useComponentsV2 = true
 
                             this.components += Container {
-                                + TextDisplay("""
+                                this.components += TextDisplay("""
                                     ## ${Emotes.LoriSunglasses} Designs de Perfil
                                     
                                     Dependendo de quantas vezes você completou o evento, você pode ter designs de perfis diferentes!
@@ -410,11 +410,11 @@ class InternalWebServer(val m: LorittaBot) {
                                     ## ${Emotes.PantufaPickaxe} SparklyPower
                                 """.trimIndent())
 
-                                + MediaGallery {
+                                this.components += MediaGallery {
                                     this.item("https://cdn.discordapp.com/attachments/1268382385280651336/1302001792372178985/img8.png?ex=6808a069&is=68074ee9&hm=e9d79d194257820505d2ad3b1904455718bfd3a0d12b877f97d0abfde95dfae8&")
                                 }
 
-                                + TextDisplay("""
+                                this.components += TextDisplay("""
                                     SparklyPower é o servidor de Minecraft da Loritta, e lá, após você acabar o seu álbum, você pode resgatar as figurinhas do álbum como mapa no servidor e ainda por cima ganhar uma mochila exclusiva lá! Basta usar `/figurittas` dentro do servidor.
                                     
                                     **IP:** `mc.sparklypower.net`
@@ -472,22 +472,22 @@ class InternalWebServer(val m: LorittaBot) {
                                                 this.useComponentsV2 = true
 
                                                 this.components += Container {
-                                                    +MediaGallery {
+                                                    this.components += MediaGallery {
                                                         this.item("https://stuff.loritta.website/loricoolcards/figurittas-da-loritta-header.png")
                                                     }
 
-                                                    +TextDisplay(
+                                                    this.components += TextDisplay(
                                                         buildString {
                                                             appendLine("### ${Emotes.LoriCoolSticker} Você está no Álbum de Figurittas da Loritta!")
                                                             appendLine("**Parabéns!** Por estar entre os 500 mais ricos da Loritta, você conquistou um lugar no álbum **${event[LoriCoolCardsEvents.eventName]}** das Figurittas da Loritta!")
                                                         }
                                                     )
 
-                                                    +MediaGallery {
+                                                    this.components += MediaGallery {
                                                         this.item(sticker[LoriCoolCardsEventCards.cardReceivedImageUrl])
                                                     }
 
-                                                    +TextDisplay(
+                                                    this.components += TextDisplay(
                                                         buildString {
                                                             appendLine("Use ${m.commandMentions.daily} para pegar seus pacotinhos de Figurittas e comece já a sua coleção!")
                                                         }
