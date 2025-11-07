@@ -12,6 +12,7 @@ import net.perfectdreams.loritta.morenitta.website.routes.RequiresDiscordLoginLo
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.trueIp
 import net.perfectdreams.loritta.morenitta.website.views.dashboard.user.UserReputationView
+import net.perfectdreams.loritta.morenitta.websitedashboard.UnauthorizedTokenException
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.or
@@ -42,7 +43,7 @@ class UserReputationRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRo
 					.toList()
 		}
 
-        val userIdentification = session?.retrieveUserIdentification()
+        val userIdentification = session?.retrieveUserIdentificationOrNullIfUnauthorizedRevokeToken(call)
 
 		val lastReputationGiven = if (userIdentification != null) {
 			loritta.newSuspendedTransaction {

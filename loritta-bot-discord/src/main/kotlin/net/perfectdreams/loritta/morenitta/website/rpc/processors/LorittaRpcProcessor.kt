@@ -2,13 +2,14 @@ package net.perfectdreams.loritta.morenitta.website.rpc.processors
 
 import io.ktor.server.application.*
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.websitedashboard.UnauthorizedTokenException
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.discord.DiscordOAuth2UserIdentification
 
 interface LorittaRpcProcessor {
     suspend fun getDiscordAccountInformation(loritta: LorittaBot, call: ApplicationCall): DiscordAccountInformationResult {
         val session = loritta.dashboardWebServer.getSession(call)
-        val userIdentification = session?.retrieveUserIdentification()
+        val userIdentification = session?.retrieveUserIdentificationOrNullIfUnauthorizedRevokeToken(call)
 
         if (session == null || userIdentification == null)
             return DiscordAccountInformationResult.InvalidDiscordAuthorization

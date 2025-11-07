@@ -7,10 +7,12 @@ import io.ktor.client.request.setBody
 import io.ktor.client.request.url
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.Parameters
 import io.ktor.http.content.TextContent
 import io.ktor.http.formUrlEncode
 import io.ktor.http.userAgent
+import io.ktor.server.application.ApplicationCall
 import kotlinx.serialization.json.Json
 import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserWebsiteSessions
@@ -66,6 +68,9 @@ class UserSession(
             header("Authorization", "Bearer ${this@UserSession.discordUserCredentials.accessToken}")
         }
 
+        if (userIdentificationHttpResponse.status == HttpStatusCode.Unauthorized)
+            throw UnauthorizedTokenException()
+
         val userIdentificationAsText = userIdentificationHttpResponse.bodyAsText()
 
         try {
@@ -99,6 +104,15 @@ class UserSession(
         }
     }
 
+    suspend fun retrieveUserIdentificationOrNullIfUnauthorizedRevokeToken(call: ApplicationCall): DiscordOAuth2UserIdentification? {
+        try {
+            return retrieveUserIdentification()
+        } catch (_: UnauthorizedTokenException) {
+            dashboardWebServer.revokeLorittaSessionCookie(call)
+            return null
+        }
+    }
+
     suspend fun retrieveUserGuilds(): List<DiscordOAuth2Guild> {
         refreshTokenIfExpired()
 
@@ -107,6 +121,9 @@ class UserSession(
             userAgent(USER_AGENT)
             header("Authorization", "Bearer ${this@UserSession.discordUserCredentials.accessToken}")
         }
+
+        if (userGuildsHttpResponse.status == HttpStatusCode.Unauthorized)
+            throw UnauthorizedTokenException()
 
         val userGuildsAsText = userGuildsHttpResponse.bodyAsText()
 
@@ -138,6 +155,10 @@ class UserSession(
 
             setBody(TextContent(parameters.formUrlEncode(), ContentType.Application.FormUrlEncoded))
         }
+
+        // If the refresh token is invalid, Discord will throw an invalid_grant (bad request)
+        if (authorizationHttpResponse.status == HttpStatusCode.BadRequest)
+            throw UnauthorizedTokenException()
 
         val authorizationAsText = authorizationHttpResponse.bodyAsText()
 

@@ -10,6 +10,7 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.DonationKey
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.website.views.DonateView
+import net.perfectdreams.loritta.morenitta.websitedashboard.UnauthorizedTokenException
 import org.jetbrains.exposed.sql.and
 
 class DonateRoute(loritta: LorittaBot) : LocalizedRoute(loritta, "/donate") {
@@ -17,7 +18,7 @@ class DonateRoute(loritta: LorittaBot) : LocalizedRoute(loritta, "/donate") {
 
 	override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext) {
         val session = loritta.dashboardWebServer.getSession(call)
-        val userIdentification = session?.retrieveUserIdentification()
+        val userIdentification = session?.retrieveUserIdentificationOrNullIfUnauthorizedRevokeToken(call)
 
 		val keys = jsonArray()
 

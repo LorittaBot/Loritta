@@ -594,11 +594,7 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
         }
 
         if (sessionDataAndCachedUserIdentification == null) {
-            setLorittaSessionCookie(
-                call.response.cookies,
-                sessionToken,
-                maxAge = 0 // Remove it!
-            )
+            revokeLorittaSessionCookie(call)
             return null
         }
 
@@ -674,6 +670,14 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
             // secure = true, // Only sent via HTTPS
             httpOnly = true, // Disable JS access
             maxAge = maxAge.toLong()
+        )
+    }
+
+    fun revokeLorittaSessionCookie(call: ApplicationCall) {
+        setLorittaSessionCookie(
+            call.response.cookies,
+            "",
+            maxAge = 0 // Remove it!
         )
     }
 

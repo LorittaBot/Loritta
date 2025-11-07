@@ -1,17 +1,15 @@
 package net.perfectdreams.loritta.morenitta.websitedashboard.routes
 
-import io.ktor.http.Cookie
-import io.ktor.http.HttpStatusCode
+import io.ktor.http.*
 import io.ktor.server.application.*
-import io.ktor.server.response.header
-import io.ktor.server.response.respond
+import io.ktor.server.response.*
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserWebsiteSessions
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
-import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.serializable.ColorTheme
+import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 
@@ -23,11 +21,7 @@ class PostLogoutUserDashboardRoute(website: LorittaDashboardWebServer) : Require
             }
         }
 
-        website.setLorittaSessionCookie(
-            call.response.cookies,
-            "",
-            0
-        )
+        website.revokeLorittaSessionCookie(call)
 
         call.response.header("Bliss-Redirect", website.loritta.config.loritta.website.url)
         call.respond(HttpStatusCode.NoContent)
