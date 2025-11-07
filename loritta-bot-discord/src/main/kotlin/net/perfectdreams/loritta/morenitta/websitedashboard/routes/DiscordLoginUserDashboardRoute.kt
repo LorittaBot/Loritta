@@ -31,11 +31,6 @@ import java.time.ZoneOffset
 class DiscordLoginUserDashboardRoute(val website: LorittaDashboardWebServer) : BaseRoute("/discord/login") {
     companion object {
         private val logger by HarmonyLoggerFactory.logger {}
-        private val REQUIRED_SCOPES = setOf(
-            "identify",
-            "guilds",
-            "email"
-        )
     }
 
     override suspend fun onRequest(call: ApplicationCall) {
