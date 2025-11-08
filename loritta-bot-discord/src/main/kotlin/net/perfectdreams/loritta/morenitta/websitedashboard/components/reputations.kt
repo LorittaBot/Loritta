@@ -44,10 +44,12 @@ fun FlowContent.reputations(
         if (reputations.isNotEmpty()) {
             div(classes = "cards") {
                 for (reputation in reputations) {
-                    val givenBy = if (isReceivedReputation) usersInformation[reputation[Reputations.givenById]] else usersInformation[reputation[Reputations.receivedById]]
+                    val userId = if (isReceivedReputation) reputation[Reputations.givenById] else reputation[Reputations.receivedById]
+                    val givenBy = usersInformation[userId]
 
                     reputationCard(
                         i18nContext,
+                        userId,
                         givenBy,
                         reputation,
                         isReceivedReputation,

@@ -15,6 +15,7 @@ import org.jetbrains.exposed.sql.ResultRow
 
 fun FlowContent.reputationCard(
     i18nContext: I18nContext,
+    userId: Long,
     user: CachedUserInfo?,
     reputation: ResultRow,
     isReceivedReputation: Boolean,
@@ -46,16 +47,15 @@ fun FlowContent.reputationCard(
 
                         if (isReceivedReputation) {
                             text("Reputação recebida de ")
-                            span(classes = "discord-mention") {
-                                text("@")
-                                text(user?.globalName ?: user?.name ?: "???")
-                            }
                         } else {
                             text("Reputação enviada para ")
-                            span(classes = "discord-mention") {
-                                text("@")
-                                text(user?.globalName ?: user?.name ?: "???")
-                            }
+                        }
+
+                        span(classes = "discord-mention") {
+                            text("@")
+                            text(user?.globalName ?: user?.name ?: "???")
+
+                            text(" ($userId)")
                         }
                     }
                 }
