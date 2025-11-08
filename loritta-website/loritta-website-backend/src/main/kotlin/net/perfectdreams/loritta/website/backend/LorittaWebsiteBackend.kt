@@ -71,14 +71,6 @@ class LorittaWebsiteBackend(
     val legacyLorittaCommands = LegacyLorittaCommands(this)
     val webEmotes = WebEmotes(images)
 
-    val addBotUrl = DiscordOAuth2AuthorizationURL {
-        append("client_id", rootConfig.discord.applicationId.toString())
-        append("scope", "bot identify guilds email applications.commands")
-        append("permissions", 2080374975.toString())
-        append("response_type", "code")
-        append("redirect_uri", "https://dash.loritta.website/discord/login")
-    }
-
     private val typesToCache = listOf(
         ContentType.Text.CSS,
         ContentType.Text.JavaScript,
