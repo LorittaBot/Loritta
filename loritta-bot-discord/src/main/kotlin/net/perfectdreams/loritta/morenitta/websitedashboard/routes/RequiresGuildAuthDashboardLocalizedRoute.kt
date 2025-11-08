@@ -63,6 +63,7 @@ abstract class RequiresGuildAuthDashboardLocalizedRoute(website: LorittaDashboar
                                                 AuthenticationState(
                                                     source = "dashboard",
                                                     medium = "button",
+                                                    content = "add_loritta_to_server_modal",
                                                     campaign = null,
                                                     httpReferrer = call.request.header(HttpHeaders.Referrer),
                                                 ),
