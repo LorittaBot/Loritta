@@ -26,7 +26,8 @@ class LorittaDashboardBackend(val config: LorittaDashboardBackendConfig) {
             "Bliss-Request",
             "Bliss-Trigger-Element-Id",
             "Bliss-Trigger-Element-Name",
-            "Accept-Language"
+            "Accept-Language",
+            "Referer"
         ).map { it.lowercase() }.toSet()
 
         val ALLOWED_RESPONSE_HEADERS = setOf(
