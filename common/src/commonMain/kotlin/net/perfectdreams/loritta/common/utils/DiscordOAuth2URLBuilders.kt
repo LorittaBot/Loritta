@@ -28,9 +28,9 @@ fun DiscordOAuth2AuthorizationURL(
 /**
  * Builds Loritta's Discord OAuth2 Add Bot `authorize` URL
  *
- * @params clientId                       the bot's ID
- * @params redirectUri                    where the user will be redirected after authenticating on Discord
- * @params guildId                        the guild ID that will be prefilled in the add bot modal
+ * @params clientId the bot's ID
+ * @params redirectUri where the user will be redirected after authenticating on Discord
+ * @params guildId the guild ID that will be prefilled in the add bot modal
  * @params redirectAfterAuthenticationUrl where the user will be redirected after their authentication has been validated
  * @params parameters additional OAuth2 URL parameters
  */
@@ -39,7 +39,7 @@ fun LorittaDiscordOAuth2AddBotURL(
     clientId: Long,
     redirectUri: String,
     guildId: Long? = null,
-    redirectAfterAuthenticationUrl: String? = null,
+    state: String? = null,
     parameters: ParametersBuilder.() -> (Unit) = {}
 ) = DiscordOAuth2AuthorizationURL {
     append("client_id", clientId.toString())
@@ -49,12 +49,8 @@ fun LorittaDiscordOAuth2AddBotURL(
     append("redirect_uri", redirectUri)
     if (guildId != null)
         append("guild_id", guildId.toString())
-    if (redirectAfterAuthenticationUrl != null) {
-        val state = buildJsonObject {
-            put("redirectUrl", redirectAfterAuthenticationUrl)
-        }
-        append("state", Base64.UrlSafe.encode(state.toString().toByteArray(Charsets.UTF_8)))
-    }
+    if (state != null)
+        append("state", state)
 
     apply(parameters)
 }
@@ -62,8 +58,8 @@ fun LorittaDiscordOAuth2AddBotURL(
 /**
  * Builds Loritta's Discord OAuth2 `authorize` URL
  *
- * @params clientId                       the bot's ID
- * @params redirectUri                    where the user will be redirected after authenticating on Discord
+ * @params clientId the bot's ID
+ * @params redirectUri where the user will be redirected after authenticating on Discord
  * @params redirectAfterAuthenticationUrl where the user will be redirected after their authentication has been validated
  * @params parameters additional OAuth2 URL parameters
  */
@@ -71,19 +67,15 @@ fun LorittaDiscordOAuth2AddBotURL(
 fun LorittaDiscordOAuth2AuthorizeScopeURL(
     clientId: Long,
     redirectUri: String,
-    redirectAfterAuthenticationUrl: String? = null,
+    state: String? = null,
     parameters: ParametersBuilder.() -> (Unit) = {}
 ) = DiscordOAuth2AuthorizationURL {
     append("client_id", clientId.toString())
     append("scope", LORITTA_AUTHORIZATION_SCOPES.joinToString(" "))
     append("response_type", "code")
     append("redirect_uri", redirectUri)
-    if (redirectAfterAuthenticationUrl != null) {
-        val state = buildJsonObject {
-            put("redirectUrl", redirectAfterAuthenticationUrl)
-        }
+    if (state != null)
         append("state", Base64.UrlSafe.encode(state.toString().toByteArray(Charsets.UTF_8)))
-    }
 
     apply(parameters)
 }

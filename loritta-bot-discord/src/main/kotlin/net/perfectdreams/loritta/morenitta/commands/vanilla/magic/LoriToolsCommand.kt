@@ -31,7 +31,8 @@ class LoriToolsCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta
 				LoriUnbanIpExecutor,
 				ChargebackRunExecutor,
 				EnableBoostExecutor,
-				DisableBoostExecutor
+				DisableBoostExecutor,
+                CreateTrackedAddUrlDesignExecutor
 			)
 
 			allExecutors.forEach {

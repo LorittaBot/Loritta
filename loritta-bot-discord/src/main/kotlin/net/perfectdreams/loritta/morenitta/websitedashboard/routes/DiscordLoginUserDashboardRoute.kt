@@ -11,23 +11,29 @@ import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
+import net.perfectdreams.loritta.cinnamon.pudding.tables.LorittaAddedGuildsStats
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserWebsiteSessions
 import net.perfectdreams.loritta.common.utils.LORITTA_AUTHORIZATION_SCOPES
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.utils.Base58
+import net.perfectdreams.loritta.morenitta.utils.LorittaDiscordOAuth2AddBotURL
+import net.perfectdreams.loritta.morenitta.utils.LorittaDiscordOAuth2AuthorizeScopeURL
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer.Companion.WEBSITE_SESSION_COOKIE
+import net.perfectdreams.loritta.morenitta.websitedashboard.AuthenticationState
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.authorizationFailedFullScreenError
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.websiteBase
 import net.perfectdreams.loritta.morenitta.websitedashboard.discord.DiscordOAuth2Authorization
 import net.perfectdreams.loritta.morenitta.websitedashboard.discord.DiscordOAuth2UserIdentification
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.AuthenticationStateUtils
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.sequins.ktor.BaseRoute
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.update
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
+import java.util.Base64
 
 class DiscordLoginUserDashboardRoute(val website: LorittaDashboardWebServer) : BaseRoute("/discord/login") {
     companion object {
@@ -36,26 +42,74 @@ class DiscordLoginUserDashboardRoute(val website: LorittaDashboardWebServer) : B
 
     override suspend fun onRequest(call: ApplicationCall) {
         val accessCode = call.request.queryParameters["code"]
-        val guildId = call.request.queryParameters["guild_id"]
-
+        val guildId = call.request.queryParameters["guild_id"]?.toLongOrNull()
+        val stateAsString = call.request.queryParameters["state"]
         val error = call.request.queryParameters["error"]
-
         val i18nContext = website.getI18nContextFromCall(call)
 
-        suspend fun respondUserFriendlyAuthenticationFailed(call: ApplicationCall, message: String) {
+        suspend fun respondUserFriendlyAuthenticationFailed(
+            call: ApplicationCall,
+            message: String,
+            resetState: Boolean
+        ) {
             call.respondHtml(status = HttpStatusCode.Unauthorized) {
                 websiteBase(
                     i18nContext,
                     i18nContext.get(I18nKeysData.Website.Dashboard.AuthorizationFailedFullScreenError.Title),
                 ) {
                     authorizationFailedFullScreenError(
-                        website.loritta,
                         i18nContext,
-                        message
+                        message,
+                        if (guildId != null) {
+                            LorittaDiscordOAuth2AddBotURL(
+                                website.loritta,
+                                guildId,
+                                if (!resetState && stateAsString != null)
+                                    stateAsString
+                                else
+                                    null
+                            ).toString()
+                        } else {
+                            LorittaDiscordOAuth2AuthorizeScopeURL(
+                                website.loritta,
+                                if (!resetState && stateAsString != null)
+                                    stateAsString
+                                else
+                                    null
+                            ).toString()
+                        }
                     )
                 }
             }
         }
+
+        val state = if (stateAsString != null) {
+            try {
+                val decodedData = AuthenticationStateUtils.verifyAndExtract(
+                    Base64.getUrlDecoder().decode(stateAsString).toString(Charsets.UTF_8),
+                    website.loritta.config.loritta.dashboard.authenticationStateKey
+                )
+
+                if (decodedData == null) {
+                    respondUserFriendlyAuthenticationFailed(
+                        call,
+                        i18nContext.get(I18nKeysData.Website.Dashboard.AuthorizationFailedFullScreenError.Errors.TamperedState),
+                        true
+                    )
+                    return
+                }
+
+                Json.decodeFromString<AuthenticationState>(decodedData)
+            } catch (e: Exception) {
+                logger.info(e) { "User authentication failed! State failed to be validated and decoded" }
+                respondUserFriendlyAuthenticationFailed(
+                    call,
+                    i18nContext.get(I18nKeysData.Website.Dashboard.AuthorizationFailedFullScreenError.Errors.TamperedState),
+                    true
+                )
+                return
+            }
+        } else null
 
         if (error != null) {
             // oof, something went wrong!
@@ -66,7 +120,8 @@ class DiscordLoginUserDashboardRoute(val website: LorittaDashboardWebServer) : B
                 call,
                 if (error == "access_denied" && errorDescription == "The resource owner or authorization server denied the request") {
                     i18nContext.get(I18nKeysData.Website.Dashboard.AuthorizationFailedFullScreenError.Errors.ResourceOwnerOrAuthorizationServerDeniedTheRequest)
-                } else errorDescription ?: error
+                } else errorDescription ?: error,
+                false
             )
             return
         }
@@ -74,7 +129,8 @@ class DiscordLoginUserDashboardRoute(val website: LorittaDashboardWebServer) : B
         if (accessCode == null) {
             respondUserFriendlyAuthenticationFailed(
                 call,
-                i18nContext.get(I18nKeysData.Website.Dashboard.AuthorizationFailedFullScreenError.Errors.MissingAuthenticationCode)
+                i18nContext.get(I18nKeysData.Website.Dashboard.AuthorizationFailedFullScreenError.Errors.MissingAuthenticationCode),
+                false
             )
             return
         }
@@ -102,7 +158,8 @@ class DiscordLoginUserDashboardRoute(val website: LorittaDashboardWebServer) : B
 
             respondUserFriendlyAuthenticationFailed(
                 call,
-                i18nContext.get(I18nKeysData.Website.Dashboard.AuthorizationFailedFullScreenError.Errors.DiscordInternalServerError)
+                i18nContext.get(I18nKeysData.Website.Dashboard.AuthorizationFailedFullScreenError.Errors.DiscordInternalServerError),
+                false
             )
             return
         }
@@ -119,7 +176,8 @@ class DiscordLoginUserDashboardRoute(val website: LorittaDashboardWebServer) : B
                 call,
                 if (error == "invalid_grant" && errorDescription == "Invalid \"code\" in request.") {
                     i18nContext.get(I18nKeysData.Website.Dashboard.AuthorizationFailedFullScreenError.Errors.InvalidAuthenticationCode)
-                } else errorDescription ?: error
+                } else errorDescription ?: error,
+                false
             )
             return
         }
@@ -134,7 +192,8 @@ class DiscordLoginUserDashboardRoute(val website: LorittaDashboardWebServer) : B
 
             respondUserFriendlyAuthenticationFailed(
                 call,
-                i18nContext.get(I18nKeysData.Website.Dashboard.AuthorizationFailedFullScreenError.Errors.MissingScopes)
+                i18nContext.get(I18nKeysData.Website.Dashboard.AuthorizationFailedFullScreenError.Errors.MissingScopes),
+                false
             )
             return
         }
@@ -157,7 +216,8 @@ class DiscordLoginUserDashboardRoute(val website: LorittaDashboardWebServer) : B
 
             respondUserFriendlyAuthenticationFailed(
                 call,
-                i18nContext.get(I18nKeysData.Website.Dashboard.AuthorizationFailedFullScreenError.Errors.DiscordInternalServerError)
+                i18nContext.get(I18nKeysData.Website.Dashboard.AuthorizationFailedFullScreenError.Errors.DiscordInternalServerError),
+                false
             )
             return
         }
@@ -191,6 +251,20 @@ class DiscordLoginUserDashboardRoute(val website: LorittaDashboardWebServer) : B
                 }
 
                 return token
+            }
+
+            if (guildId != null) {
+                LorittaAddedGuildsStats.insert {
+                    it[LorittaAddedGuildsStats.guildId] = guildId
+                    it[LorittaAddedGuildsStats.addedAt] = now
+                    it[LorittaAddedGuildsStats.addedBy] = userIdentification.id
+                    it[LorittaAddedGuildsStats.sourceValue] = state?.source
+                    it[LorittaAddedGuildsStats.medium] = state?.medium
+                    it[LorittaAddedGuildsStats.campaign] = state?.campaign
+                    it[LorittaAddedGuildsStats.content] = state?.content
+                    it[LorittaAddedGuildsStats.httpReferrer] = state?.httpReferrer
+                    it[LorittaAddedGuildsStats.discordLocale] = userIdentification.locale
+                }
             }
 
             val newSessionToken = if (sessionToken != null) {

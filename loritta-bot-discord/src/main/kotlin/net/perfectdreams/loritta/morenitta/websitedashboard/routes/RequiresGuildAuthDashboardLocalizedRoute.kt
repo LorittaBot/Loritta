@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.websitedashboard.routes
 
+import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.*
 import io.ktor.server.request.header
@@ -17,10 +18,12 @@ import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.dashboard.EmbeddedModal
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
+import net.perfectdreams.loritta.morenitta.websitedashboard.AuthenticationState
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.ButtonStyle
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.discordButtonLink
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.AuthenticationStateUtils
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.defaultModalCloseButton
@@ -56,7 +59,15 @@ abstract class RequiresGuildAuthDashboardLocalizedRoute(website: LorittaDashboar
                                         href = net.perfectdreams.loritta.morenitta.utils.LorittaDiscordOAuth2AddBotURL(
                                             website.loritta,
                                             guildId,
-                                            null
+                                            state = AuthenticationStateUtils.createStateAsBase64(
+                                                AuthenticationState(
+                                                    source = "dashboard",
+                                                    medium = "button",
+                                                    campaign = null,
+                                                    httpReferrer = call.request.header(HttpHeaders.Referrer),
+                                                ),
+                                                website.loritta
+                                            )
                                         ).toString()
                                     ) {
                                         text("Adicionar")

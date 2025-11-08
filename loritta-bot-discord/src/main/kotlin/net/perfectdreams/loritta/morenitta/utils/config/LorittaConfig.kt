@@ -152,7 +152,8 @@ data class LorittaConfig(
         val jsPath: String?,
         val cssPath: String?,
         val url: String,
-        val cookieDomain: String
+        val cookieDomain: String,
+        val authenticationStateKey: String
     )
 
     @Serializable

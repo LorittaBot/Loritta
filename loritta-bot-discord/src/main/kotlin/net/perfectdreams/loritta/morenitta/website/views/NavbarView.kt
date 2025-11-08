@@ -21,6 +21,8 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.LorittaDiscordOAuth2AddBotURL
+import net.perfectdreams.loritta.morenitta.websitedashboard.AuthenticationState
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.AuthenticationStateUtils
 
 abstract class NavbarView(
     val loritta: LorittaBot,
@@ -345,7 +347,18 @@ abstract class NavbarView(
                             }
 
                             div(classes = "add-cta") {
-                                a(classes = "add-me button pink shadow big", href = LorittaDiscordOAuth2AddBotURL(loritta).toString()) {
+                                a(classes = "add-me button pink shadow big", href = LorittaDiscordOAuth2AddBotURL(
+                                    loritta,
+                                    state = AuthenticationStateUtils.createStateAsBase64(
+                                        AuthenticationState(
+                                            source = "website",
+                                            medium = "button",
+                                            campaign = null,
+                                            content = "footer"
+                                        ),
+                                        loritta
+                                    )
+                                ).toString()) {
                                     style = "font-size: 1.5em;"
 
                                     i(classes = "fas fa-plus") {}

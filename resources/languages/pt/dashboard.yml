@@ -152,4 +152,5 @@ website:
         missingAuthenticationCode: "Código de autenticação ausente"
         missingScopes: "A conta foi autorizada, mas o usuário não me deu acesso a todos os escopos necessários"
         discordInternalServerError: "Ocorreu um erro nos servidores do Discord durante a autorização"
+        tamperedState: "Dados da URL foram modificados"
       tryAgain: "Tentar Novamente"

@@ -25,6 +25,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.discord.DiscordOAuth
 import net.perfectdreams.loritta.morenitta.websitedashboard.discord.DiscordOAuth2UserIdentification
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.ChooseYourServerUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.DashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.DiscordAddBotUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.DiscordLoginUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.PostFavoriteGuildUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.PocketLorittaUserDashboardRoute
@@ -240,7 +241,6 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
     val routes = listOf(
         ChooseYourServerUserDashboardRoute(this),
         PocketLorittaUserDashboardRoute(this),
-        DiscordLoginUserDashboardRoute(this),
         SonhosShopUserDashboardRoute(this),
         PostSonhosShopApplyCouponUserDashboardRoute(this),
         PostSonhosShopBuyUserDashboardRoute(this),
@@ -456,6 +456,8 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
         PutXPBlockersGuildDashboardRoute(this),
 
         // Special
+        DiscordLoginUserDashboardRoute(this),
+        DiscordAddBotUserDashboardRoute(this),
         AddedLorittaGuildDashboardRoute(this),
         PostTestMessageGuildDashboardRoute(this),
         UserProfilePreviewDashboardRoute(this),

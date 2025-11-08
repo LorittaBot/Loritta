@@ -13,9 +13,9 @@ import net.perfectdreams.loritta.morenitta.utils.LorittaDiscordOAuth2AuthorizeSc
 import net.perfectdreams.loritta.serializable.ColorTheme
 
 fun FlowContent.authorizationFailedFullScreenError(
-    loritta: LorittaBot,
     i18nContext: I18nContext,
-    errorToBeDisplayed: String?
+    errorToBeDisplayed: String?,
+    authUrl: String
 ) {
     div(classes = "full-screen-error ${ColorTheme.SYNC_WITH_SYSTEM.className}}") {
         img(src = "https://stuff.loritta.website/emotes/lori-sob.png") {
@@ -42,7 +42,7 @@ fun FlowContent.authorizationFailedFullScreenError(
         }
 
         div {
-            discordButtonLink(ButtonStyle.PRIMARY, href = LorittaDiscordOAuth2AuthorizeScopeURL(loritta, null).toString()) {
+            discordButtonLink(ButtonStyle.PRIMARY, href = authUrl) {
                 style = "margin-top: 24px;"
 
                 text(i18nContext.get(I18nKeysData.Website.Dashboard.AuthorizationFailedFullScreenError.TryAgain))
