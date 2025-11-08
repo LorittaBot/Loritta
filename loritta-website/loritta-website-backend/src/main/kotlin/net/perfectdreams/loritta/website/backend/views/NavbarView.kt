@@ -442,7 +442,7 @@ abstract class NavbarView(
                             }
 
                             div(classes = "add-cta") {
-                                a(classes = "discord-button pink", href = LorittaWebsiteBackend.addBotUrl.toString()) {
+                                a(classes = "discord-button pink", href = "https://dash.loritta.website/discord/add?source=website&medium=button&content=footer") {
                                     style = "font-size: 1.5em;"
 
                                     LorittaWebsiteBackend.svgIconManager.plus.apply(this)

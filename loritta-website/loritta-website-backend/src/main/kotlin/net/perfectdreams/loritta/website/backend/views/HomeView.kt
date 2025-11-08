@@ -92,7 +92,7 @@ class HomeView(
                 div(classes = "buttons") {
                     div {
                         style = "margin-left: auto;"
-                        a(classes = "discord-button pink add-me", href = LorittaWebsiteBackend.addBotUrl.toString()) {
+                        a(classes = "discord-button pink add-me", href = "https://dash.loritta.website/discord/add?source=website&medium=button&content=jumbotron") {
                             img(classes = "lori-happy", src = "$versionPrefix/assets/img/lori_happy.gif")
                             LorittaWebsiteBackend.svgIconManager.plus.apply(this)
 

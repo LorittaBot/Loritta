@@ -12,7 +12,7 @@ fun DIV.makeItAwesome(LorittaWebsiteBackend: LorittaWebsiteBackend, locale: Base
             + locale["website.home.makeItAwesome.title"]
         }
 
-        a(classes = "discord-button pink", href = LorittaWebsiteBackend.addBotUrl.toString()) {
+        a(classes = "discord-button pink", href = "https://dash.loritta.website/discord/add?source=website&medium=button&content=make_it_awesome") {
             style = "font-size: 1.5em; width: fit-content; margin: auto;"
 
             LorittaWebsiteBackend.svgIconManager.plus.apply(this)
