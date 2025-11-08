@@ -12,9 +12,9 @@ This section is not recommended to users who wants to contribute to her code, ch
 
 ## 📜 Conditions and Warnings
 
-In addition to the project's [AGPL-3.0 license](../LICENSE), here are some other things that you should keep in mind:
+In addition to the project's [PerfectDreams Source Available License (PDSAL)](../LICENSE), here are some other things that you should keep in mind:
 1. We keep the source code open so people can see, learn and be inspired by how Loritta was made and, if they want to, they can help the project with features and bug fixes.
-2. This is a community project, if you make changes to Loritta's source code you need to follow the [AGPL-3.0 license](../LICENSE) and keep the changes open source! And, if you want to help Loritta, why not create a pull request? 😉
+2. This is a community project, if you make changes to Loritta's source code you need to follow the [PerfectDreams Source Available License (PDSAL)](../LICENSE) and keep the changes open source! And, if you want to help Loritta, why not create a pull request? 😉
 3. **We don't give support for self-hosted instances**, you need to know how to troubleshoot the issues yourself. We tried to make the selfhost process as painless as possible, but it's impossible to be aware of all the differente issues you may find.
 4. Don't spread misunderstanding about Loritta's ownership. Please, give credits to the creators.
 5. Loritta requires a lot of different API keys for a lot of features. While they aren't required, you may encounter issues when trying to use some of the features.

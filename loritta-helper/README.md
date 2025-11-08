@@ -48,4 +48,4 @@ If you have some kind of experience, please consider doing [unit tests](https://
 
 ## 📊 License
 
-This repository is under the [AGPL-3.0](https://github.com/LorittaBot/LorittaHelper/blob/main/LICENSE) license.
+This repository is under the [PerfectDreams Source Available License (PDSAL)](https://github.com/LorittaBot/Loritta/blob/main/LICENSE) license.

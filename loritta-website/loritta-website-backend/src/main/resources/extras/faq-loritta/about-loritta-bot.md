@@ -67,4 +67,4 @@ Originalmente ela foi criada em Java (utilizei o Eclipse para programar), mas al
 Atualmente ela é feita usando [<img src="https://cdn.discordapp.com/emojis/453714186925637642.png?v=1" class="inline-emoji"> Kotlin](https://kotlinlang.org/) (utilizando o IntelliJ IDEA para programar), usando a incrível library [<img src="https://cdn.discordapp.com/emojis/411518264267767818.png?v=1" class="inline-emoji"> JDA](https://github.com/DV8FromTheWorld/JDA) para interagir com a plataforma Discord.
 
 ## Cadê o código-fonte da Loritta?
-[Disponível no GitHub e licenciado em AGPL-3.0!](https://github.com/LorittaBot/Loritta)
+[Disponível no GitHub e licenciado em PerfectDreams Source Available License (PDSAL)!](https://github.com/LorittaBot/Loritta)
