@@ -101,7 +101,7 @@ class DiscordLoginUserDashboardRoute(val website: LorittaDashboardWebServer) : B
 
                 Json.decodeFromString<AuthenticationState>(decodedData)
             } catch (e: Exception) {
-                logger.info(e) { "User authentication failed! State failed to be validated and decoded" }
+                logger.info(e) { "User authentication failed! State failed to be validated and decoded. State was $stateAsString" }
                 respondUserFriendlyAuthenticationFailed(
                     call,
                     i18nContext.get(I18nKeysData.Website.Dashboard.AuthorizationFailedFullScreenError.Errors.TamperedState),
