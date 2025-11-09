@@ -5,7 +5,10 @@ import net.dv8tion.jda.api.events.emoji.GenericEmojiEvent
 import net.dv8tion.jda.api.events.guild.GenericGuildEvent
 import net.dv8tion.jda.api.events.guild.GuildAuditLogEntryCreateEvent
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent
+import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent
+import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent
 import net.dv8tion.jda.api.events.guild.member.GuildMemberUpdateEvent
+import net.dv8tion.jda.api.events.guild.member.update.GenericGuildMemberUpdateEvent
 import net.dv8tion.jda.api.events.role.GenericRoleEvent
 import net.dv8tion.jda.api.events.sticker.GenericGuildStickerEvent
 import net.dv8tion.jda.api.events.thread.GenericThreadEvent
@@ -27,38 +30,57 @@ class DeviousGuildModifiedListener(val m: LorittaBot) : ListenerAdapter() {
         if (event is GuildAuditLogEntryCreateEvent)
             return
 
-        if (event is GuildMemberUpdateEvent && event.member.idLong != event.guild.selfMember.idLong)
+        // This is a "catch all" event that ignores the cache, we don't care about it because we only care when Loritta has *actually* changed something! (see below)
+        if (event is GuildMemberUpdateEvent)
             return
 
-        logger.info { "Guild ${event.guild.idLong} marked as modified! Cause: $event" }
-        m.unmodifiedGuilds.remove(event.guild.idLong)
+        if (event is GenericGuildMemberUpdateEvent<*> && event.member.idLong != event.guild.selfMember.idLong)
+            return
+
+        if ((event is GuildMemberRoleAddEvent || event is GuildMemberRoleRemoveEvent) && event.member.idLong != event.guild.selfMember.idLong)
+            return
+
+        if (m.unmodifiedGuilds.contains(event.guild.idLong)) {
+            logger.info { "Guild ${event.guild.idLong} marked as modified! Cause: $event" }
+            m.unmodifiedGuilds.remove(event.guild.idLong)
+        }
     }
 
     override fun onGenericEmoji(event: GenericEmojiEvent) {
-        logger.info { "Guild ${event.guild.idLong} marked as modified! Cause: $event" }
-        m.unmodifiedGuilds.remove(event.guild.idLong)
+        if (m.unmodifiedGuilds.contains(event.guild.idLong)) {
+            logger.info { "Guild ${event.guild.idLong} marked as modified! Cause: $event" }
+            m.unmodifiedGuilds.remove(event.guild.idLong)
+        }
     }
 
     override fun onGenericRole(event: GenericRoleEvent) {
-        logger.info { "Guild ${event.guild.idLong} marked as modified! Cause: $event" }
-        m.unmodifiedGuilds.remove(event.guild.idLong)
+        if (m.unmodifiedGuilds.contains(event.guild.idLong)) {
+            logger.info { "Guild ${event.guild.idLong} marked as modified! Cause: $event" }
+            m.unmodifiedGuilds.remove(event.guild.idLong)
+        }
     }
 
     override fun onGenericChannel(event: GenericChannelEvent) {
         if (!event.isFromGuild)
             return
 
-        logger.info { "Guild ${event.guild.idLong} marked as modified! Cause: $event" }
-        m.unmodifiedGuilds.remove(event.guild.idLong)
+        if (m.unmodifiedGuilds.contains(event.guild.idLong)) {
+            logger.info { "Guild ${event.guild.idLong} marked as modified! Cause: $event" }
+            m.unmodifiedGuilds.remove(event.guild.idLong)
+        }
     }
 
     override fun onGenericThread(event: GenericThreadEvent) {
-        logger.info { "Guild ${event.guild.idLong} marked as modified! Cause: $event" }
-        m.unmodifiedGuilds.remove(event.guild.idLong)
+        if (m.unmodifiedGuilds.contains(event.guild.idLong)) {
+            logger.info { "Guild ${event.guild.idLong} marked as modified! Cause: $event" }
+            m.unmodifiedGuilds.remove(event.guild.idLong)
+        }
     }
 
     override fun onGenericGuildSticker(event: GenericGuildStickerEvent) {
-        logger.info { "Guild ${event.guild.idLong} marked as modified! Cause: $event" }
-        m.unmodifiedGuilds.remove(event.guild.idLong)
+        if (m.unmodifiedGuilds.contains(event.guild.idLong)) {
+            logger.info { "Guild ${event.guild.idLong} marked as modified! Cause: $event" }
+            m.unmodifiedGuilds.remove(event.guild.idLong)
+        }
     }
 }
