@@ -19,11 +19,14 @@ import net.perfectdreams.loritta.morenitta.utils.devious.CachedGuilds
 import net.perfectdreams.loritta.morenitta.utils.devious.GatewayExtrasData
 import net.perfectdreams.loritta.morenitta.utils.devious.GatewaySessionData
 import net.perfectdreams.loritta.morenitta.utils.devious.GatewayShardStartupResumeStatus
+import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 import java.util.concurrent.LinkedBlockingQueue
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
+import kotlin.use
 
 
 /**
@@ -94,10 +97,12 @@ class PreStartGatewayEventReplayListener(
                             jdaImpl.guildsView.writeLock().use {
                                 val database = loritta.cacheDatabases[jdaImpl.shardInfo.shardId]!! // This should NEVER be null
                                 transaction(database) {
-                                    for (row in CachedGuilds.select(CachedGuilds.event)) {
+                                    for (row in CachedGuilds.select(CachedGuilds.id, CachedGuilds.event)) {
                                         // Fill the cache out
                                         val dataObject = DataObject.fromJson("""{"op":0,"d":${row[CachedGuilds.event]},"t":"GUILD_CREATE","$FAKE_EVENT_FIELD":true}""")
                                         jdaImpl.client.handleEvent(dataObject)
+
+                                        loritta.unmodifiedGuilds.add(row[CachedGuilds.id].value)
                                     }
                                 }
                             }

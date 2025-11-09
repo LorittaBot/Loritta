@@ -44,6 +44,7 @@ class GetStatusRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/loritta/statu
 			put("minShard", currentShard.minShard)
 			put("maxShard", currentShard.maxShard)
 			put("uptime", ManagementFactory.getRuntimeMXBean().uptime)
+			put("unmodifiedGuilds", loritta.unmodifiedGuilds.size)
 
 			putJsonArray("shards") {
 				for (shard in loritta.lorittaShards.shardManager.shards.sortedBy { it.shardInfo.shardId }) {

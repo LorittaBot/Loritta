@@ -22,7 +22,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.datetime.Clock
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonPrimitive
@@ -157,7 +156,6 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.measureTime
-import kotlin.time.toJavaDuration
 
 /**
  * Loritta's main class, where everything (and anything) can happen!
@@ -256,6 +254,7 @@ class LorittaBot(
 	val coinFlipBetGlobalListener = CoinFlipBetGlobalListener(this)
 	val sonhosTransferInteractionsListener = SonhosTransferInteractionsListener(this)
 	val thirdPartySonhosTransferInteractionsListener = ThirdPartySonhosTransferInteractionsListener(this)
+    val deviousGuildModifiedListener = DeviousGuildModifiedListener(this)
 
 	var builder: DefaultShardManagerBuilder
 
@@ -274,6 +273,7 @@ class LorittaBot(
 	val cachedRetrievedArtists = CacheBuilder.newBuilder().expireAfterWrite(7, TimeUnit.DAYS)
 		.build<Long, Optional<CachedUserInfo>>()
 	var bucketedController: BucketedController? = null
+    val unmodifiedGuilds = ConcurrentHashMap.newKeySet<Long>()
 
 	val perfectPaymentsClient = PerfectPaymentsClient(config.loritta.perfectPayments.url)
 
@@ -469,7 +469,8 @@ class LorittaBot(
 				easter2023Listener,
 				reactionListener,
 				sonhosTransferInteractionsListener,
-				thirdPartySonhosTransferInteractionsListener
+				thirdPartySonhosTransferInteractionsListener,
+                deviousGuildModifiedListener
 			)
 			.addEventListenerProvider {
 				PreStartGatewayEventReplayListener(
@@ -644,14 +645,16 @@ class LorittaBot(
 							.sortedBy { it.shardInfo.shardId } // Sorted by shard ID just to be easier to track them down in the logs
 							.map { shard ->
 								GlobalScope.async(dispatcher) {
+                                    var totalAvailableGuilds = 0
+                                    var totalUnavailableGuilds = 0
 									var upsertedGuilds = 0
-									var unchangedGuilds = 0
+                                    var unchangedGuildsUnmodifiedCheck = 0
+									var unchangedGuildsHashCheck = 0
 
-									measureTime {
+									val shardSaveTime = measureTime {
 										val jdaImpl = shard as JDAImpl
 										val sessionId = jdaImpl.client.sessionId
 										val resumeUrl = jdaImpl.client.resumeUrl
-										val newLineUtf8 = "\n".toByteArray(Charsets.UTF_8)
 
 										// Only get connected shards, invalidate everything else
 										// The "shards.guildView.isEmpty" check is done to avoid shards with no guilds being saved to the disk, because shards without any guilds aren't correctly loaded by the code
@@ -679,14 +682,15 @@ class LorittaBot(
 
 											val database = cacheDatabases[shard.shardInfo.shardId]!! // This should NEVER be null
 
-											val implictNulls = Json {
-												explicitNulls = false
-											}
-
 											org.jetbrains.exposed.sql.transactions.transaction(database) {
-												val guildIdsForReadyEvent = jdaImpl.guildsView.map { it.idLong } + jdaImpl.unavailableGuilds.map { it.toLong() }
+                                                val availableGuildIds = jdaImpl.guildsView.map { it.idLong }
+                                                val unavailableGuildIds = jdaImpl.unavailableGuilds.map { it.toLong() }
+                                                val guildIdsForReadyEvent = availableGuildIds + unavailableGuildIds
 
-												val guildCount = jdaImpl.guildsView.size()
+                                                totalAvailableGuilds = availableGuildIds.size
+                                                totalUnavailableGuilds = unavailableGuildIds.size
+
+												val guildCount = availableGuildIds.size
 
 												logger.info { "Trying to persist $guildCount guilds for shard ${jdaImpl.shardInfo.shardId}..." }
 
@@ -695,6 +699,7 @@ class LorittaBot(
 
 												logger.info { "Deleted $delCount unknown guilds from shard ${jdaImpl.shardInfo.shardId}'s cache" }
 
+                                                // Each shard has its own database, so we don't need to do a "where" check here
 												val guildIdToHash = CachedGuilds.select(
 													CachedGuilds.id,
 													CachedGuilds.hashCode
@@ -705,52 +710,59 @@ class LorittaBot(
 												logger.info { "Queried ${guildIdToHash.size} cached guilds from shard ${jdaImpl.shardInfo.shardId}'s cache" }
 
 												for (guild in jdaImpl.guildsView) {
-													guild as GuildImpl
+                                                    guild as GuildImpl
 
-													val serializableGuild = DeviousConverter.toSerializableGuildCreateEvent(
-														guild,
-														serializableSelfUser
-													)
+                                                    if (guild.idLong !in this@LorittaBot.unmodifiedGuilds) {
+                                                        val serializableGuild = DeviousConverter.toSerializableGuildCreateEvent(
+                                                            guild,
+                                                            serializableSelfUser
+                                                        )
 
-													// We do this because some of the elements REQUIRE it to be in a certain order to avoid issues
-													val sortedSerializableGuild = serializableGuild.copy(
-														channels = serializableGuild.channels.sortedBy {
-															it.id
-														}.map { it.copy(permission_overwrites = it.permission_overwrites?.sortedBy { it.id }) } ,
-														roles = serializableGuild.roles.sortedBy {
-															it.id
-														},
-														emojis = serializableGuild.emojis.sortedBy {
-															it.id
-														},
-														stickers = serializableGuild.stickers.sortedBy {
-															it.id
-														}
-													)
+                                                        // We do this because some of the elements REQUIRE it to be in a certain order to avoid issues
+                                                        val sortedSerializableGuild = serializableGuild.copy(
+                                                            channels = serializableGuild.channels.sortedBy {
+                                                                it.id
+                                                            }.map { it.copy(permission_overwrites = it.permission_overwrites?.sortedBy { it.id }) },
+                                                            roles = serializableGuild.roles.sortedBy {
+                                                                it.id
+                                                            },
+                                                            emojis = serializableGuild.emojis.sortedBy {
+                                                                it.id
+                                                            },
+                                                            stickers = serializableGuild.stickers.sortedBy {
+                                                                it.id
+                                                            }
+                                                        )
 
-													val hashCode = sortedSerializableGuild.hashCode()
+                                                        val hashCode = sortedSerializableGuild.hashCode()
 
-													// println("Guild ID: ${guild.idLong}")
-													// println("Stored code: ${guildIdToHash[guild.idLong]}")
-													// println("Hash code: $hashCode")
-													// While it is a bit iffy that we are +1 inside a transaction, it doesn't really matter in this context: Because SQLite is only serializable, it should NEVER EVER trigger a exception in the transaction
-													if (guildIdToHash[guild.idLong] != hashCode) {
-														upsertedGuilds++
+                                                        // println("Guild ID: ${guild.idLong}")
+                                                        // println("Stored code: ${guildIdToHash[guild.idLong]}")
+                                                        // println("Hash code: $hashCode")
+                                                        // While it is a bit iffy that we are +1 inside a transaction, it doesn't really matter in this context: Because SQLite is only serializable, it should NEVER EVER trigger a exception in the transaction
+                                                        if (guildIdToHash[guild.idLong] != hashCode) {
+                                                            upsertedGuilds++
 
-														// We don't need to serialize the sorted version, but it is better for us because we can diff what was changed between the previous save and the new save
-														val guildAsJson = implictNulls.encodeToString(sortedSerializableGuild)
+                                                            // We don't need to serialize the sorted version, but it is better for us because we can diff what was changed between the previous save and the new save
+                                                            val guildAsJson = implicitNulls.encodeToString(sortedSerializableGuild)
 
-														CachedGuilds.upsert(CachedGuilds.id) {
-															it[CachedGuilds.id] = guild.idLong
-															it[CachedGuilds.hashCode] = hashCode
-															it[CachedGuilds.event] = guildAsJson
-														}
-													} else {
-														unchangedGuilds++
-													}
+                                                            CachedGuilds.upsert(CachedGuilds.id) {
+                                                                it[CachedGuilds.id] = guild.idLong
+                                                                it[CachedGuilds.hashCode] = hashCode
+                                                                it[CachedGuilds.event] = guildAsJson
+                                                            }
+                                                        } else {
+                                                            unchangedGuildsHashCheck++
+                                                        }
+                                                    } else {
+                                                        unchangedGuildsUnmodifiedCheck++
+                                                    }
 
-													guild.invalidate()
-												}
+                                                    // Instead of using invalidate, we remove the guild directly from the view because it is WAY faster (200ms vs 26ms to process 1.4k unmodified guilds!)
+                                                    // This does mean we aren't properly cleaning everything up, but it doesn't really matter because we are shutting down the process anyway
+                                                    // guild.invalidate()
+                                                    jdaImpl.guildsView.remove(guild.idLong)
+                                                }
 
 												logger.info { "Writing session cache file for shard ${jdaImpl.shardInfo.shardId}..." }
 												SessionCacheMetadata.upsert(SessionCacheMetadata.id) {
@@ -777,7 +789,9 @@ class LorittaBot(
 												}
 											}
 										}
-									}.also { logger.info { "Took $it to process shard's ${shard.shardInfo.shardId} stuff! Upserted Guilds: $upsertedGuilds; Unchanged Guilds: $unchangedGuilds" } }
+									}
+
+                                    logger.info { "Took $shardSaveTime to process shard's ${shard.shardInfo.shardId} stuff! Total available guilds: $totalAvailableGuilds; Total unavailable guilds: ${totalUnavailableGuilds}; Upserted Guilds: $upsertedGuilds; Unchanged Guilds (unmodified check): $unchangedGuildsUnmodifiedCheck; Unchanged Guilds (hash check): $unchangedGuildsHashCheck" }
 								}
 							}
 

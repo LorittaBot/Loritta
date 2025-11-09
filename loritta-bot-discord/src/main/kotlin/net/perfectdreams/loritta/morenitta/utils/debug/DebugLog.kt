@@ -34,6 +34,7 @@ object DebugLog {
 		}
 		logger.info { "Active voice connections: ${loritta.voiceConnectionsManager.voiceConnections.size}" }
 		logger.info { "Pudding Semaphore Permits: ${loritta.pudding.semaphore.availablePermits}" }
+        logger.info { "Unmodified Guilds: ${loritta.unmodifiedGuilds.size}"}
 		logger.info { "> Command Stuff" }
 		logger.info { "commandManager.commandMap.size: ${loritta.legacyCommandManager.commandMap.size}" }
 		logger.info { "messageInteractionCache.size: ${loritta.messageInteractionCache.size}" }
