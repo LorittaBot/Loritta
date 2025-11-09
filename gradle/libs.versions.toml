@@ -13,7 +13,7 @@ kotlinWrappers = "2025.11.3"
 jdaKtx = "e7b0e50683"
 
 [libraries]
-deviousjda = { module = "com.github.LorittaBot:DeviousJDA", version = "59c4761f5e" }
+deviousjda = { module = "com.github.LorittaBot:DeviousJDA", version = "7a056307ed" }
 jdaKtx = { module = "com.github.freya022:jda-ktx", version.ref = "jdaKtx" }
 
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
@@ -58,3 +58,5 @@ logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "lo
 
 hikaricp = { module = "com.zaxxer:HikariCP", version = "6.3.0" }
 postgresqljdbcdriver = { module = "org.postgresql:postgresql", version = "42.7.6" }
+
+discord-zstd-java-jni-impl = "dev.freya02:discord-zstd-java-jni-impl:0.3.0"
