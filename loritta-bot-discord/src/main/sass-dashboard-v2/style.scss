@@ -633,23 +633,31 @@ nav#left-sidebar {
     }
 }
 
+#left-sidebar-reserved-space {
+    width: var(--left-sidebar-width);
+    flex-shrink: 0;
+
+    @media (1280px > width) {
+        // Hide if the screen is smol
+        display: none;
+    }
+}
+
 section#right-sidebar {
     width: 100%;
     display: flex;
     flex-direction: row;
-    // We don't use overflow here, to let the ad sidebar propagate scroll thru
-    // The space used by the left sidebar, we NEED to do it that way because we cannot use overflow + sticky on the sidebar, because we want the sidebar ad to propagate scroll events thru
-    margin-left: var(--left-sidebar-width);
     // Required for the swipe actions to work on mobile devices
     touch-action: pan-y;
+    // Allow it to shrink (required for overflow on child components to work)
+    min-width: 0;
 
     @include bp('medium') {
         width: calc(100% - 160px);
     }
 
-    @media (max-width: 1279px) {
+    @media (1280px > width) {
         margin-top: var(--navbar-height);
-        margin-left: 0;
         // Required for the screen to actually stretch the entire page
         // If this ain't here, on mobile devices you can see a empty/white background below the sections
         min-height: calc(100dvh - var(--navbar-height));
@@ -667,6 +675,8 @@ section#right-sidebar {
         padding-right: 4em;
         padding-top: 1em;
         padding-bottom: 1em;
+        // Allow it to shrink (required for overflow on child components to work)
+        min-width: 0;
 
         @media (max-width: 500px) {
             padding-left: 1em;

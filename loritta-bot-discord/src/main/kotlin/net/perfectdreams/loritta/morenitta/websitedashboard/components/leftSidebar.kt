@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.morenitta.websitedashboard.components
 
 import kotlinx.html.FlowContent
+import kotlinx.html.div
 import kotlinx.html.hr
 import kotlinx.html.id
 import kotlinx.html.nav
@@ -12,6 +13,10 @@ fun FlowContent.leftSidebar(block: FlowContent.() -> (Unit)) {
         id = "left-sidebar"
 
         block()
+    }
+
+    div {
+        id = "left-sidebar-reserved-space"
     }
 }
 
