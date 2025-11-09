@@ -408,7 +408,7 @@ class WelcomerGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                                 fieldWrappers {
                                     toggleableSection(
                                         {
-                                            text("Ativar as mensagens quando alguém entrar")
+                                            text(i18nContext.get(DashboardI18nKeysData.Welcomer.JoinSection.Toggle))
                                         },
                                         null,
                                         welcomerConfig?.tellOnJoin ?: false,
@@ -419,7 +419,7 @@ class WelcomerGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                                             fieldWrapper {
                                                 fieldInformationBlock {
                                                     fieldTitle {
-                                                        text("Canal onde será enviado as mensagens")
+                                                        text(i18nContext.get(DashboardI18nKeysData.Welcomer.JoinSection.ChannelTitle))
                                                     }
                                                 }
 
@@ -435,7 +435,7 @@ class WelcomerGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                                             fieldWrapper {
                                                 fieldInformationBlock {
                                                     fieldTitle {
-                                                        text("Segundos para deletar a mensagem (Deixe em 0 para nunca deletar)")
+                                                        text(i18nContext.get(DashboardI18nKeysData.Welcomer.JoinSection.DeleteAfterTitle))
                                                     }
                                                 }
 
@@ -452,7 +452,7 @@ class WelcomerGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                                             discordMessageEditor(
                                                 i18nContext,
                                                 guild,
-                                                { text("Mensagem quando alguém entrar") },
+                                                { text(i18nContext.get(DashboardI18nKeysData.Welcomer.JoinSection.MessageEditorTitle)) },
                                                 null,
                                                 MessageEditorBootstrap.TestMessageTarget.QuerySelector("[loritta-config='channelJoinId']"),
                                                 joinTemplates,
@@ -467,7 +467,7 @@ class WelcomerGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
 
                                     toggleableSection(
                                         {
-                                            text("Ativar as mensagens quando alguém sair")
+                                            text(i18nContext.get(DashboardI18nKeysData.Welcomer.LeaveSection.Toggle))
                                         },
                                         null,
                                         welcomerConfig?.tellOnRemove ?: false,
@@ -478,7 +478,7 @@ class WelcomerGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                                             fieldWrapper {
                                                 fieldInformationBlock {
                                                     fieldTitle {
-                                                        text("Canal onde será enviado as mensagens")
+                                                        text(i18nContext.get(DashboardI18nKeysData.Welcomer.LeaveSection.ChannelTitle))
                                                     }
                                                 }
 
@@ -494,7 +494,7 @@ class WelcomerGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                                             fieldWrapper {
                                                 fieldInformationBlock {
                                                     fieldTitle {
-                                                        text("Segundos para deletar a mensagem (Deixe em 0 para nunca deletar)")
+                                                        text(i18nContext.get(DashboardI18nKeysData.Welcomer.LeaveSection.DeleteAfterTitle))
                                                     }
                                                 }
 
@@ -511,7 +511,7 @@ class WelcomerGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                                             discordMessageEditor(
                                                 i18nContext,
                                                 guild,
-                                                { text("Mensagem quando alguém sair") },
+                                                { text(i18nContext.get(DashboardI18nKeysData.Welcomer.LeaveSection.MessageEditorTitle)) },
                                                 null,
                                                 MessageEditorBootstrap.TestMessageTarget.QuerySelector("[loritta-config='channelRemoveId']"),
                                                 leaveTemplates,
@@ -525,7 +525,7 @@ class WelcomerGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                                             fieldWrapper {
                                                 toggleableSection(
                                                     {
-                                                        text("Ativar as mensagens quando alguém sair")
+                                                        text(i18nContext.get(DashboardI18nKeysData.Welcomer.BanSection.Toggle))
                                                     },
                                                     null,
                                                     welcomerConfig?.tellOnBan ?: false,
@@ -536,7 +536,7 @@ class WelcomerGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                                                         discordMessageEditor(
                                                             i18nContext,
                                                             guild,
-                                                            { text("Mensagem quando alguém for banido") },
+                                                            { text(i18nContext.get(DashboardI18nKeysData.Welcomer.BanSection.MessageEditorTitle)) },
                                                             null,
                                                             MessageEditorBootstrap.TestMessageTarget.QuerySelector("[loritta-config='channelRemoveId']"),
                                                             listOf(),
@@ -554,10 +554,10 @@ class WelcomerGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
 
                                     toggleableSection(
                                         {
-                                            text("Ativar as mensagens enviadas nas mensagens diretas do usuário quando alguém entrar")
+                                            text(i18nContext.get(DashboardI18nKeysData.Welcomer.PrivateJoinSection.Toggle))
                                         },
                                         {
-                                            text("Útil caso você queria mostrar informações básicas sobre o servidor para um usuário mas não quer que fique cheio de mensagens inúteis toda hora que alguém entra.")
+                                            text(i18nContext.get(DashboardI18nKeysData.Welcomer.PrivateJoinSection.Description))
                                         },
                                         welcomerConfig?.tellOnPrivateJoin ?: false,
                                         "tellOnPrivateJoin",
@@ -567,7 +567,7 @@ class WelcomerGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                                             discordMessageEditor(
                                                 i18nContext,
                                                 guild,
-                                                { text("Mensagem quando alguém entrar (via mensagem direta)") },
+                                                { text(i18nContext.get(DashboardI18nKeysData.Welcomer.PrivateJoinSection.MessageEditorTitle)) },
                                                 null,
                                                 MessageEditorBootstrap.TestMessageTarget.SendDirectMessage,
                                                 listOf(),

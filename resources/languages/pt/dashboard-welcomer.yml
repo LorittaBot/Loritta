@@ -2,3 +2,20 @@ website:
   dashboard:
     welcomer:
       title: "Mensagens de Entrada/Saída"
+      joinSection:
+        toggle: "Ativar as mensagens quando alguém entrar"
+        channelTitle: "Canal onde será enviado as mensagens"
+        deleteAfterTitle: "Segundos para deletar a mensagem (Deixe em 0 para nunca deletar)"
+        messageEditorTitle: "Mensagem quando alguém entrar"
+      leaveSection:
+        toggle: "Ativar as mensagens quando alguém sair"
+        channelTitle: "Canal onde será enviado as mensagens"
+        deleteAfterTitle: "Segundos para deletar a mensagem (Deixe em 0 para nunca deletar)"
+        messageEditorTitle: "Mensagem quando alguém sair"
+      banSection:
+        toggle: "Mostrar mensagem diferenciada ao ser banido"
+        messageEditorTitle: "Mensagem quando alguém for banido"
+      privateJoinSection:
+        toggle: "Ativar as mensagens enviadas nas mensagens diretas do usuário quando alguém entrar"
+        description: "Útil caso você queria mostrar informações básicas sobre o servidor para um usuário mas não quer que fique cheio de mensagens inúteis toda hora que alguém entra."
+        messageEditorTitle: "Mensagem quando alguém entrar (via mensagem direta)"
