@@ -629,15 +629,17 @@ class LorittaBot(
 						?.selfUser
 
 					if (selfUser != null) {
+						// We use dummy values (expect for the ID!) because we don't want an avatar change triggering a different guild create hash
+						// JDA does not mind about this because it always uses the REAL user passed during the session initialization
 						val serializableSelfUser = DeviousConverter.User(
 							id = selfUser.idLong,
-							username = selfUser.name,
-							global_name = selfUser.globalName,
-							discriminator = selfUser.discriminator,
-							avatar = selfUser.avatarId,
-							public_flags = selfUser.flagsRaw,
-							bot = selfUser.isBot,
-							system = selfUser.isSystem
+							username = "_",
+							global_name = "_",
+							discriminator = "0000",
+							avatar = null,
+							public_flags = 0,
+							bot = true,
+							system = false
 						)
 
 						val shardJobs = shardManager
