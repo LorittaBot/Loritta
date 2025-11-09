@@ -13,12 +13,14 @@ import net.perfectdreams.loritta.common.locale.LorittaLanguageManager
 import net.perfectdreams.loritta.common.utils.HostnameUtils
 import net.perfectdreams.loritta.morenitta.analytics.LorittaMetrics
 import net.perfectdreams.loritta.morenitta.utils.config.BaseConfig
+import net.perfectdreams.loritta.morenitta.utils.devious.CachedGuilds
 import net.perfectdreams.loritta.morenitta.utils.devious.DeviousConverter
 import net.perfectdreams.loritta.morenitta.utils.devious.GatewayExtrasData
 import net.perfectdreams.loritta.morenitta.utils.devious.GatewaySessionData
 import net.perfectdreams.loritta.morenitta.utils.devious.SessionCacheMetadata
 import net.perfectdreams.loritta.morenitta.utils.readConfigurationFromFile
 import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.selectAll
 import java.io.File
 import java.lang.management.ManagementFactory
@@ -151,7 +153,16 @@ object LorittaLauncher {
 						logger.warn { "Couldn't find initial session and gateway extras for $shard! Skipping..." }
 					}
 				}
-			}
+			} else {
+                org.jetbrains.exposed.sql.transactions.transaction(shardCacheDatabase) {
+                    // If the file does NOT exist, we'll create tables and columns on it
+                    // We could create it directly when shutting down, but this call is a bit "hefty" (taking ~30ms even if the tables are already created)
+                    SchemaUtils.createMissingTablesAndColumns(
+                        CachedGuilds,
+                        SessionCacheMetadata
+                    )
+                }
+            }
 		}
 
 		// Iniciar instância da Loritta

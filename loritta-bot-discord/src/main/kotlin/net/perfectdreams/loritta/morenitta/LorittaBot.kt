@@ -684,11 +684,6 @@ class LorittaBot(
 											}
 
 											org.jetbrains.exposed.sql.transactions.transaction(database) {
-												SchemaUtils.createMissingTablesAndColumns(
-													CachedGuilds,
-													SessionCacheMetadata
-												)
-
 												val guildIdsForReadyEvent = jdaImpl.guildsView.map { it.idLong } + jdaImpl.unavailableGuilds.map { it.toLong() }
 
 												val guildCount = jdaImpl.guildsView.size()
