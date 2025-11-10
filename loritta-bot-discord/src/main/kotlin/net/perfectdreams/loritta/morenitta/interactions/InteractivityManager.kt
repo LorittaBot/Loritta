@@ -242,21 +242,24 @@ class InteractivityManager {
      */
     fun entitySelectMenuForUser(
         targetUser: User,
+        types: List<EntitySelectMenu.SelectTarget>,
         callbackAlwaysEphemeral: Boolean,
         builder: (EntitySelectMenu.Builder).() -> (Unit) = {},
         callback: suspend (ComponentContext, List<IMentionable>) -> (Unit)
-    ) = entitySelectMenuForUser(targetUser.idLong, callbackAlwaysEphemeral, builder, callback)
+    ) = entitySelectMenuForUser(targetUser.idLong, types, callbackAlwaysEphemeral, builder, callback)
 
     /**
      * Creates an interactive select menu
      */
     fun entitySelectMenuForUser(
         targetUserId: Long,
+        types: List<EntitySelectMenu.SelectTarget>,
         callbackAlwaysEphemeral: Boolean,
         builder: (EntitySelectMenu.Builder).() -> (Unit) = {},
         callback: suspend (ComponentContext, List<IMentionable>) -> (Unit)
     ) = entitySelectMenu(
         callbackAlwaysEphemeral,
+        types,
         builder
     ) { context, strings ->
         if (targetUserId != context.user.idLong) {
@@ -277,12 +280,13 @@ class InteractivityManager {
      */
     fun entitySelectMenu(
         callbackAlwaysEphemeral: Boolean,
+        types: List<EntitySelectMenu.SelectTarget>,
         builder: (EntitySelectMenu.Builder).() -> (Unit) = {},
         callback: suspend (ComponentContext, List<IMentionable>) -> (Unit)
     ): EntitySelectMenu {
         val buttonId = UUID.randomUUID()
         selectMenuEntityInteractionCallbacks[buttonId] = SelectMenuEntityInteractionCallback(callbackAlwaysEphemeral, callback)
-        return EntitySelectMenu.create(UnleashedComponentId(buttonId).toString(), listOf(EntitySelectMenu.SelectTarget.CHANNEL))
+        return EntitySelectMenu.create(UnleashedComponentId(buttonId).toString(), types)
             .apply(builder)
             .build()
     }

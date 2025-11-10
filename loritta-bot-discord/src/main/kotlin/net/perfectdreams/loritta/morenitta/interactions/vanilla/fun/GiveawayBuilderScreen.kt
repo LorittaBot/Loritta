@@ -683,9 +683,9 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
 
             val rolesToBeGivenToTheWinners = m.interactivityManager.entitySelectMenuForUser(
                 context.user,
+                listOf(EntitySelectMenu.SelectTarget.ROLE),
                 context.alwaysEphemeral,
                 {
-                    this.setEntityTypes(EntitySelectMenu.SelectTarget.ROLE)
                     this.setRequiredRange(0, 25)
                     val roleIds = builder.roleIds
                     if (roleIds != null) {
@@ -707,6 +707,7 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
 
             val channelSelectMenu = m.interactivityManager.entitySelectMenuForUser(
                 context.user,
+                listOf(EntitySelectMenu.SelectTarget.CHANNEL),
                 context.alwaysEphemeral,
                 {
                     this.setChannelTypes(
@@ -789,9 +790,9 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
         override suspend fun render(context: UnleashedContext, builder: GiveawayBuilder): InlineMessage<*>.() -> Unit {
             val channel1SelectMenu = m.interactivityManager.entitySelectMenuForUser(
                 context.user,
+                listOf(EntitySelectMenu.SelectTarget.ROLE),
                 context.alwaysEphemeral,
                 {
-                    this.setEntityTypes(EntitySelectMenu.SelectTarget.ROLE)
                     this.setRequiredRange(0, 25)
 
                     val roleIds = builder.allowedRolesIds
@@ -808,9 +809,9 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
 
             val channel2SelectMenu = m.interactivityManager.entitySelectMenuForUser(
                 context.user,
+                listOf(EntitySelectMenu.SelectTarget.ROLE),
                 context.alwaysEphemeral,
                 {
-                    this.setEntityTypes(EntitySelectMenu.SelectTarget.ROLE)
                     this.setRequiredRange(0, 25)
 
                     val roleIds = builder.deniedRolesIds
@@ -1162,9 +1163,12 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
 
             val extraEntryRoleSelector = m.interactivityManager.entitySelectMenuForUser(
                 context.user,
+                listOf(EntitySelectMenu.SelectTarget.ROLE),
                 context.alwaysEphemeral,
                 {
-                    this.setEntityTypes(EntitySelectMenu.SelectTarget.ROLE)
+                    val selectedRoleId = builder.extraEntryBuilder.roleId
+                    if (selectedRoleId != null)
+                        this.setDefaultValues(EntitySelectMenu.DefaultValue.role(selectedRoleId))
                 }
             ) { it, values ->
                 builder.extraEntryBuilder.roleId = values.first().idLong
