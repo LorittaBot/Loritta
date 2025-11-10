@@ -45,6 +45,7 @@ class PreStartGatewayEventReplayListener(
     }
 
     private val replayCache = LinkedBlockingQueue<DataObject>()
+    private var hasReceivedFirstDispatchEventAfterResume = false
 
     @OptIn(ExperimentalTime::class)
     override fun onPreProcessedRawGateway(event: PreProcessedRawGatewayEvent) {
@@ -64,8 +65,13 @@ class PreStartGatewayEventReplayListener(
             when (event.`package`.getInt("op")) {
                 // Only cancel dispatch events, we don't want the gateway connection to timeout due to not sending heartbeats
                 WebSocketCode.DISPATCH -> {
+                    if (!this.hasReceivedFirstDispatchEventAfterResume) {
+                        this.hasReceivedFirstDispatchEventAfterResume = true
+                        logger.info { "Successfully received the first dispatch gateway event of shard ${event.jda.shardInfo.shardId}! Loading cached data... Took ${gatewayExtras?.shutdownBeganAt?.let { Clock.System.now() - it }} since shard shutdown began to now" }
+                    }
+
                     if (event.type == "RESUMED") {
-						state.value = ProcessorState.LOADING_GUILDS
+                        state.value = ProcessorState.LOADING_GUILDS
                         logger.info { "Successfully resumed the gateway connection of shard ${event.jda.shardInfo.shardId}! Loading cached data... Took ${gatewayExtras?.shutdownBeganAt?.let { Clock.System.now() - it }} since shard shutdown began to now" }
 
                         // No need to send the resumed event to JDA because we have sent our own faked READY event
@@ -112,7 +118,7 @@ class PreStartGatewayEventReplayListener(
                         // Now replay the events!
                         logger.info { "Successfully sent faked guild create events for shard ${event.jda.shardInfo.shardId}! Took $time" }
                         logger.info { "Replaying ${replayCache.size} events for shard ${event.jda.shardInfo.shardId}.." }
-						state.value = ProcessorState.REPLAYING_EVENTS
+                        state.value = ProcessorState.REPLAYING_EVENTS
                         while (replayCache.isNotEmpty()) {
                             val cachedEvent = replayCache.poll()
 
@@ -181,7 +187,7 @@ class PreStartGatewayEventReplayListener(
         if (state.value == ProcessorState.FINISHED)
             return
 
-       if (initialSession != null) {
+        if (initialSession != null) {
             val diff = gatewayExtras?.shutdownBeganAt?.let { Clock.System.now() - gatewayExtras.shutdownBeganAt }
             logger.info { "Connecting shard ${event.jda.shardInfo.shardId} to WebSocket, sending faked READY event... Took $diff since shard shutdown began to now" }
 
@@ -243,8 +249,8 @@ class PreStartGatewayEventReplayListener(
     enum class ProcessorState {
         WAITING_FOR_WEBSOCKET_CONNECTION,
         WAITING_FOR_RESUME,
-		LOADING_GUILDS,
-		REPLAYING_EVENTS,
+        LOADING_GUILDS,
+        REPLAYING_EVENTS,
         FINISHED
     }
 }
