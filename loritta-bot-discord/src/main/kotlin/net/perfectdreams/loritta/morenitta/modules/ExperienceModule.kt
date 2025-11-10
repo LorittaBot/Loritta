@@ -308,15 +308,15 @@ class ExperienceModule(val loritta: LorittaBot) : MessageReceivedModule {
 						}
 					}
 					LevelUpAnnouncementType.DIRECT_MESSAGE -> {
-						val hasLevelUpNotificationsEnabled = loritta.newSuspendedTransaction {
+						val hasNotificationsEnabled = loritta.newSuspendedTransaction {
                             UserNotificationSettings.selectAll()
                                 .where {
                                     UserNotificationSettings.userId eq member.idLong and (UserNotificationSettings.type eq NotificationType.EXPERIENCE_LEVEL_UP) and (UserNotificationSettings.enabled eq false)
                                 }
-                                .count() != 0L
+                                .count() == 0L
 						}
 
-						if (hasLevelUpNotificationsEnabled) {
+						if (hasNotificationsEnabled) {
 							logger.info { "Direct msg, sending msg" }
 							try {
 								val privateChannel = loritta.getOrRetrievePrivateChannelForUser(member.user)
