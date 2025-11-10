@@ -219,7 +219,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 val enableBomDiaECia = miscellaneousConfig?.enableBomDiaECia ?: false
                 val isBomDiaECia = enableBomDiaECia && executor is LigarCommand.LigarExecutor
 
-                if (checkIfCommandIsDisabledOnGuild(event, slashDeclaration, context, i18nContext, guildId, serverConfig, lorittaUser))
+                if (!isBomDiaECia && checkIfCommandIsDisabledOnGuild(event, slashDeclaration, context, i18nContext, guildId, serverConfig, lorittaUser))
                     return@launchMessageJob
 
                 loritta.transaction {
