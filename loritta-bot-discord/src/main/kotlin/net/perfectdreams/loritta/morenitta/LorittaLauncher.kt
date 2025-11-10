@@ -3,12 +3,12 @@ package net.perfectdreams.loritta.morenitta
 import com.sun.management.HotSpotDiagnosticMXBean
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.debug.DebugProbes
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
+import net.dv8tion.jda.api.utils.data.DataObject
 import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.harmony.logging.slf4j.HarmonyLoggerCreatorSLF4J
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
@@ -16,6 +16,7 @@ import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.common.locale.LorittaLanguageManager
 import net.perfectdreams.loritta.common.utils.HostnameUtils
 import net.perfectdreams.loritta.morenitta.analytics.LorittaMetrics
+import net.perfectdreams.loritta.morenitta.listeners.PreStartGatewayEventReplayListener.Companion.FAKE_EVENT_FIELD
 import net.perfectdreams.loritta.morenitta.utils.config.BaseConfig
 import net.perfectdreams.loritta.morenitta.utils.devious.CachedGuilds
 import net.perfectdreams.loritta.morenitta.utils.devious.DeviousConverter
@@ -31,6 +32,7 @@ import java.lang.management.ManagementFactory
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.imageio.ImageIO
+import kotlin.time.measureTime
 
 /**
  * Loritta's Launcher
@@ -124,9 +126,8 @@ object LorittaLauncher {
 		val cacheFolder = File("cache")
 		cacheFolder.mkdirs()
 
-		val initialSessions = mutableMapOf<Int, GatewaySessionData>()
-		val gatewayExtras = mutableMapOf<Int, GatewayExtrasData>()
-		val cacheDatabases = mutableMapOf<Int, Database>()
+        logger.info { "Loading shard initialization data..." }
+        val shardsInit = mutableMapOf<Int, ShardInit>()
 
 		runBlocking {
 			val deferredShardsData = (lorittaCluster.minShard..lorittaCluster.maxShard).map { shardId ->
@@ -142,7 +143,7 @@ object LorittaLauncher {
 
 					if (shardCacheDatabaseFile.exists()) {
 						// From here on out we query the data and store it
-						val (session, extras) = org.jetbrains.exposed.sql.transactions.transaction(shardCacheDatabase) {
+						val (session, extras, queue) = org.jetbrains.exposed.sql.transactions.transaction(shardCacheDatabase) {
 							val metadata = SessionCacheMetadata.selectAll()
 								.toList()
 
@@ -151,17 +152,34 @@ object LorittaLauncher {
 
 							if (initialSessionRaw != null && gatewayExtrasRaw != null) {
 								logger.info { "Found initial session and gateway extras for shard $shardId!" }
-								return@transaction Pair(
+
+                                val queue = LinkedList<ShardInit.GuildCreateEventWrapper>()
+                                val loadGuildsTime = measureTime {
+                                    for (row in CachedGuilds.select(CachedGuilds.id, CachedGuilds.event)) {
+                                        val dataObject = DataObject.empty()
+                                            .put("op", 0)
+                                            .put("t", "GUILD_CREATE")
+                                            .put("d", DataObject.fromJson(row[CachedGuilds.event]))
+                                            .put(FAKE_EVENT_FIELD, true)
+
+                                        queue.add(ShardInit.GuildCreateEventWrapper(row[CachedGuilds.id].value, dataObject))
+                                    }
+                                }
+
+                                logger.info { "Took $loadGuildsTime to create the fake create guild events for shard $shardId" }
+
+								return@transaction Triple(
 									Json.decodeFromString<GatewaySessionData>(initialSessionRaw),
-									Json.decodeFromString<GatewayExtrasData>(gatewayExtrasRaw)
+									Json.decodeFromString<GatewayExtrasData>(gatewayExtrasRaw),
+                                    queue
 								)
 							} else {
 								logger.warn { "Couldn't find initial session and gateway extras for $shardId! Skipping..." }
-								return@transaction Pair(null, null)
+								return@transaction Triple(null, null, null)
 							}
 						}
 
-						return@async Triple(shardCacheDatabase, session, extras)
+						return@async ShardInit(shardCacheDatabase, session, extras, queue)
 					} else {
 						org.jetbrains.exposed.sql.transactions.transaction(shardCacheDatabase) {
 							// If the file does NOT exist, we'll create tables and columns on it
@@ -172,23 +190,20 @@ object LorittaLauncher {
 							)
 						}
 
-						return@async Triple(shardCacheDatabase, null, null)
+						return@async ShardInit(shardCacheDatabase, null, null, null)
 					}
 				}
 			}
 
 			for ((shardId, deferredShardData) in deferredShardsData) {
-				val (database, session, extras) = deferredShardData.await()
-				cacheDatabases[shardId] = database
-				if (session != null)
-					initialSessions[shardId] = session
-				if (extras != null)
-					gatewayExtras[shardId] = extras
+				val shardInit = deferredShardData.await()
+				shardsInit[shardId] = shardInit
 			}
 		}
+        logger.info { "Successfully loaded shard initialization data!" }
 
 		// Iniciar instância da Loritta
-		val loritta = LorittaBot(clusterId, config, languageManager, localeManager, services, cacheFolder, initialSessions, gatewayExtras, cacheDatabases)
+		val loritta = LorittaBot(clusterId, config, languageManager, localeManager, services, cacheFolder, shardsInit)
 		loritta.start()
 	}
 
@@ -226,4 +241,16 @@ object LorittaLauncher {
 			null
 		}
 	}
+
+    data class ShardInit(
+        val shardCacheDatabase: Database,
+        val sessionData: GatewaySessionData?,
+        val extrasData: GatewayExtrasData?,
+        val guildCreateEvents: LinkedList<GuildCreateEventWrapper>?
+    ) {
+        data class GuildCreateEventWrapper(
+            val guildId: Long,
+            val event: DataObject
+        )
+    }
 }

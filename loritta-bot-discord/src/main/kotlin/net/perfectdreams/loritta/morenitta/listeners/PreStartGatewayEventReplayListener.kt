@@ -15,6 +15,7 @@ import net.dv8tion.jda.internal.JDAImpl
 import net.dv8tion.jda.internal.entities.SelfUserImpl
 import net.dv8tion.jda.internal.requests.WebSocketCode
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.LorittaLauncher
 import net.perfectdreams.loritta.morenitta.utils.devious.CachedGuilds
 import net.perfectdreams.loritta.morenitta.utils.devious.GatewayExtrasData
 import net.perfectdreams.loritta.morenitta.utils.devious.GatewaySessionData
@@ -34,8 +35,7 @@ import kotlin.use
  */
 class PreStartGatewayEventReplayListener(
     private val loritta: LorittaBot,
-    private val initialSession: GatewaySessionData?,
-    private val gatewayExtras: GatewayExtrasData?,
+    private val shardInit: LorittaLauncher.ShardInit,
     private val cacheFolder: File,
     private val state: MutableStateFlow<ProcessorState>
 ) : ListenerAdapter() {
@@ -67,12 +67,12 @@ class PreStartGatewayEventReplayListener(
                 WebSocketCode.DISPATCH -> {
                     if (!this.hasReceivedFirstDispatchEventAfterResume) {
                         this.hasReceivedFirstDispatchEventAfterResume = true
-                        logger.info { "Successfully received the first dispatch gateway event of shard ${event.jda.shardInfo.shardId}! Loading cached data... Took ${gatewayExtras?.shutdownBeganAt?.let { Clock.System.now() - it }} since shard shutdown began to now" }
+                        logger.info { "Successfully received the first dispatch gateway event of shard ${event.jda.shardInfo.shardId}! Loading cached data... Took ${shardInit.extrasData?.shutdownBeganAt?.let { Clock.System.now() - it }} since shard shutdown began to now" }
                     }
 
                     if (event.type == "RESUMED") {
                         state.value = ProcessorState.LOADING_GUILDS
-                        logger.info { "Successfully resumed the gateway connection of shard ${event.jda.shardInfo.shardId}! Loading cached data... Took ${gatewayExtras?.shutdownBeganAt?.let { Clock.System.now() - it }} since shard shutdown began to now" }
+                        logger.info { "Successfully resumed the gateway connection of shard ${event.jda.shardInfo.shardId}! Loading cached data... Took ${shardInit.extrasData?.shutdownBeganAt?.let { Clock.System.now() - it }} since shard shutdown began to now" }
 
                         // No need to send the resumed event to JDA because we have sent our own faked READY event
                         event.isCancelled = true
@@ -102,21 +102,13 @@ class PreStartGatewayEventReplayListener(
                         // but that makes the code harder and confusing.
                         val time = measureTime {
                             jdaImpl.guildsView.writeLock().use {
-                                val database = loritta.cacheDatabases[jdaImpl.shardInfo.shardId]!! // This should NEVER be null
+                                val guildCreateEvents = shardInit.guildCreateEvents
 
-                                // Create the base DataObject outside the loop to reduce GC pressure
-                                val dataObject = DataObject.empty()
-                                    .put("op", 0)
-                                    .put("t", "GUILD_CREATE")
-                                    .put(FAKE_EVENT_FIELD, true)
-
-                                transaction(database) {
-                                    for (row in CachedGuilds.select(CachedGuilds.id, CachedGuilds.event)) {
-                                        // Fill the cache out
-                                        dataObject.put("d", DataObject.fromJson(row[CachedGuilds.event]))
-                                        jdaImpl.client.handleEvent(dataObject)
-
-                                        loritta.unmodifiedGuilds.add(row[CachedGuilds.id].value)
+                                if (guildCreateEvents != null) {
+                                    while (guildCreateEvents.isNotEmpty()) {
+                                        val eventWrapper = guildCreateEvents.pop()
+                                        jdaImpl.client.handleEvent(eventWrapper.event)
+                                        loritta.unmodifiedGuilds.add(eventWrapper.guildId)
                                     }
                                 }
                             }
@@ -137,7 +129,7 @@ class PreStartGatewayEventReplayListener(
                             (event.jda as JDAImpl).client.handleEvent(cachedEventWithoutSequence)
                         }
                         state.value = ProcessorState.FINISHED
-                        logger.info { "Successfully replayed events for shard ${event.jda.shardInfo.shardId}! Took ${gatewayExtras?.shutdownBeganAt?.let { Clock.System.now() - it }} since shard shutdown began to now" }
+                        logger.info { "Successfully replayed events for shard ${event.jda.shardInfo.shardId}! Took ${shardInit.extrasData?.shutdownBeganAt?.let { Clock.System.now() - it }} since shard shutdown began to now" }
                         loritta.gatewayShardsStartupResumeStatus[event.jda.shardInfo.shardId] = GatewayShardStartupResumeStatus.SUCCESSFULLY_RESUMED
                         jdaImpl.presence.setPresence(
                             OnlineStatus.ONLINE,
@@ -177,7 +169,8 @@ class PreStartGatewayEventReplayListener(
 
                 WebSocketCode.INVALIDATE_SESSION -> {
                     // Session has been invalidated, clear out the replay cache
-                    val diff = gatewayExtras?.shutdownBeganAt?.let { Clock.System.now() - gatewayExtras.shutdownBeganAt }
+                    val diff = shardInit.extrasData?.shutdownBeganAt?.let { Clock.System.now() - shardInit.extrasData.shutdownBeganAt }
+                    shardInit.guildCreateEvents?.clear()
                     logger.info { "Session of shard ${event.jda.shardInfo.shardId} has been invalidated, clearing out ${replayCache.size} events... Took $diff since shard shutdown began to now" }
                     state.value = ProcessorState.FINISHED
                     loritta.gatewayShardsStartupResumeStatus[event.jda.shardInfo.shardId] = GatewayShardStartupResumeStatus.SESSION_INVALIDATED
@@ -194,8 +187,10 @@ class PreStartGatewayEventReplayListener(
         if (state.value == ProcessorState.FINISHED)
             return
 
+        val initialSession = shardInit.sessionData
+        val extras = shardInit.extrasData
         if (initialSession != null) {
-            val diff = gatewayExtras?.shutdownBeganAt?.let { Clock.System.now() - gatewayExtras.shutdownBeganAt }
+            val diff = extras?.shutdownBeganAt?.let { Clock.System.now() - extras.shutdownBeganAt }
             logger.info { "Connecting shard ${event.jda.shardInfo.shardId} to WebSocket, sending faked READY event... Took $diff since shard shutdown began to now" }
 
             val jdaImpl = event.jda as JDAImpl

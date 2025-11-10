@@ -169,9 +169,7 @@ class LorittaBot(
 	val localeManager: LocaleManager,
 	val pudding: Pudding,
 	val cacheFolder: File,
-	val initialSessions: Map<Int, GatewaySessionData>,
-	val gatewayExtras: Map<Int, GatewayExtrasData>,
-	val cacheDatabases: Map<Int, Database>,
+    val shardsInit: Map<Int, LorittaLauncher.ShardInit>
 ) {
 	// ===[ STATIC ]===
 	companion object {
@@ -374,7 +372,7 @@ class LorittaBot(
 			.protocols(listOf(Protocol.HTTP_1_1)) // https://i.imgur.com/FcQljAP.png
 
 		for (shardId in lorittaCluster.minShard..lorittaCluster.maxShard) {
-			val initialSession = initialSessions[shardId]
+			val initialSession = shardsInit[shardId]?.sessionData
 
 			val processorState = if (initialSession != null) {
 				PreStartGatewayEventReplayListener.ProcessorState.WAITING_FOR_WEBSOCKET_CONNECTION
@@ -475,8 +473,7 @@ class LorittaBot(
 			.addEventListenerProvider {
 				PreStartGatewayEventReplayListener(
 					this,
-					initialSessions[it],
-					gatewayExtras[it],
+					shardsInit[it]!!,
 					cacheFolder,
 					preLoginStates[it]!!,
 				)
@@ -682,7 +679,7 @@ class LorittaBot(
 											// Create the shard cache folder
 											shardCacheFolder.mkdirs()
 
-											val database = cacheDatabases[shard.shardInfo.shardId]!! // This should NEVER be null
+											val database = shardsInit[shard.shardInfo.shardId]!!.shardCacheDatabase // This should NEVER be null
 
 											org.jetbrains.exposed.sql.transactions.transaction(database) {
                                                 val availableGuildIds = jdaImpl.guildsView.map { it.idLong }
