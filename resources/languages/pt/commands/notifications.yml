@@ -30,6 +30,6 @@ configure:
     experienceLevelUp:
       title: "Notificação ao Subir de Nível"
       description: "Notificações ao subir de nível. Esta configuração apenas afeta as mensagens que eu envio no privado, caso o servidor que você esteja tenha as notificações de nível no privado ativadas."
-
-
-
+    managedGiveawayEnded:
+      title: "Notificação ao Encerrar um Sorteio"
+      description: "Notificações quando um sorteio que você está gerenciando é encerrado."

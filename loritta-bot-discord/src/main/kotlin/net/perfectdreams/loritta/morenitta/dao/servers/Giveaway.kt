@@ -32,6 +32,7 @@ class Giveaway(id: EntityID<Long>) : LongEntity(id) {
     var messagesTimeThreshold by Giveaways.messagesTimeThreshold
     var extraEntriesShouldStack by Giveaways.extraEntriesShouldStack
     var createdAt by Giveaways.createdAt
+    var createdBy by Giveaways.createdBy
     var finished by Giveaways.finished
 
     var version by Giveaways.version

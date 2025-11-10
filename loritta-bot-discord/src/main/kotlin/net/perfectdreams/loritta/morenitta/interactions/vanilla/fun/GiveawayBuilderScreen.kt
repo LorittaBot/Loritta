@@ -256,6 +256,7 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
             val giveaway = m.giveawayManager.spawnGiveaway(
                 context.locale,
                 context.i18nContext,
+                context.user,
                 channel,
                 builder.name,
                 builder.description,

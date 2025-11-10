@@ -125,6 +125,12 @@ sealed class NotificationsSetupScreen(val m: LorittaBot) {
                 NotificationType.EXPERIENCE_LEVEL_UP
             )
 
+            val giveawayEndedToggle = createNotificationTypeToggleButton(
+                context,
+                configuredNotifications,
+                NotificationType.GIVEAWAY_ENDED
+            )
+
             return {
                 this.useComponentsV2 = true
 
@@ -176,6 +182,13 @@ sealed class NotificationsSetupScreen(val m: LorittaBot) {
                         this.components += OptionExplanationCombo(
                             context.i18nContext.get(SETUP_I18N_PREFIX.Types.ExperienceLevelUp.Title),
                             context.i18nContext.get(SETUP_I18N_PREFIX.Types.ExperienceLevelUp.Description)
+                        )
+                    }
+
+                    this.components += Section(giveawayEndedToggle) {
+                        this.components += OptionExplanationCombo(
+                            context.i18nContext.get(SETUP_I18N_PREFIX.Types.ManagedGiveawayEnded.Title),
+                            context.i18nContext.get(SETUP_I18N_PREFIX.Types.ManagedGiveawayEnded.Description)
                         )
                     }
                 }

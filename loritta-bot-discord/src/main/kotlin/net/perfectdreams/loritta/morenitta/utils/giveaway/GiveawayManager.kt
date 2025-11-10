@@ -1,5 +1,11 @@
 package net.perfectdreams.loritta.morenitta.utils.giveaway
 
+import dev.minn.jda.ktx.interactions.components.Container
+import dev.minn.jda.ktx.interactions.components.Section
+import dev.minn.jda.ktx.interactions.components.TextDisplay
+import dev.minn.jda.ktx.interactions.components.Thumbnail
+import dev.minn.jda.ktx.messages.MessageCreate
+import io.ktor.server.application.ServerConfig
 import kotlinx.coroutines.*
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.sync.Mutex
@@ -19,11 +25,13 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import net.dv8tion.jda.api.utils.messages.MessageEditData
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.toJavaColor
+import net.perfectdreams.loritta.cinnamon.pudding.tables.UserNotificationSettings
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GiveawayParticipants
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GiveawayRoleExtraEntries
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.LorittaColors
+import net.perfectdreams.loritta.common.utils.NotificationType
 import net.perfectdreams.loritta.common.utils.WeightedRandom
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -36,6 +44,7 @@ import net.perfectdreams.loritta.morenitta.utils.substringIfNeeded
 import net.perfectdreams.loritta.serializable.GiveawayRoleExtraEntry
 import net.perfectdreams.loritta.serializable.GiveawayRoles
 import net.perfectdreams.sequins.text.StringUtils
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.batchInsert
 import org.jetbrains.exposed.sql.selectAll
 import java.awt.Color
@@ -206,6 +215,7 @@ class GiveawayManager(val loritta: LorittaBot) {
     suspend fun spawnGiveaway(
         locale: BaseLocale,
         i18nContext: I18nContext,
+        user: User?,
         channel: GuildMessageChannel,
         reason: String,
         description: String,
@@ -281,6 +291,7 @@ class GiveawayManager(val loritta: LorittaBot) {
                 }
                 this.extraEntriesShouldStack = extraEntriesShouldStack
                 this.createdAt = Instant.now()
+                this.createdBy = user?.idLong
                 this.finished = false
 
                 this.version = 2
@@ -713,8 +724,57 @@ class GiveawayManager(val loritta: LorittaBot) {
             giveaway.finished = true
         }
 
-        giveawayTasks[giveaway.id.value]?.cancel()
-        giveawayTasks.remove(giveaway.id.value)
+        val createdBy = giveaway.createdBy
+        if (createdBy != null) {
+            val (hasNotificationEnabled, serverConfig) = loritta.newSuspendedTransaction {
+                val hasNotificationEnabled = UserNotificationSettings.selectAll()
+                    .where {
+                        UserNotificationSettings.userId eq createdBy and (UserNotificationSettings.type eq NotificationType.GIVEAWAY_ENDED) and (UserNotificationSettings.enabled eq false)
+                    }
+                    .count() == 0L
+
+                Pair(hasNotificationEnabled, loritta.getOrCreateServerConfig(message.guildIdLong))
+            }
+
+            if (hasNotificationEnabled) {
+                val i18nContext = loritta.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
+
+                val guild = message.guild
+                val iconUrl = guild.iconUrl
+
+                try {
+                    val privateChannel = loritta.getOrRetrievePrivateChannelForUserOrNullIfUserDoesNotExist(createdBy)
+                    if (privateChannel != null) {
+                        privateChannel.sendMessage(
+                            MessageCreate {
+                                this.useComponentsV2 = true
+
+                                this.components += Container {
+                                    this.accentColorRaw = LorittaColors.LorittaAqua.rgb
+
+                                    val textDisplay = TextDisplay(i18nContext.get(I18N_PREFIX.GiveawayEndedDirectMessage.GiveawayEnded(giveaway.reason, guild.name)))
+                                    if (iconUrl != null) {
+                                        this.components += Section(Thumbnail(iconUrl)) {
+                                            this.components += textDisplay
+                                        }
+                                    } else {
+                                        this.components += textDisplay
+                                    }
+                                }
+
+                                this.components += ActionRow.of(
+                                    Button.link(message.jumpUrl, i18nContext.get(I18N_PREFIX.GiveawayEndedDirectMessage.JumpToGiveaway)),
+                                )
+                            }
+                        ).await()
+                    }
+                } catch (e: Exception) {
+                    logger.warn(e) { "Something went wrong while trying to notify $createdBy about the giveaway finish!" }
+                }
+            }
+        }
+
+        giveawayTasks.remove(giveaway.id.value)?.cancel()
     }
 
     private data class GiveawayCombo(

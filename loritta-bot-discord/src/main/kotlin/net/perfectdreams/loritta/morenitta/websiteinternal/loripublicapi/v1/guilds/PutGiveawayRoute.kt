@@ -197,6 +197,7 @@ class PutGiveawayRoute(m: LorittaBot) : LoriPublicAPIGuildRoute(
         val createdGiveaway = m.giveawayManager.spawnGiveaway(
             baseLocale,
             i18nContext,
+            null,
             channel,
             request.reason,
             request.description,
