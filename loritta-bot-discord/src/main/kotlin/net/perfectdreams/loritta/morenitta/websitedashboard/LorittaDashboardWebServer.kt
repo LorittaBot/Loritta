@@ -147,6 +147,8 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.youtub
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.youtube.PostYouTubeChannelGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.youtube.PutYouTubeChannelGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.youtube.YouTubeGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.notifications.NotificationsGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.notifications.PutNotificationsGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.profilepresets.CreateProfilePresetsUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.profilepresets.DeleteProfilePresetUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.profilepresets.PostApplyProfilePresetUserDashboardRoute
@@ -294,6 +296,10 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
         ReceivedReputationsUserDashboardRoute(this),
         ViewGivenReputationUserDashboardRoute(this),
         ViewReceivedReputationUserDashboardRoute(this),
+
+        // Notifications
+        NotificationsGuildDashboardRoute(this),
+        PutNotificationsGuildDashboardRoute(this),
 
         // Starboard
         StarboardGuildDashboardRoute(this),

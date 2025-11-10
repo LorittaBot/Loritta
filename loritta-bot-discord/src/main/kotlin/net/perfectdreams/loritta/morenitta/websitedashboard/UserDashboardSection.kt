@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.morenitta.websitedashboard
 enum class UserDashboardSection {
     CHOOSE_YOUR_SERVER,
     POCKET_LORITTA,
+    NOTIFICATIONS,
     PROFILE_DESIGNS,
     PROFILE_BACKGROUND,
     PROFILE_PRESETS,

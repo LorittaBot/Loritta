@@ -87,6 +87,30 @@ fun FlowContent.saveBar(
 /**
  * A generic save bar that PUTs everything that is marked with the `loritta-config` attribute
  */
+fun FlowContent.genericUserSaveBar(
+    i18nContext: I18nContext,
+    alwaysDirty: Boolean,
+    resourcePathRelativeToRoot: String
+) {
+    saveBar(
+        i18nContext,
+        alwaysDirty,
+        {
+            attributes["bliss-get"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}$resourcePathRelativeToRoot"
+            attributes["bliss-swap:200"] = "#section-config (innerHTML) -> #section-config (innerHTML)"
+            attributes["bliss-headers"] = buildJsonObject {
+                put("Loritta-Configuration-Reset", "true")
+            }.toString()
+        }
+    ) {
+        attributes["bliss-put"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}$resourcePathRelativeToRoot"
+        attributes["bliss-include-json"] = "[loritta-config]"
+    }
+}
+
+/**
+ * A generic save bar that PUTs everything that is marked with the `loritta-config` attribute
+ */
 fun FlowContent.genericSaveBar(
     i18nContext: I18nContext,
     alwaysDirty: Boolean,

@@ -30,6 +30,7 @@ object Giveaways : LongIdTable() {
 	var messagesTimeThreshold = long("messages_time_threshold").nullable()
 	val extraEntriesShouldStack = bool("extra_entries_should_stack")
 	val createdAt = timestampWithTimeZone("created_at").nullable() // Can be nullable due to old giveaways
+    val createdBy = long("created_by").nullable()
 
 	val finished = bool("finished").default(false).index()
 

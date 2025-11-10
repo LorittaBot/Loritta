@@ -38,7 +38,7 @@ fun FlowContent.userDashLeftSidebarEntries(
         sectionEntryContent(
             "Servidor de Minecraft da Loritta",
             SVGIcons.Pickaxe,
-            true
+            false
         )
     }
 
@@ -59,6 +59,7 @@ fun FlowContent.userDashLeftSidebarEntries(
         text("Personalização")
     }
 
+    aDashboardSidebarEntry(i18nContext, "/notifications", i18nContext.get(DashboardI18nKeysData.Notifications.Title), SVGIcons.Bell, selectedUserSection == UserDashboardSection.NOTIFICATIONS, true)
     aDashboardSidebarEntry(i18nContext, "/profiles", i18nContext.get(DashboardI18nKeysData.ProfileDesigns.Title), SVGIcons.IdentificationCard, selectedUserSection == UserDashboardSection.PROFILE_DESIGNS, false)
     aDashboardSidebarEntry(i18nContext, "/backgrounds", i18nContext.get(DashboardI18nKeysData.Backgrounds.Title), SVGIcons.Images, selectedUserSection == UserDashboardSection.PROFILE_BACKGROUND, false)
     aDashboardSidebarEntry(i18nContext, "/profile-presets", i18nContext.get(DashboardI18nKeysData.ProfilePresets.Title), SVGIcons.BoxArrowUp, selectedUserSection == UserDashboardSection.PROFILE_PRESETS, false)
