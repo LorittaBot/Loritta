@@ -29,7 +29,8 @@ object DebugLog {
 		logger.info { "Shards Pre Login states that aren't finished:" }
 		for ((shardId, state) in loritta.preLoginStates) {
 			if (state.value != PreStartGatewayEventReplayListener.ProcessorState.FINISHED) {
-				logger.info { "Shard $shardId: ${state.value}" }
+				val shard = loritta.lorittaShards.shardManager.getShardById(shardId)
+				logger.info { "Shard $shardId: ${state.value} (${shard?.status})" }
 			}
 		}
 		logger.info { "Active voice connections: ${loritta.voiceConnectionsManager.voiceConnections.size}" }
