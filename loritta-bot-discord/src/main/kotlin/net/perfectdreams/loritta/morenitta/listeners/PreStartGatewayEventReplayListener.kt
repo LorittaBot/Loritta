@@ -103,10 +103,17 @@ class PreStartGatewayEventReplayListener(
                         val time = measureTime {
                             jdaImpl.guildsView.writeLock().use {
                                 val database = loritta.cacheDatabases[jdaImpl.shardInfo.shardId]!! // This should NEVER be null
+
+                                // Create the base DataObject outside the loop to reduce GC pressure
+                                val dataObject = DataObject.empty()
+                                    .put("op", 0)
+                                    .put("t", "GUILD_CREATE")
+                                    .put(FAKE_EVENT_FIELD, true)
+
                                 transaction(database) {
                                     for (row in CachedGuilds.select(CachedGuilds.id, CachedGuilds.event)) {
                                         // Fill the cache out
-                                        val dataObject = DataObject.fromJson("""{"op":0,"d":${row[CachedGuilds.event]},"t":"GUILD_CREATE","$FAKE_EVENT_FIELD":true}""")
+                                        dataObject.put("d", DataObject.fromJson(row[CachedGuilds.event]))
                                         jdaImpl.client.handleEvent(dataObject)
 
                                         loritta.unmodifiedGuilds.add(row[CachedGuilds.id].value)
