@@ -33,6 +33,7 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.javatime.date
 import java.time.Instant
 import java.time.LocalDate
+import kotlin.system.exitProcess
 
 class LoriServerListConfigCommand(loritta: LorittaBot) : AbstractCommand(loritta, "lslc", category = net.perfectdreams.loritta.common.commands.CommandCategory.MAGIC) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -47,6 +48,12 @@ class LoriServerListConfigCommand(loritta: LorittaBot) : AbstractCommand(loritta
 
 		// Sub-comandos que só o Dono pode usar
 		if (context.loritta.isOwner(context.userHandle.id)) {
+			if (arg0 == "bye") {
+				// Stops Loritta, useful when running Loritta in IntelliJ IDEA which, for some weird reason, does not have a way to "gracefully"
+				// stop the JVM application when using Gradle
+				exitProcess(0)
+			}
+
 			if (arg0 == "inject_economy") {
 				val config = context.loritta.getOrCreateServerConfig(context.guild.idLong)
 
