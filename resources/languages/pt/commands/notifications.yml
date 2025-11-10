@@ -13,7 +13,7 @@ configure:
 
   types:
     dailyReminder:
-      title: "Notificação de Lembre do Daily"
+      title: "Notificação de Lembrete do Daily"
       description: "Notificações que a Loritta envia falando que você já pode pegar o daily novamente"
     marriageExpirationReminder:
       title: "Notificação de Expiração do Casamento"
