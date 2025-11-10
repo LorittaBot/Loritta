@@ -12,6 +12,7 @@ import net.perfectdreams.loritta.common.emojis.LorittaEmojis
 import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.common.utils.NotificationType
 import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.morenitta.DirectMessageNotification
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.components.ComponentContext
@@ -89,48 +90,6 @@ sealed class NotificationsSetupScreen(val m: LorittaBot) {
                     .associate { it[UserNotificationSettings.type] to it[UserNotificationSettings.enabled] }
             }
 
-            val dailyReminderToggle = createNotificationTypeToggleButton(
-                context,
-                configuredNotifications,
-                NotificationType.DAILY_REMINDER
-            )
-
-            val marriageExpirationReminderToggle = createNotificationTypeToggleButton(
-                context,
-                configuredNotifications,
-                NotificationType.MARRIAGE_EXPIRATION_REMINDER
-            )
-
-            val marriageExpiredReminderToggle = createNotificationTypeToggleButton(
-                context,
-                configuredNotifications,
-                NotificationType.MARRIAGE_EXPIRED
-            )
-
-            val marriageRenewedReminderToggle = createNotificationTypeToggleButton(
-                context,
-                configuredNotifications,
-                NotificationType.MARRIAGE_RENEWED
-            )
-
-            val marriageLoveLetterToggle = createNotificationTypeToggleButton(
-                context,
-                configuredNotifications,
-                NotificationType.MARRIAGE_LOVE_LETTER
-            )
-
-            val experienceLevelUpToggle = createNotificationTypeToggleButton(
-                context,
-                configuredNotifications,
-                NotificationType.EXPERIENCE_LEVEL_UP
-            )
-
-            val giveawayEndedToggle = createNotificationTypeToggleButton(
-                context,
-                configuredNotifications,
-                NotificationType.GIVEAWAY_ENDED
-            )
-
             return {
                 this.useComponentsV2 = true
 
@@ -143,53 +102,19 @@ sealed class NotificationsSetupScreen(val m: LorittaBot) {
                             appendLine(context.i18nContext.get(SETUP_I18N_PREFIX.ChooseWhichNotification))
                         })
 
-                    this.components += Section(dailyReminderToggle) {
-                        this.components += OptionExplanationCombo(
-                            context.i18nContext.get(SETUP_I18N_PREFIX.Types.DailyReminder.Title),
-                            context.i18nContext.get(SETUP_I18N_PREFIX.Types.DailyReminder.Description)
+                    for (notification in DirectMessageNotification.all) {
+                        val toggle = createNotificationTypeToggleButton(
+                            context,
+                            configuredNotifications,
+                            notification.type
                         )
-                    }
 
-                    this.components += Section(marriageExpirationReminderToggle) {
-                        this.components += OptionExplanationCombo(
-                            context.i18nContext.get(SETUP_I18N_PREFIX.Types.MarriageExpirationReminder.Title),
-                            context.i18nContext.get(SETUP_I18N_PREFIX.Types.MarriageExpirationReminder.Description)
-                        )
-                    }
-
-                    this.components += Section(marriageExpiredReminderToggle) {
-                        this.components += OptionExplanationCombo(
-                            context.i18nContext.get(SETUP_I18N_PREFIX.Types.MarriageExpired.Title),
-                            context.i18nContext.get(SETUP_I18N_PREFIX.Types.MarriageExpired.Description)
-                        )
-                    }
-
-                    this.components += Section(marriageRenewedReminderToggle) {
-                        this.components += OptionExplanationCombo(
-                            context.i18nContext.get(SETUP_I18N_PREFIX.Types.MarriageRenewed.Title),
-                            context.i18nContext.get(SETUP_I18N_PREFIX.Types.MarriageRenewed.Description)
-                        )
-                    }
-
-                    this.components += Section(marriageLoveLetterToggle) {
-                        this.components += OptionExplanationCombo(
-                            context.i18nContext.get(SETUP_I18N_PREFIX.Types.MarriageLoveLetter.Title),
-                            context.i18nContext.get(SETUP_I18N_PREFIX.Types.MarriageLoveLetter.Description)
-                        )
-                    }
-
-                    this.components += Section(experienceLevelUpToggle) {
-                        this.components += OptionExplanationCombo(
-                            context.i18nContext.get(SETUP_I18N_PREFIX.Types.ExperienceLevelUp.Title),
-                            context.i18nContext.get(SETUP_I18N_PREFIX.Types.ExperienceLevelUp.Description)
-                        )
-                    }
-
-                    this.components += Section(giveawayEndedToggle) {
-                        this.components += OptionExplanationCombo(
-                            context.i18nContext.get(SETUP_I18N_PREFIX.Types.ManagedGiveawayEnded.Title),
-                            context.i18nContext.get(SETUP_I18N_PREFIX.Types.ManagedGiveawayEnded.Description)
-                        )
+                        this.components += Section(toggle) {
+                            this.components += OptionExplanationCombo(
+                                context.i18nContext.get(notification.title),
+                                context.i18nContext.get(notification.description)
+                            )
+                        }
                     }
                 }
             }
