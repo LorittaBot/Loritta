@@ -29,6 +29,7 @@ class SlashCommandDeclarationBuilder(
     var botPermissions: Set<Permission>? = null
     var defaultMemberPermissions: DefaultMemberPermissions? = null
     var enableLegacyMessageSupport = false
+    var allowUsageEvenIfLorittaBanned = false
     var alternativeLegacyLabels = mutableListOf<String>()
     var alternativeLegacyAbsoluteCommandPaths = mutableListOf<String>()
     val subcommands = mutableListOf<SlashCommandDeclarationBuilder>()
@@ -74,6 +75,7 @@ class SlashCommandDeclarationBuilder(
             enableLegacyMessageSupport,
             alternativeLegacyLabels,
             alternativeLegacyAbsoluteCommandPaths,
+            allowUsageEvenIfLorittaBanned,
             integrationTypes,
             interactionContexts,
             executor,
@@ -132,6 +134,7 @@ class UserCommandDeclarationBuilder(
     var defaultMemberPermissions: DefaultMemberPermissions? = null
     var integrationTypes = listOf(IntegrationType.GUILD_INSTALL)
     var interactionContexts = listOf(InteractionContextType.GUILD, InteractionContextType.BOT_DM, InteractionContextType.PRIVATE_CHANNEL)
+    var allowUsageEvenIfLorittaBanned = false
 
     fun build(): UserCommandDeclaration {
         return UserCommandDeclaration(
@@ -139,6 +142,7 @@ class UserCommandDeclarationBuilder(
             category,
             uniqueId,
             defaultMemberPermissions,
+            allowUsageEvenIfLorittaBanned,
             integrationTypes,
             interactionContexts,
             executor
@@ -160,13 +164,15 @@ class MessageCommandDeclarationBuilder(
     var defaultMemberPermissions: DefaultMemberPermissions? = null
     var integrationTypes = listOf(IntegrationType.GUILD_INSTALL)
     var interactionContexts = listOf(InteractionContextType.GUILD, InteractionContextType.BOT_DM, InteractionContextType.PRIVATE_CHANNEL)
-
+    var allowUsageEvenIfLorittaBanned = false
+    
     fun build(): MessageCommandDeclaration {
         return MessageCommandDeclaration(
             name,
             category,
             uniqueId,
             defaultMemberPermissions,
+            allowUsageEvenIfLorittaBanned,
             integrationTypes,
             interactionContexts,
             executor

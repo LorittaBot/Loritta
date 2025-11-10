@@ -209,7 +209,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 )
 
                 // Check if user is banned
-                if (AccountUtils.checkAndSendMessageIfUserIsBanned(context.loritta, context, context.user))
+                if (!slashDeclaration.allowUsageEvenIfLorittaBanned && AccountUtils.checkAndSendMessageIfUserIsBanned(context.loritta, context, context.user))
                     return@launchMessageJob
 
                 // Check if the command is disabled
@@ -434,7 +434,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 )
 
                 // Check if user is banned
-                if (AccountUtils.checkAndSendMessageIfUserIsBanned(context.loritta, context, context.user))
+                if (!slashDeclaration.allowUsageEvenIfLorittaBanned && AccountUtils.checkAndSendMessageIfUserIsBanned(context.loritta, context, context.user))
                     return@launchMessageJob
 
                 // Check if the command is disabled
@@ -537,7 +537,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 )
 
                 // Check if user is banned
-                if (AccountUtils.checkAndSendMessageIfUserIsBanned(context.loritta, context, context.user))
+                if (!slashDeclaration.allowUsageEvenIfLorittaBanned && AccountUtils.checkAndSendMessageIfUserIsBanned(context.loritta, context, context.user))
                     return@launchMessageJob
 
                 // Check if the command is disabled

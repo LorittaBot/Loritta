@@ -15,6 +15,7 @@ sealed class ExecutableApplicationCommandDeclaration {
     abstract val uniqueId: UUID
     abstract val integrationTypes: List<IntegrationType>
     abstract val interactionContexts: List<InteractionContextType>
+    abstract val allowUsageEvenIfLorittaBanned: Boolean
 }
 
 data class SlashCommandDeclaration(
@@ -25,9 +26,10 @@ data class SlashCommandDeclaration(
     val examples: ListI18nData?,
     val botPermissions: Set<Permission>,
     val defaultMemberPermissions: DefaultMemberPermissions?,
-    var enableLegacyMessageSupport: Boolean,
-    var alternativeLegacyLabels: List<String>,
-    var alternativeLegacyAbsoluteCommandPaths: List<String>,
+    val enableLegacyMessageSupport: Boolean,
+    val alternativeLegacyLabels: List<String>,
+    val alternativeLegacyAbsoluteCommandPaths: List<String>,
+    override val allowUsageEvenIfLorittaBanned: Boolean,
     override val integrationTypes: List<IntegrationType>,
     override val interactionContexts: List<InteractionContextType>,
     val executor: LorittaSlashCommandExecutor?,
@@ -39,7 +41,7 @@ data class SlashCommandGroupDeclaration(
     val name: StringI18nData,
     val description: StringI18nData,
     val category: CommandCategory,
-    var alternativeLegacyLabels: List<String>,
+    val alternativeLegacyLabels: List<String>,
     val subcommands: List<SlashCommandDeclaration>
 )
 
@@ -48,6 +50,7 @@ data class UserCommandDeclaration(
     override val category: CommandCategory,
     override val uniqueId: UUID,
     val defaultMemberPermissions: DefaultMemberPermissions?,
+    override val allowUsageEvenIfLorittaBanned: Boolean,
     override val integrationTypes: List<IntegrationType>,
     override val interactionContexts: List<InteractionContextType>,
     val executor: LorittaUserCommandExecutor?
@@ -58,6 +61,7 @@ data class MessageCommandDeclaration(
     override val category: CommandCategory,
     override val uniqueId: UUID,
     val defaultMemberPermissions: DefaultMemberPermissions?,
+    override val allowUsageEvenIfLorittaBanned: Boolean,
     override val integrationTypes: List<IntegrationType>,
     override val interactionContexts: List<InteractionContextType>,
     val executor: LorittaMessageCommandExecutor?

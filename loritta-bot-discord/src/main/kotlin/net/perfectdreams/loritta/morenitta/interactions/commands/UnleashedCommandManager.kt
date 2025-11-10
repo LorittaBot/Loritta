@@ -519,7 +519,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
             }
 
             // Check if user is banned
-            if (AccountUtils.checkAndSendMessageIfUserIsBanned(context.loritta, context, context.user))
+            if (!slashDeclaration.allowUsageEvenIfLorittaBanned && AccountUtils.checkAndSendMessageIfUserIsBanned(context.loritta, context, context.user))
                 return true
 
             // Check if the command is disabled
