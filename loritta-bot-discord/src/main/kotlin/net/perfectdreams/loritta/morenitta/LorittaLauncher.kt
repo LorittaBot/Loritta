@@ -1,8 +1,12 @@
 package net.perfectdreams.loritta.morenitta
 
 import com.sun.management.HotSpotDiagnosticMXBean
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.debug.DebugProbes
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
@@ -124,45 +128,63 @@ object LorittaLauncher {
 		val gatewayExtras = mutableMapOf<Int, GatewayExtrasData>()
 		val cacheDatabases = mutableMapOf<Int, Database>()
 
-		for (shard in lorittaCluster.minShard..lorittaCluster.maxShard) {
-			val shardCacheFolder = File(cacheFolder, shard.toString())
-			shardCacheFolder.mkdirs()
-			val shardCacheDatabaseFile = File(shardCacheFolder, "cache.db")
-			// We want to always create a database, no matter if it exists or not
-			val shardCacheDatabase = Database.connect(
-				"jdbc:sqlite:${shardCacheDatabaseFile.absoluteFile}",
-				driver = "org.sqlite.JDBC"
-			)
+		runBlocking {
+			val deferredShardsData = (lorittaCluster.minShard..lorittaCluster.maxShard).map { shardId ->
+				shardId to async(Dispatchers.IO) {
+					val shardCacheFolder = File(cacheFolder, shardId.toString())
+					shardCacheFolder.mkdirs()
+					val shardCacheDatabaseFile = File(shardCacheFolder, "cache.db")
+					// We want to always create a database, no matter if it exists or not
+					val shardCacheDatabase = Database.connect(
+						"jdbc:sqlite:${shardCacheDatabaseFile.absoluteFile}",
+						driver = "org.sqlite.JDBC"
+					)
 
-			cacheDatabases[shard] = shardCacheDatabase
+					if (shardCacheDatabaseFile.exists()) {
+						// From here on out we query the data and store it
+						val (session, extras) = org.jetbrains.exposed.sql.transactions.transaction(shardCacheDatabase) {
+							val metadata = SessionCacheMetadata.selectAll()
+								.toList()
 
-			if (shardCacheDatabaseFile.exists()) {
-				// From here on out we query the data and store it
-				org.jetbrains.exposed.sql.transactions.transaction(shardCacheDatabase) {
-					val metadata = SessionCacheMetadata.selectAll()
-						.toList()
+							val initialSessionRaw = metadata.firstOrNull { it[SessionCacheMetadata.id].value == DeviousConverter.INITIAL_SESSION_ID }?.get(SessionCacheMetadata.content)
+							val gatewayExtrasRaw = metadata.firstOrNull { it[SessionCacheMetadata.id].value == DeviousConverter.GATEWAY_EXTRAS_ID }?.get(SessionCacheMetadata.content)
 
-					val initialSessionRaw = metadata.firstOrNull { it[SessionCacheMetadata.id].value == DeviousConverter.INITIAL_SESSION_ID }?.get(SessionCacheMetadata.content)
-					val gatewayExtrasRaw = metadata.firstOrNull { it[SessionCacheMetadata.id].value == DeviousConverter.GATEWAY_EXTRAS_ID }?.get(SessionCacheMetadata.content)
+							if (initialSessionRaw != null && gatewayExtrasRaw != null) {
+								logger.info { "Found initial session and gateway extras for shard $shardId!" }
+								return@transaction Pair(
+									Json.decodeFromString<GatewaySessionData>(initialSessionRaw),
+									Json.decodeFromString<GatewayExtrasData>(gatewayExtrasRaw)
+								)
+							} else {
+								logger.warn { "Couldn't find initial session and gateway extras for $shardId! Skipping..." }
+								return@transaction Pair(null, null)
+							}
+						}
 
-					if (initialSessionRaw != null && gatewayExtrasRaw != null) {
-						logger.info { "Found initial session and gateway extras for shard $shard!" }
-						initialSessions[shard] = Json.decodeFromString<GatewaySessionData>(initialSessionRaw)
-						gatewayExtras[shard] = Json.decodeFromString<GatewayExtrasData>(gatewayExtrasRaw)
+						return@async Triple(shardCacheDatabase, session, extras)
 					} else {
-						logger.warn { "Couldn't find initial session and gateway extras for $shard! Skipping..." }
+						org.jetbrains.exposed.sql.transactions.transaction(shardCacheDatabase) {
+							// If the file does NOT exist, we'll create tables and columns on it
+							// We could create it directly when shutting down, but this call is a bit "hefty" (taking ~30ms even if the tables are already created)
+							SchemaUtils.createMissingTablesAndColumns(
+								CachedGuilds,
+								SessionCacheMetadata
+							)
+						}
+
+						return@async Triple(shardCacheDatabase, null, null)
 					}
 				}
-			} else {
-                org.jetbrains.exposed.sql.transactions.transaction(shardCacheDatabase) {
-                    // If the file does NOT exist, we'll create tables and columns on it
-                    // We could create it directly when shutting down, but this call is a bit "hefty" (taking ~30ms even if the tables are already created)
-                    SchemaUtils.createMissingTablesAndColumns(
-                        CachedGuilds,
-                        SessionCacheMetadata
-                    )
-                }
-            }
+			}
+
+			for ((shardId, deferredShardData) in deferredShardsData) {
+				val (database, session, extras) = deferredShardData.await()
+				cacheDatabases[shardId] = database
+				if (session != null)
+					initialSessions[shardId] = session
+				if (extras != null)
+					gatewayExtras[shardId] = extras
+			}
 		}
 
 		// Iniciar instância da Loritta
