@@ -23,9 +23,6 @@ class BucketedController(val loritta: LorittaBot, @Nonnegative bucketFactor: Int
 	}
 
 	private val shardControllers: Array<SessionController?>
-	private val rateLimits = mutableListOf<RateLimitHit>()
-	private val rateLimitListMutex = Mutex()
-	private var lastTooManyRequestsCheck = -1L
 	val parallelLoginsSemaphore = Semaphore(maxParallelLogins)
 
 	init {
@@ -48,9 +45,4 @@ class BucketedController(val loritta: LorittaBot, @Nonnegative bucketFactor: Int
 	private fun controllerFor(node: SessionConnectNode): SessionController? {
 		return shardControllers[node.shardInfo.shardId % shardControllers.size]
 	}
-
-	private data class RateLimitHit(
-		val wait: Long,
-		val hitAt: Long
-	)
 }
