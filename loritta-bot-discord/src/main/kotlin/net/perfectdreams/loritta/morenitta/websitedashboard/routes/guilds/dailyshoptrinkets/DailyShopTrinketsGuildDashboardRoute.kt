@@ -200,7 +200,7 @@ class DailyShopTrinketsGuildDashboardRoute(website: LorittaDashboardWebServer) :
 
                                                 channelSelectMenu(
                                                     guild,
-                                                    databaseConfig?.get(LorittaDailyShopNotificationsConfigs.shopTrinketsChannelId),
+                                                    databaseConfig?.get(LorittaDailyShopNotificationsConfigs.newTrinketsChannelId),
                                                 ) {
                                                     attributes["loritta-config"] = "newTrinketsChannelId"
                                                     name = "newTrinketsChannelId"
