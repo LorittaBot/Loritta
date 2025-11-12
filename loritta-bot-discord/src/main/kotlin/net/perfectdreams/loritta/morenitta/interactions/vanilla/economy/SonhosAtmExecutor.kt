@@ -10,11 +10,14 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.double
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.common.utils.GACampaigns
 import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -22,6 +25,7 @@ import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
+import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import java.util.*
 
 class SonhosAtmExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
@@ -156,6 +160,14 @@ class SonhosAtmExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor()
                     val extendedSonhosInfo = extendedSonhosInfo
                     if (extendedSonhosInfo != null)
                         addExtendedSonhosInfoEmbed(extendedSonhosInfo)
+
+                    actionRow(
+                        Button.of(
+                            ButtonStyle.LINK,
+                            GACampaigns.sonhosBundlesUpsellUrl(loritta.config.loritta.dashboard.url.removeSuffix("/"), "discord", "button", "sonhos-bundles-upsell", "sonhos-atm"),
+                            context.i18nContext.get(I18nKeysData.Website.Dashboard.SonhosShop.Title)
+                        ).withEmoji(Emotes.Sonhos3.toJDA())
+                    )
                 }
 
                 if (context is ApplicationCommandContext) {
