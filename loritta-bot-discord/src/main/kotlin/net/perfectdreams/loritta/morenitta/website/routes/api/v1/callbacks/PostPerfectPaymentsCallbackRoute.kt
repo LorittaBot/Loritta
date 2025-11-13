@@ -247,7 +247,7 @@ class PostPerfectPaymentsCallbackRoute(val loritta: LorittaBot) : BaseRoute("/ap
 						)
 					}
 
-					sendPaymentApprovedDirectMessage(loritta, internalPayment.userId, loritta.localeManager.getLocaleById("default"), "${loritta.config.loritta.website.url}support")
+					sendPaymentApprovedDirectMessage(loritta, internalPayment.userId, loritta.localeManager.getLocaleById("default"), "${loritta.config.loritta.website.url}/br/support")
 
 					call.respondJson(jsonObject())
 					return
