@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.morenitta.listeners
 import com.github.benmanes.caffeine.cache.Caffeine
 import dev.minn.jda.ktx.messages.MessageCreate
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -54,7 +55,6 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.update
-import org.slf4j.LoggerFactory
 import java.util.concurrent.TimeUnit
 import kotlin.collections.set
 
@@ -64,9 +64,17 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 		// https://cdn.discordapp.com/attachments/681830234168754226/716341063912128636/unknown.png
 		private const val MEMBER_COUNTER_COOLDOWN = 300_000L // 5 minutes in ms
 
+		// We're using this mutex to avoid possible race conditions
+		val jobMutex = Mutex()
+
 		val memberCounterLastUpdate = Caffeine.newBuilder()
 			.expireAfterWrite(15L, TimeUnit.MINUTES)
 			.build<Long, Long>()
+			.asMap()
+
+		val memberCounterPendingJobs = Caffeine.newBuilder()
+			.expireAfterWrite(3, TimeUnit.MINUTES)
+			.build<Long, Job>()
 			.asMap()
 
 		/**
@@ -104,48 +112,39 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 				}
 		}
 
-		private suspend fun queueTextChannelTopicUpdate(loritta: LorittaBot, guild: Guild, serverConfig: ServerConfig, textChannel: TextChannel) {
-			if (!guild.selfMember.hasPermission(textChannel, Permission.MANAGE_CHANNEL))
-				return
+		private suspend fun queueTextChannelTopicUpdate(
+			loritta: LorittaBot,
+			guild: Guild,
+			serverConfig: ServerConfig,
+			textChannel: TextChannel
+		) {
+			jobMutex.withLock {
+				if (!guild.selfMember.hasPermission(textChannel, Permission.MANAGE_CHANNEL))
+					return
 
-			val memberCountConfig = loritta.newSuspendedTransaction {
-				MemberCounterChannelConfig.find {
-					MemberCounterChannelConfigs.channelId eq textChannel.idLong
-				}.firstOrNull()
-			} ?: return
+				val memberCountConfig = loritta.newSuspendedTransaction {
+					MemberCounterChannelConfig.find {
+						MemberCounterChannelConfigs.channelId eq textChannel.idLong
+					}.firstOrNull()
+				} ?: return
 
-			val memberCounterPendingForUpdateMutex = memberCounterExecutingUpdatesMutexes.getOrPut(textChannel.idLong) { Mutex() }
-			val memberCounterExecutingUpdateMutex = memberCounterExecutingUpdatesMutexes.getOrPut(textChannel.idLong) { Mutex() }
+				memberCounterPendingJobs[textChannel.idLong]?.cancel()
 
-			if (memberCounterPendingForUpdateMutex.isLocked) {
-				// If the "memberCounterPendingForUpdateMutex" is locked, then it means that we already have a job waiting for the counter to be updated!
-				// So we are going to return, the counter will be updated later when the mutex is unlocked so... whatever.
-				logger.info { "Text channel $textChannel topic already has a pending update for guild $guild, cancelling..." }
-				return
-			}
+				val job = GlobalScope.launch(loritta.coroutineDispatcher) {
+					val pendingMutex = memberCounterExecutingUpdatesMutexes
+						.getOrPut(textChannel.idLong) { Mutex() }
 
-			val diff = System.currentTimeMillis() - (memberCounterLastUpdate[textChannel.idLong] ?: 0)
+					val diff = System.currentTimeMillis() - (memberCounterLastUpdate[textChannel.idLong] ?: 0)
 
-			if (memberCounterExecutingUpdateMutex.isLocked) {
-				// If the "memberCounterExecutingUpdateMutex" is locked, then it means that the counter is still updating!
-				// We will wait until it is finished and then continue.
-				logger.info { "Text channel $textChannel topic already has a pending execute for guild $guild, waiting until the update is executed to continue..." }
-
-				// Double locc time
-				memberCounterPendingForUpdateMutex.withLock {
-					memberCounterExecutingUpdateMutex.withLock {
+					pendingMutex.withLock {
 						delayForTextChannelUpdateCooldown(textChannel, diff)
-
 						updateTextChannelTopic(loritta, guild, serverConfig, textChannel, memberCountConfig)
 					}
 				}
-				return
-			}
 
-			memberCounterExecutingUpdateMutex.withLock {
-				delayForTextChannelUpdateCooldown(textChannel, diff)
+				memberCounterPendingJobs[textChannel.idLong] = job
 
-				updateTextChannelTopic(loritta, guild, serverConfig, textChannel, memberCountConfig)
+				job.invokeOnCompletion { memberCounterPendingJobs.remove(textChannel.idLong, job) }
 			}
 		}
 
