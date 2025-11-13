@@ -24,6 +24,7 @@ import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
+import net.perfectdreams.loritta.morenitta.interactions.retrieveMemberCount
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.getLocalizedName
@@ -332,6 +333,11 @@ class ServerCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                         value = timeCreated
 
                         inline = true
+                    }
+
+                    field {
+                        name = "${Emotes.BustsInSilhouette} " + context.i18nContext.get(I18N_PREFIX.Role.Info.Members)
+                        value = "${role.retrieveMemberCount()}"
                     }
 
                     // We don't include the member count because that's the cached member count, not the real member count
