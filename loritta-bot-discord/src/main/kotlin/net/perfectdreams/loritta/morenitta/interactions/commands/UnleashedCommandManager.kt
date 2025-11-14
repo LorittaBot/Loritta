@@ -615,6 +615,13 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                 if (!loritta.discordSlashCommandScopeWorkaround.checkIfSlashCommandScopeIsEnabled(guild, context.member)) {
                     context.reply(false, loritta.discordSlashCommandScopeWorkaround.unauthMessage(context.guild, context.member))
                 }
+
+                // Delete the author message after the command
+                if (!event.isFromType(ChannelType.PRIVATE)) {
+                    if (guild.selfMember.hasPermission(event.channel as GuildChannel, Permission.MESSAGE_MANAGE) && (serverConfig.deleteMessageAfterCommand)) {
+                        event.message.guildChannel.deleteMessageById(event.messageId).queue()
+                    }
+                }
             }
 
             loritta.transaction {
