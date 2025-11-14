@@ -63,10 +63,10 @@ class StaffView(
                     socialNetworks.add(TwitterSocialNetwork("srtabread"))
                 }
 
-                user("hechfx") {
-                    socialNetworks.add(DiscordSocialNetwork(236167700777271297L))
+                user("o victor") {
+                    socialNetworks.add(DiscordSocialNetwork(670071034074103854L))
                     socialNetworks.add(TwitterSocialNetwork("brviictoor"))
-                    socialNetworks.add(GitHubSocialNetwork("hechfx"))
+                    socialNetworks.add(GitHubSocialNetwork("brviictoor"))
                     socialNetworks.add(LastFmSocialNetwork("brviictoor"))
                 }
 
