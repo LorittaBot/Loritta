@@ -113,7 +113,7 @@ class LorittaDashboardBackend(val config: LorittaDashboardBackendConfig) {
             ContentType.parse(it)
         }
 
-        if (acceptHeader?.match(ContentType.Text.EventStream) == true) {
+        if (acceptHeader?.match(ContentType.Text.EventStream) == true && System.getProperty("lorittadashboardproxy.enableSSEProxy", "true").toBooleanStrict()) {
             logger.info { "Requesting $method $host$pathWithoutSlashPrefix (SSE)..." }
             // SSE is a bit trickier!
             // But because SSE are my beloved, we *need* to support them :3
