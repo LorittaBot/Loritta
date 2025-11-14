@@ -1,12 +1,10 @@
 package net.perfectdreams.loritta.morenitta.websitedashboard.routes.dailyshop
 
-import io.ktor.http.CacheControl
-import io.ktor.http.ContentType
-import io.ktor.server.application.ApplicationCall
-import io.ktor.server.response.cacheControl
-import io.ktor.server.response.header
-import io.ktor.server.response.respondBytesWriter
+import io.ktor.http.*
+import io.ktor.server.application.*
+import io.ktor.server.response.*
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.html.body
 import kotlinx.html.stream.createHTML
 import kotlinx.serialization.json.Json
@@ -16,7 +14,6 @@ import net.perfectdreams.bliss.SSECustomEvent
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.dashboard.EmbeddedToast
-import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.SseEvent
 import net.perfectdreams.loritta.morenitta.utils.extensions.writeSseEvent
@@ -26,6 +23,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.dailyShop
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresUserAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
 import net.perfectdreams.loritta.serializable.ColorTheme
+import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 
 class SSEDailyShopTimerUserDashboardRoute(website: LorittaDashboardWebServer) : RequiresUserAuthDashboardLocalizedRoute(website, "/daily-shop/timer") {
     override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
@@ -43,7 +41,22 @@ class SSEDailyShopTimerUserDashboardRoute(website: LorittaDashboardWebServer) : 
         var lastGeneratedText: String? = null
 
         call.respondBytesWriter(contentType = ContentType.Text.EventStream) {
-            while (true) {
+            call.launch {
+                while (!isClosedForWrite) {
+                    // We need to send a heartbeat event every once in a while to avoid the connection getting stuck in "open" state!
+                    // Because the proxy only knows that it has been closed if sending an event fails.
+                    writeSseEvent(
+                        SseEvent(
+                            data = System.currentTimeMillis().toString(),
+                            event = "heartbeat"
+                        )
+                    )
+
+                    delay(15_000)
+                }
+            }
+
+            while (!isClosedForWrite) {
                 val currentDailyShopGeneratedAt = website.loritta.transaction {
                     DashboardDailyShopUtils.queryCurrentDailyShopGeneratedAt()
                 }
