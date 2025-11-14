@@ -21,7 +21,12 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.DiscordLoginU
 import org.json.XML
 import java.io.File
 import java.net.InetAddress
+import java.util.EnumSet
 import kotlin.time.Duration.Companion.seconds
+
+inline fun <reified T : Enum<T>> enumSetOf(vararg elements: T): EnumSet<T> =
+	if (elements.isNotEmpty()) EnumSet.of(elements[0], *elements.drop(1).toTypedArray())
+	else EnumSet.noneOf(T::class.java)
 
 object MiscUtils {
 	private val logger by HarmonyLoggerFactory.logger {}

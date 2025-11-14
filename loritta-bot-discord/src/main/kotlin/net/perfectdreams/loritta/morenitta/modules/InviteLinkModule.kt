@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.entities.Message
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.common.locale.BaseLocale
@@ -24,6 +25,7 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
 import java.net.URLDecoder
+import java.util.EnumSet
 import java.util.concurrent.TimeUnit
 import java.util.regex.Matcher
 
@@ -166,6 +168,8 @@ class InviteLinkModule(val loritta: LorittaBot) : MessageReceivedModule {
 								).await()
 
 								context.reply(true) {
+									allowedMentionTypes = enumSetOf(Message.MentionType.USER)
+
 									if (success) {
 										styled(
 											context.i18nContext.get(I18nKeysData.Modules.InviteBlocker.BypassEnabled("<@&${topRole.idLong}>")),
@@ -182,7 +186,7 @@ class InviteLinkModule(val loritta: LorittaBot) : MessageReceivedModule {
 
 							message.guildChannel.sendMessageAsync(
 								MessageCreate {
-									mentions {}
+									allowedMentionTypes = enumSetOf(Message.MentionType.USER)
 
 									styled(
 										i18nContext.get(I18nKeysData.Modules.InviteBlocker.ActivateInviteBlockerBypass("<@&${topRole.id}>")),
