@@ -35,6 +35,7 @@ class SonhosCommand(private val loritta: LorittaBot) : SlashCommandDeclarationWr
             this.alternativeLegacyAbsoluteCommandPaths.apply {
                 add("pay")
                 add("pagar")
+                add("pix")
             }
             executor = SonhosPayExecutor(loritta)
         }
