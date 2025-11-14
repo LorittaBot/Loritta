@@ -79,7 +79,7 @@ class PostRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRout
 					}
 				}
 
-				val requiredCount = quantity.toLong() * RaffleType.ORIGINAL.ticketPrice
+				val requiredCount = quantity.toLong() * type.ticketPrice
 				logger.info { "$userId irá comprar $quantity tickets por ${requiredCount}!" }
 
 				val lorittaProfile = loritta.getOrCreateLorittaProfile(userId)
