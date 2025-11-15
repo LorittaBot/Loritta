@@ -4,6 +4,7 @@ import io.ktor.client.*
 import io.ktor.client.engine.java.Java
 import io.ktor.client.plugins.sse.SSE
 import io.ktor.client.plugins.sse.sse
+import io.ktor.client.plugins.sse.sseSession
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -14,9 +15,18 @@ import io.ktor.server.netty.Netty
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.sse.ServerSentEvent
+import io.ktor.util.cio.ChannelWriteException
+import io.ktor.utils.io.writeStringUtf8
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.future.await
+import kotlinx.coroutines.stream.consumeAsFlow
 import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.dashboard.backend.configs.LorittaDashboardBackendConfig
 import net.perfectdreams.loritta.dashboard.backend.utils.writeSseEvent
+import java.net.http.HttpResponse
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.toJavaDuration
 
 class LorittaDashboardBackend(val config: LorittaDashboardBackendConfig) {
     companion object {
@@ -59,9 +69,13 @@ class LorittaDashboardBackend(val config: LorittaDashboardBackendConfig) {
     val http = HttpClient(Java) {
         this.expectSuccess = false
         this.followRedirects = false
-
-        install(SSE)
     }
+
+    val httpClient = java.net.http.HttpClient
+        .newBuilder()
+        .version(java.net.http.HttpClient.Version.HTTP_1_1)
+        .connectTimeout(10.seconds.toJavaDuration())
+        .build()
 
     fun start() {
         val server = embeddedServer(Netty, port = 8080) {
@@ -117,9 +131,12 @@ class LorittaDashboardBackend(val config: LorittaDashboardBackendConfig) {
             logger.info { "Requesting $method $host$pathWithoutSlashPrefix (SSE)..." }
             // SSE is a bit trickier!
             // But because SSE are my beloved, we *need* to support them :3
-            http.sse(
-                "$host$pathWithoutSlashPrefix",
-                {
+            // We use Java's HttpClient directly because Ktor's SSE plugin has a bug where connections are NOT closed when using the Java engine
+            // See https://youtrack.jetbrains.com/issue/KTOR-9102/SSE-Closing-the-SSE-Session-does-not-close-the-underlying-connection-when-using-the-Java-client
+            val request = java.net.http.HttpRequest.newBuilder(java.net.URI("$host$pathWithoutSlashPrefix"))
+                .header("Accept", "text/event-stream")
+                .header("Cache-Control", "no-cache")
+                .apply {
                     header("Dashboard-Proxy", "true")
                     header("X-Forwarded-Host", call.request.header("X-Forwarded-Host") ?: call.request.header("Host"))
                     header("X-Forwarded-Proto", call.request.header("X-Forwarded-Proto") ?: "http")
@@ -143,8 +160,14 @@ class LorittaDashboardBackend(val config: LorittaDashboardBackendConfig) {
                         }
                     }
                 }
-            ) {
-                for (header in this.call.response.headers.entries()) {
+                .GET()
+                .build()
+
+            val httpResponse = httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofLines()).await()
+            val httpBody = httpResponse.body()
+
+            try {
+                for (header in httpResponse.headers().map()) {
                     if (header.key.lowercase() in ALLOWED_RESPONSE_HEADERS) {
                         for (value in header.value) {
                             var _value = value
@@ -162,11 +185,15 @@ class LorittaDashboardBackend(val config: LorittaDashboardBackendConfig) {
                 }
 
                 call.respondBytesWriter(contentType = ContentType.Text.EventStream) {
-                    this@sse.incoming.collect {
-                        writeSseEvent(it)
-                        flush()
-                    }
+                    httpBody.consumeAsFlow()
+                        .collect {
+                            writeStringUtf8("$it\n")
+                            flush()
+                        }
                 }
+            } finally {
+                logger.info { "SSE connection has closed! Closing upstream connection..." }
+                httpResponse.body().close()
             }
         } else {
             logger.info { "Requesting $method $host$pathWithoutSlashPrefix..." }

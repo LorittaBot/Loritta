@@ -51,7 +51,7 @@ class SSEDailyShopTimerUserDashboardRoute(website: LorittaDashboardWebServer) : 
                             event = "heartbeat"
                         )
                     )
-
+                    flush()
                     delay(15_000)
                 }
             }

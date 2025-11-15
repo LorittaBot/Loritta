@@ -5,8 +5,8 @@ plugins {
 }
 
 dependencies {
-    implementation("io.ktor:ktor-server-netty:3.3.1")
-    implementation("io.ktor:ktor-client-java:3.3.1")
+    implementation(libs.ktor.server.netty)
+    implementation(libs.ktor.client.java)
 
     // Logging
     implementation("net.perfectdreams.harmony.logging:harmonylogging-slf4j:1.0.2")
