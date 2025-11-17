@@ -67,6 +67,17 @@ types:
     lostTaxed: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (valor após taxado: {quantityAfterTax}) para o {emojiFightEmoji} de {winnerUserPreview} em uma apostas de sonhos em rinha de emojis"
     won: "Recebeu {quantityAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (sem taxa!) de {userInEmojiFight,plural, =0 {# usuários} one {# usuário} other {# usuários}} em uma rinha de emoji pois todos temeram o poderoso {emojiFightEmoji}"
     lost: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (sem taxa!) para o {emojiFightEmoji} de {winnerUserPreview} em uma apostas de sonhos em rinha de emojis"
+  blackjack:
+    title: "Apostas no Blackjack"
+    description: "Transações relacionadas a apostas no Blackjack"
+    payout: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} por ter ganhado na partida #{matchId} de Blackjack"
+    tied: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} por ter empatado na partida #{matchId} de Blackjack"
+    split: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para fazer split na partida #{matchId} de Blackjack"
+    joined: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para entrar na partida #{matchId} de Blackjack"
+    insurance: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para comprar o seguro na partida #{matchId} de Blackjack"
+    insurancePayout: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} do seguro na partida #{matchId} de Blackjack"
+    doubleDown: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para dobrar a aposta na partida #{matchId} de Blackjack"
+    refunded: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} como reembolso na partida #{matchId} de Blackjack pois a Loritta reiniciou durante a partida"
   shipEffect:
     title: "Subornos de Ship"
     description: "Transações relacionadas com subornos ao oráculo do amor"

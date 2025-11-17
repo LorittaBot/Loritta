@@ -243,103 +243,113 @@ class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandE
 
             description = buildString {
                 for (transaction in transactions) {
-                    val stringBuilderBlock = when (transaction) {
+                    val transformer = when (transaction) {
                         // ===[ PAYMENTS ]===
-                        is PaymentSonhosTransaction -> PaymentSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is PaymentSonhosTransaction -> PaymentSonhosTransactionTransformer
 
                         // ===[ PAYMENTS (THIRD PARTY / DEPRECATED) ]===
-                        is APIInitiatedPaymentSonhosTransaction -> APIInitiatedPaymentSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is APIInitiatedPaymentSonhosTransaction -> APIInitiatedPaymentSonhosTransactionTransformer
 
                         // ===[ PAYMENTS (THIRD PARTY) ]===
-                        is ThirdPartyPaymentSonhosTransaction -> ThirdPartyPaymentSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is ThirdPartyPaymentSonhosTransaction -> ThirdPartyPaymentSonhosTransactionTransformer
 
                         // ===[ DAILY REWARD ]===
-                        is DailyRewardSonhosTransaction -> DailyRewardSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is DailyRewardSonhosTransaction -> DailyRewardSonhosTransactionTransformer
 
                         // ===[ BROKER ]===
-                        is BrokerSonhosTransaction -> BrokerSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is BrokerSonhosTransaction -> BrokerSonhosTransactionTransformer
 
                         // ===[ COIN FLIP BET ]===
-                        is CoinFlipBetSonhosTransaction -> CoinFlipBetSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is CoinFlipBetSonhosTransaction -> CoinFlipBetSonhosTransactionTransformer
 
                         // ===[ COIN FLIP BET GLOBAL ]===
-                        is CoinFlipBetGlobalSonhosTransaction -> CoinFlipBetGlobalSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is CoinFlipBetGlobalSonhosTransaction -> CoinFlipBetGlobalSonhosTransactionTransformer
 
                         // ===[ EMOJI FIGHT BET ]===
-                        is EmojiFightBetSonhosTransaction -> EmojiFightBetSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is EmojiFightBetSonhosTransaction -> EmojiFightBetSonhosTransactionTransformer
 
                         // ===[ RAFFLE ]===
-                        is RaffleRewardSonhosTransaction -> RaffleRewardSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
-                        is RaffleTicketsSonhosTransaction -> RaffleTicketsSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is RaffleRewardSonhosTransaction -> RaffleRewardSonhosTransactionTransformer
+                        is RaffleTicketsSonhosTransaction -> RaffleTicketsSonhosTransactionTransformer
 
                         // ===[ SPARKLYPOWER LSX ]===
-                        is SparklyPowerLSXSonhosTransaction -> SparklyPowerLSXSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is SparklyPowerLSXSonhosTransaction -> SparklyPowerLSXSonhosTransactionTransformer
 
                         // ===[ SONHOS BUNDLES ]===
-                        is SonhosBundlePurchaseSonhosTransaction -> SonhosBundlePurchaseSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
-                        is ChargebackedSonhosBundleTransaction -> ChargebackedSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is SonhosBundlePurchaseSonhosTransaction -> SonhosBundlePurchaseSonhosTransactionTransformer
+                        is ChargebackedSonhosBundleTransaction -> ChargebackedSonhosTransactionTransformer
 
                         // ===[ DAILY TAX ]===
-                        is DailyTaxSonhosTransaction -> DailyTaxSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is DailyTaxSonhosTransaction -> DailyTaxSonhosTransactionTransformer
 
                         // ===[ DIVINE INTERVENTION ]===
-                        is DivineInterventionSonhosTransaction -> DivineInterventionSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is DivineInterventionSonhosTransaction -> DivineInterventionSonhosTransactionTransformer
 
                         // ===[ BOT VOTE ]===
-                        is BotVoteSonhosTransaction -> BotVoteTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is BotVoteSonhosTransaction -> BotVoteTransactionTransformer
 
                         // ===[ SHIP EFFECT ]===
-                        is ShipEffectSonhosTransaction -> ShipEffectSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is ShipEffectSonhosTransaction -> ShipEffectSonhosTransactionTransformer
 
                         // ===[ CHRISTMAS 2022 ]===
-                        is Christmas2022SonhosTransaction -> Christmas2022SonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is Christmas2022SonhosTransaction -> Christmas2022SonhosTransactionTransformer
 
                         // ===[ EASTER 2023 ]===
-                        is Easter2023SonhosTransaction -> Easter2023SonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is Easter2023SonhosTransaction -> Easter2023SonhosTransactionTransformer
 
                         // ===[ REACTION EVENTS ]===
-                        is ReactionEventSonhosTransaction -> ReactionEventSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is ReactionEventSonhosTransaction -> ReactionEventSonhosTransactionTransformer
 
                         // ===[ POWERSTREAM ]===
-                        is PowerStreamClaimedFirstSonhosRewardSonhosTransaction -> PowerStreamClaimedFirstSonhosRewardTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
-                        is PowerStreamClaimedLimitedTimeSonhosRewardSonhosTransaction -> PowerStreamClaimedLimitedTimeSonhosRewardSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is PowerStreamClaimedFirstSonhosRewardSonhosTransaction -> PowerStreamClaimedFirstSonhosRewardTransactionTransformer
+                        is PowerStreamClaimedLimitedTimeSonhosRewardSonhosTransaction -> PowerStreamClaimedLimitedTimeSonhosRewardSonhosTransactionTransformer
 
                         // ===[ LORI COOL CARDS ]===
-                        is LoriCoolCardsBoughtBoosterPackSonhosTransaction -> LoriCoolCardsBoughtBoosterPackSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
-                        is LoriCoolCardsFinishedAlbumSonhosTransaction -> LoriCoolCardsFinishedAlbumSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
-                        is LoriCoolCardsPaymentSonhosTradeTransaction -> LoriCoolCardsPaymentSonhosTradeTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is LoriCoolCardsBoughtBoosterPackSonhosTransaction -> LoriCoolCardsBoughtBoosterPackSonhosTransactionTransformer
+                        is LoriCoolCardsFinishedAlbumSonhosTransaction -> LoriCoolCardsFinishedAlbumSonhosTransactionTransformer
+                        is LoriCoolCardsPaymentSonhosTradeTransaction -> LoriCoolCardsPaymentSonhosTradeTransactionTransformer
 
                         // ===[ LORITTA ITEM SHOP ]===
-                        is LorittaItemShopBoughtBackgroundTransaction -> LorittaItemShopBoughtBackgroundSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
-                        is LorittaItemShopBoughtProfileDesignTransaction -> LorittaItemShopBoughtProfileDesignSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
-                        is LorittaItemShopComissionBackgroundTransaction -> LorittaItemShopComissionBackgroundSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
-                        is LorittaItemShopComissionProfileDesignTransaction -> LorittaItemShopComissionProfileDesignSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is LorittaItemShopBoughtBackgroundTransaction -> LorittaItemShopBoughtBackgroundSonhosTransactionTransformer
+                        is LorittaItemShopBoughtProfileDesignTransaction -> LorittaItemShopBoughtProfileDesignSonhosTransactionTransformer
+                        is LorittaItemShopComissionBackgroundTransaction -> LorittaItemShopComissionBackgroundSonhosTransactionTransformer
+                        is LorittaItemShopComissionProfileDesignTransaction -> LorittaItemShopComissionProfileDesignSonhosTransactionTransformer
 
                         // ===[ BOM DIA & CIA ]===
-                        is BomDiaECiaCallCalledTransaction -> BomDiaECiaCallCalledSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
-                        is BomDiaECiaCallWonTransaction -> BomDiaECiaCallWonSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is BomDiaECiaCallCalledTransaction -> BomDiaECiaCallCalledSonhosTransactionTransformer
+                        is BomDiaECiaCallWonTransaction -> BomDiaECiaCallWonSonhosTransactionTransformer
 
                         // ===[ GARTICBOT ]===
-                        is GarticosTransferTransaction -> GarticosTransferSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is GarticosTransferTransaction -> GarticosTransferSonhosTransactionTransformer
 
                         // ===[ MARRIAGE ]===
-                        is MarriageMarryTransaction -> MarriageMarrySonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
-                        is MarriageRestoreTransaction -> MarriageRestoreSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
-                        is MarriageRestoreAutomaticTransaction -> MarriageRestoreAutomaticSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
-                        is MarriageLoveLetterTransaction -> MarriageLoveLetterTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is MarriageMarryTransaction -> MarriageMarrySonhosTransactionTransformer
+                        is MarriageRestoreTransaction -> MarriageRestoreSonhosTransactionTransformer
+                        is MarriageRestoreAutomaticTransaction -> MarriageRestoreAutomaticSonhosTransactionTransformer
+                        is MarriageLoveLetterTransaction -> MarriageLoveLetterTransactionTransformer
 
-                        is VacationModeLeaveTransaction -> VacationModeLeaveSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is VacationModeLeaveTransaction -> VacationModeLeaveSonhosTransactionTransformer
 
                         // ===[ REPUTATION DELETE ]===
-                        is ReputationDeletedTransaction -> ReputationDeleteTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is ReputationDeletedTransaction -> ReputationDeleteTransactionTransformer
+
+                        // ===[ BLACKJACK ]===
+                        is BlackjackJoinedTransaction -> SimpleSonhosTransactionTransformers.BlackjackJoinedTransactionTransformer
+                        is BlackjackSplitTransaction -> SimpleSonhosTransactionTransformers.BlackjackSplitTransactionTransformer
+                        is BlackjackPayoutTransaction -> SimpleSonhosTransactionTransformers.BlackjackPayoutTransactionTransformer
+                        is BlackjackTiedTransaction -> SimpleSonhosTransactionTransformers.BlackjackTiedTransactionTransformer
+                        is BlackjackInsuranceTransaction -> SimpleSonhosTransactionTransformers.BlackjackInsuranceTransactionTransformer
+                        is BlackjackInsurancePayoutTransaction -> SimpleSonhosTransactionTransformers.BlackjackInsurancePayoutTransactionTransformer
+                        is BlackjackDoubleDownTransaction -> SimpleSonhosTransactionTransformers.BlackjackDoubleDownTransactionTransformer
+                        is BlackjackRefundTransaction -> SimpleSonhosTransactionTransformers.BlackjackRefundTransactionTransformer
 
                         // This should never happen because we do a left join with a "isNotNull" check
-                        is UnknownSonhosTransaction -> UnknownSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is UnknownSonhosTransaction -> UnknownSonhosTransactionTransformer
                     }
 
                     append("[<t:${transaction.timestamp.epochSeconds}:d> <t:${transaction.timestamp.epochSeconds}:t> | <t:${transaction.timestamp.epochSeconds}:R>]")
                     append(" ")
-                    stringBuilderBlock()
+                    transformer.transformGeneric(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction).invoke(this)
                     append("\n")
                 }
             }

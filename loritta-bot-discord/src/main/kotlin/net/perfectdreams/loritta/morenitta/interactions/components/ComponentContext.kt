@@ -151,10 +151,16 @@ class ComponentContext(
                 loritta.interactivityManager.selectMenuInteractionCallbacks.remove(componentId.uniqueId)
             }
             Component.Type.TEXT_INPUT -> TODO()
-            Component.Type.USER_SELECT -> TODO()
-            Component.Type.ROLE_SELECT -> TODO()
+            Component.Type.USER_SELECT -> {
+                loritta.interactivityManager.selectMenuInteractionCallbacks.remove(componentId.uniqueId)
+            }
+            Component.Type.ROLE_SELECT -> {
+                loritta.interactivityManager.selectMenuInteractionCallbacks.remove(componentId.uniqueId)
+            }
             Component.Type.MENTIONABLE_SELECT -> TODO()
-            Component.Type.CHANNEL_SELECT -> TODO()
+            Component.Type.CHANNEL_SELECT -> {
+                loritta.interactivityManager.selectMenuInteractionCallbacks.remove(componentId.uniqueId)
+            }
             Component.Type.SECTION -> TODO()
             Component.Type.TEXT_DISPLAY -> TODO()
             Component.Type.THUMBNAIL -> TODO()

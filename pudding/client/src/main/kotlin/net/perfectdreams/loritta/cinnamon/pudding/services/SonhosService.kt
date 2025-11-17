@@ -352,6 +352,22 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
 
                         is StoredReputationDeletedTransaction -> createUsingReflection(ReputationDeletedTransaction::class, stored.reputationId)
 
+                        is StoredBlackjackPayoutTransaction -> createUsingReflection(BlackjackPayoutTransaction::class, stored.matchId)
+
+                        is StoredBlackjackTiedTransaction -> createUsingReflection(BlackjackTiedTransaction::class, stored.matchId)
+
+                        is StoredBlackjackJoinedTransaction -> createUsingReflection(BlackjackJoinedTransaction::class, stored.matchId)
+
+                        is StoredBlackjackSplitTransaction -> createUsingReflection(BlackjackSplitTransaction::class, stored.matchId)
+
+                        is StoredBlackjackInsuranceTransaction -> createUsingReflection(BlackjackInsuranceTransaction::class, stored.matchId)
+
+                        is StoredBlackjackInsurancePayoutTransaction -> createUsingReflection(BlackjackInsurancePayoutTransaction::class, stored.matchId)
+
+                        is StoredBlackjackDoubleDownTransaction -> createUsingReflection(BlackjackDoubleDownTransaction::class, stored.matchId)
+
+                        is StoredBlackjackRefundTransaction -> createUsingReflection(BlackjackRefundTransaction::class, stored.matchId)
+
                         is StoredEmojiFightBetSonhosTransaction -> {
                             val emojiFightMatchmakingResult = emojiFightMatchmakingResults.first { it[EmojiFightMatchmakingResults.id].value == stored.emojiFightMatchmakingResultsId }
 

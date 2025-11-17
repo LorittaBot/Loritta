@@ -432,3 +432,83 @@ data class ReputationDeletedTransaction(
     val sonhos: Long,
     val reputationId: Long
 ) : SonhosTransaction()
+
+@Serializable
+data class BlackjackPayoutTransaction(
+    override val id: Long,
+    override val transactionType: TransactionType,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val sonhos: Long,
+    val matchId: Long
+) : SonhosTransaction()
+
+@Serializable
+data class BlackjackTiedTransaction(
+    override val id: Long,
+    override val transactionType: TransactionType,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val sonhos: Long,
+    val matchId: Long
+) : SonhosTransaction()
+
+@Serializable
+data class BlackjackJoinedTransaction(
+    override val id: Long,
+    override val transactionType: TransactionType,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val sonhos: Long,
+    val matchId: Long
+) : SonhosTransaction()
+
+@Serializable
+data class BlackjackSplitTransaction(
+    override val id: Long,
+    override val transactionType: TransactionType,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val sonhos: Long,
+    val matchId: Long
+) : SonhosTransaction()
+
+@Serializable
+data class BlackjackInsuranceTransaction(
+    override val id: Long,
+    override val transactionType: TransactionType,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val sonhos: Long,
+    val matchId: Long
+) : SonhosTransaction()
+
+@Serializable
+data class BlackjackInsurancePayoutTransaction(
+    override val id: Long,
+    override val transactionType: TransactionType,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val sonhos: Long,
+    val matchId: Long
+) : SonhosTransaction()
+
+@Serializable
+data class BlackjackDoubleDownTransaction(
+    override val id: Long,
+    override val transactionType: TransactionType,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val sonhos: Long,
+    val matchId: Long
+) : SonhosTransaction()
+
+@Serializable
+data class BlackjackRefundTransaction(
+    override val id: Long,
+    override val transactionType: TransactionType,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val sonhos: Long,
+    val matchId: Long
+) : SonhosTransaction()

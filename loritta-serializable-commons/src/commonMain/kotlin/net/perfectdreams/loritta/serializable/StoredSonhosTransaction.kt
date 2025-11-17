@@ -188,3 +188,27 @@ data object StoredVacationModeLeaveTransaction : StoredSonhosTransaction()
 
 @Serializable
 data class StoredReputationDeletedTransaction(val reputationId: Long) : StoredSonhosTransaction()
+
+@Serializable
+data class StoredBlackjackPayoutTransaction(val matchId: Long) : StoredSonhosTransaction()
+
+@Serializable
+data class StoredBlackjackTiedTransaction(val matchId: Long) : StoredSonhosTransaction()
+
+@Serializable
+data class StoredBlackjackInsuranceTransaction(val matchId: Long) : StoredSonhosTransaction()
+
+@Serializable
+data class StoredBlackjackInsurancePayoutTransaction(val matchId: Long) : StoredSonhosTransaction()
+
+@Serializable
+data class StoredBlackjackJoinedTransaction(val matchId: Long) : StoredSonhosTransaction()
+
+@Serializable
+data class StoredBlackjackSplitTransaction(val matchId: Long) : StoredSonhosTransaction()
+
+@Serializable
+data class StoredBlackjackDoubleDownTransaction(val matchId: Long) : StoredSonhosTransaction()
+
+@Serializable
+data class StoredBlackjackRefundTransaction(val matchId: Long) : StoredSonhosTransaction()

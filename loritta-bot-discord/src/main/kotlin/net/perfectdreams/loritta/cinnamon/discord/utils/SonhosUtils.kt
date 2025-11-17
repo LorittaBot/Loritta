@@ -355,6 +355,22 @@ object SonhosUtils {
         }
     }
 
+    inline fun <T> takeSonhosAndLogToTransactionLogAndReturn(
+        userId: Long,
+        value: Long,
+        type: TransactionType,
+        metadata: StoredSonhosTransaction,
+        onFailure: (Long) -> (T),
+        onSuccess: () -> (T)
+    ): T {
+        val result = takeSonhosAndLogToTransactionLog(userId, value, type, metadata)
+
+        return when (result) {
+            is SonhosRemovalResult.NotEnoughSonhos -> onFailure.invoke(result.balance)
+            SonhosRemovalResult.Success -> onSuccess.invoke()
+        }
+    }
+
     sealed class SonhosCheckResult {
         object Success : SonhosCheckResult()
         class NotEnoughSonhos(val balance: Long) : SonhosCheckResult()

@@ -8,4 +8,10 @@ object LorittaColors {
     val DiscordOldBlurple = Color(110, 133, 211)
     val CorreiosYellow = Color(253, 220, 1)
     val RobloxRed = Color(226, 34, 26)
+
+    val BlackjackPlayerTurn = DiscordBlurple
+    val BlackjackDealerTurn = LorittaAqua
+    val BlackjackLost = Color(218, 55, 60)
+    val BlackjackYellow = Color(255, 208, 0)
+    val BlackjackWon = Color(41, 133, 70)
 }

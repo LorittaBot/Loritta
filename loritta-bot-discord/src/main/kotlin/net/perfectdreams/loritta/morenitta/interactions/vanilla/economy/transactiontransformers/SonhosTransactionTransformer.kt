@@ -6,6 +6,7 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
 import net.perfectdreams.loritta.serializable.SonhosTransaction
 import net.perfectdreams.loritta.serializable.UserId
+import kotlin.reflect.KFunction
 
 interface SonhosTransactionTransformer<T : SonhosTransaction> {
     /**
@@ -19,6 +20,19 @@ interface SonhosTransactionTransformer<T : SonhosTransaction> {
         transaction: T
     ): suspend StringBuilder.() -> (Unit)
 
+    /**
+     * Creates a [StringBuilder] block that appends the [transaction] into a [StringBuilder].
+     *
+     * Used when [transaction] is not typed
+     */
+    suspend fun transformGeneric(
+        loritta: LorittaBot,
+        i18nContext: I18nContext,
+        cachedUserInfo: CachedUserInfo,
+        cachedUserInfos: MutableMap<UserId, CachedUserInfo?>,
+        transaction: SonhosTransaction
+    ) = transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction as T)
+
     fun StringBuilder.appendMoneyLostEmoji() {
         append(Emotes.MoneyWithWings)
         append(" ")
@@ -27,5 +41,30 @@ interface SonhosTransactionTransformer<T : SonhosTransaction> {
     fun StringBuilder.appendMoneyEarnedEmoji() {
         append(Emotes.DollarBill)
         append(" ")
+    }
+}
+
+/**
+ * A "simple" sonhos transaction transformer for transactions that do not require a lot of checks and weird states
+ */
+fun <T : SonhosTransaction> SimpleSonhosTransactionTransformer(
+    earnedMoney: Boolean,
+    block: suspend StringBuilder.(LorittaBot, I18nContext, T) -> (Unit)
+): SonhosTransactionTransformer<T> {
+    return object: SonhosTransactionTransformer<T> {
+        override suspend fun transform(
+            loritta: LorittaBot,
+            i18nContext: I18nContext,
+            cachedUserInfo: CachedUserInfo,
+            cachedUserInfos: MutableMap<UserId, CachedUserInfo?>,
+            transaction: T
+        ): suspend StringBuilder.() -> Unit = {
+            if (earnedMoney)
+                appendMoneyEarnedEmoji()
+            else
+                appendMoneyLostEmoji()
+
+            block(loritta, i18nContext, transaction)
+        }
     }
 }

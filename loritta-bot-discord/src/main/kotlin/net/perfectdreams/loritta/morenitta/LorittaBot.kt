@@ -82,6 +82,7 @@ import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
 import net.perfectdreams.loritta.morenitta.analytics.LorittaMetrics
 import net.perfectdreams.loritta.morenitta.analytics.MagicStats
 import net.perfectdreams.loritta.morenitta.analytics.stats.LorittaStatsCollector
+import net.perfectdreams.loritta.morenitta.blackjack.BlackjackManager
 import net.perfectdreams.loritta.morenitta.bluesky.LorittaBlueskyRelay
 import net.perfectdreams.loritta.morenitta.christmas2022event.listeners.ReactionListener
 import net.perfectdreams.loritta.morenitta.commands.CommandManager
@@ -356,6 +357,7 @@ class LorittaBot(
 	val raffleResultsMutex = Mutex()
 
 	val taskManager = TaskManager(this)
+    val blackjackManager = BlackjackManager(this)
 
 	init {
 		FOLDER = config.loritta.folders.root
@@ -548,6 +550,9 @@ class LorittaBot(
 		logger.info { "Starting Pudding tasks..." }
 		pudding.startPuddingTasks()
 		GlobalScope.launch(block = NitroBoostUtils.createBoostTask(this, config.loritta.donatorsOstentation))
+
+        logger.info { "Starting Blackjack Refund task..." }
+        blackjackManager.startRefundBlackjacksTask()
 
 		// Vamos criar todas as instâncias necessárias do JDA para nossas shards
 		logger.info { "Starting Loritta (Discord Bot)..." }

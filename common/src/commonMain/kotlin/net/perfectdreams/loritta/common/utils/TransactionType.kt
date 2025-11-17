@@ -37,6 +37,11 @@ enum class TransactionType(
         I18nKeysData.Commands.Command.Transactions.Types.EmojiFightBet.Description,
         Emotes.Rooster.toLorittaEmojiReference()
     ),
+    BLACKJACK(
+        I18nKeysData.Commands.Command.Transactions.Types.Blackjack.Title,
+        I18nKeysData.Commands.Command.Transactions.Types.Blackjack.Description,
+        LorittaEmojis.CardSpades
+    ),
     RAFFLE(
         I18nKeysData.Commands.Command.Transactions.Types.Raffle.Title,
         I18nKeysData.Commands.Command.Transactions.Types.Raffle.Description,

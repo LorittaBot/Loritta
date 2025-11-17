@@ -33,3 +33,6 @@ info:
   commands: "Comandos"
   support: "Suporte"
   premium: "Premium"
+appeal:
+  label: "apelo"
+  description: "Envie um apelo de ban para a Loritta"

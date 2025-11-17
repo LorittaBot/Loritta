@@ -1,0 +1,166 @@
+label: "blackjack"
+description: "Blackjack!"
+
+play:
+  label: "jogar"
+  description: "Jogue uma partida de Blackjack contra a Loritta"
+
+  invalidBet: "Você precisa apostar entre {minBetEmoji} **{minimumBet,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** e {maxBetEmoji} **{maximumBet,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** para poder jogar Blackjack! Quer jogar apenas por diversão? Então aposte nada!"
+
+  startNewMatch: "Começar nova partida!"
+  matchEndedAutomaticallyDueToInactivity: "A partida #{matchId} foi automaticamente finalizada devido à inatividade."
+  matchId: "Partida #{matchId}"
+
+  buttons:
+    hit: "Manda mais uma chefia"
+    stand: "Parar"
+    doubleDown: "Dobrar"
+    split: "Split"
+    payInsurance: "Pagar Seguro"
+    howToPlay: "Como jogar?"
+    houseRules: "Regras da Casa"
+
+  errors:
+    cannotDoThisNow: "Você não pode fazer isto no momento!"
+    alreadyStanding: "Você não pode pedir mais cartas pois você já pediu para parar"
+    alreadyDoubledDown: "Você não pode dobrar mais que uma vez!"
+    cannotDoubleDown: "Você não pode dobrar com essa mão!"
+    notEnoughSonhosDoubleDown: "Você não tem sonhos suficientes para dobrar!"
+    cannotSplit: "Você não pode dar split com essa mão!"
+    notEnoughSonhosSplit: "Você não tem sonhos suficientes para fazer um split!"
+    insuranceNotAvailable: "Seguro não está disponível!"
+    notEnoughSonhosInsurance: "Você não tem sonhos suficientes para comprar um seguro!"
+    cannotHitBecauseYouAreStanding: "Você não pode dar hit pois você já deu stand!"
+
+  dealerMessages:
+    yourTurn: "É a sua vez!"
+    yourTurnInsurance: "É a sua vez! Eu posso ter um Blackjack, você pode pagar um seguro e sair com os seus sonhos de volta se eu tiver."
+    yourTurnInsurancePaid: "É a sua vez! Você pagou seguro, mas eu não tinha um Blackjack."
+    dealerTurn: "SILÊNCIO, a Loritta está jogando"
+    youWon: "Parabéns! Você ganhou!"
+    tied: "Melhor empatar do que sair perdendo, né?"
+    youLost:
+      - "Talvez Blackjack não seja para você... Já tentou Uno?"
+      - "Obrigada pela doação! A casa agradece."
+      - "Eita. Essa vai doer por um tempo."
+      - "A casa sempre ganha. Você já deveria saber disso."
+      - "Eu venci. Novidade? Não pra mim."
+      - "Sabe o que é melhor que suas cartas? As minhas."
+      - "Talvez na próxima vez você tenha mais sorte."
+      - "E mais uma para a casa."
+      - "Interessante estratégia. Não funcionou, mas foi interessante."
+      - "A casa agradece a sua generosidade."
+      - "Eu admiro a sua confiança."
+      - "Eu nem me esforcei muito nessa."
+      - "Obrigada pelos sonhos!"
+      - "A casa acaba de ficar um pouco mais rica."
+      - "E mais uma vitória para a coleção."
+      - "Você trouxe sonhos. Eu trouxe talento. Deu no que deu."
+      - "Isso foi tão previsível que quase bocejei."
+      - "Eu poderia fazer isso de olhos fechados, quer ver?"
+      - "É sério que você pensou que isso ia funcionar?"
+      - "A realidade bateu forte nessa mão, hein?"
+
+  handStatus:
+    hand: "Mão {handIndex,number}"
+    busted: "Você estourou!"
+    inProgress: "Em progresso..."
+    tied: "Empatou!"
+    lost: "Você perdeu..."
+    won: "Você ganhou!"
+    lostButInsured: "Você perdeu... Mas pelo ou menos você tinha seguro!"
+    doubled: "DOBROU!"
+    sonhosReward: "{sonhosEmoji} {sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
+
+  entities:
+    loritta: "Loritta"
+    you: "Você"
+
+  options:
+    sonhos:
+      text: "A quantidade de sonhos que você deseja apostar"
+
+tutorial:
+  label: "tutorial"
+  description: "Envia as instruções de como jogar o Blackjack da Loritta"
+
+  title: "Regras Blackjack"
+
+  whatIsBlackjack:
+    title: "O que é o Blackjack?"
+    description: "Blackjack é um jogo de cartas onde você compete contra a Loritta para ver quem consegue a melhor pontuação!"
+    objective: "**Objetivo:** Chegar o mais próximo possível de 21 pontos sem ultrapassar este número (estourar) e superar a pontuação da Loritta!"
+
+  deck:
+    title: "O Baralho"
+    description: "O jogo usa um baralho comum de 52 cartas. Cada carta possui um valor no jogo, sendo eles:"
+    cards2to10: "**Cartas 2-10:** Valem **o número indicado na carta**"
+    cardsJQK: "**J (Valete), Q (Dama), K (Rei):** Valem **10 pontos**"
+    ace: "**Ás:** Pode valer **1 ponto** ou **11 pontos**."
+    aceExplanation: "O jogo escolhe automaticamente o melhor valor para você. Se o Ás valendo 11 te deixa com mais de 21 pontos, o Ás acaba valendo 1."
+    handScore: "Para saber a pontuação da sua mão, basta somar o valor das suas cartas!"
+    suitsWarning: "**Atenção:** Os naipes ({suits}) não afetam o valor das cartas!"
+
+  scoreExamples:
+    title: "Exemplos de Pontuação"
+    example1: "{cards} = **12 pontos**"
+    example1Explanation: "2 + 10 (J vale 10) = 12"
+    example2: "{cards} = **21 pontos - BLACKJACK!**"
+    example2Explanation1: "Ás (valendo 11) + K (vale 10) = 21"
+    example2Explanation2: "Conseguir 21 pontos com apenas duas cartas se chama **Blackjack** e é a melhor jogada possível!"
+    example3: "{cards} = **18 pontos**"
+    example3Explanation1: "J (10) + Ás (1) + 7 = 18"
+    example3Explanation2: "Aqui o Ás vale 1 para não \"estourar\" (se valesse 11, o total seria 28, que passa de 21)"
+
+  howToPlay:
+    title: "Como Funciona uma Partida?"
+    step1Title: "**Início:** Você e a Loritta recebem 2 cartas cada"
+    step1PlayerCards: "Suas cartas ficam visíveis"
+    step1DealerCard: "Uma carta da Loritta fica virada para baixo ({cards})"
+    step2: "**Sua vez:** Você escolhe o que fazer (veja as ações abaixo)"
+    step3: "**Vez da Loritta:** Depois que você terminar, a carta escondida é revelada e a Loritta joga automaticamente. Ela é obrigada a pegar cartas até ter, no mínimo, 17 pontos."
+    step4: "**Resultado:** Quem tiver a pontuação mais próxima de 21 sem ultrapassar, vence!"
+
+  actions:
+    title: "Ações Disponíveis"
+    hit: "**Manda mais uma chefia (Hit):** Recebe mais uma carta. Cuidado para não estourar!"
+    stand: "**Parar (Stand):** Mantém suas cartas e passa a vez."
+    doubleDown: "**Dobrar (Double Down):** Dobra a aposta, recebe apenas mais uma carta e encerra sua vez."
+    split: "**Split:** Disponível apenas quando as suas duas primeiras cartas possuem o mesmo valor. Dobra sua aposta e divide em duas mão separadas."
+    insurance: "**Seguro:** Disponível apenas quando a carta visível da Loritta for um Ás. Você paga metade da aposta como seguro contra Blackjack. Se a Loritta tiver um Blackjack, você ganha o valor da aposta e do seguro de volta. Se não tiver, o jogo continua normalmente."
+
+  results:
+    title: "Resultados"
+    blackjackNatural: "**Blackjack Natural:** 21 com 2 cartas (Ás + carta de valor 10) - Paga 6:5 (1.2x)"
+    normalWin: "**Vitória Normal:** Pontuação maior que a Loritta sem estourar - Paga 1:1"
+    push: "**Empate (Push):** Mesma pontuação - Aposta devolvida"
+    loss: "**Derrota:** Loritta tem mais pontos ou você estoura - Perde a aposta"
+    lossNote: "Se você estourar, você perde imediatamente, mesmo que a Loritta também fosse estourar na vez dela!"
+
+houseRules:
+  label: "regrasdacasa"
+  description: "Envia as regras da casa do Blackjack da Loritta"
+
+  title: "⚖️ Regras da Casa"
+  dealerMustHit: "A Loritta é obrigada a pedir cartas até ter pelo ou menos 17 pontos"
+  dealerStandsSoft17: "A Loritta para em \"soft 17\" (17 pontos com um Ás valendo 11, exemplo: {softStandExample})"
+  singleDeck: "Apenas um deck de cartas é usado"
+  doubleAnyCard: "É permitido dobrar qualquer carta"
+  doubleAfterSplit: "É permitido dobrar após dar split"
+  splitOnce: "Você pode splitar apenas uma vez"
+  hitSplitAces: "Você pode pedir mais cartas ao splitar dois Ás"
+  noSurrender: "Você não pode se render após começar uma partida"
+  insuranceAvailable: "Seguro é disponibilizado se a primeira carta da Loritta é um Ás"
+
+stats:
+  label: "stats"
+  description: "Mostra suas estatísticas do Blackjack"
+  yourStats: "**Suas Estatísticas**"
+  totalMatches: "**Partidas jogadas:** {count,plural, =0 {# partidas} one {# partida} other {# partidas}}"
+  wonHands: "**Mãos que ganharam:** {count,plural, =0 {# mãos} one {# mão} other {# mãos}}"
+  lostHands: "**Mãos que perderam:** {count,plural, =0 {# mãos} one {# mão} other {# mãos}}"
+  tiedHands: "**Mãos que empataram:** {count,plural, =0 {# mãos} one {# mão} other {# mãos}}"
+  sonhosPayout: "**Total de sonhos que você ganhou:** {sonhosEmoji} {sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
+  options:
+    user:
+      text: "O usuário que você deseja ver as estatísticas dele"
