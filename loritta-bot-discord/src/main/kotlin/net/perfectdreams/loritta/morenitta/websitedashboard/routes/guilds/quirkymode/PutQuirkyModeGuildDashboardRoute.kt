@@ -37,7 +37,6 @@ class PutQuirkyModeGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
             }
 
             newConfig.enableQuirky = request.enableQuirky
-            newConfig.enableBomDiaECia = false
 
             serverConfig.miscellaneousConfig = newConfig
         }

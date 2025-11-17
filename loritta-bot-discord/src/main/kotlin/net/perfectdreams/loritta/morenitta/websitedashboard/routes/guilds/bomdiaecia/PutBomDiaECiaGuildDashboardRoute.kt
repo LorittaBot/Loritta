@@ -36,7 +36,6 @@ class PutBomDiaECiaGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
                 this.enableBomDiaECia = false
             }
 
-            newConfig.enableQuirky = false
             newConfig.enableBomDiaECia = request.enableBomDiaECia
 
             serverConfig.miscellaneousConfig = newConfig
