@@ -1,5 +1,5 @@
 label: "blackjack"
-description: "Blackjack!"
+description: "Comandos relacionados ao sistema de Blackjack da Loritta!"
 
 play:
   label: "jogar"
