@@ -111,7 +111,7 @@ class BRMemesCommand(val client: GabrielaImageServerClient) : SlashCommandDeclar
                 executor = ChicoAtaExecutor()
             }
 
-            subcommand(I18N_PREFIX.Ata.Lori.Label, I18N_PREFIX.Ata.Lori.Label, UUID.fromString("86d12d0a-25fb-4499-827a-9892e81a04ab")) {
+            subcommand(I18N_PREFIX.Ata.Lori.Label, I18N_PREFIX.Ata.Lori.Description, UUID.fromString("86d12d0a-25fb-4499-827a-9892e81a04ab")) {
                 alternativeLegacyAbsoluteCommandPaths.apply {
                     add("loriata")
                 }

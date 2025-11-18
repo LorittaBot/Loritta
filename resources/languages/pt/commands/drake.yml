@@ -5,8 +5,8 @@ drake:
   label: "drake"
   description: "Criar um meme de Drakeposting com duas imagens!"
 bolsonaro:
-  label: "bolsonaro"
+  label: "bolsodrake"
   description: "Memes devem ser de origens brasileiras, talquei??"
 lori:
-  label: "lori"
+  label: "loridrake"
   description: "Criar um meme de Drakeposting, Loritta edition"

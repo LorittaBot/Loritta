@@ -7,7 +7,6 @@ import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.ArtCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.base.UnleashedGabrielaImageServerSingleCommandBase
 import java.util.*
 

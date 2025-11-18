@@ -4,9 +4,15 @@ description: "Desenhista, Animador, YouTuber... e nas horas vagas escravizado pa
 atendente:
   label: "atendente"
   description: "O número de pessoas que sacam as referências dos meus comandos, por mais que sejam incrivelmente óbvias e gritantes... é minúsculo. Você sabe quem é, se não sabe, não consegue pegar referências! Escreva algo na bandana da Atendente que sempre aparece nos vídeos do Drawn Mask!"
+  options:
+    line1:
+      text: "A linha que estará na cabeça da atendente"
 sign:
   label: "placa"
   description: "Faça o Drawn Mask segurar uma placa mostrando algo interessante e fofo!"
 word:
   label: "word"
   description: "eU sO crianSA i escRevO coIsas ToSCas"
+  options:
+    text:
+      text: "O texto que estará na tela do Drawn Mask"
