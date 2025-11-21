@@ -12,6 +12,7 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.serializable.responses.GetDailyRewardResponse
 import net.perfectdreams.spicymorenitta.i18nContext
 import net.perfectdreams.spicymorenitta.routes.DailyScreen
+import net.perfectdreams.spicymorenitta.utils.GoogleAdSense
 import org.jetbrains.compose.web.attributes.ATarget
 import org.jetbrains.compose.web.attributes.target
 import org.jetbrains.compose.web.css.height
@@ -142,6 +143,24 @@ fun GotDailyRewardOverview(
                         }
                     }
                 }
+            }
+        }
+
+        // [Loritta] Website Daily Reward Post-Reward
+        Div(attrs = {
+            attr("style", "margin-left: auto; margin-right: auto;")
+        }) {
+            Ins(attrs = {
+                classes("adsbygoogle")
+                attr("style", "display:inline-block;width:320px;height:100px")
+                attr("data-ad-client", "ca-pub-9989170954243288")
+                attr("data-ad-slot", "9077577537")
+
+                ref {
+                    GoogleAdSense.renderAds()
+                    onDispose {}
+                }
+            }) {
             }
         }
 
