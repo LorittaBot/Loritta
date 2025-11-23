@@ -870,7 +870,19 @@ class BlackjackCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper
                 }
 
                 this.section(
-                    Thumbnail("https://cdn.discordapp.com/attachments/739823666891849729/1437848679875612915/Discord_CN6EeYtMio.png?ex=6914bc6f&is=69136aef&hm=21de8f039b818dc2cfd9ccd738810454c7d1655d18f4aa8ffd5bb66fafedcf40&")
+                    Thumbnail(
+                        when (blackjack.gameState) {
+                            Blackjack.GameState.GameOver -> {
+                                if (!anyHandWon && !anyHandPushed) {
+                                    // smol cache busting because Discord loves trying to use the wrong image due to cache
+                                    "https://stuff.loritta.website/blackjack/loritta-blackjack-lose.png?v2"
+                                } else {
+                                    "https://stuff.loritta.website/blackjack/loritta-blackjack-win.png"
+                                }
+                            }
+                            else -> "https://stuff.loritta.website/blackjack/loritta-blackjack-neutral.png"
+                        }
+                    )
                 ) {
                     this.text(
                         buildString {
