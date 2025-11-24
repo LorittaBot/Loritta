@@ -857,6 +857,20 @@ class BlackjackCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper
             val anyHandWon = handStates.any { it.value is Blackjack.HandState.Win }
             val anyHandPushed = handStates.any { it.value is Blackjack.HandState.Push }
 
+            val visibleMatchBet = if (matchBet != null) {
+                var baseValue = 0L
+
+                for (hand in blackjack.playerHands) {
+                    baseValue += matchBet
+
+                    if (hand.wasDoubledDown) {
+                        baseValue += matchBet
+                    }
+                }
+
+                baseValue
+            } else null
+
             this.components += Container {
                 this.accentColorRaw = when (blackjack.gameState) {
                     Blackjack.GameState.DealerTurn -> {
@@ -927,6 +941,12 @@ class BlackjackCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper
 
                             appendLine()
                             appendLine()
+
+                            if (visibleMatchBet != null) {
+                                appendLine(context.i18nContext.get(I18N_PREFIX.Play.CurrentBet(SonhosUtils.getSonhosEmojiOfQuantity(visibleMatchBet), visibleMatchBet)))
+                            } else {
+                                appendLine(context.i18nContext.get(I18N_PREFIX.Play.CurrentBetJustForFun))
+                            }
 
                             var idx = 0
                             for ((hand, handState) in handStates) {

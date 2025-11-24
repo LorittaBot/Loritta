@@ -11,6 +11,9 @@ play:
   matchEndedAutomaticallyDueToInactivity: "A partida #{matchId} foi automaticamente finalizada devido à inatividade."
   matchId: "Partida #{matchId}"
 
+  currentBet: "**Aposta:** {sonhosEmoji} {currentBet,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
+  currentBetJustForFun: "**Aposta:** *Nada! Apenas por Diversão :3*"
+
   buttons:
     hit: "Manda mais uma chefia"
     stand: "Parar"
