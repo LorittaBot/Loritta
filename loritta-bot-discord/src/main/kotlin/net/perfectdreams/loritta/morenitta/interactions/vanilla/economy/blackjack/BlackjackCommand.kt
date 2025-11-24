@@ -123,13 +123,17 @@ class BlackjackCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper
             val selfUserProfile = context.lorittaUser.profile
 
             var totalEarnings = if (providedStringSonhosInput != null) {
-                NumberUtils.convertShortenedNumberOrUserSonhosSpecificToLong(providedStringSonhosInput, selfUserProfile.money) ?: context.fail(
-                    true,
-                    context.i18nContext.get(
-                        I18nKeysData.Commands.InvalidNumber(providedStringSonhosInput)
-                    ),
-                    Emotes.LORI_CRYING.asMention
-                )
+                NumberUtils.convertShortenedNumberOrUserSonhosSpecificToLong(providedStringSonhosInput, selfUserProfile.money) ?: run {
+                    context.reply(true) {
+                        styled(
+                            context.i18nContext.get(
+                                I18nKeysData.Commands.InvalidNumber(providedStringSonhosInput)
+                            ),
+                            Emotes.LORI_CRYING.asMention
+                        )
+                    }
+                    return
+                }
             } else {
                 null
             }
@@ -140,13 +144,15 @@ class BlackjackCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper
 
             // Sonhos check if the user provided sonhos' amount
             if (totalEarnings != null) {
-                if (0 >= totalEarnings)
-                    context.fail(true) {
+                if (0 >= totalEarnings) {
+                    context.reply(true) {
                         styled(
                             context.locale["commands.command.flipcoinbet.zeroMoney"],
                             Constants.ERROR
                         )
                     }
+                    return
+                }
 
                 if (totalEarnings !in BlackjackUtils.MINIMUM_BET..BlackjackUtils.MAXIMUM_BET) {
                     context.reply(true) {
@@ -166,7 +172,7 @@ class BlackjackCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper
                 }
 
                 if (totalEarnings > selfUserProfile.money) {
-                    context.fail(true) {
+                    context.reply(true) {
                         this.styled(
                             context.locale["commands.command.flipcoinbet.notEnoughMoneySelf"],
                             Constants.ERROR
@@ -183,6 +189,7 @@ class BlackjackCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper
                             Emotes.LORI_RICH.asMention
                         )
                     }
+                    return
                 }
             }
 
@@ -809,7 +816,7 @@ class BlackjackCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper
                     }
                 }
                 CreateGameResult.NotEnoughSonhos -> {
-                    context.fail(true) {
+                    context.reply(false) {
                         this.styled(
                             context.locale["commands.command.flipcoinbet.notEnoughMoneySelf"],
                             Constants.ERROR
