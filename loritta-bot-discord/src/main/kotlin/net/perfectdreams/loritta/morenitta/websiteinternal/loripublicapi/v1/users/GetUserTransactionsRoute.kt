@@ -12,15 +12,7 @@ import net.perfectdreams.loritta.morenitta.utils.UserIdAsStringSerializer
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.*
 import net.perfectdreams.loritta.publichttpapi.LoriPublicHttpApiEndpoints
-import net.perfectdreams.loritta.serializable.BlackjackDoubleDownTransaction
-import net.perfectdreams.loritta.serializable.BlackjackInsurancePayoutTransaction
-import net.perfectdreams.loritta.serializable.BlackjackInsuranceTransaction
-import net.perfectdreams.loritta.serializable.BlackjackPayoutTransaction
-import net.perfectdreams.loritta.serializable.BlackjackRefundTransaction
-import net.perfectdreams.loritta.serializable.BlackjackTiedTransaction
-import net.perfectdreams.loritta.serializable.BlackjackJoinedTransaction
 import net.perfectdreams.loritta.serializable.ReputationDeletedTransaction
-import net.perfectdreams.loritta.serializable.BlackjackSplitTransaction
 import net.perfectdreams.loritta.serializable.UserId
 import java.time.Instant
 import kotlin.time.Duration.Companion.seconds
@@ -476,14 +468,70 @@ class GetUserTransactionsRoute(m: LorittaBot) : LoriPublicAPIRoute(
                     transaction.sonhos
                 )
 
-                is BlackjackJoinedTransaction -> TODO()
-                is BlackjackSplitTransaction -> TODO()
-                is BlackjackPayoutTransaction -> TODO()
-                is BlackjackTiedTransaction -> TODO()
-                is BlackjackInsurancePayoutTransaction -> TODO()
-                is BlackjackInsuranceTransaction -> TODO()
-                is BlackjackDoubleDownTransaction -> TODO()
-                is BlackjackRefundTransaction -> TODO()
+                is net.perfectdreams.loritta.serializable.BlackjackJoinedTransaction -> BlackjackJoinedTransaction(
+                    transaction.id,
+                    transaction.transactionType,
+                    transaction.timestamp,
+                    transaction.user,
+                    transaction.sonhos,
+                    transaction.matchId
+                )
+                is net.perfectdreams.loritta.serializable.BlackjackSplitTransaction -> BlackjackSplitTransaction(
+                    transaction.id,
+                    transaction.transactionType,
+                    transaction.timestamp,
+                    transaction.user,
+                    transaction.sonhos,
+                    transaction.matchId
+                )
+                is net.perfectdreams.loritta.serializable.BlackjackPayoutTransaction -> BlackjackPayoutTransaction(
+                    transaction.id,
+                    transaction.transactionType,
+                    transaction.timestamp,
+                    transaction.user,
+                    transaction.sonhos,
+                    transaction.matchId
+                )
+                is net.perfectdreams.loritta.serializable.BlackjackTiedTransaction -> BlackjackTiedTransaction(
+                    transaction.id,
+                    transaction.transactionType,
+                    transaction.timestamp,
+                    transaction.user,
+                    transaction.sonhos,
+                    transaction.matchId
+                )
+                is net.perfectdreams.loritta.serializable.BlackjackInsurancePayoutTransaction -> BlackjackInsurancePayoutTransaction(
+                    transaction.id,
+                    transaction.transactionType,
+                    transaction.timestamp,
+                    transaction.user,
+                    transaction.sonhos,
+                    transaction.matchId
+                )
+                is net.perfectdreams.loritta.serializable.BlackjackInsuranceTransaction -> BlackjackInsuranceTransaction(
+                    transaction.id,
+                    transaction.transactionType,
+                    transaction.timestamp,
+                    transaction.user,
+                    transaction.sonhos,
+                    transaction.matchId
+                )
+                is net.perfectdreams.loritta.serializable.BlackjackDoubleDownTransaction -> BlackjackDoubleDownTransaction(
+                    transaction.id,
+                    transaction.transactionType,
+                    transaction.timestamp,
+                    transaction.user,
+                    transaction.sonhos,
+                    transaction.matchId
+                )
+                is net.perfectdreams.loritta.serializable.BlackjackRefundTransaction -> BlackjackRefundTransaction(
+                    transaction.id,
+                    transaction.transactionType,
+                    transaction.timestamp,
+                    transaction.user,
+                    transaction.sonhos,
+                    transaction.matchId
+                )
             }
         }
     }
@@ -955,6 +1003,94 @@ class GetUserTransactionsRoute(m: LorittaBot) : LoriPublicAPIRoute(
         @Serializable(UserIdAsStringSerializer::class)
         override val user: UserId,
         val sonhos: Long
+    ) : SonhosTransaction()
+
+    @Serializable
+    data class BlackjackJoinedTransaction(
+        override val id: Long,
+        override val transactionType: TransactionType,
+        override val timestamp: kotlinx.datetime.Instant,
+        @Serializable(UserIdAsStringSerializer::class)
+        override val user: UserId,
+        val sonhos: Long,
+        val matchId: Long
+    ) : SonhosTransaction()
+
+    @Serializable
+    data class BlackjackSplitTransaction(
+        override val id: Long,
+        override val transactionType: TransactionType,
+        override val timestamp: kotlinx.datetime.Instant,
+        @Serializable(UserIdAsStringSerializer::class)
+        override val user: UserId,
+        val sonhos: Long,
+        val matchId: Long
+    ) : SonhosTransaction()
+
+    @Serializable
+    data class BlackjackPayoutTransaction(
+        override val id: Long,
+        override val transactionType: TransactionType,
+        override val timestamp: kotlinx.datetime.Instant,
+        @Serializable(UserIdAsStringSerializer::class)
+        override val user: UserId,
+        val sonhos: Long,
+        val matchId: Long
+    ) : SonhosTransaction()
+
+    @Serializable
+    data class BlackjackTiedTransaction(
+        override val id: Long,
+        override val transactionType: TransactionType,
+        override val timestamp: kotlinx.datetime.Instant,
+        @Serializable(UserIdAsStringSerializer::class)
+        override val user: UserId,
+        val sonhos: Long,
+        val matchId: Long
+    ) : SonhosTransaction()
+
+    @Serializable
+    data class BlackjackInsurancePayoutTransaction(
+        override val id: Long,
+        override val transactionType: TransactionType,
+        override val timestamp: kotlinx.datetime.Instant,
+        @Serializable(UserIdAsStringSerializer::class)
+        override val user: UserId,
+        val sonhos: Long,
+        val matchId: Long
+    ) : SonhosTransaction()
+
+    @Serializable
+    data class BlackjackInsuranceTransaction(
+        override val id: Long,
+        override val transactionType: TransactionType,
+        override val timestamp: kotlinx.datetime.Instant,
+        @Serializable(UserIdAsStringSerializer::class)
+        override val user: UserId,
+        val sonhos: Long,
+        val matchId: Long
+    ) : SonhosTransaction()
+
+    @Serializable
+    data class BlackjackDoubleDownTransaction(
+        override val id: Long,
+        override val transactionType: TransactionType,
+        override val timestamp: kotlinx.datetime.Instant,
+        @Serializable(UserIdAsStringSerializer::class)
+        override val user: UserId,
+        val sonhos: Long,
+        val matchId: Long
+    ) : SonhosTransaction()
+
+    @Serializable
+    data class BlackjackRefundTransaction(
+        override val id: Long,
+        override val transactionType: TransactionType,
+        override val timestamp: kotlinx.datetime.Instant,
+        @Serializable(UserIdAsStringSerializer::class)
+        override val user: UserId,
+        val sonhos: Long,
+        val matchId: Long
     ) : SonhosTransaction()
 
     @Serializable

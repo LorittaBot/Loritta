@@ -316,6 +316,14 @@ suspend fun main() {
                     StoredMarriageRestoreTransaction -> TODO()
                     StoredMarriageRestoreAutomaticTransaction -> TODO()
                     is StoredReputationDeletedTransaction -> TODO()
+                    is StoredBlackjackDoubleDownTransaction -> TODO()
+                    is StoredBlackjackInsurancePayoutTransaction -> TODO()
+                    is StoredBlackjackInsuranceTransaction -> TODO()
+                    is StoredBlackjackJoinedTransaction -> TODO()
+                    is StoredBlackjackPayoutTransaction -> TODO()
+                    is StoredBlackjackRefundTransaction -> TODO()
+                    is StoredBlackjackSplitTransaction -> TODO()
+                    is StoredBlackjackTiedTransaction -> TODO()
                 }
             }
     }
