@@ -1239,6 +1239,23 @@ class BlackjackCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper
                     // Mark this match as finished!
                     finishBlackjack(matchId, payout, handsStatus.size, winningHands, tiedHands, losingHands, blackjack.paidInsurance, false, autoStand, blackjack.dealerHand, blackjack.playerHands)
                 } else {
+                    // We need this just to extract the win/tied/lose hands status
+                    for ((_, handState) in handsStatus) {
+                        when (handState) {
+                            Blackjack.HandState.InProgress -> {}
+                            Blackjack.HandState.Busted, is Blackjack.HandState.Lose -> {
+                                losingHands++
+                            }
+                            Blackjack.HandState.Push -> {
+                                tiedHands++
+                            }
+
+                            is Blackjack.HandState.Win -> {
+                                winningHands++
+                            }
+                        }
+                    }
+
                     // Mark this match as finished!
                     finishBlackjack(matchId, null, handsStatus.size, winningHands, tiedHands, losingHands, blackjack.paidInsurance, false, autoStand, blackjack.dealerHand, blackjack.playerHands)
                 }
