@@ -27,8 +27,8 @@ class UnlockCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.MODERATION, UUID.fromString("d39bbd64-fea7-4eb5-9b50-fcff7d83804b")) {
         this.enableLegacyMessageSupport = true
-        this.defaultMemberPermissions = DefaultMemberPermissions.enabledFor(Permission.MANAGE_CHANNEL)
-        this.botPermissions = setOf(Permission.MANAGE_CHANNEL)
+        this.defaultMemberPermissions = DefaultMemberPermissions.enabledFor(Permission.MANAGE_CHANNEL, Permission.MANAGE_PERMISSIONS)
+        this.botPermissions = setOf(Permission.MANAGE_CHANNEL, Permission.MANAGE_PERMISSIONS)
 
         alternativeLegacyLabels.apply {
             add("destrancar")
