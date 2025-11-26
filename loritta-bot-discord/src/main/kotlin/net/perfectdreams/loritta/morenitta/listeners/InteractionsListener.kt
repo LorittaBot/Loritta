@@ -1267,6 +1267,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 context.alwaysEphemeral = !context.member.hasPermission(context.channel as GuildChannel, Permission.USE_EXTERNAL_APPLICATIONS)
             }
         } else {
+            // The command IS ENABLED, yay!
             // Power Thoughts on DDevs:
             // I think this was already discussed before but I'm stupid and I don't remember the reasoning:
             //
@@ -1277,40 +1278,36 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
             // but at the same time I don't know how Discord could fix this, because blindingly checking if the user has permission to use apps on the current channel would break other things, so I think I figured out why Discord does not do that by themselves lol
             // ---
             // So, for this case, we set the alwaysEphemeral flag if the user does NOT have permission to use application commands on the current channel
-            // The command IS ENABLED on the current server, so we don't mind if they don't have permission to use external applications
-            context.alwaysEphemeral = !context.member.hasPermission(context.channel as GuildChannel, Permission.USE_APPLICATION_COMMANDS)
-        }
+            if (serverConfig.blacklistedChannels.contains(context.channel.idLong) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
+                if (serverConfig.warnIfBlacklisted) {
+                    if (serverConfig.blacklistedWarning?.isNotEmpty() == true && event.guild != null && event.member != null && event.channel != null) {
+                        // Channel has commands BLOCKED here!
+                        // So, how can we check that the user can use it if it is a USER_INSTALL command?
+                        // 1. Does the "USER_INSTALL" integration type is set?
+                        // 2. Is the user an integration owner?
+                        // If both are true, the message will be ephemeral if the user does NOT have the "external apps" permission set
+                        val authorizingUserId = if (event.interaction.integrationOwners.isUserIntegration) event.interaction.integrationOwners.authorizingUserIdLong else null
 
-        // And then we check ONCE AGAIN, but now if it is a blacklisted command
-        if (serverConfig.blacklistedChannels.contains(context.channel.idLong) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
-            if (serverConfig.warnIfBlacklisted) {
-                if (serverConfig.blacklistedWarning?.isNotEmpty() == true && event.guild != null && event.member != null && event.channel != null) {
-                    // Channel has commands BLOCKED here!
-                    // So, how can we check that the user can use it if it is a USER_INSTALL command?
-                    // 1. Does the "USER_INSTALL" integration type is set?
-                    // 2. Is the user an integration owner?
-                    // If both are true, the message will be ephemeral if the user does NOT have the "external apps" permission set
-                    val authorizingUserId = if (event.interaction.integrationOwners.isUserIntegration) event.interaction.integrationOwners.authorizingUserIdLong else null
+                        val canBeUsedAnyway = slashDeclaration.integrationTypes.contains(IntegrationType.USER_INSTALL) && authorizingUserId == context.user.idLong
+                        if (!canBeUsedAnyway) {
+                            // NO, then bail out NOW
+                            val generatedMessage = MessageUtils.generateMessageOrFallbackIfInvalid(
+                                i18nContext = i18nContext,
+                                message = serverConfig.blacklistedWarning ?: "???",
+                                sources = listOf(event.member, event.channel, event.guild) as List<Any>, // The cast should not be needed BUT I can't figure out why it works
+                                guild = event.guild,
+                                customTokens = emptyMap<String, String>(),
+                                generationErrorMessageI18nKey = I18nKeysData.InvalidMessages.CommandDenylist
+                            )
 
-                    val canBeUsedAnyway = slashDeclaration.integrationTypes.contains(IntegrationType.USER_INSTALL) && authorizingUserId == context.user.idLong
-                    if (!canBeUsedAnyway) {
-                        // NO, then bail out NOW
-                        val generatedMessage = MessageUtils.generateMessageOrFallbackIfInvalid(
-                            i18nContext = i18nContext,
-                            message = serverConfig.blacklistedWarning ?: "???",
-                            sources = listOf(event.member, event.channel, event.guild) as List<Any>, // The cast should not be needed BUT I can't figure out why it works
-                            guild = event.guild,
-                            customTokens = emptyMap<String, String>(),
-                            generationErrorMessageI18nKey = I18nKeysData.InvalidMessages.CommandDenylist
-                        )
-
-                        context.reply(true, generatedMessage)
-                        return true
-                    } else {
-                        // So, it is actually enabled on a user install context!
-                        // What we'll do instead is force the interaction to ALWAYS be ephemeral
-                        // If the user has permission, then the message should be PUBLIC, if not, it should be EPHEMERAL
-                        context.alwaysEphemeral = !context.member.hasPermission(context.channel as GuildChannel, Permission.USE_EXTERNAL_APPLICATIONS)
+                            context.reply(true, generatedMessage)
+                            return true
+                        } else {
+                            // So, it is actually enabled on a user install context!
+                            // What we'll do instead is force the interaction to ALWAYS be ephemeral
+                            // If the user has permission, then the message should be PUBLIC, if not, it should be EPHEMERAL
+                            context.alwaysEphemeral = !context.member.hasPermission(context.channel as GuildChannel, Permission.USE_EXTERNAL_APPLICATIONS)
+                        }
                     }
                 }
             }
