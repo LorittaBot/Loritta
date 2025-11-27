@@ -42,6 +42,8 @@ object ExperienceUtils {
 
         customTokens[Placeholders.EXPERIENCE_LEVEL_SHORT.name] = level.toString()
         customTokens[Placeholders.EXPERIENCE_XP_SHORT.name] = xp.toString()
+        customTokens[net.perfectdreams.loritta.placeholders.Placeholders.EXPERIENCE_LEVEL.name] = level.toString()
+        customTokens[net.perfectdreams.loritta.placeholders.Placeholders.EXPERIENCE_XP.name] = xp.toString()
 
         customTokens[Placeholders.EXPERIENCE_NEXT_LEVEL.name] = nextLevel.toString()
         customTokens[Placeholders.EXPERIENCE_NEXT_LEVEL_TOTAL_XP.name] = nextLevelTotalXp.toString()
