@@ -16,7 +16,10 @@ import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
+import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendCouponSonhosBundleUpsellInformationIfNotNull
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Payments
+import net.perfectdreams.loritta.cinnamon.pudding.tables.WebsiteDiscountCoupons
 import net.perfectdreams.loritta.common.utils.GACampaigns
 import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.i18n.I18nKeysData
@@ -26,6 +29,11 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
+import net.perfectdreams.loritta.morenitta.website.routes.user.dashboard.ClaimedWebsiteCoupon
+import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.selectAll
+import java.time.Instant
 import java.util.*
 
 class SonhosAtmExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
@@ -45,6 +53,34 @@ class SonhosAtmExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor()
             val profile = context.loritta.pudding.users.getUserProfile(net.perfectdreams.loritta.serializable.UserId(user.idLong))
             val userSonhos = profile?.money ?: 0L
             val isSelf = context.user.id == user.id
+
+            val claimedWebsiteCoupon = loritta.transaction {
+                val now = Instant.now()
+
+                val couponData = WebsiteDiscountCoupons.selectAll()
+                    .where {
+                        WebsiteDiscountCoupons.public and (WebsiteDiscountCoupons.startsAt lessEq now and (WebsiteDiscountCoupons.endsAt greaterEq now))
+                    }
+                    .orderBy(WebsiteDiscountCoupons.total, SortOrder.ASC)
+                    .firstOrNull()
+
+                if (couponData != null) {
+                    val paymentsThatUsedTheCouponCount = Payments.selectAll()
+                        .where {
+                            Payments.coupon eq couponData[WebsiteDiscountCoupons.id]
+                        }
+                        .count()
+
+                    ClaimedWebsiteCoupon(
+                        couponData[WebsiteDiscountCoupons.id].value,
+                        couponData[WebsiteDiscountCoupons.code],
+                        couponData[WebsiteDiscountCoupons.endsAt],
+                        couponData[WebsiteDiscountCoupons.total],
+                        couponData[WebsiteDiscountCoupons.maxUses],
+                        paymentsThatUsedTheCouponCount,
+                    )
+                } else null
+            }
 
             // Needs to be in here because MessageBuilder is not suspendable!
             val sonhosRankPosition = if (userSonhos != 0L && profile != null) // Only show the ranking position if the user has any sonhos, this avoids querying the db with useless stuff
@@ -160,6 +196,14 @@ class SonhosAtmExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor()
                     val extendedSonhosInfo = extendedSonhosInfo
                     if (extendedSonhosInfo != null)
                         addExtendedSonhosInfoEmbed(extendedSonhosInfo)
+                    else {
+                        appendCouponSonhosBundleUpsellInformationIfNotNull(
+                            loritta,
+                            context.i18nContext,
+                            claimedWebsiteCoupon,
+                            "button"
+                        )
+                    }
 
                     actionRow(
                         Button.of(
