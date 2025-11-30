@@ -322,7 +322,7 @@ class InternalWebServer(val m: LorittaBot) {
                                     
                                     Colecione figurinhas, troque figurinhas com outras pessoas e complete o seu álbum para ganhar **${template.sonhosReward} SONHOS**, um **DESIGN DE PERFIL** e **UMA BADGE**!
                                 
-                                    As figurinhas são de VOCÊS, todos que estavam no Top 500 Sonhadores estão no álbum! Mas corra, o evento estará disponível até ${DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(event[LoriCoolCardsEvents.endsAt])}, se você não completar o álbum até lá, você PERDE.
+                                    As figurinhas são de VOCÊS, todos que estavam no Top 500 que terminaram o álbum anterior estão neste álbum! Mas corra, o evento estará disponível até ${DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(event[LoriCoolCardsEvents.endsAt])}, se você não completar o álbum até lá, você PERDE.
                                     ## <:sticker_rarity_legendary_small:1233271569682399232> As Figurinhas (aprecie elas)
                                 """.trimIndent())
 
@@ -479,7 +479,7 @@ class InternalWebServer(val m: LorittaBot) {
                                                     this.components += TextDisplay(
                                                         buildString {
                                                             appendLine("### ${Emotes.LoriCoolSticker} Você está no Álbum de Figurittas da Loritta!")
-                                                            appendLine("**Parabéns!** Por estar entre os 500 mais ricos da Loritta, você conquistou um lugar no álbum **${event[LoriCoolCardsEvents.eventName]}** das Figurittas da Loritta!")
+                                                            appendLine("**Parabéns!** Por você ter terminado o álbum anterior nos 500 mais rápidos, você conquistou um lugar no álbum **${event[LoriCoolCardsEvents.eventName]}** das Figurittas da Loritta!")
                                                         }
                                                     )
 
