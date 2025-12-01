@@ -17,7 +17,8 @@ fun FlowContent.authorizationFailedFullScreenError(
     errorToBeDisplayed: String?,
     authUrl: String
 ) {
-    div(classes = "full-screen-error ${ColorTheme.SYNC_WITH_SYSTEM.className}}") {
+    // We don't use the user's theme because we are NOT logged in, so we don't know which theme the user prefers
+    div(classes = "full-screen-error ${ColorTheme.SYNC_WITH_SYSTEM.className}") {
         img(src = "https://stuff.loritta.website/emotes/lori-sob.png") {
             width = "192"
             height = "192"
