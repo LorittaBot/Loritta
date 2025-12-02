@@ -18,6 +18,7 @@ import io.ktor.server.util.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.debug.DebugProbes
 import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import kotlinx.datetime.toJavaInstant
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
@@ -25,6 +26,8 @@ import kotlinx.serialization.json.*
 import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.utils.MarkdownSanitizer
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.pudding.tables.BanAppeals
+import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsEventCards
 import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsEvents
 import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsFinishedAlbumUsers
@@ -34,6 +37,8 @@ import net.perfectdreams.loritta.common.utils.placeholders.TwitchStreamOnlineMes
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.analytics.LorittaMetrics
+import net.perfectdreams.loritta.morenitta.banappeals.BanAppeal
+import net.perfectdreams.loritta.morenitta.banappeals.BanAppealsUtils.createStaffAppealMessage
 import net.perfectdreams.loritta.morenitta.loricoolcards.StickerAlbumTemplate
 import net.perfectdreams.loritta.morenitta.loricoolcards.StickerMetadata
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
@@ -53,6 +58,8 @@ import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.v1.user
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.v1.users.GetUserTransactionsRoute
 import net.perfectdreams.loritta.morenitta.websiteinternal.rpc.RPCResponseException
 import net.perfectdreams.loritta.morenitta.websiteinternal.rpc.processors.Processors
+import net.perfectdreams.loritta.serializable.UserBannedState
+import net.perfectdreams.loritta.serializable.UserId
 import net.perfectdreams.loritta.serializable.internal.requests.LorittaInternalRPCRequest
 import net.perfectdreams.loritta.serializable.internal.responses.LorittaInternalRPCResponse
 import net.perfectdreams.sequins.ktor.BaseRoute
@@ -513,6 +520,63 @@ class InternalWebServer(val m: LorittaBot) {
                     )
                 }
 
+                post("/ban-appeals/{banAppealId}/notify") {
+                    val eventId = call.parameters.getOrFail("banAppealId").toLong()
+                    val request = Json.decodeFromString<NotifyBanAppealRequest>(call.receiveText())
+
+                    val guild = m.lorittaShards.getGuildById(request.guildId)!!
+                    val channel = guild.getGuildMessageChannelById(request.channelId)!!
+
+                    val appeal = m.transaction {
+                        BanAppeals
+                            .innerJoin(BannedUsers)
+                            .selectAll()
+                            .where {
+                                BanAppeals.id eq eventId
+                            }
+                            .first()
+                    }
+
+                    val submittedBy = m.lorittaShards.retrieveUserInfoById(appeal[BanAppeals.submittedBy])
+                    val appealFor = m.lorittaShards.retrieveUserInfoById(appeal[BanAppeals.userId])
+
+                    channel.sendMessage(
+                        MessageCreate {
+                            createStaffAppealMessage(
+                                BanAppeal(
+                                    appeal[BanAppeals.id].value,
+                                    appeal[BanAppeals.submittedBy],
+                                    appeal[BanAppeals.userId],
+                                    appeal[BanAppeals.whatDidYouDo],
+                                    appeal[BanAppeals.whyDidYouBreakThem],
+                                    appeal[BanAppeals.accountIds],
+                                    appeal[BanAppeals.whyShouldYouBeUnbanned],
+                                    appeal[BanAppeals.additionalComments],
+                                    appeal[BanAppeals.files],
+                                    UserBannedState(
+                                        appeal[BannedUsers.id].value,
+                                        appeal[BannedUsers.valid],
+                                        Instant.fromEpochMilliseconds(appeal[BannedUsers.bannedAt]),
+                                        appeal[BannedUsers.expiresAt]?.let { Instant.fromEpochMilliseconds(it) },
+                                        appeal[BannedUsers.reason],
+                                        appeal[BannedUsers.bannedBy]?.let { UserId(it.toULong()) },
+                                        appeal[BannedUsers.staffNotes]
+                                    ),
+                                    appeal[BanAppeals.submittedAt],
+                                    appeal[BanAppeals.reviewedBy],
+                                    appeal[BanAppeals.reviewedAt],
+                                    appeal[BanAppeals.reviewerNotes],
+                                    appeal[BanAppeals.appealResult]
+                                ),
+                                submittedBy,
+                                appealFor
+                            )
+                        }
+                    ).await()
+
+                    call.respondText("")
+                }
+
                 for (route in publicAPIRoutes) {
                     route.register(this)
                 }
@@ -630,6 +694,12 @@ class InternalWebServer(val m: LorittaBot) {
 
     @Serializable
     data class NotifyLoriCoolCardsRequest(
+        val guildId: Long,
+        val channelId: Long
+    )
+
+    @Serializable
+    data class NotifyBanAppealRequest(
         val guildId: Long,
         val channelId: Long
     )

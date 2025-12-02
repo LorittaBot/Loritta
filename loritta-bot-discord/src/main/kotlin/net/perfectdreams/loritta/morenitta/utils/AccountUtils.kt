@@ -2,18 +2,22 @@ package net.perfectdreams.loritta.morenitta.utils
 
 import dev.minn.jda.ktx.messages.InlineMessage
 import dev.minn.jda.ktx.messages.MessageCreate
+import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
+import net.perfectdreams.loritta.common.utils.GACampaigns
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.dao.Daily
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
+import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import net.perfectdreams.loritta.serializable.UserId
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
@@ -224,6 +228,20 @@ object AccountUtils {
         styled(
             i18nContext.get(I18nKeysData.Commands.UserIsLorittaBanned.TooLateToSaySorry),
             Emotes.LoriSob
+        )
+
+        actionRow(
+            Button.of(
+                ButtonStyle.LINK,
+                GACampaigns.createUrlWithCampaign(
+                    "https://appeals.loritta.website/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/",
+                    "discord",
+                    "button",
+                    "unban-appeal",
+                    "user-banned-message"
+                ).toString(),
+                "Faça um Apelo de Ban"
+            ).withEmoji(Emotes.LoriMegaphone.toJDA())
         )
     }
 }

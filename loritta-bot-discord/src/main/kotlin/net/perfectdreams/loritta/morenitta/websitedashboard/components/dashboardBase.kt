@@ -2,12 +2,14 @@ package net.perfectdreams.loritta.morenitta.websitedashboard.components
 
 import io.ktor.http.Url
 import kotlinx.html.BODY
+import kotlinx.html.DIV
 import kotlinx.html.FlowContent
 import kotlinx.html.HTML
 import kotlinx.html.body
 import kotlinx.html.button
 import kotlinx.html.canvas
 import kotlinx.html.div
+import kotlinx.html.h1
 import kotlinx.html.head
 import kotlinx.html.hr
 import kotlinx.html.id
@@ -191,6 +193,46 @@ fun HTML.dashboardBase(
                     else !userPremiumPlan.displayAds,
                     rightSidebarContent
                 )
+            }
+        }
+    }
+}
+
+fun HTML.banAppealWrapperBase(
+    i18nContext: I18nContext,
+    title: String,
+    theme: ColorTheme,
+    shimejiSettings: LorittaShimejiSettings,
+    appealForm: DIV.() -> Unit
+) {
+    websiteBase(
+        i18nContext,
+        title
+    ) {
+        canvas(classes = "loritta-game-canvas") {
+            attributes["bliss-component"] = "loritta-shimeji"
+            attributes["loritta-shimeji-settings"] = BlissHex.encodeToHexString(Json.encodeToString(shimejiSettings))
+        }
+
+        div(classes = theme.className) {
+            id = "ban-appeal-wrapper"
+
+            div {
+                id = "toast-list"
+            }
+
+            div {
+                id = "modal-list"
+            }
+
+            div {
+                id = "ban-appeal-content"
+
+                div {
+                    id = "appeal-form"
+
+                    appealForm()
+                }
             }
         }
     }

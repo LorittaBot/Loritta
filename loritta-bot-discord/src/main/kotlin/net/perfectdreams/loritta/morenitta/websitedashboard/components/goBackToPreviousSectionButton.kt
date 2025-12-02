@@ -6,12 +6,15 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.utils.SVGIcons
 
 fun FlowContent.goBackToPreviousSectionButton(
     href: String,
+    attrs: FlowContent.() -> Unit = {
+        swapRightSidebarContentsAttributes()
+    },
     block: FlowContent.() -> (Unit),
 ) {
     discordButtonLink(ButtonStyle.NO_BACKGROUND_THEME_DEPENDENT_DARK_TEXT, href = href) {
         classes += "text-with-icon bounce-icon-to-the-left-on-hover"
 
-        swapRightSidebarContentsAttributes()
+        attrs()
         svgIcon(SVGIcons.CaretLeft)
 
         block()

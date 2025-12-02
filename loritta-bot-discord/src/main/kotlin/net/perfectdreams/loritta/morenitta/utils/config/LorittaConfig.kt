@@ -193,7 +193,11 @@ data class LorittaConfig(
     )
 
     @Serializable
-    data class EtherealGambiServiceConfig(val url: String)
+    data class EtherealGambiServiceConfig(
+        val backgroundsUrl: String,
+        val baseUrl: String,
+        val token: String
+    )
 
     @Serializable
     data class GabrielaHelperServiceConfig(val url: String)

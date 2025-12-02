@@ -5,23 +5,35 @@ import web.dom.document
 import web.events.addEventHandler
 import web.html.HTMLDivElement
 import web.html.HTMLInputElement
+import web.html.HTMLTextAreaElement
 import web.input.INPUT
 import web.input.InputEvent
 
 class CharacterCounterComponent : BlissComponent<HTMLDivElement>() {
     override fun onMount() {
         val elementToBeListenedTo = document.body.querySelector(mountedElement.getAttribute("character-counter-listen")!!) ?: error("Could not find element to listen to!")
-        require(elementToBeListenedTo is HTMLInputElement)
 
-        fun updatePreview() {
-            this.mountedElement.textContent = "${elementToBeListenedTo.value.length}/${elementToBeListenedTo.maxLength}"
-        }
+        if (elementToBeListenedTo is HTMLInputElement) {
+            fun updatePreview() {
+                this.mountedElement.textContent = "${elementToBeListenedTo.value.length}/${elementToBeListenedTo.maxLength}"
+            }
 
-        registeredEvents += elementToBeListenedTo.addEventHandler(InputEvent.INPUT) {
+            registeredEvents += elementToBeListenedTo.addEventHandler(InputEvent.INPUT) {
+                updatePreview()
+            }
+
             updatePreview()
-        }
+        } else if (elementToBeListenedTo is HTMLTextAreaElement) {
+            fun updatePreview() {
+                this.mountedElement.textContent = "${elementToBeListenedTo.value.length}/${elementToBeListenedTo.maxLength}"
+            }
 
-        updatePreview()
+            registeredEvents += elementToBeListenedTo.addEventHandler(InputEvent.INPUT) {
+                updatePreview()
+            }
+
+            updatePreview()
+        } else error("You can't listen to a $elementToBeListenedTo!")
     }
 
     override fun onUnmount() {}

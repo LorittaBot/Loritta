@@ -78,10 +78,12 @@ object DateUtils {
 		return "${TimeFormat.DATE_TIME_SHORT.format(epochMilli)} (${TimeFormat.RELATIVE.format(epochMilli)})"
 	}
 
+    fun formatDiscordLikeRelativeDate(i18nContext: I18nContext, fromEpoch: Instant, toEpoch: Instant) = formatDiscordLikeRelativeDate(i18nContext, fromEpoch.toEpochMilli(), toEpoch.toEpochMilli())
+
 	fun formatDiscordLikeRelativeDate(i18nContext: I18nContext, fromEpochMilli: Long, toEpochMilli: Long): String {
 		val result = formatDateDiff(i18nContext, fromEpochMilli, toEpochMilli, 1)
 
-		return if (fromEpochMilli > toEpochMilli) {
+		return if (toEpochMilli > fromEpochMilli) {
 			i18nContext.get(I18nKeysData.Time.TimeSpanInTheFuture(result))
 		} else {
 			i18nContext.get(I18nKeysData.Time.TimeSpanInThePast(result))

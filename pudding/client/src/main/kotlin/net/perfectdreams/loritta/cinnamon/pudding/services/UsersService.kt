@@ -181,6 +181,7 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
 
         return@transaction bannedState.let {
             UserBannedState(
+                it[BannedUsers.id].value,
                 it[BannedUsers.valid],
                 Instant.fromEpochMilliseconds(it[BannedUsers.bannedAt]),
                 it[BannedUsers.expiresAt]?.let { Instant.fromEpochMilliseconds(it) },

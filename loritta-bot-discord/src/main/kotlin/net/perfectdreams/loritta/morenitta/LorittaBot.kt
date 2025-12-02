@@ -256,6 +256,7 @@ class LorittaBot(
 	val sonhosTransferInteractionsListener = SonhosTransferInteractionsListener(this)
 	val thirdPartySonhosTransferInteractionsListener = ThirdPartySonhosTransferInteractionsListener(this)
     val deviousGuildModifiedListener = DeviousGuildModifiedListener(this)
+    val banAppealInteractionsListener = BanAppealInteractionsListener(this)
 
 	var builder: DefaultShardManagerBuilder
 
@@ -472,7 +473,8 @@ class LorittaBot(
 				reactionListener,
 				sonhosTransferInteractionsListener,
 				thirdPartySonhosTransferInteractionsListener,
-                deviousGuildModifiedListener
+                deviousGuildModifiedListener,
+                banAppealInteractionsListener
 			)
 			.addEventListenerProvider {
 				PreStartGatewayEventReplayListener(

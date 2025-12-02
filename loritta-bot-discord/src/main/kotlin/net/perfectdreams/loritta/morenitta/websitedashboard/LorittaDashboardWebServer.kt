@@ -23,12 +23,16 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite.UserPermissionLevel
 import net.perfectdreams.loritta.morenitta.websitedashboard.discord.DiscordOAuth2Guild
 import net.perfectdreams.loritta.morenitta.websitedashboard.discord.DiscordOAuth2UserIdentification
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.banappeals.BanAppealsOverrideRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.banappeals.BanAppealsFormRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.ChooseYourServerUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.DashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.DiscordAddBotUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.DiscordLoginUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.PostFavoriteGuildUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.PocketLorittaUserDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.banappeals.PostBanAppealsOverrideRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.banappeals.PostBanAppealsRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.PostDashboardThemeGuildUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.PostLogoutUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.PostServerListUserDashboardRoute
@@ -43,6 +47,8 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.backgrounds.B
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.backgrounds.GetBackgroundUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.backgrounds.PostApplyBackgroundUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.backgrounds.PostUploadBackgroundUserDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.banappeals.BanAppealsOverviewRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.banappeals.PostBanAppealsAccountIdsRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.dailyshop.DailyShopUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.dailyshop.PostBuyDailyShopItemUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.dailyshop.SSEDailyShopTimerUserDashboardRoute
@@ -195,6 +201,10 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
         const val WEBSITE_SESSION_COOKIE = "loritta_session"
         const val WEBSITE_SESSION_COOKIE_MAX_AGE = 86_400 * 90 // 90 days
         const val WEBSITE_SESSION_COOKIE_REFRESH = 86_400 * 30 // 30 days
+        // We use ports instead of hosts to be easier to debug locally
+        // Because if we used hosts, we would need to manually change the hosts file
+        const val DASHBOARD_PORT = 13004
+        const val BAN_APPEALS_PORT = 13005
 
         fun canManageGuild(g: DiscordOAuth2Guild): Boolean {
             val isAdministrator = g.permissions shr 3 and 1 == 1L
@@ -240,7 +250,7 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
         )
     )
 
-    val routes = listOf(
+    val dashboardRoutes = listOf(
         ChooseYourServerUserDashboardRoute(this),
         PocketLorittaUserDashboardRoute(this),
         SonhosShopUserDashboardRoute(this),
@@ -470,6 +480,16 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
         UserBackgroundPreviewDashboardRoute(this),
     )
 
+    val appealsRoute = listOf(
+        // Ban Appeal
+        BanAppealsOverviewRoute(this),
+        BanAppealsFormRoute(this),
+        BanAppealsOverrideRoute(this),
+        PostBanAppealsOverrideRoute(this),
+        PostBanAppealsRoute(this),
+        PostBanAppealsAccountIdsRoute(this)
+    )
+
     val oauth2Endpoints = DiscordOAuth2Endpoints(this.loritta)
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -495,7 +515,20 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
             cssBundle
         )
 
-        val server = embeddedServer(Netty, 13004) {
+        val server = embeddedServer(
+            Netty,
+            configure = {
+                connectors.add(EngineConnectorBuilder().apply {
+                    host = "0.0.0.0"
+                    port = DASHBOARD_PORT
+                })
+
+                connectors.add(EngineConnectorBuilder().apply {
+                    host = "0.0.0.0"
+                    port = BAN_APPEALS_PORT
+                })
+            }
+        ) {
             install(Compression)
 
             intercept(ApplicationCallPipeline.Setup) {
@@ -507,13 +540,28 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
                     call.respondText("Howdy! Loritta Cluster ${loritta.lorittaCluster.id}")
                 }
 
-                for (route in this@LorittaDashboardWebServer.routes) {
-                    route.register(this)
+                port(DASHBOARD_PORT) {
+                    for (route in this@LorittaDashboardWebServer.dashboardRoutes) {
+                        route.register(this)
 
-                    if (route is DashboardLocalizedRoute && route.getMethod() == HttpMethod.Get) {
-                        get(route.originalPath) {
-                            val i18nContext = getI18nContextFromCall(call)
-                            call.respondRedirect("/${i18nContext.get(I18nKeysData.Website.LocalePathId)}${call.request.uri}")
+                        if (route is DashboardLocalizedRoute && route.getMethod() == HttpMethod.Get) {
+                            get(route.originalPath) {
+                                val i18nContext = getI18nContextFromCall(call)
+                                call.respondRedirect("/${i18nContext.get(I18nKeysData.Website.LocalePathId)}${call.request.uri}")
+                            }
+                        }
+                    }
+                }
+
+                port(BAN_APPEALS_PORT) {
+                    for (route in appealsRoute) {
+                        route.register(this)
+
+                        if (route is DashboardLocalizedRoute && route.getMethod() == HttpMethod.Get) {
+                            get(route.originalPath) {
+                                val i18nContext = getI18nContextFromCall(call)
+                                call.respondRedirect("/${i18nContext.get(I18nKeysData.Website.LocalePathId)}${call.request.uri}")
+                            }
                         }
                     }
                 }

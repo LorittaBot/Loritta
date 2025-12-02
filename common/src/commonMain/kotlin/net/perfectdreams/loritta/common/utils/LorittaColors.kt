@@ -14,4 +14,8 @@ object LorittaColors {
     val BlackjackLost = Color(218, 55, 60)
     val BlackjackYellow = Color(255, 208, 0)
     val BlackjackWon = Color(41, 133, 70)
+
+    val BanAppealPending = LorittaAqua
+    val BanAppealApproved = Color(41, 133, 70)
+    val BanAppealRejected = Color(218, 55, 60)
 }

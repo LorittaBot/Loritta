@@ -343,13 +343,21 @@ object Bliss {
                 }
             }
 
-            val disableWhen = element.getAttribute("bliss-disable-when")
-                ?.split(",")
+            val disableWhenAttribute = element.getAttribute("bliss-disable-when")
 
-            if (disableWhen != null) {
-                println("BLISS DISABLE WHEN!!! $disableWhen")
-                for (entry in disableWhen) {
-                    val match = DISABLE_WHEN_REGEX.matchEntire(entry) ?: error("Failed to match $entry!")
+            if (disableWhenAttribute != null) {
+                println("BLISS DISABLE WHEN!!! $disableWhenAttribute")
+
+                val operatorRegex = Regex("\\s*(\\|\\||&&)\\s*")
+                val parts = disableWhenAttribute.split(operatorRegex)
+                val operators = operatorRegex.findAll(disableWhenAttribute).map { it.groupValues[1] }.toList()
+
+                data class ConditionCheck(val element: Element, val check: () -> Boolean)
+
+                val conditions = mutableListOf<ConditionCheck>()
+
+                for (entry in parts) {
+                    val match = DISABLE_WHEN_REGEX.matchEntire(entry.trim()) ?: error("Failed to match $entry!")
 
                     val selector = match.groups["querySelector"]!!.value
                     val text = match.groups["text"]?.value
@@ -361,80 +369,84 @@ object Bliss {
                     println("Registering $selector for disabled when (text: $text, blank: $blank, empty: $empty)")
                     val targetEventElement = document.querySelector(selector) ?: error("Could not find element $selector!")
 
-                    fun disableCondition(invokeBlock: () -> (Boolean)) {
-                        val result = invokeBlock.invoke()
-
-                        if (result) {
-                            element.setAttribute("disabled", "")
-                        } else {
-                            element.removeAttribute("disabled")
-                        }
-                    }
-
-                    if (targetEventElement is HTMLInputElement) {
-                        fun blankCondition(bool: Boolean) {
-                            if (targetEventElement.value.isBlank() == bool) {
-                                element.removeAttribute("disabled")
-                            } else {
-                                element.setAttribute("disabled", "")
-                            }
-                        }
-
-                        fun contentCondition(expected: String, bool: Boolean) {
-                            val checkValue = targetEventElement.value == expected
-
-                            if (checkValue == bool) {
-                                element.removeAttribute("disabled")
-                            } else {
-                                element.setAttribute("disabled", "")
-                            }
-                        }
-
+                    val condition: () -> Boolean = if (targetEventElement is HTMLInputElement) {
                         if (empty != null) {
-                            val emptyCondition = {
-                                targetEventElement.value.isEmpty() == expectedBoolValue
-                            }
-
-                            targetEventElement.addEventHandler(InputEvent.INPUT) {
-                                disableCondition(emptyCondition)
-                            }
-
-                            disableCondition(emptyCondition)
+                            { targetEventElement.value.isEmpty() == expectedBoolValue }
                         } else if (blank != null) {
-                            val blankCondition = {
-                                targetEventElement.value.isBlank() == expectedBoolValue
-                            }
-
-                            targetEventElement.addEventHandler(InputEvent.INPUT) {
-                                disableCondition(blankCondition)
-                            }
-
-                            disableCondition(blankCondition)
+                            { targetEventElement.value.isBlank() == expectedBoolValue }
                         } else if (text != null) {
-                            val textCondition = {
-                                (targetEventElement.value == text) == expectedBoolValue
-                            }
-
-                            targetEventElement.addEventHandler(InputEvent.INPUT) {
-                                disableCondition(textCondition)
-                            }
-
-                            disableCondition(textCondition)
+                            { (targetEventElement.value == text) == expectedBoolValue }
+                        } else {
+                            error("Invalid condition for input element!")
+                        }
+                    } else if (targetEventElement is HTMLTextAreaElement) {
+                        if (empty != null) {
+                            { targetEventElement.value.isEmpty() == expectedBoolValue }
+                        } else if (blank != null) {
+                            { targetEventElement.value.isBlank() == expectedBoolValue }
+                        } else if (text != null) {
+                            { (targetEventElement.value == text) == expectedBoolValue }
+                        } else {
+                            error("Invalid condition for textarea element!")
                         }
                     } else if (targetEventElement is HTMLSelectElement) {
                         if (text != null) {
-                            val textCondition = {
-                                (targetEventElement.value == text) == expectedBoolValue
-                            }
+                            { (targetEventElement.value == text) == expectedBoolValue }
+                        } else {
+                            error("Invalid condition for select element!")
+                        }
+                    } else {
+                        error("Cannot target element $targetEventElement for disabled when!")
+                    }
 
-                            targetEventElement.addEventHandler(Event.CHANGE) {
-                                disableCondition(textCondition)
-                            }
+                    conditions.add(ConditionCheck(targetEventElement, condition))
+                }
 
-                            disableCondition(textCondition)
+                fun checkDisableCondition() {
+                    val values = conditions.map { it.check() }.toMutableList()
+                    val currentOps = operators.toMutableList()
+
+                    // Operator precedence: && first
+                    var i = 0
+                    while (i < currentOps.size) {
+                        if (currentOps[i] == "&&") {
+                            val left = values[i]
+                            val right = values[i + 1]
+                            values[i] = left && right
+                            values.removeAt(i + 1)
+                            currentOps.removeAt(i)
+                        } else {
+                            i++
+                        }
+                    }
+
+                    // Then ||
+                    var result = values[0]
+                    for (j in 0 until currentOps.size) {
+                        result = result || values[j + 1]
+                    }
+
+                    if (result) {
+                        element.setAttribute("disabled", "")
+                    } else {
+                        element.removeAttribute("disabled")
+                    }
+                }
+
+                for (condition in conditions) {
+                    val targetEventElement = condition.element
+                    if (targetEventElement is HTMLInputElement || targetEventElement is HTMLTextAreaElement) {
+                        targetEventElement.addEventHandler(InputEvent.INPUT) {
+                            checkDisableCondition()
+                        }
+                    } else if (targetEventElement is HTMLSelectElement) {
+                        targetEventElement.addEventHandler(Event.CHANGE) {
+                            checkDisableCondition()
                         }
                     }
                 }
+
+                checkDisableCondition()
             }
 
             val transformText = element.getAttribute("bliss-transform-text")
