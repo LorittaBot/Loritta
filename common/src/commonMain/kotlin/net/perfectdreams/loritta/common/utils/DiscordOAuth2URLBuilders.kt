@@ -75,7 +75,7 @@ fun LorittaDiscordOAuth2AuthorizeScopeURL(
     append("response_type", "code")
     append("redirect_uri", redirectUri)
     if (state != null)
-        append("state", Base64.UrlSafe.encode(state.toString().toByteArray(Charsets.UTF_8)))
+        append("state", state)
 
     apply(parameters)
 }

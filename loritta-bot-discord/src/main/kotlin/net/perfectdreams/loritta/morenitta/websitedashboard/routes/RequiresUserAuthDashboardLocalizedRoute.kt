@@ -2,6 +2,9 @@ package net.perfectdreams.loritta.morenitta.websitedashboard.routes
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.*
+import io.ktor.server.plugins.origin
+import io.ktor.server.request.host
+import io.ktor.server.request.uri
 import io.ktor.server.request.userAgent
 import io.ktor.server.response.respondRedirect
 import io.ktor.server.response.respondText
@@ -17,9 +20,12 @@ import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.LorittaDiscordOAuth2AuthorizeScopeURL
+import net.perfectdreams.loritta.morenitta.website.utils.extensions.hostFromHeader
+import net.perfectdreams.loritta.morenitta.websitedashboard.AuthenticationState
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.AuthenticationStateUtils
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.shimeji.ActivityLevel
@@ -96,11 +102,18 @@ abstract class RequiresUserAuthDashboardLocalizedRoute(website: LorittaDashboard
             }
             return
         }
-        
+
+        val fullUrl = call.request.origin.scheme + "://" + call.request.hostFromHeader() + call.request.uri
+
         call.respondRedirect(
             LorittaDiscordOAuth2AuthorizeScopeURL(
                 website.loritta,
-                null
+                AuthenticationStateUtils.createStateAsBase64(
+                    AuthenticationState(
+                        redirectUrl = fullUrl,
+                    ),
+                    website.loritta
+                )
             ),
             false
         )

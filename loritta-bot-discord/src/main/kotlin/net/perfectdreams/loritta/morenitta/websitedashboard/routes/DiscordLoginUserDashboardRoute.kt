@@ -310,11 +310,17 @@ class DiscordLoginUserDashboardRoute(val website: LorittaDashboardWebServer) : B
         )
 
         // Successfully authenticated, let's freaking go!!!
-        // If we have a Guild ID associated with it, we'll redirect to a new page that checks if Loritta was *actually* added to the server
-        if (guildId != null) {
-            call.respondRedirect("/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/$guildId/added", false)
+        val redirectUrl = state?.redirectUrl
+        if (redirectUrl != null) {
+            // If we have a redirect URL for our state, we will redirect to it
+            call.respondRedirect(redirectUrl, false)
         } else {
-            call.respondRedirect("/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/", false)
+            // If we have a Guild ID associated with it, we'll redirect to a new page that checks if Loritta was *actually* added to the server
+            if (guildId != null) {
+                call.respondRedirect("/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/$guildId/added", false)
+            } else {
+                call.respondRedirect("/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/", false)
+            }
         }
     }
 }
