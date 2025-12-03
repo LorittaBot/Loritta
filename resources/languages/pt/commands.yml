@@ -62,6 +62,7 @@ commands:
     staffNote: "**Nota da Staff:** {staffNote}"
     appealLink: "**Apelo de Bans:** {appealLink}"
     tooLateToSaySorry: "*Será que é tarde demais para ele pedir desculpas?*"
+    sendABanAppeal: "Enviar um Apelo de Ban"
   usersFill:
     notEnoughUsersPermissionsTip: "Eu poderia pegar membros das mensagens mais recentes do servidor, mas para isso eu preciso ter permissão para ler o histórico de mensagens do canal!"
     notEnoughUsersGuildTip: "Eu poderia pegar membros das mensagens mais recentes de um servidor, mas... bem, estamos em uma mensagem direta, os únicos dois usuários aqui são você e eu!"

@@ -243,8 +243,8 @@ object AccountUtils {
                     "unban-appeal",
                     "user-banned-message"
                 ).toString(),
-                "Faça um Apelo de Ban"
-            ).withEmoji(Emotes.LoriMegaphone.toJDA())
+                i18nContext.get(I18nKeysData.Commands.UserIsLorittaBanned.SendABanAppeal)
+            ).withEmoji(Emotes.LoriAngel.toJDA())
         )
     }
 }

@@ -14,6 +14,8 @@ import kotlinx.datetime.toJavaInstant
 import kotlinx.datetime.toKotlinInstant
 import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.IntegrationType
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
@@ -31,6 +33,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.linkButton
 import net.perfectdreams.loritta.morenitta.utils.ClusterOfflineException
 import net.perfectdreams.loritta.morenitta.utils.devious.GatewayShardStartupResumeStatus
+import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import org.jetbrains.exposed.sql.selectAll
 import java.lang.management.ManagementFactory
 import java.time.Instant
@@ -45,6 +48,7 @@ class LorittaCommand(val m: LorittaBot) : SlashCommandDeclarationWrapper {
         private val CLUSTERS_I18N_PREFIX = I18N_PREFIX.Clusters
         private val INFO_I18N_PREFIX = I18N_PREFIX.Info
         private val NERD_I18N_PREFIX = I18N_PREFIX.Nerd
+        private val APPEAL_I18N_PREFIX = I18N_PREFIX.Appeal
     }
 
     override fun command() = slashCommand(I18nKeysData.Commands.Command.Loritta.Label, TodoFixThisData, CommandCategory.DISCORD, UUID.fromString("7ff3e80c-5832-48f5-9137-6640ef341863")) {
@@ -81,6 +85,16 @@ class LorittaCommand(val m: LorittaBot) : SlashCommandDeclarationWrapper {
             }
 
             executor = LorittaNerdStatsExecutor(m)
+        }
+
+        subcommand(APPEAL_I18N_PREFIX.Label, APPEAL_I18N_PREFIX.Description, UUID.fromString("00d970d5-7b67-433f-bd51-1cb2b67654e7")) {
+            this.alternativeLegacyAbsoluteCommandPaths.apply {
+                add("apelo")
+                add("appeal")
+            }
+            this.allowUsageEvenIfLorittaBanned = true
+
+            executor = LorittaAppealExecutor(m)
         }
     }
 
@@ -527,6 +541,36 @@ class LorittaCommand(val m: LorittaBot) : SlashCommandDeclarationWrapper {
                 styled(
                     "**${locale["commands.command.botinfo.love"]}:** ∞",
                     "<:blobheart:467447056374693889>",
+                )
+            }
+        }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ) = LorittaLegacyMessageCommandExecutor.NO_ARGS
+    }
+
+    class LorittaAppealExecutor(val m: LorittaBot) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            context.reply(false) {
+                styled(
+                    context.i18nContext.get(I18nKeysData.Commands.Command.Loritta.Appeal.BrokeTheRules),
+                    Emotes.LoriBonk
+                )
+
+                actionRow(
+                    Button.of(
+                        ButtonStyle.LINK,
+                        GACampaigns.createUrlWithCampaign(
+                            m.config.loritta.banAppeals.url.removeSuffix("/") + "/${context.i18nContext.get(I18nKeysData.Website.LocalePathId)}/",
+                            "discord",
+                            "button",
+                            "unban-appeal",
+                            "appeal-command"
+                        ).toString(),
+                        context.i18nContext.get(I18nKeysData.Commands.UserIsLorittaBanned.SendABanAppeal)
+                    ).withEmoji(Emotes.LoriAngel.toJDA())
                 )
             }
         }

@@ -35,4 +35,6 @@ info:
   premium: "Premium"
 appeal:
   label: "apelo"
-  description: "Envie um apelo de ban para a Loritta"
+  description: "Foi banido da Loritta? Então envie um apelo de ban para conseguir uma segunda chance!"
+
+  brokeTheRules: "Você quebrou as regras da Loritta e queria uma segunda chance? Então envie um apelo de ban!"
