@@ -82,7 +82,7 @@ object DashboardDailyShopUtils {
         val backgroundsWrapper = ProfileSectionsResponse.BackgroundsWrapper(
             loritta.dreamStorageService.baseUrl,
             dreamStorageServiceNamespace,
-            loritta.config.loritta.etherealGambiService.url,
+            loritta.config.loritta.etherealGambiService.backgroundsUrl,
             boughtBackgroundsResults.map {
                 BackgroundWithVariations(
                     it,

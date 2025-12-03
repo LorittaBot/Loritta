@@ -3,8 +3,10 @@ package net.perfectdreams.loritta.morenitta.websitedashboard.routes.banappeals
 import io.ktor.server.application.*
 import kotlinx.html.div
 import kotlinx.html.h1
+import kotlinx.html.h2
 import kotlinx.html.hr
 import kotlinx.html.id
+import kotlinx.html.p
 import kotlinx.html.style
 import net.perfectdreams.etherealgambi.client.EtherealGambiClient
 import net.perfectdreams.i18nhelper.core.I18nContext
@@ -34,9 +36,6 @@ class BanAppealsOverviewRoute(website: LorittaDashboardWebServer) : RequiresUser
         val banState = website.loritta.pudding.users.getUserBannedState(UserId(bannedUserId))
         val userInfo = website.loritta.lorittaShards.retrieveUserInfoById(bannedUserId) ?: error("Unknown user!")
 
-        // TODO: Check cooldown state here AND on the override POST too!
-        //  The check must check who sent the appeal + the session ID
-
         call.respondHtml {
             banAppealWrapperBase(
                 i18nContext,
@@ -45,40 +44,62 @@ class BanAppealsOverviewRoute(website: LorittaDashboardWebServer) : RequiresUser
                 shimejiSettings
             ) {
                 heroWrapper {
+                    simpleHeroImage("https://stuff.loritta.website/emotes/lori-bonk.png")
+
                     heroText {
                         h1 {
-                            text("Apelo de Ban da Loritta")
+                            text("Central de Apelos da Loritta")
+                        }
+
+                        p {
+                            text("Se você foi banido da Loritta, você pode enviar um apelo para conseguir uma segunda chance.")
                         }
                     }
-
-                    simpleHeroImage("https://cdn.discordapp.com/emojis/956402010712834078.png?size=2048")
                 }
 
                 hr {}
 
                 if (banState == null) {
                     div {
-                        text("Atualmente você não está banido!")
-                    }
+                        style = "text-align: center;"
 
-                    discordButton(ButtonStyle.PRIMARY) {
-                        attributes["bliss-get"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/override"
-                        attributes["bliss-swap:200"] = "#appeal-form (innerHTML) -> #appeal-form (innerHTML)"
-                        attributes["bliss-push-url:200"] = "true"
+                        h2 {
+                            text("Você não está banido da Loritta!")
+                        }
 
-                        text("Eu estou banido em outra conta")
+                        div {
+                            text("Obrigado por respeitar as regras da Loritta!")
+                        }
+
+                        discordButton(ButtonStyle.PRIMARY) {
+                            style = "margin-top: 24px;"
+                            attributes["bliss-get"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/override"
+                            attributes["bliss-swap:200"] = "#ban-appeal-content (innerHTML) -> #ban-appeal-content (innerHTML)"
+                            attributes["bliss-push-url:200"] = "true"
+
+                            text("Eu estou banido em outra conta")
+                        }
                     }
                 } else {
                     div {
-                        text("Você está banido por ${banState.reason}!")
-                    }
+                        style = "text-align: center;"
 
-                    discordButton(ButtonStyle.PRIMARY) {
-                        attributes["bliss-get"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/form"
-                        attributes["bliss-swap:200"] = "#appeal-form (innerHTML) -> #appeal-form (innerHTML)"
-                        attributes["bliss-push-url:200"] = "true"
+                        h2 {
+                            text("Você está banido da Loritta!")
+                        }
 
-                        text("Iniciar Apelo")
+                        div {
+                            text("Motivo: ${banState.reason}!")
+                        }
+
+                        discordButton(ButtonStyle.PRIMARY) {
+                            style = "margin-top: 24px;"
+                            attributes["bliss-get"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/form"
+                            attributes["bliss-swap:200"] = "#ban-appeal-content (innerHTML) -> #ban-appeal-content (innerHTML)"
+                            attributes["bliss-push-url:200"] = "true"
+
+                            text("Enviar Apelo")
+                        }
                     }
                 }
             }

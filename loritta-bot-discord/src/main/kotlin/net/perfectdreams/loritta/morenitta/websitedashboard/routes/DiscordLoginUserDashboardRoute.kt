@@ -6,6 +6,7 @@ import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
+import kotlinx.html.title
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.jsonObject
@@ -27,6 +28,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.websiteBa
 import net.perfectdreams.loritta.morenitta.websitedashboard.discord.DiscordOAuth2Authorization
 import net.perfectdreams.loritta.morenitta.websitedashboard.discord.DiscordOAuth2UserIdentification
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.AuthenticationStateUtils
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.dashboardTitle
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.sequins.ktor.BaseRoute
 import org.jetbrains.exposed.sql.insert
@@ -55,7 +57,7 @@ class DiscordLoginUserDashboardRoute(val website: LorittaDashboardWebServer) : B
             call.respondHtml(status = HttpStatusCode.Unauthorized) {
                 websiteBase(
                     i18nContext,
-                    i18nContext.get(I18nKeysData.Website.Dashboard.AuthorizationFailedFullScreenError.Title),
+                    dashboardTitle(i18nContext, i18nContext.get(I18nKeysData.Website.Dashboard.AuthorizationFailedFullScreenError.Title))
                 ) {
                     authorizationFailedFullScreenError(
                         i18nContext,

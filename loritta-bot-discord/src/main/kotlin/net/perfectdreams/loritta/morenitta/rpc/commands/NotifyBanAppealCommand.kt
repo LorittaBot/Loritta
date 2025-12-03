@@ -63,6 +63,7 @@ class NotifyBanAppealCommand(val loritta: LorittaBot) : LorittaRPCCommand(Loritt
                             appeal[BannedUsers.staffNotes]
                         ),
                         appeal[BanAppeals.submittedAt],
+                        appeal[BanAppeals.languageId],
                         appeal[BanAppeals.reviewedBy],
                         appeal[BanAppeals.reviewedAt],
                         appeal[BanAppeals.reviewerNotes],

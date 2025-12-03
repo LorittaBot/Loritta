@@ -42,6 +42,7 @@ data class LorittaConfig(
     val crowdin: CrowdinConfig,
     val twitch: TwitchConfig,
     val bluesky: BlueskyConfig,
+    val banAppeals: BanAppealsConfig,
     val quirky: QuirkyConfig,
     val donatorsOstentation: DonatorsOstentationConfig,
     val connectionManager: ConnectionManagerConfig,
@@ -325,5 +326,12 @@ data class LorittaConfig(
     data class ConnectionManagerConfig(
         val trustedDomains: List<String>,
         val blockedDomains: List<String>
+    )
+
+    @Serializable
+    data class BanAppealsConfig(
+        val url: String,
+        val guildId: Long,
+        val channelId: Long
     )
 }

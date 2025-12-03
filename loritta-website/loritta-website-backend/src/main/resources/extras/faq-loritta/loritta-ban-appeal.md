@@ -116,4 +116,4 @@ Lembrando que mesmo que seja permanente sem ter chance de apelo, a equipe tem to
 
 ## Como posso fazer um apelo?
 
-Envie `apelo` via mensagem direta (privado) da Loritta Helper no [servidor de suporte da Loritta](https://loritta.website/br/support) e a Helper irá te explicar como fazer o seu apelo para ser desbanido. Boa sorte!
+Acesse https://appeals.loritta.website/ e envie o seu apelo por lá. Boa sorte!

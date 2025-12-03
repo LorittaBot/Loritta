@@ -379,6 +379,11 @@ body {
     to { visibility: hidden; }
 }
 
+hr {
+    width: 100%;
+    border: 1px solid black;
+}
+
 // This sidebar looks weird because we need to do a lot of weird tricks just to hide the sidebar WHEN THE TRANSITION ENDS
 // We did this by having a "is-closed" state that plays the "toggle-sidebar-visibility" animation
 nav#left-sidebar {
@@ -444,9 +449,8 @@ nav#left-sidebar {
         // Required for the swipe actions to work on mobile devices
         touch-action: pan-y;
 
-        > .divider {
-            width: 100%;
-            border: 1px solid var(--left-sidebar-divider-color);
+        > hr {
+            border-color: var(--left-sidebar-divider-color);
         }
 
         > .category {
@@ -643,13 +647,6 @@ nav#left-sidebar {
     }
 }
 
-hr {
-    box-sizing: content-box;
-    background: var(--content-divider-color);
-    border: 0;
-    height: 1px;
-}
-
 .hero-wrapper {
     display: grid;
     align-items: center;
@@ -658,12 +655,34 @@ hr {
     // much perfectionism
     grid-template-columns: 64fr 36fr;
 
+    // STATIC
     .hero-image {
         text-align: center;
         aspect-ratio: 16/12;
-        // Make it centered within the aspect ratio!
-        margin-left: auto;
-        margin-right: auto;
+        // Avoid the hero image being gigantic on the mobile layout
+        max-height: 350px;
+        width: 100%;
+        object-fit: contain;
+        -webkit-mask-image: linear-gradient(to bottom, rgb(0, 0, 0) 50%, rgba(0,0,0,0) 100%);
+        mask-image: linear-gradient(to bottom, rgb(0, 0, 0) 50%, rgba(0,0,0,0) 100%);
+    }
+
+    // ANIMATED
+    .hero-web-animation {
+        height: 350px;
+        width: 100%;
+        object-fit: contain;
+        -webkit-mask-image: linear-gradient(to bottom, rgb(0, 0, 0) 50%, rgba(0,0,0,0) 100%);
+        mask-image: linear-gradient(to bottom, rgb(0, 0, 0) 50%, rgba(0,0,0,0) 100%);
+
+        > div {
+            height: 100%;
+        }
+
+        svg {
+            width: 100%;
+            height: 100%;
+        }
     }
 
     .hero-text {
@@ -723,31 +742,8 @@ section#right-sidebar {
             padding-right: 1em;
         }
 
-        // STATIC
-        .hero-image {
-            max-height: 100%;
-            width: 100%;
-            object-fit: contain;
-            -webkit-mask-image: linear-gradient(to bottom, rgb(0, 0, 0) 50%, rgba(0,0,0,0) 100%);
-            mask-image: linear-gradient(to bottom, rgb(0, 0, 0) 50%, rgba(0,0,0,0) 100%);
-        }
-
-        // ANIMATED
-        .hero-web-animation {
-            height: 350px;
-            width: 100%;
-            object-fit: contain;
-            -webkit-mask-image: linear-gradient(to bottom, rgb(0, 0, 0) 50%, rgba(0,0,0,0) 100%);
-            mask-image: linear-gradient(to bottom, rgb(0, 0, 0) 50%, rgba(0,0,0,0) 100%);
-
-            > div {
-                height: 100%;
-            }
-
-            svg {
-                width: 100%;
-                height: 100%;
-            }
+        hr {
+            border-color: var(--content-divider-color);
         }
 
         > .fill-loading-screen {
@@ -878,6 +874,9 @@ aside#that-wasnt-very-cash-money-of-you-fixed-sidebar-reserved-space {
     .field-description {
         // A Discord-like field description
         font-size: var(--description-font-size);
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
     }
 }
 
@@ -1153,6 +1152,10 @@ aside#that-wasnt-very-cash-money-of-you-fixed-sidebar-reserved-space {
     background-color: var(--background-color);
     color: var(--content-text-color);
     min-height: 100vh;
+
+    hr {
+        border-color: var(--content-divider-color);
+    }
 
     #ban-appeal-content {
         max-width: 50em;

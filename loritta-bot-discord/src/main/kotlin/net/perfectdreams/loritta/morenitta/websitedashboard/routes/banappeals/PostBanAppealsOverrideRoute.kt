@@ -29,12 +29,24 @@ import net.perfectdreams.loritta.serializable.UserId
 class PostBanAppealsOverrideRoute(website: LorittaDashboardWebServer) : RequiresUserAuthDashboardLocalizedRoute(website, "/override") {
     @Serializable
     data class BanAppealOverrideRequest(
-        val userId: Long
+        val userId: String
     )
 
     override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
         val request = Json.decodeFromString<BanAppealOverrideRequest>(call.receiveText())
-        val userId = request.userId
+        val userId = request.userId.toLongOrNull()
+
+        if (userId == null) {
+            call.respondHtmlFragment(status = HttpStatusCode.BadRequest) {
+                blissShowToast(
+                    createEmbeddedToast(
+                        EmbeddedToast.Type.WARN,
+                        "Você não colocou um ID válido!"
+                    )
+                )
+            }
+            return
+        }
 
         val bannedState = website.loritta.pudding.users.getUserBannedState(UserId(userId))
         if (bannedState == null) {
@@ -58,21 +70,11 @@ class PostBanAppealsOverrideRoute(website: LorittaDashboardWebServer) : Requires
                 "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/",
                 attrs = {
                     attributes["bliss-get"] = "[href]"
-                    attributes["bliss-swap:200"] = "#appeal-form (innerHTML) -> #appeal-form (innerHTML)"
+                    attributes["bliss-swap:200"] = "#ban-appeal-content (innerHTML) -> #ban-appeal-content (innerHTML)"
                     attributes["bliss-push-url:200"] = "true"
                 }
             ) {
                 text("Voltar")
-            }
-
-            hr {}
-
-            heroWrapper {
-                heroText {
-                    h1 {
-                        text("Apelo de Ban da Loritta")
-                    }
-                }
             }
 
             hr {}

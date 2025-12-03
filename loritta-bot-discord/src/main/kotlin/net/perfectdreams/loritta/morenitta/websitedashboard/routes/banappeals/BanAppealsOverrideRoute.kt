@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.morenitta.websitedashboard.routes.banappeals
 
 import io.ktor.server.application.*
+import kotlinx.html.a
 import kotlinx.html.div
 import kotlinx.html.h1
 import kotlinx.html.hr
@@ -16,7 +17,10 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.ButtonStyle
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.banAppealWrapperBase
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.discordButton
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldDescription
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldInformation
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldInformationBlock
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldTitle
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrapper
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrappers
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.goBackToPreviousSectionButton
@@ -40,7 +44,7 @@ class BanAppealsOverrideRoute(website: LorittaDashboardWebServer) : RequiresUser
                     "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/",
                     attrs = {
                         attributes["bliss-get"] = "[href]"
-                        attributes["bliss-swap:200"] = "#appeal-form (innerHTML) -> #appeal-form (innerHTML)"
+                        attributes["bliss-swap:200"] = "#ban-appeal-content (innerHTML) -> #ban-appeal-content (innerHTML)"
                         attributes["bliss-push-url:200"] = "true"
                     }
                 ) {
@@ -49,19 +53,27 @@ class BanAppealsOverrideRoute(website: LorittaDashboardWebServer) : RequiresUser
 
                 hr {}
 
-                heroWrapper {
-                    heroText {
-                        h1 {
-                            text("Apelo de Ban da Loritta")
-                        }
-                    }
-                }
-
-                hr {}
-
                 fieldWrappers {
                     fieldWrapper {
-                        fieldInformation("ID da sua conta")
+                        fieldInformationBlock {
+                            fieldTitle {
+                                text("ID da sua conta banida")
+                            }
+
+                            fieldDescription {
+                                div {
+                                    text("Se você perdeu acesso a sua conta banida ou está usando outra conta agora, você pode enviar um apelo para ela colocando o ID dela aqui!")
+                                }
+
+                                div {
+                                    text("Não sabe copiar IDs? Então ")
+                                    a(href = "https://support.discord.com/hc/pt-br/articles/206346498-Onde-posso-encontrar-minhas-IDs-de-usu%C3%A1rio-servidor-e-mensagem", target = "_blank") {
+                                        text("clique aqui")
+                                    }
+                                    text("!")
+                                }
+                            }
+                        }
 
                         textInput {
                             name = "userId"
@@ -72,7 +84,7 @@ class BanAppealsOverrideRoute(website: LorittaDashboardWebServer) : RequiresUser
                         discordButton(ButtonStyle.PRIMARY) {
                             attributes["bliss-post"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/override"
                             attributes["bliss-include-json"] = "[name='userId']"
-                            attributes["bliss-swap:200"] = "body (innerHTML) -> #appeal-form (innerHTML)"
+                            attributes["bliss-swap:200"] = "body (innerHTML) -> #ban-appeal-content (innerHTML)"
                             text("Enviar")
                         }
                     }

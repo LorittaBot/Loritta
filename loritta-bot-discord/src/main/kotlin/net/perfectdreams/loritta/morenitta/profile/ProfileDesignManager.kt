@@ -768,7 +768,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 
 	fun getEtherealGambiBackgroundUrl(background: BackgroundVariation): String {
 		val extension = MediaTypeUtils.convertContentTypeToExtension(background.preferredMediaType)
-		return loritta.config.loritta.etherealGambiService.url.removeSuffix("/") + "/" + background.file + ".$extension"
+		return loritta.config.loritta.etherealGambiService.backgroundsUrl.removeSuffix("/") + "/" + background.file + ".$extension"
 	}
 
 	class ProfileCreationResult(

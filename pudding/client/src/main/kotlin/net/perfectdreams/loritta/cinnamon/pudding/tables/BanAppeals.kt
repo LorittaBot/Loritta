@@ -8,6 +8,7 @@ object BanAppeals : LongIdTable() {
     val submittedBy = long("submitted_by").index()
     val userId = long("user").index()
 
+    val languageId = text("language_id")
     val whatDidYouDo = text("what_did_you_do")
     val whyDidYouBreakThem = text("why_did_you_break_them")
     val accountIds = array<Long>("account_ids")

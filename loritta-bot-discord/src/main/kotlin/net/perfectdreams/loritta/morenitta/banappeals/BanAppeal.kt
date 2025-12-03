@@ -16,6 +16,7 @@ data class BanAppeal(
     val files: List<String>,
     val banEntry: UserBannedState,
     val submittedAt: OffsetDateTime,
+    val languageId: String,
     val reviewedBy: Long?,
     val reviewedAt: OffsetDateTime?,
     val reviewerNotes: String?,

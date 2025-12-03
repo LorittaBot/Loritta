@@ -33,6 +33,7 @@ import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.SVGIcons
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.banAppealTitle
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedDisableAdBlockModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
@@ -42,7 +43,7 @@ import net.perfectdreams.loritta.serializable.ColorTheme
 
 fun HTML.websiteBase(
     i18nContext: I18nContext,
-    title: String,
+    fullTitle: String,
     body: BODY.() -> Unit
 ) {
     // See these HTML tags! https://blog.jim-nielsen.com/2025/dont-forget-these-html-tags/
@@ -54,7 +55,7 @@ fun HTML.websiteBase(
         // Necessary for responsive design on phones: If not set, the browsers uses the "Use Desktop Design"
         meta(name = "viewport", content = "width=device-width, initial-scale=1, viewport-fit=cover")
 
-        title(dashboardTitle(i18nContext, title))
+        title(fullTitle)
         link(rel = "icon", type = "image/png", href = "/assets/images/favicon-192x192.png?v=${LorittaDashboardWebServer.favicon192x192Hash}")
         link(rel = "stylesheet", href = "/assets/css/style.css?v=${LorittaDashboardWebServer.assets.cssBundle.hash}", type = "text/css")
         meta(name = "theme-color") { this.content = LorittaColors.LorittaAqua.toHex() }
@@ -105,7 +106,7 @@ fun HTML.dashboardBase(
     leftSidebarEntries: FlowContent.() -> Unit,
     rightSidebarContent: FlowContent.() -> Unit,
 ) {
-    websiteBase(i18nContext, title) {
+    websiteBase(i18nContext, dashboardTitle(i18nContext, title)) {
         canvas(classes = "loritta-game-canvas") {
             attributes["bliss-component"] = "loritta-shimeji"
             attributes["loritta-shimeji-settings"] = BlissHex.encodeToHexString(Json.encodeToString(shimejiSettings))
@@ -207,7 +208,7 @@ fun HTML.banAppealWrapperBase(
 ) {
     websiteBase(
         i18nContext,
-        title
+        banAppealTitle(i18nContext, title)
     ) {
         canvas(classes = "loritta-game-canvas") {
             attributes["bliss-component"] = "loritta-shimeji"
@@ -228,11 +229,7 @@ fun HTML.banAppealWrapperBase(
             div {
                 id = "ban-appeal-content"
 
-                div {
-                    id = "appeal-form"
-
-                    appealForm()
-                }
+                appealForm()
             }
         }
     }

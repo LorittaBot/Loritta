@@ -49,7 +49,7 @@ class BanAppealsFormRoute(website: LorittaDashboardWebServer) : RequiresUserAuth
                     "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/",
                     attrs = {
                         attributes["bliss-get"] = "[href]"
-                        attributes["bliss-swap:200"] = "#appeal-form (innerHTML) -> #appeal-form (innerHTML)"
+                        attributes["bliss-swap:200"] = "#ban-appeal-content (innerHTML) -> #ban-appeal-content (innerHTML)"
                         attributes["bliss-push-url:200"] = "true"
                     }
                 ) {
@@ -58,27 +58,9 @@ class BanAppealsFormRoute(website: LorittaDashboardWebServer) : RequiresUserAuth
 
                 hr {}
 
-                heroWrapper {
-                    heroText {
-                        h1 {
-                            text("Apelo de Ban da Loritta")
-                        }
-                    }
-                }
-
-                hr {}
-
                 if (banState == null) {
                     div {
                         text("Atualmente você não está banido!")
-                    }
-
-                    discordButtonLink(ButtonStyle.PRIMARY, href = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/override") {
-                        attributes["bliss-get"] = "[href]"
-                        attributes["bliss-swap:200"] = "#appeal-form (innerHTML) -> #appeal-form (innerHTML)"
-                        attributes["bliss-push-url:200"] = "true"
-
-                        text("Eu estou banido em outra conta")
                     }
                 } else {
                     banAppealForm(i18nContext, bannedUserId, userInfo, banState)

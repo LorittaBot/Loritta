@@ -26,6 +26,11 @@ fun FlowContent.configSaved(i18nContext: I18nContext) {
  */
 fun dashboardTitle(i18nContext: I18nContext, section: String) = "$section • Painel da Loritta"
 
+/**
+ * Creates the Loritta styled ban appeal title
+ */
+fun banAppealTitle(i18nContext: I18nContext, section: String) = "$section • Central de Apelos"
+
 suspend fun ApplicationCall.respondConfigSaved(
     i18nContext: I18nContext,
     block: FlowContent.() -> Unit = {}

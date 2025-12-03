@@ -119,6 +119,7 @@ object AccountUtils {
             val messageBuilder: InlineMessage<*>.() -> (Unit) = {
                 apply(
                     buildBanMessage(
+                        loritta,
                         context.i18nContext,
                         context.user.isLorittaSupervisor(loritta.lorittaShards),
                         userId,
@@ -148,6 +149,7 @@ object AccountUtils {
                 MessageCreate {
                     apply(
                         buildBanMessage(
+                            context.loritta,
                             context.i18nContext,
                             context.userHandle.isLorittaSupervisor(context.loritta.lorittaShards),
                             userProfile.userId,
@@ -166,6 +168,7 @@ object AccountUtils {
     }
 
     private fun buildBanMessage(
+        loritta: LorittaBot,
         i18nContext: I18nContext,
         showWhoBannedTheUser: Boolean,
         userId: Long,
@@ -234,7 +237,7 @@ object AccountUtils {
             Button.of(
                 ButtonStyle.LINK,
                 GACampaigns.createUrlWithCampaign(
-                    "https://appeals.loritta.website/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/",
+                    loritta.config.loritta.banAppeals.url.removeSuffix("/") + "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/",
                     "discord",
                     "button",
                     "unban-appeal",
