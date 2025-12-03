@@ -25,14 +25,12 @@ import net.perfectdreams.loritta.morenitta.banappeals.BanAppealsUtils.createStaf
 import net.perfectdreams.loritta.morenitta.interactions.InteractivityManager
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedComponentId
 import net.perfectdreams.loritta.morenitta.interactions.modals.options.modalString
-import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.serializable.UserBannedState
 import net.perfectdreams.loritta.serializable.UserId
 import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.update
 import java.time.OffsetDateTime
@@ -77,19 +75,6 @@ class BanAppealInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
             reviewerNotes,
             appealResult
         )
-    }
-
-    private suspend fun getCachedUserInfoForAppeal(appeal: BanAppeal): AppealCachedUserInfo {
-        if (appeal.submittedBy == appeal.userId) {
-            val userInfo = m.lorittaShards.retrieveUserInfoById(appeal.userId)
-
-            return AppealCachedUserInfo(userInfo, userInfo)
-        } else {
-            return AppealCachedUserInfo(
-                m.lorittaShards.retrieveUserInfoById(appeal.submittedBy),
-                m.lorittaShards.retrieveUserInfoById(appeal.userId),
-            )
-        }
     }
 
     override fun onButtonInteraction(event: ButtonInteractionEvent) {
@@ -154,7 +139,7 @@ class BanAppealInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
 
         when (result) {
             is AppealAcceptResult.Success -> {
-                val (submittedBy, appeal) = getCachedUserInfoForAppeal(result.appeal)
+                val (submittedBy, appeal) = BanAppealsUtils.getCachedUserInfoForAppeal(m, result.appeal)
 
                 if (submittedBy == null) {
                     deferredReply.await()
@@ -310,7 +295,7 @@ class BanAppealInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
 
                 when (result) {
                     is AppealRejectResult.Success -> {
-                        val (submittedBy, appeal) = getCachedUserInfoForAppeal(result.appeal)
+                        val (submittedBy, appeal) = BanAppealsUtils.getCachedUserInfoForAppeal(m, result.appeal)
 
                         if (submittedBy == null) {
                             deferredReply.await()
@@ -437,9 +422,4 @@ class BanAppealInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
         data class AlreadyReviewed(val result: BanAppealResult) : AppealRejectResult()
         data object NotFound : AppealRejectResult()
     }
-
-    private data class AppealCachedUserInfo(
-        val submittedBy: CachedUserInfo?,
-        val appeal: CachedUserInfo?
-    )
 }

@@ -25,6 +25,7 @@ import net.perfectdreams.loritta.morenitta.banappeals.BanAppealsUtils
 import net.perfectdreams.loritta.morenitta.rpc.LorittaRPC
 import net.perfectdreams.loritta.morenitta.rpc.payloads.NotifyBanAppealRequest
 import net.perfectdreams.loritta.morenitta.rpc.execute
+import net.perfectdreams.loritta.morenitta.rpc.payloads.NotifyBanAppealResponse
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
@@ -194,6 +195,23 @@ class PostBanAppealsRoute(website: LorittaDashboardWebServer) : RequiresUserAuth
                             website.loritta.config.loritta.banAppeals.channelId,
                         )
                     )
+
+                    when (response) {
+                        NotifyBanAppealResponse.UserNotFound -> {
+                            call.respondHtmlFragment(status = HttpStatusCode.InternalServerError) {
+                                blissShowToast(
+                                    createEmbeddedToast(
+                                        EmbeddedToast.Type.WARN,
+                                        "Algo deu errado ao enviar o seu formulário!"
+                                    ) {
+                                        text("Usuário não encontrado")
+                                    }
+                                )
+                            }
+                            return
+                        }
+                        NotifyBanAppealResponse.Success -> {}
+                    }
 
                     // We should ALWAYS send the DMs to the user that created the report, even tho they may be sending on behalf of someone else
                     // This is to avoid spamming innocent users

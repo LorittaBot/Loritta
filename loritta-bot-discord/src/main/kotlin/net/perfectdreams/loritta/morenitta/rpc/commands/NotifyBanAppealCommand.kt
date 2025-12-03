@@ -9,6 +9,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.BanAppeals
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.banappeals.BanAppeal
+import net.perfectdreams.loritta.morenitta.banappeals.BanAppealsUtils
 import net.perfectdreams.loritta.morenitta.banappeals.BanAppealsUtils.createStaffAppealMessage
 import net.perfectdreams.loritta.morenitta.rpc.LorittaRPC
 import net.perfectdreams.loritta.morenitta.rpc.payloads.NotifyBanAppealRequest
@@ -27,7 +28,7 @@ class NotifyBanAppealCommand(val loritta: LorittaBot) : LorittaRPCCommand(Loritt
         val guild = loritta.lorittaShards.getGuildById(request.guildId)!!
         val channel = guild.getGuildMessageChannelById(request.channelId)!!
 
-        val appeal = loritta.transaction {
+        val appealRow = loritta.transaction {
             BanAppeals
                 .innerJoin(BannedUsers)
                 .selectAll()
@@ -37,39 +38,45 @@ class NotifyBanAppealCommand(val loritta: LorittaBot) : LorittaRPCCommand(Loritt
                 .first()
         }
 
-        val submittedBy = loritta.lorittaShards.retrieveUserInfoById(appeal[BanAppeals.submittedBy])
-        val appealFor = loritta.lorittaShards.retrieveUserInfoById(appeal[BanAppeals.userId])
+        val appeal = BanAppeal(
+            appealRow[BanAppeals.id].value,
+            appealRow[BanAppeals.submittedBy],
+            appealRow[BanAppeals.userId],
+            appealRow[BanAppeals.whatDidYouDo],
+            appealRow[BanAppeals.whyDidYouBreakThem],
+            appealRow[BanAppeals.accountIds],
+            appealRow[BanAppeals.whyShouldYouBeUnbanned],
+            appealRow[BanAppeals.additionalComments],
+            appealRow[BanAppeals.files],
+            UserBannedState(
+                appealRow[BannedUsers.id].value,
+                appealRow[BannedUsers.valid],
+                Instant.fromEpochMilliseconds(appealRow[BannedUsers.bannedAt]),
+                appealRow[BannedUsers.expiresAt]?.let { Instant.fromEpochMilliseconds(it) },
+                appealRow[BannedUsers.reason],
+                appealRow[BannedUsers.bannedBy]?.let { UserId(it.toULong()) },
+                appealRow[BannedUsers.staffNotes]
+            ),
+            appealRow[BanAppeals.submittedAt],
+            appealRow[BanAppeals.languageId],
+            appealRow[BanAppeals.reviewedBy],
+            appealRow[BanAppeals.reviewedAt],
+            appealRow[BanAppeals.reviewerNotes],
+            appealRow[BanAppeals.appealResult]
+        )
+        
+        val (submittedBy, appealFor) = BanAppealsUtils.getCachedUserInfoForAppeal(loritta, appeal)
+
+        if (submittedBy == null || appealFor == null) {
+            call.respondRPCResponse<NotifyBanAppealResponse>(NotifyBanAppealResponse.UserNotFound)
+            return
+        }
 
         channel.sendMessage(
             MessageCreate {
                 createStaffAppealMessage(
                     loritta,
-                    BanAppeal(
-                        appeal[BanAppeals.id].value,
-                        appeal[BanAppeals.submittedBy],
-                        appeal[BanAppeals.userId],
-                        appeal[BanAppeals.whatDidYouDo],
-                        appeal[BanAppeals.whyDidYouBreakThem],
-                        appeal[BanAppeals.accountIds],
-                        appeal[BanAppeals.whyShouldYouBeUnbanned],
-                        appeal[BanAppeals.additionalComments],
-                        appeal[BanAppeals.files],
-                        UserBannedState(
-                            appeal[BannedUsers.id].value,
-                            appeal[BannedUsers.valid],
-                            Instant.fromEpochMilliseconds(appeal[BannedUsers.bannedAt]),
-                            appeal[BannedUsers.expiresAt]?.let { Instant.fromEpochMilliseconds(it) },
-                            appeal[BannedUsers.reason],
-                            appeal[BannedUsers.bannedBy]?.let { UserId(it.toULong()) },
-                            appeal[BannedUsers.staffNotes]
-                        ),
-                        appeal[BanAppeals.submittedAt],
-                        appeal[BanAppeals.languageId],
-                        appeal[BanAppeals.reviewedBy],
-                        appeal[BanAppeals.reviewedAt],
-                        appeal[BanAppeals.reviewerNotes],
-                        appeal[BanAppeals.appealResult]
-                    ),
+                    appeal,
                     submittedBy,
                     appealFor
                 )

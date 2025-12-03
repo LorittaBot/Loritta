@@ -18,6 +18,19 @@ import kotlin.time.Duration.Companion.days
 object BanAppealsUtils {
     val BAN_APPEAL_COOLDOWN = 30.days
 
+    suspend fun getCachedUserInfoForAppeal(m: LorittaBot, appeal: BanAppeal): AppealCachedUserInfo {
+        if (appeal.submittedBy == appeal.userId) {
+            val userInfo = m.lorittaShards.retrieveUserInfoById(appeal.userId)
+
+            return AppealCachedUserInfo(userInfo, userInfo)
+        } else {
+            return AppealCachedUserInfo(
+                m.lorittaShards.retrieveUserInfoById(appeal.submittedBy),
+                m.lorittaShards.retrieveUserInfoById(appeal.userId),
+            )
+        }
+    }
+
     // data = the result row of the BanAppeals table
     fun InlineMessage<*>.createStaffAppealMessage(
         loritta: LorittaBot,
@@ -141,4 +154,9 @@ object BanAppealsUtils {
             ).withDisabled(alreadyReviewed)
         )
     }
+
+    data class AppealCachedUserInfo(
+        val submittedBy: CachedUserInfo?,
+        val appeal: CachedUserInfo?
+    )
 }

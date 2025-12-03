@@ -9,4 +9,7 @@ data class NotifyBanAppealRequest(val appealId: Long, val guildId: Long, val cha
 sealed class NotifyBanAppealResponse {
     @Serializable
     data object Success : NotifyBanAppealResponse()
+
+    @Serializable
+    data object UserNotFound : NotifyBanAppealResponse()
 }
