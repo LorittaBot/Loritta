@@ -75,6 +75,7 @@ dependencies {
     implementation(libs.ktor.client.java)
     implementation(libs.ktor.client.cio)
     implementation(libs.ktor.client.logging)
+    implementation("io.ktor:ktor-server-sse:3.3.2")
     implementation("io.micrometer:micrometer-registry-prometheus:1.13.6")
 
     implementation("com.google.code.gson:gson:2.10.1")
@@ -102,6 +103,9 @@ dependencies {
     // GalleryOfDreams client
     implementation("net.perfectdreams.galleryofdreams:common:1.0.13")
     implementation("net.perfectdreams.galleryofdreams:client:1.0.13")
+
+    // EtherealGambi client
+    implementation("net.perfectdreams.etherealgambi:client:1.0.4")
 
     // Used for logs - MojangStyleFileAppenderAndRollover
     implementation("com.github.luben:zstd-jni:1.5.5-6")
