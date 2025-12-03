@@ -79,7 +79,7 @@ object BanAppealsUtils {
                             }
                             appendLine("```")
                         } else {
-                            appendLine("*Nenhuma conta*")
+                            appendLine("*Nenhuma conta adicional*")
                         }
 
                         appendLine()
