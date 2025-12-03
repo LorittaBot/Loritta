@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.pudding.services
 
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
-import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingServerConfigRoot
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerRolePermissions
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.*
@@ -14,59 +13,6 @@ import org.jetbrains.exposed.sql.selectAll
 import java.util.*
 
 class ServerConfigsService(private val pudding: Pudding) : Service(pudding) {
-    suspend fun getServerConfigRoot(guildId: ULong): PuddingServerConfigRoot? = pudding.transaction {
-        ServerConfigs.selectFirstOrNull {
-            ServerConfigs.id eq guildId.toLong()
-        }?.let { PuddingServerConfigRoot.fromRow(it) }
-    }
-
-    suspend fun getModerationConfigByGuildId(guildId: ULong): ModerationConfig? = pudding.transaction {
-        ModerationConfigs.innerJoin(ServerConfigs).selectFirstOrNull {
-            ServerConfigs.id eq guildId.toLong()
-        }?.let { ModerationConfig.fromRow(it) }
-    }
-
-    suspend fun getMessageForPunishmentTypeOnGuildId(guildId: ULong, punishmentAction: PunishmentAction): String? = pudding.transaction {
-        val moderationConfig = getModerationConfigByGuildId(guildId)
-
-        val moderationPunishmentMessageConfig = ModerationPunishmentMessagesConfig.selectFirstOrNull {
-            ModerationPunishmentMessagesConfig.guild eq guildId.toLong() and
-                    (ModerationPunishmentMessagesConfig.punishmentAction eq punishmentAction)
-        }
-
-        moderationPunishmentMessageConfig?.get(ModerationPunishmentMessagesConfig.punishLogMessage) ?: moderationConfig?.punishLogMessage
-    }
-
-    suspend fun getPredefinedPunishmentMessagesByGuildId(guildId: ULong) = pudding.transaction {
-        ModerationPredefinedPunishmentMessages.selectAll().where {
-            ModerationPredefinedPunishmentMessages.guild eq guildId.toLong()
-        }.map {
-            PredefinedPunishmentMessage(it[ModerationPredefinedPunishmentMessages.short], it[ModerationPredefinedPunishmentMessages.message])
-        }
-    }
-
-    suspend fun getStarboardConfigById(id: Long): StarboardConfig? = pudding.transaction {
-        StarboardConfigs.selectFirstOrNull {
-            StarboardConfigs.id eq id
-        }?.let { StarboardConfig.fromRow(it) }
-    }
-
-    suspend fun getMiscellaneousConfigById(id: Long): MiscellaneousConfig? {
-        return pudding.transaction {
-            MiscellaneousConfigs.selectFirstOrNull {
-                MiscellaneousConfigs.id eq id
-            }
-        }?.let { MiscellaneousConfig.fromRow(it) }
-    }
-
-    suspend fun getInviteBlockerConfigById(id: Long): InviteBlockerConfig? {
-        return pudding.transaction {
-            InviteBlockerConfigs.selectFirstOrNull {
-                InviteBlockerConfigs.id eq id
-            }
-        }?.let { InviteBlockerConfig.fromRow(it) }
-    }
-
     /**
      * Gets the [LorittaPermission] that the [roleIds] on [guildId] has.
      */

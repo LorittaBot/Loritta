@@ -59,17 +59,6 @@ open class Service(private val pudding: Pudding) {
         )
     )
 
-    fun PuddingServerConfigRoot.Companion.fromRow(row: ResultRow) = PuddingServerConfigRoot(
-        pudding,
-        ServerConfigRoot(
-            row[ServerConfigs.id].value.toULong(),
-            row[ServerConfigs.localeId],
-            row[ServerConfigs.starboardConfig]?.value,
-            row[ServerConfigs.miscellaneousConfig]?.value,
-            row[ServerConfigs.inviteBlockerConfig]?.value
-        )
-    )
-
     fun PuddingAchievement.Companion.fromRow(row: ResultRow) = PuddingAchievement(
         pudding,
         Achievement(
@@ -183,31 +172,4 @@ fun Daily.Companion.fromRow(row: ResultRow) = Daily(
 
 fun PatchNotesNotification.Companion.fromRow(row: ResultRow) = PatchNotesNotification(
     row[PatchNotesNotifications.path]
-)
-
-fun StarboardConfig.Companion.fromRow(row: ResultRow) = StarboardConfig(
-    row[StarboardConfigs.enabled],
-    row[StarboardConfigs.starboardChannelId].toULong(),
-    row[StarboardConfigs.requiredStars]
-)
-
-fun MiscellaneousConfig.Companion.fromRow(row: ResultRow) = MiscellaneousConfig(
-    row[MiscellaneousConfigs.enableBomDiaECia],
-    row[MiscellaneousConfigs.enableQuirky],
-)
-
-fun InviteBlockerConfig.Companion.fromRow(row: ResultRow) = InviteBlockerConfig(
-    row[InviteBlockerConfigs.enabled],
-    row[InviteBlockerConfigs.whitelistedChannels].toList(),
-    row[InviteBlockerConfigs.whitelistServerInvites],
-    row[InviteBlockerConfigs.deleteMessage],
-    row[InviteBlockerConfigs.tellUser],
-    row[InviteBlockerConfigs.warnMessage],
-)
-
-fun ModerationConfig.Companion.fromRow(row: ResultRow) = ModerationConfig(
-    row[ModerationConfigs.sendPunishmentViaDm],
-    row[ModerationConfigs.sendPunishmentToPunishLog],
-    row[ModerationConfigs.punishLogChannelId],
-    row[ModerationConfigs.punishLogMessage]
 )
