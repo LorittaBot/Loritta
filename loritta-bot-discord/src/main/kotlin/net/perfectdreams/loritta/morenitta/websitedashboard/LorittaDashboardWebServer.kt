@@ -540,7 +540,8 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
                     call.respondText("Howdy! Loritta Cluster ${loritta.lorittaCluster.id}")
                 }
 
-                port(DASHBOARD_PORT) {
+                // DO NOT USE port! We NEED to use localPort because port relies on the "Host" header!
+                localPort(DASHBOARD_PORT) {
                     for (route in this@LorittaDashboardWebServer.dashboardRoutes) {
                         route.register(this)
 
@@ -553,7 +554,7 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
                     }
                 }
 
-                port(BAN_APPEALS_PORT) {
+                localPort(BAN_APPEALS_PORT) {
                     for (route in appealsRoute) {
                         route.register(this)
 
