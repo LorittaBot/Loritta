@@ -57,7 +57,10 @@ class DiscordLoginUserDashboardRoute(val website: LorittaDashboardWebServer) : B
             call.respondHtml(status = HttpStatusCode.Unauthorized) {
                 websiteBase(
                     i18nContext,
-                    dashboardTitle(i18nContext, i18nContext.get(I18nKeysData.Website.Dashboard.AuthorizationFailedFullScreenError.Title))
+                    dashboardTitle(i18nContext, i18nContext.get(I18nKeysData.Website.Dashboard.AuthorizationFailedFullScreenError.Title)),
+                    // Nasty!
+                    // But honestly? Do we even care about doing a bit of static abuse?
+                    Url(LorittaDashboardWebServer.INSTANCE.loritta.config.loritta.dashboard.url).host
                 ) {
                     authorizationFailedFullScreenError(
                         i18nContext,

@@ -44,6 +44,7 @@ import net.perfectdreams.loritta.serializable.ColorTheme
 fun HTML.websiteBase(
     i18nContext: I18nContext,
     fullTitle: String,
+    plausibleDataDomain: String,
     body: BODY.() -> Unit
 ) {
     // See these HTML tags! https://blog.jim-nielsen.com/2025/dont-forget-these-html-tags/
@@ -62,9 +63,7 @@ fun HTML.websiteBase(
 
         // Plausible Analytics
         script(src = "https://web-analytics.perfectdreams.net/js/plausible.js") {
-            // Nasty!
-            // But honestly? Do we even care about doing a bit of static abuse?
-            attributes["data-domain"] = Url(LorittaDashboardWebServer.INSTANCE.loritta.config.loritta.dashboard.url).host
+            attributes["data-domain"] = plausibleDataDomain
             defer = true
         }
 
@@ -106,7 +105,13 @@ fun HTML.dashboardBase(
     leftSidebarEntries: FlowContent.() -> Unit,
     rightSidebarContent: FlowContent.() -> Unit,
 ) {
-    websiteBase(i18nContext, dashboardTitle(i18nContext, title)) {
+    websiteBase(
+        i18nContext,
+        dashboardTitle(i18nContext, title),
+        // Nasty!
+        // But honestly? Do we even care about doing a bit of static abuse?
+        Url(LorittaDashboardWebServer.INSTANCE.loritta.config.loritta.dashboard.url).host
+    ) {
         canvas(classes = "loritta-game-canvas") {
             attributes["bliss-component"] = "loritta-shimeji"
             attributes["loritta-shimeji-settings"] = BlissHex.encodeToHexString(Json.encodeToString(shimejiSettings))
@@ -208,7 +213,10 @@ fun HTML.banAppealWrapperBase(
 ) {
     websiteBase(
         i18nContext,
-        banAppealTitle(i18nContext, title)
+        banAppealTitle(i18nContext, title),
+        // Nasty!
+        // But honestly? Do we even care about doing a bit of static abuse?
+        Url(LorittaDashboardWebServer.INSTANCE.loritta.config.loritta.banAppeals.url).host
     ) {
         canvas(classes = "loritta-game-canvas") {
             attributes["bliss-component"] = "loritta-shimeji"
