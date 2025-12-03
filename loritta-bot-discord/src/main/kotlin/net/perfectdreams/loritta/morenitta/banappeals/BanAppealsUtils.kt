@@ -6,6 +6,7 @@ import dev.minn.jda.ktx.messages.InlineMessage
 import kotlinx.datetime.toJavaInstant
 import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.components.separator.Separator
 import net.perfectdreams.loritta.banappeals.BanAppealResult
 import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -24,16 +25,64 @@ object BanAppealsUtils {
         submittedByUserInfo: CachedUserInfo?,
         appealUserInfo: CachedUserInfo?
     ) {
+        requireNotNull(submittedByUserInfo)
+        requireNotNull(appealUserInfo)
         this.useComponentsV2 = true
 
         val alreadyReviewed = data.appealResult != BanAppealResult.PENDING
 
         this.text("<@&${loritta.config.loritta.banAppeals.roleId}>")
+
         container {
-            this.section(Thumbnail(appealUserInfo!!.effectiveAvatarUrl)) {
+            this.accentColorRaw = when (data.appealResult) {
+                BanAppealResult.PENDING -> LorittaColors.LorittaAqua.rgb
+                BanAppealResult.APPROVED -> LorittaColors.BanAppealApproved.rgb
+                BanAppealResult.DENIED -> LorittaColors.BanAppealRejected.rgb
+            }
+
+            text(
+                buildString {
+                    appendLine("### \uD83D\uDE93 Apelo de Ban")
+
+                    appendLine("**Qual foi o motivo do seu banimento?**")
+                    appendLine(data.whatDidYouDo)
+
+                    appendLine()
+                    appendLine("**Por que você quebrou as regras da Loritta?**")
+                    appendLine(data.whyDidYouBreakThem)
+
+                    appendLine()
+                    appendLine("**Quais são os IDs das suas contas do Discord?**")
+                    if (data.accountIds.isNotEmpty()) {
+                        appendLine("```")
+                        for (accountId in data.accountIds) {
+                            appendLine(accountId)
+                        }
+                        appendLine("```")
+                    } else {
+                        appendLine("*Nenhuma conta adicional*")
+                    }
+
+                    appendLine()
+                    appendLine("**Por que você deveria ser desbanido?**")
+                    appendLine(data.whyShouldYouBeUnbanned)
+
+                    appendLine()
+                    appendLine("**Deseja comentar mais alguma coisa sobre o seu ban?**")
+                    appendLine(data.additionalComments)
+                }
+            )
+
+            if (data.files.isNotEmpty()) {
+                mediaGallery(data.files.map { MediaGalleryItem("https://stuff.loritta.website${it}") })
+            }
+
+            this.separator(isDivider = true, spacing = Separator.Spacing.LARGE)
+
+            this.section(Thumbnail(appealUserInfo.effectiveAvatarUrl)) {
                 text(
                     buildString {
-                        appendLine("### Apelo de ${convertToUserNameCodeBlockPreviewTag(appealUserInfo.id, appealUserInfo.name, appealUserInfo.globalName, appealUserInfo.discriminator, stripCodeMarksFromInput = false, stripLinksFromInput = false)}")
+                        appendLine("### Informações de ${convertToUserNameCodeBlockPreviewTag(appealUserInfo.id, appealUserInfo.name, appealUserInfo.globalName, appealUserInfo.discriminator, stripCodeMarksFromInput = false, stripLinksFromInput = false)}")
                         appendLine("**Banido por:** <@${data.banEntry.bannedBy?.value}> (`${data.banEntry.bannedBy?.value}`)")
                         appendLine("**Motivo:** ${data.banEntry.reason}")
                         appendLine("**Banido desde:** ${DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(data.banEntry.bannedAt.toJavaInstant())}")
@@ -43,72 +92,15 @@ object BanAppealsUtils {
                     }
                 )
             }
-        }
 
-        container {
-            this.section(Thumbnail(submittedByUserInfo!!.effectiveAvatarUrl)) {
-                text("### Apelo enviado por ${convertToUserNameCodeBlockPreviewTag(submittedByUserInfo.id, submittedByUserInfo.name, submittedByUserInfo.globalName, submittedByUserInfo.discriminator, stripCodeMarksFromInput = false, stripLinksFromInput = false)}")
+            // Only show the "Appeal sent by" section if the user is NOT sent by the same user
+            if (data.submittedBy != data.userId) {
+                this.separator(isDivider = true, spacing = Separator.Spacing.LARGE)
+
+                this.section(Thumbnail(submittedByUserInfo!!.effectiveAvatarUrl)) {
+                    text("### Apelo enviado por ${convertToUserNameCodeBlockPreviewTag(submittedByUserInfo.id, submittedByUserInfo.name, submittedByUserInfo.globalName, submittedByUserInfo.discriminator, stripCodeMarksFromInput = false, stripLinksFromInput = false)}")
+                }
             }
-        }
-
-        container {
-            this.accentColorRaw = when (data.appealResult) {
-                BanAppealResult.PENDING -> LorittaColors.LorittaAqua.rgb
-                BanAppealResult.APPROVED -> LorittaColors.BanAppealApproved.rgb
-                BanAppealResult.DENIED -> LorittaColors.BanAppealRejected.rgb
-            }
-
-            this.section(Thumbnail(appealUserInfo!!.effectiveAvatarUrl)) {
-                text(
-                    buildString {
-                        appendLine("### \uD83D\uDE93 Apelo de Ban")
-
-                        appendLine("**Qual foi o motivo do seu banimento?**")
-                        appendLine(data.whatDidYouDo)
-
-                        appendLine()
-                        appendLine("**Por que você quebrou as regras da Loritta?**")
-                        appendLine(data.whyDidYouBreakThem)
-
-                        appendLine()
-                        appendLine("**Quais são os IDs das suas contas do Discord?**")
-                        if (data.accountIds.isNotEmpty()) {
-                            appendLine("```")
-                            for (accountId in data.accountIds) {
-                                appendLine(accountId)
-                            }
-                            appendLine("```")
-                        } else {
-                            appendLine("*Nenhuma conta adicional*")
-                        }
-
-                        appendLine()
-                        appendLine("**Por que você deveria ser desbanido?**")
-                        appendLine(data.whyShouldYouBeUnbanned)
-
-                        appendLine()
-                        appendLine("**Deseja comentar mais alguma coisa sobre o seu ban?**")
-                        appendLine(data.additionalComments)
-                    }
-                )
-            }
-
-            if (data.files.isNotEmpty()) {
-                mediaGallery(data.files.map { MediaGalleryItem("https://stuff.loritta.website${it}") })
-            }
-
-            actionRow(
-                Button.of(
-                    ButtonStyle.PRIMARY,
-                    "appeal_accept:${data.id}",
-                    "Aceitar"
-                ).withDisabled(alreadyReviewed),
-                Button.of(
-                    ButtonStyle.SECONDARY,
-                    "appeal_reject:${data.id}",
-                    "Rejeitar"
-                ).withDisabled(alreadyReviewed)
-            )
 
             this.text(
                 buildString {
@@ -137,5 +129,18 @@ object BanAppealsUtils {
                 )
             }
         }
+
+        actionRow(
+            Button.of(
+                ButtonStyle.PRIMARY,
+                "appeal_accept:${data.id}",
+                "Aceitar"
+            ).withDisabled(alreadyReviewed),
+            Button.of(
+                ButtonStyle.SECONDARY,
+                "appeal_reject:${data.id}",
+                "Rejeitar"
+            ).withDisabled(alreadyReviewed)
+        )
     }
 }
