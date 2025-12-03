@@ -146,7 +146,7 @@ class BanAppealInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
                 deferredReply.await()
                     .editOriginal(
                         MessageEdit {
-                            createStaffAppealMessage(result.appeal, submittedBy, appeal)
+                            createStaffAppealMessage(m, result.appeal, submittedBy, appeal)
                         }
                     )
                     .await()
@@ -276,7 +276,7 @@ class BanAppealInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
                         deferredReply.await()
                             .editOriginal(
                                 MessageEdit {
-                                    createStaffAppealMessage(result.appeal, submittedBy, appeal)
+                                    createStaffAppealMessage(m, result.appeal, submittedBy, appeal)
                                 }
                             )
                             .setReplace(true)

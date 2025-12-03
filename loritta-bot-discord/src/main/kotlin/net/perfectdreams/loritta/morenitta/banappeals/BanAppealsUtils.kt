@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.perfectdreams.loritta.banappeals.BanAppealResult
 import net.perfectdreams.loritta.common.utils.LorittaColors
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.convertToUserNameCodeBlockPreviewTag
@@ -18,6 +19,7 @@ object BanAppealsUtils {
 
     // data = the result row of the BanAppeals table
     fun InlineMessage<*>.createStaffAppealMessage(
+        loritta: LorittaBot,
         data: BanAppeal,
         submittedByUserInfo: CachedUserInfo?,
         appealUserInfo: CachedUserInfo?
@@ -26,6 +28,7 @@ object BanAppealsUtils {
 
         val alreadyReviewed = data.appealResult != BanAppealResult.PENDING
 
+        this.text("<@&${loritta.config.loritta.banAppeals.roleId}>")
         container {
             this.section(Thumbnail(appealUserInfo!!.effectiveAvatarUrl)) {
                 text(

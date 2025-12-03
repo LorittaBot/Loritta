@@ -332,6 +332,7 @@ data class LorittaConfig(
     data class BanAppealsConfig(
         val url: String,
         val guildId: Long,
-        val channelId: Long
+        val channelId: Long,
+        val roleId: Long
     )
 }

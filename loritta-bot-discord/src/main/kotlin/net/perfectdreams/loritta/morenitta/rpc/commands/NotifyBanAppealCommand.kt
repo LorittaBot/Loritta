@@ -43,6 +43,7 @@ class NotifyBanAppealCommand(val loritta: LorittaBot) : LorittaRPCCommand(Loritt
         channel.sendMessage(
             MessageCreate {
                 createStaffAppealMessage(
+                    loritta,
                     BanAppeal(
                         appeal[BanAppeals.id].value,
                         appeal[BanAppeals.submittedBy],
