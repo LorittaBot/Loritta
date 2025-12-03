@@ -538,10 +538,6 @@ class InternalWebServer(val m: LorittaBot) {
                 is LorittaInternalRPCRequest.GetLorittaInfoRequest -> {
                     processors.getLorittaInfoProcessor.process(call, request)
                 }
-
-                is LorittaInternalRPCRequest.ExecuteDashGuildScopedRPCRequest -> {
-                    processors.executeDashGuildScopedProcessor.process(call, request)
-                }
             }
         } catch (e: RPCResponseException) {
             e.response

@@ -12,18 +12,6 @@ import net.perfectdreams.loritta.serializable.internal.responses.LorittaInternal
 interface LorittaInternalRpcProcessor<Req: LorittaInternalRPCRequest, Res: LorittaInternalRPCResponse> {
     suspend fun process(call: ApplicationCall, request: Req): Res
 
-    suspend fun validateMemberManageGuildPermissionsOrFailWithResponse(
-        m: LorittaBot,
-        guildId: Long,
-        memberId: Long?,
-        unknownGuildResponse: Res,
-        unknownMemberResponse: Res,
-        missingPermissionResponse: Res
-    ) {
-        // This is just an alternate method for getGuildByIdValidateMemberManageGuildPermissionsOrFailWithResponse that doesn't return the guild object
-        getGuildByIdValidateMemberManageGuildPermissionsOrFailWithResponse(m, guildId, memberId, unknownGuildResponse, unknownGuildResponse, missingPermissionResponse)
-    }
-
     suspend fun getGuildByIdValidateMemberManageGuildPermissionsOrFailWithResponse(
         m: LorittaBot,
         guildId: Long,

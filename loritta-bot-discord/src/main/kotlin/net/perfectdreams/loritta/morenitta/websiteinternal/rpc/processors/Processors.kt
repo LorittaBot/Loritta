@@ -5,5 +5,4 @@ import net.perfectdreams.loritta.morenitta.websiteinternal.rpc.processors.loritt
 
 class Processors(val internalWebServer: InternalWebServer) {
     val getLorittaInfoProcessor = GetLorittaInfoProcessor(internalWebServer.m)
-    val executeDashGuildScopedProcessor = ExecuteDashGuildScopedProcessor(internalWebServer, internalWebServer.m)
 }

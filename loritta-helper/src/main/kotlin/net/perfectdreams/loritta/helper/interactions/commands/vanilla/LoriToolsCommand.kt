@@ -27,8 +27,6 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandDec
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
 import net.perfectdreams.loritta.morenitta.interactions.styled
-import net.perfectdreams.loritta.serializable.dashboard.requests.LorittaDashboardRPCRequest
-import net.perfectdreams.loritta.serializable.dashboard.responses.LorittaDashboardRPCResponse
 import net.perfectdreams.pantufa.rpc.BanSparklyPowerPlayerLorittaBannedRequest
 import net.perfectdreams.pantufa.rpc.BanSparklyPowerPlayerLorittaBannedResponse
 import net.perfectdreams.pantufa.rpc.PantufaRPCRequest
@@ -666,7 +664,7 @@ class LoriToolsCommand(val helper: LorittaHelper) : SlashCommandDeclarationWrapp
             // Convert LocalDateTime to Instant using UTC (or desired) time zone offset
             val endsAtInstant = endsAtLocalDateTime.toInstant(zoneId.rules.getOffset(endsAtLocalDateTime))
 
-            val response = context.loritta.makeLorittaRPCRequest<LorittaDashboardRPCResponse.UpdateLorittaActivityResponse>(
+            /* val response = context.loritta.makeLorittaRPCRequest<LorittaDashboardRPCResponse.UpdateLorittaActivityResponse>(
                 LorittaDashboardRPCRequest.UpdateLorittaActivityRequest(
                     text,
                     type,
@@ -688,7 +686,7 @@ class LoriToolsCommand(val helper: LorittaHelper) : SlashCommandDeclarationWrapp
                         content = "Não autorizado, tem certeza que o token da API está correto?"
                     }
                 }
-            }
+            } */
         }
     }
 

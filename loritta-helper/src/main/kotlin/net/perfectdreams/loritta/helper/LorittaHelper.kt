@@ -39,8 +39,6 @@ import net.perfectdreams.loritta.helper.utils.topsonhos.TopSonhosRankingSender
 import net.perfectdreams.loritta.morenitta.interactions.InteractionsListener
 import net.perfectdreams.loritta.morenitta.interactions.InteractivityManager
 import net.perfectdreams.loritta.morenitta.interactions.commands.UnleashedCommandManager
-import net.perfectdreams.loritta.serializable.dashboard.requests.LorittaDashboardRPCRequest
-import net.perfectdreams.loritta.serializable.dashboard.responses.LorittaDashboardRPCResponse
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDateTime
@@ -288,14 +286,5 @@ class LorittaHelper(val config: LorittaHelperConfig, val fanArtsConfig: FanArtsC
 
     fun launch(block: suspend CoroutineScope.() -> Unit) = GlobalScope.launch(executor) {
         block.invoke(this)
-    }
-
-    suspend inline fun <reified T : LorittaDashboardRPCResponse> makeLorittaRPCRequest(rpc: LorittaDashboardRPCRequest): T {
-        return Json.decodeFromString<T>(
-            http.post("${config.loritta.api.url.removeSuffix("/")}/api/v1/rpc") {
-                header("Authorization", config.loritta.api.token)
-                setBody(Json.encodeToString<LorittaDashboardRPCRequest>(rpc))
-            }.bodyAsText()
-        )
     }
 }
