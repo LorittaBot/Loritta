@@ -5,6 +5,7 @@ import dev.minn.jda.ktx.messages.MessageCreate
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
+import kotlinx.html.a
 import kotlinx.html.b
 import kotlinx.html.div
 import kotlinx.html.h1
@@ -234,6 +235,8 @@ class PostBanAppealsRoute(website: LorittaDashboardWebServer) : RequiresUserAuth
 
                                                     appendLine("Recebemos o seu apelo de ban! Em breve você terá uma resposta dizendo se o seu apelo foi aprovado ou não.")
                                                     appendLine()
+                                                    appendLine("Se você precisar de ajuda com o seu apelo, você pode falar com a nossa equipe no [Tribunal da Loritta](${website.loritta.config.loritta.banAppeals.supportInviteUrl}). Lembrando que o servidor serve você tirar dúvidas ou para dar mais informações para a equipe, e não para você ir pedir para verem o seu apelo mais rápido.")
+                                                    appendLine()
                                                     appendLine("**Boa sorte! ${Emotes.LoriLick}**")
                                                     appendLine()
                                                     appendLine("-# Apelo #${result.appeal[BanAppeals.id].value}")
@@ -265,7 +268,7 @@ class PostBanAppealsRoute(website: LorittaDashboardWebServer) : RequiresUserAuth
 
                             heroText {
                                 h1 {
-                                    text("Apelo enviado!")
+                                    text("Apelo #${result.appeal[BanAppeals.id].value} enviado!")
                                 }
 
                                 p {
@@ -280,6 +283,16 @@ class PostBanAppealsRoute(website: LorittaDashboardWebServer) : RequiresUserAuth
                                     p {
                                         text("Eu tentei te enviar uma mensagem direta confirmando o envio, mas as suas mensagens diretas estão fechadas! Se você quiser receber atualizações sobre o apelo, mantenha ele aberto!")
                                     }
+                                }
+
+                                p {
+                                    text("Se você precisar de ajuda com o seu apelo, você pode falar com a nossa equipe no ")
+
+                                    a(href = website.loritta.config.loritta.banAppeals.supportInviteUrl) {
+                                        text("Tribunal da Loritta")
+                                    }
+
+                                    text(". Lembrando que o servidor serve você tirar dúvidas ou para dar mais informações para a equipe, e não para você ir pedir para verem o seu apelo mais rápido.")
                                 }
 
                                 p {
