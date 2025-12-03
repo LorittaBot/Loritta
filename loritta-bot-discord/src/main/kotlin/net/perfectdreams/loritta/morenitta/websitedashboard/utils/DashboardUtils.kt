@@ -4,6 +4,7 @@ import io.ktor.server.application.ApplicationCall
 import kotlinx.html.FlowContent
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.dashboard.EmbeddedToast
+import net.perfectdreams.loritta.i18n.I18nKeysData
 
 /**
  * Shows the generic toast for when the configuration was saved + other tidbits
@@ -24,12 +25,12 @@ fun FlowContent.configSaved(i18nContext: I18nContext) {
 /**
  * Creates the Loritta styled dashboard title
  */
-fun dashboardTitle(i18nContext: I18nContext, section: String) = "$section • Painel da Loritta"
+fun dashboardTitle(i18nContext: I18nContext, section: String) = "$section • ${i18nContext.get(I18nKeysData.Website.Dashboard.TitleShort)}"
 
 /**
  * Creates the Loritta styled ban appeal title
  */
-fun banAppealTitle(i18nContext: I18nContext, section: String) = "$section • Central de Apelos"
+fun banAppealTitle(i18nContext: I18nContext, section: String) = "$section • ${i18nContext.get(I18nKeysData.Website.BanAppeals.TitleShort)}"
 
 suspend fun ApplicationCall.respondConfigSaved(
     i18nContext: I18nContext,

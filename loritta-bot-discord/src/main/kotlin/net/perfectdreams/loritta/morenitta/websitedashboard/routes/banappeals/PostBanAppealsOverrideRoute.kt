@@ -26,7 +26,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFra
 import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.serializable.UserId
 
-class PostBanAppealsOverrideRoute(website: LorittaDashboardWebServer) : RequiresUserAuthDashboardLocalizedRoute(website, "/override") {
+class PostBanAppealsOverrideRoute(website: LorittaDashboardWebServer) : RequiresUserAuthBanAppealsLocalizedRoute(website, "/override") {
     @Serializable
     data class BanAppealOverrideRequest(
         val userId: String

@@ -75,34 +75,52 @@ abstract class RequiresUserAuthDashboardLocalizedRoute(website: LorittaDashboard
         shimejiSettings: LorittaShimejiSettings
     )
 
-    suspend fun onUnauthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext) {
+    open suspend fun onUnauthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext) {
         if (call.request.userAgent() == Constants.DISCORD_CRAWLER_USER_AGENT) {
-            call.respondHtml {
-                head {
-                    fun setMetaProperty(property: String, content: String) {
-                        meta(content = content) { attributes["property"] = property }
-                    }
-
-                    title("Login • Loritta")
-                    setMetaProperty("og:site_name", "Loritta")
-                    setMetaProperty("og:title", "Painel da Loritta")
-                    setMetaProperty("og:description", "Meu painel de configuração, aonde você pode me configurar para deixar o seu servidor único e incrível!")
-                    setMetaProperty("og:image", "https://stuff.loritta.website/loritta-and-wumpus-dashboard-yafyr.png")
-                    setMetaProperty("og:image:width", "320")
-                    setMetaProperty("og:ttl", "660")
-                    setMetaProperty("og:image:width", "320")
-                    setMetaProperty("theme-color", LorittaColors.LorittaAqua.toHex())
-                    meta("twitter:card", "summary_large_image")
-                }
-                body {
-                    p {
-                        + "Parabéns, você encontrou um easter egg!"
-                    }
-                }
-            }
+            respondWithDiscordLoginPage(
+                call,
+                "Painel da Loritta",
+                "Meu painel de configuração, aonde você pode me configurar para deixar o seu servidor único e incrível!",
+                "https://stuff.loritta.website/loritta-and-wumpus-dashboard-yafyr.png"
+            )
             return
         }
 
+        respondWithDiscordAuthRedirect(call)
+    }
+
+    suspend fun respondWithDiscordLoginPage(
+        call: ApplicationCall,
+        embedTitle: String,
+        embedDescription: String,
+        embedImageUrl: String
+    ) {
+        call.respondHtml {
+            head {
+                fun setMetaProperty(property: String, content: String) {
+                    meta(content = content) { attributes["property"] = property }
+                }
+
+                title("Login • Loritta")
+                setMetaProperty("og:site_name", "Loritta")
+                setMetaProperty("og:title", embedTitle)
+                setMetaProperty("og:description", embedDescription)
+                setMetaProperty("og:image", embedImageUrl)
+                setMetaProperty("og:image:width", "320")
+                setMetaProperty("og:ttl", "660")
+                setMetaProperty("og:image:width", "320")
+                setMetaProperty("theme-color", LorittaColors.LorittaAqua.toHex())
+                meta("twitter:card", "summary_large_image")
+            }
+            body {
+                p {
+                    + "Parabéns, você encontrou um easter egg!"
+                }
+            }
+        }
+    }
+
+    suspend fun respondWithDiscordAuthRedirect(call: ApplicationCall) {
         val fullUrl = call.request.origin.scheme + "://" + call.request.hostFromHeader() + call.request.uri
 
         call.respondRedirect(

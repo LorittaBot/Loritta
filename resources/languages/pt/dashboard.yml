@@ -2,6 +2,7 @@
 website:
   dashboard:
     title: "Painel de Controle da Loritta"
+    titleShort: "Painel da Loritta"
     localePathId: "pt" #The locale ID that is prefixed on every localized page path, example: "/pt/commands/"
     loading: "Carregando..."
     frequentlyAskedQuestions: "Perguntas Frequentes"

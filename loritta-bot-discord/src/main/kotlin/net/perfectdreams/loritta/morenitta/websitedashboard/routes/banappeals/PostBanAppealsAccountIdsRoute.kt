@@ -31,7 +31,7 @@ import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.serializable.UserId
 import java.util.UUID
 
-class PostBanAppealsAccountIdsRoute(website: LorittaDashboardWebServer) : RequiresUserAuthDashboardLocalizedRoute(website, "/form/account-ids") {
+class PostBanAppealsAccountIdsRoute(website: LorittaDashboardWebServer) : RequiresUserAuthBanAppealsLocalizedRoute(website, "/form/account-ids") {
     @Serializable
     data class AccountIdsRequest(
         val accountIdsRaw: String

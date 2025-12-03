@@ -53,7 +53,7 @@ import org.jetbrains.exposed.sql.statements.InsertStatement
 import java.time.OffsetDateTime
 import java.util.*
 
-class PostBanAppealsRoute(website: LorittaDashboardWebServer) : RequiresUserAuthDashboardLocalizedRoute(website, "/form") {
+class PostBanAppealsRoute(website: LorittaDashboardWebServer) : RequiresUserAuthBanAppealsLocalizedRoute(website, "/form") {
     companion object {
         private val logger by HarmonyLoggerFactory.logger {}
     }
