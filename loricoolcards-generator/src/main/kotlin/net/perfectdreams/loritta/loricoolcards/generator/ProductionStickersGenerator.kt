@@ -20,6 +20,8 @@ import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingBackground
 import net.perfectdreams.loritta.cinnamon.pudding.services.UsersService
 import net.perfectdreams.loritta.cinnamon.pudding.services.fromRow
 import net.perfectdreams.loritta.cinnamon.pudding.tables.*
+import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsEvents
+import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsFinishedAlbumUsers
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentReason
 import net.perfectdreams.loritta.common.locale.LorittaLanguageManager
 import net.perfectdreams.loritta.common.loricoolcards.CardRarity
@@ -43,7 +45,9 @@ import net.perfectdreams.loritta.serializable.Background
 import net.perfectdreams.loritta.serializable.BackgroundStorageType
 import net.perfectdreams.loritta.serializable.BackgroundVariation
 import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.innerJoin
 import org.jetbrains.exposed.sql.selectAll
 import java.awt.image.BufferedImage
 import java.io.File
@@ -72,7 +76,7 @@ suspend fun main() {
 }
 
 suspend fun generateCards(config: LoriCoolCardsGeneratorProductionStickersConfig) {
-    val folderName = "production_v15_befopti"
+    val folderName = "production_v16_befopti"
     val http = HttpClient {}
 
     println("Max memory: ${Runtime.getRuntime().maxMemory()}")
@@ -243,10 +247,19 @@ suspend fun generateCards(config: LoriCoolCardsGeneratorProductionStickersConfig
     )
 
     val moneyProfiles = pudding.transaction {
-        Profiles.innerJoin(UserSettings).selectAll().where {
-            Profiles.id notInSubQuery UsersService.validBannedUsersList(System.currentTimeMillis()) and (Profiles.id notInList staffIds) and (Profiles.id notInSubQuery UsersService.botTokenUsersList())
-        }
-            .orderBy(Profiles.money, SortOrder.DESC)
+        val lastEvent = LoriCoolCardsEvents.selectAll()
+            .orderBy(LoriCoolCardsEvents.startsAt, SortOrder.DESC)
+            .limit(1)
+            .first()
+
+        LoriCoolCardsFinishedAlbumUsers
+            .innerJoin(Profiles, { LoriCoolCardsFinishedAlbumUsers.user }, { Profiles.id })
+            .innerJoin(UserSettings)
+            .selectAll()
+            .where {
+                LoriCoolCardsFinishedAlbumUsers.event eq lastEvent[LoriCoolCardsEvents.id].value and (Profiles.id notInSubQuery UsersService.validBannedUsersList(System.currentTimeMillis()) and (Profiles.id notInList staffIds) and (Profiles.id notInSubQuery UsersService.botTokenUsersList()))
+            }
+            .orderBy(LoriCoolCardsFinishedAlbumUsers.finishedAt, SortOrder.ASC)
             .limit(500)
             .toList()
     }
