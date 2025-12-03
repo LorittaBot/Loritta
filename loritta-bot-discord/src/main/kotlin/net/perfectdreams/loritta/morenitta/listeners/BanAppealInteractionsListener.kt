@@ -25,6 +25,7 @@ import net.perfectdreams.loritta.morenitta.banappeals.BanAppealsUtils.createStaf
 import net.perfectdreams.loritta.morenitta.interactions.InteractivityManager
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedComponentId
 import net.perfectdreams.loritta.morenitta.interactions.modals.options.modalString
+import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
@@ -76,6 +77,19 @@ class BanAppealInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
             reviewerNotes,
             appealResult
         )
+    }
+
+    private suspend fun getCachedUserInfoForAppeal(appeal: BanAppeal): AppealCachedUserInfo {
+        if (appeal.submittedBy == appeal.userId) {
+            val userInfo = m.lorittaShards.retrieveUserInfoById(appeal.userId)
+
+            return AppealCachedUserInfo(userInfo, userInfo)
+        } else {
+            return AppealCachedUserInfo(
+                m.lorittaShards.retrieveUserInfoById(appeal.submittedBy),
+                m.lorittaShards.retrieveUserInfoById(appeal.userId),
+            )
+        }
     }
 
     override fun onButtonInteraction(event: ButtonInteractionEvent) {
@@ -140,8 +154,35 @@ class BanAppealInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
 
         when (result) {
             is AppealAcceptResult.Success -> {
-                val submittedBy = m.lorittaShards.retrieveUserInfoById(result.appeal.submittedBy)
-                val appeal = m.lorittaShards.retrieveUserInfoById(result.appeal.userId)
+                val (submittedBy, appeal) = getCachedUserInfoForAppeal(result.appeal)
+
+                if (submittedBy == null) {
+                    deferredReply.await()
+                        .sendMessage(
+                            MessageCreate {
+                                styled(
+                                    "Apelo aceito, mas parece que os dados de quem enviou o apelo não existem! Bug?"
+                                )
+                            }
+                        )
+                        .setEphemeral(true)
+                        .await()
+                    return
+                }
+
+                if (appeal == null) {
+                    deferredReply.await()
+                        .sendMessage(
+                            MessageCreate {
+                                styled(
+                                    "Apelo aceito, mas parece que os dados da pessoa que enviou o apelo não existem! Bug?"
+                                )
+                            }
+                        )
+                        .setEphemeral(true)
+                        .await()
+                    return
+                }
 
                 deferredReply.await()
                     .editOriginal(
@@ -267,11 +308,37 @@ class BanAppealInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
                     )
                 }
 
-
                 when (result) {
                     is AppealRejectResult.Success -> {
-                        val submittedBy = m.lorittaShards.retrieveUserInfoById(result.appeal.submittedBy)
-                        val appeal = m.lorittaShards.retrieveUserInfoById(result.appeal.userId)
+                        val (submittedBy, appeal) = getCachedUserInfoForAppeal(result.appeal)
+
+                        if (submittedBy == null) {
+                            deferredReply.await()
+                                .sendMessage(
+                                    MessageCreate {
+                                        styled(
+                                            "Apelo rejeitado, mas parece que os dados de quem enviou o apelo não existem! Bug?"
+                                        )
+                                    }
+                                )
+                                .setEphemeral(true)
+                                .await()
+                            return@ModalInteractionCallback
+                        }
+
+                        if (appeal == null) {
+                            deferredReply.await()
+                                .sendMessage(
+                                    MessageCreate {
+                                        styled(
+                                            "Apelo rejeitado, mas parece que os dados da pessoa que enviou o apelo não existem! Bug?"
+                                        )
+                                    }
+                                )
+                                .setEphemeral(true)
+                                .await()
+                            return@ModalInteractionCallback
+                        }
 
                         deferredReply.await()
                             .editOriginal(
@@ -370,4 +437,9 @@ class BanAppealInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
         data class AlreadyReviewed(val result: BanAppealResult) : AppealRejectResult()
         data object NotFound : AppealRejectResult()
     }
+
+    private data class AppealCachedUserInfo(
+        val submittedBy: CachedUserInfo?,
+        val appeal: CachedUserInfo?
+    )
 }

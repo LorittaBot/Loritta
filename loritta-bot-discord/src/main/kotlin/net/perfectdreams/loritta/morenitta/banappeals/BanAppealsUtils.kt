@@ -22,11 +22,9 @@ object BanAppealsUtils {
     fun InlineMessage<*>.createStaffAppealMessage(
         loritta: LorittaBot,
         data: BanAppeal,
-        submittedByUserInfo: CachedUserInfo?,
-        appealUserInfo: CachedUserInfo?
+        submittedByUserInfo: CachedUserInfo,
+        appealUserInfo: CachedUserInfo
     ) {
-        requireNotNull(submittedByUserInfo)
-        requireNotNull(appealUserInfo)
         this.useComponentsV2 = true
 
         val alreadyReviewed = data.appealResult != BanAppealResult.PENDING
@@ -97,7 +95,7 @@ object BanAppealsUtils {
             if (data.submittedBy != data.userId) {
                 this.separator(isDivider = true, spacing = Separator.Spacing.LARGE)
 
-                this.section(Thumbnail(submittedByUserInfo!!.effectiveAvatarUrl)) {
+                this.section(Thumbnail(submittedByUserInfo.effectiveAvatarUrl)) {
                     text("### Apelo enviado por ${convertToUserNameCodeBlockPreviewTag(submittedByUserInfo.id, submittedByUserInfo.name, submittedByUserInfo.globalName, submittedByUserInfo.discriminator, stripCodeMarksFromInput = false, stripLinksFromInput = false)}")
                 }
             }
