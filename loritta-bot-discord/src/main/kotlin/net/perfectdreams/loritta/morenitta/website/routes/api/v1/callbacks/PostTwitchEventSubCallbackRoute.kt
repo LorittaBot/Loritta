@@ -12,6 +12,9 @@ import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.cinnamon.pudding.tables.TwitchEventSubEvents
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.rpc.LorittaRPC
+import net.perfectdreams.loritta.morenitta.rpc.execute
+import net.perfectdreams.loritta.morenitta.rpc.payloads.TwitchStreamOnlineEventResponse
 import net.perfectdreams.loritta.serializable.internal.requests.LorittaInternalRPCRequest
 import net.perfectdreams.loritta.serializable.internal.responses.LorittaInternalRPCResponse
 import net.perfectdreams.sequins.ktor.BaseRoute
@@ -101,15 +104,16 @@ class PostTwitchEventSubCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api
 						val jobs = loritta.config.loritta.clusters.instances.map { cluster ->
 							cluster to GlobalScope.async {
 								withTimeout(25_000) {
-									loritta.makeRPCRequest<LorittaInternalRPCResponse.TwitchStreamOnlineEventResponse>(
-										cluster,
-										LorittaInternalRPCRequest.TwitchStreamOnlineEventRequest(
-											broadcasterUserIdAsLong,
-											broadcasterUserLogin,
-											stream?.title,
-											stream?.gameName
-										)
-									)
+                                    LorittaRPC.TwitchStreamOnlineEvent.execute(
+                                        loritta,
+                                        cluster,
+                                        net.perfectdreams.loritta.morenitta.rpc.payloads.TwitchStreamOnlineEventRequest(
+                                            broadcasterUserIdAsLong,
+                                            broadcasterUserLogin,
+                                            stream?.title,
+                                            stream?.gameName
+                                        )
+                                    )
 								}
 							}
 						}
@@ -118,8 +122,12 @@ class PostTwitchEventSubCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api
 						for (job in jobs) {
 							try {
 								val relayResult = job.second.await()
-								logger.info { "Twitch Relay of $broadcasterUserLogin ($broadcasterUserIdAsLong) to Cluster ${job.first.id} (${job.first.name}) was successfully processed! Notified Guilds: ${relayResult.notifiedGuilds.size}" }
-								totalNotifiedCount += relayResult.notifiedGuilds.size
+                                if (relayResult is TwitchStreamOnlineEventResponse.Success) {
+                                    logger.info { "Twitch Relay of $broadcasterUserLogin ($broadcasterUserIdAsLong) to Cluster ${job.first.id} (${job.first.name}) was successfully processed! Notified Guilds: ${relayResult.notifiedGuilds.size}" }
+                                    totalNotifiedCount += relayResult.notifiedGuilds.size
+                                } else {
+                                    error("Relay result is not Success! Result: $relayResult")
+                                }
 							} catch (e: Exception) {
 								logger.warn(e) { "Twitch Relay of $broadcasterUserLogin ($broadcasterUserIdAsLong) to Cluster ${job.first.id} (${job.first.name}) failed!" }
 							}

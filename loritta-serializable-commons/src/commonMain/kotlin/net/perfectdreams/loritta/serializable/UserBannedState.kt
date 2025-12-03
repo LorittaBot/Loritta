@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class UserBannedState(
+    val id: Long,
     val valid: Boolean,
     val bannedAt: Instant,
     val expiresAt: Instant?,

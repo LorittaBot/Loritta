@@ -15,36 +15,32 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.util.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.debug.DebugProbes
+import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 import kotlinx.datetime.toJavaInstant
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.*
 import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
-import net.dv8tion.jda.api.utils.MarkdownSanitizer
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.pudding.tables.BanAppeals
-import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsEventCards
 import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsEvents
 import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsFinishedAlbumUsers
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.TrackedTwitchAccounts
 import net.perfectdreams.loritta.common.utils.placeholders.BlueskyPostMessagePlaceholders
-import net.perfectdreams.loritta.common.utils.placeholders.TwitchStreamOnlineMessagePlaceholders
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.analytics.LorittaMetrics
-import net.perfectdreams.loritta.morenitta.banappeals.BanAppeal
-import net.perfectdreams.loritta.morenitta.banappeals.BanAppealsUtils.createStaffAppealMessage
 import net.perfectdreams.loritta.morenitta.loricoolcards.StickerAlbumTemplate
 import net.perfectdreams.loritta.morenitta.loricoolcards.StickerMetadata
+import net.perfectdreams.loritta.morenitta.rpc.commands.BlueskyPostRelayCommand
+import net.perfectdreams.loritta.morenitta.rpc.commands.NotifyBanAppealCommand
+import net.perfectdreams.loritta.morenitta.rpc.commands.TwitchStreamOnlineEventCommand
+import net.perfectdreams.loritta.morenitta.rpc.commands.UpdateTwitchSubscriptionsCommand
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.MessageUtils
 import net.perfectdreams.loritta.morenitta.utils.PendingUpdate
-import net.perfectdreams.loritta.morenitta.utils.escapeMentions
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
@@ -58,14 +54,11 @@ import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.v1.user
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.v1.users.GetUserTransactionsRoute
 import net.perfectdreams.loritta.morenitta.websiteinternal.rpc.RPCResponseException
 import net.perfectdreams.loritta.morenitta.websiteinternal.rpc.processors.Processors
-import net.perfectdreams.loritta.serializable.UserBannedState
-import net.perfectdreams.loritta.serializable.UserId
 import net.perfectdreams.loritta.serializable.internal.requests.LorittaInternalRPCRequest
 import net.perfectdreams.loritta.serializable.internal.responses.LorittaInternalRPCResponse
 import net.perfectdreams.sequins.ktor.BaseRoute
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.rank
-import org.jetbrains.exposed.sql.innerJoin
 import org.jetbrains.exposed.sql.selectAll
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
@@ -94,6 +87,12 @@ class InternalWebServer(val m: LorittaBot) {
         PostTransferSonhosRoute(m),
         PostRequestSonhosRoute(m),
         GetThirdPartySonhosTransferStatusRoute(m)
+    )
+    private val rpcCommands = listOf(
+        NotifyBanAppealCommand(m),
+        UpdateTwitchSubscriptionsCommand(m),
+        TwitchStreamOnlineEventCommand(m),
+        BlueskyPostRelayCommand(m)
     )
     private val internalAPIRoutes = listOf<BaseRoute>()
 
@@ -125,6 +124,10 @@ class InternalWebServer(val m: LorittaBot) {
                     call.respondJson(
                         Json.encodeToString<LorittaInternalRPCResponse>(response)
                     )
+                }
+
+                for (command in rpcCommands) {
+                    command.register(this)
                 }
 
                 // Dumps all currently running coroutines
@@ -520,63 +523,6 @@ class InternalWebServer(val m: LorittaBot) {
                     )
                 }
 
-                post("/ban-appeals/{banAppealId}/notify") {
-                    val eventId = call.parameters.getOrFail("banAppealId").toLong()
-                    val request = Json.decodeFromString<NotifyBanAppealRequest>(call.receiveText())
-
-                    val guild = m.lorittaShards.getGuildById(request.guildId)!!
-                    val channel = guild.getGuildMessageChannelById(request.channelId)!!
-
-                    val appeal = m.transaction {
-                        BanAppeals
-                            .innerJoin(BannedUsers)
-                            .selectAll()
-                            .where {
-                                BanAppeals.id eq eventId
-                            }
-                            .first()
-                    }
-
-                    val submittedBy = m.lorittaShards.retrieveUserInfoById(appeal[BanAppeals.submittedBy])
-                    val appealFor = m.lorittaShards.retrieveUserInfoById(appeal[BanAppeals.userId])
-
-                    channel.sendMessage(
-                        MessageCreate {
-                            createStaffAppealMessage(
-                                BanAppeal(
-                                    appeal[BanAppeals.id].value,
-                                    appeal[BanAppeals.submittedBy],
-                                    appeal[BanAppeals.userId],
-                                    appeal[BanAppeals.whatDidYouDo],
-                                    appeal[BanAppeals.whyDidYouBreakThem],
-                                    appeal[BanAppeals.accountIds],
-                                    appeal[BanAppeals.whyShouldYouBeUnbanned],
-                                    appeal[BanAppeals.additionalComments],
-                                    appeal[BanAppeals.files],
-                                    UserBannedState(
-                                        appeal[BannedUsers.id].value,
-                                        appeal[BannedUsers.valid],
-                                        Instant.fromEpochMilliseconds(appeal[BannedUsers.bannedAt]),
-                                        appeal[BannedUsers.expiresAt]?.let { Instant.fromEpochMilliseconds(it) },
-                                        appeal[BannedUsers.reason],
-                                        appeal[BannedUsers.bannedBy]?.let { UserId(it.toULong()) },
-                                        appeal[BannedUsers.staffNotes]
-                                    ),
-                                    appeal[BanAppeals.submittedAt],
-                                    appeal[BanAppeals.reviewedBy],
-                                    appeal[BanAppeals.reviewedAt],
-                                    appeal[BanAppeals.reviewerNotes],
-                                    appeal[BanAppeals.appealResult]
-                                ),
-                                submittedBy,
-                                appealFor
-                            )
-                        }
-                    ).await()
-
-                    call.respondText("")
-                }
-
                 for (route in publicAPIRoutes) {
                     route.register(this)
                 }
@@ -596,96 +542,6 @@ class InternalWebServer(val m: LorittaBot) {
                 is LorittaInternalRPCRequest.ExecuteDashGuildScopedRPCRequest -> {
                     processors.executeDashGuildScopedProcessor.process(call, request)
                 }
-
-                is LorittaInternalRPCRequest.DailyShopRefreshedRequest -> {
-                    processors.dailyShopRefreshedProcessor.process(call, request)
-                }
-                is LorittaInternalRPCRequest.UpdateTwitchSubscriptionsRequest -> {
-                    if (m.isMainInstance) {
-                        GlobalScope.launch {
-                            m.twitchSubscriptionsHandler.requestSubscriptionCreation("Update Twitch Subscriptions Request")
-                        }
-                    }
-                    LorittaInternalRPCResponse.UpdateTwitchSubscriptionsResponse
-                }
-
-                is LorittaInternalRPCRequest.TwitchStreamOnlineEventRequest -> {
-                    // Get all tracked guild accounts of this user
-                    val trackedTwitchAccounts = m.transaction {
-                        TrackedTwitchAccounts.selectAll().where {
-                            TrackedTwitchAccounts.twitchUserId eq request.twitchUserId
-                        }.toList()
-                    }
-
-                    val notifiedGuilds = mutableListOf<Long>()
-                    for (trackedTwitchAccount in trackedTwitchAccounts) {
-                        val guild = m.lorittaShards.getGuildById(trackedTwitchAccount[TrackedTwitchAccounts.guildId]) ?: continue // This could be for other clusters, so let's just skip if the guild is null
-
-                        val channel = guild.getGuildMessageChannelById(trackedTwitchAccount[TrackedTwitchAccounts.channelId]) ?: continue // Channel does not exist! Bail out
-
-                        val missingStreamInformationPlaceholder = "*${m.languageManager.defaultI18nContext.get(I18nKeysData.Modules.Twitch.CouldntGetLivestreamInformation)}*"
-                        try {
-                            channel.sendMessage(
-                                MessageUtils.generateMessageOrFallbackIfInvalid(
-                                    m.languageManager.defaultI18nContext, // TODO: Load the language of the server
-                                    trackedTwitchAccount[TrackedTwitchAccounts.message],
-                                    guild,
-                                    TwitchStreamOnlineMessagePlaceholders,
-                                    {
-                                        when (it) {
-                                            TwitchStreamOnlineMessagePlaceholders.GuildIconUrlPlaceholder -> guild.iconUrl ?: ""
-                                            TwitchStreamOnlineMessagePlaceholders.GuildNamePlaceholder -> guild.name
-                                            TwitchStreamOnlineMessagePlaceholders.GuildSizePlaceholder -> guild.memberCount.toString()
-                                            TwitchStreamOnlineMessagePlaceholders.StreamGamePlaceholder -> request.gameName?.let { str -> MarkdownSanitizer.sanitize(str, MarkdownSanitizer.SanitizationStrategy.ESCAPE).escapeMentions() } ?: missingStreamInformationPlaceholder
-                                            TwitchStreamOnlineMessagePlaceholders.StreamTitlePlaceholder -> request.title?.let { str -> MarkdownSanitizer.sanitize(str, MarkdownSanitizer.SanitizationStrategy.ESCAPE).escapeMentions() } ?: missingStreamInformationPlaceholder
-                                            TwitchStreamOnlineMessagePlaceholders.StreamUrlPlaceholder -> "https://twitch.tv/${request.twitchUserLogin}"
-                                        }
-                                    },
-                                    I18nKeysData.InvalidMessages.TwitchStreamOnlineNotification
-                                )
-                            ).await()
-                            notifiedGuilds.add(guild.idLong)
-                        } catch (e: Exception) {
-                            logger.warn(e) { "Something went wrong while trying to send Twitch Stream Online notification on ${guild.idLong}!" }
-                        }
-                    }
-
-                    LorittaInternalRPCResponse.TwitchStreamOnlineEventResponse(notifiedGuilds)
-                }
-
-                is LorittaInternalRPCRequest.BlueskyPostRelayRequest -> {
-                    val notifiedGuilds = mutableListOf<Long>()
-                    for (tracked in request.tracks) {
-                        val guild = m.lorittaShards.getGuildById(tracked.guildId) ?: continue // This could be for other clusters, so let's just skip if the guild is null
-
-                        val channel = guild.getGuildMessageChannelById(tracked.channelId) ?: continue // Channel does not exist! Bail out
-
-                        try {
-                            channel.sendMessage(
-                                MessageUtils.generateMessageOrFallbackIfInvalid(
-                                    m.languageManager.defaultI18nContext, // TODO: Load the language of the server
-                                    tracked.message,
-                                    guild,
-                                    BlueskyPostMessagePlaceholders,
-                                    {
-                                        when (it) {
-                                            BlueskyPostMessagePlaceholders.GuildIconUrlPlaceholder -> guild.iconUrl ?: ""
-                                            BlueskyPostMessagePlaceholders.GuildNamePlaceholder -> guild.name
-                                            BlueskyPostMessagePlaceholders.GuildSizePlaceholder -> guild.memberCount.toString()
-                                            BlueskyPostMessagePlaceholders.PostUrlPlaceholder -> "https://bsky.app/profile/${request.repo}/post/${request.postId}"
-                                        }
-                                    },
-                                    I18nKeysData.InvalidMessages.BlueskyPostNotification
-                                )
-                            ).await()
-                            notifiedGuilds.add(guild.idLong)
-                        } catch (e: Exception) {
-                            logger.warn(e) { "Something went wrong while trying to send Twitch Stream Online notification on ${guild.idLong}!" }
-                        }
-                    }
-
-                    LorittaInternalRPCResponse.BlueskyPostRelayResponse(notifiedGuilds)
-                }
             }
         } catch (e: RPCResponseException) {
             e.response
@@ -694,12 +550,6 @@ class InternalWebServer(val m: LorittaBot) {
 
     @Serializable
     data class NotifyLoriCoolCardsRequest(
-        val guildId: Long,
-        val channelId: Long
-    )
-
-    @Serializable
-    data class NotifyBanAppealRequest(
         val guildId: Long,
         val channelId: Long
     )

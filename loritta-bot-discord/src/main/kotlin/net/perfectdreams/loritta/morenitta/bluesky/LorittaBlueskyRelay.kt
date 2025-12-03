@@ -7,7 +7,12 @@ import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.TrackedBlueskyAccounts
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.analytics.LorittaMetrics
+import net.perfectdreams.loritta.morenitta.rpc.LorittaRPC
+import net.perfectdreams.loritta.morenitta.rpc.execute
+import net.perfectdreams.loritta.morenitta.rpc.payloads.BlueskyPostRelayRequest
+import net.perfectdreams.loritta.morenitta.rpc.payloads.BlueskyPostRelayResponse
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
+import net.perfectdreams.loritta.morenitta.website.routes.api.v1.callbacks.PostTwitchEventSubCallbackRoute
 import net.perfectdreams.loritta.serializable.internal.requests.LorittaInternalRPCRequest
 import net.perfectdreams.loritta.serializable.internal.responses.LorittaInternalRPCResponse
 import net.perfectdreams.yokye.BlueskyFirehoseClient
@@ -32,7 +37,7 @@ class LorittaBlueskyRelay(val loritta: LorittaBot) {
                 // We do have a minimum post count to avoid hammering the database, because there's a LOT of bsky posts
                 // It isn't a huge deal if we don't fill 100 posts, because we will wait for 1s before bailing out and continuing anyway
                 val posts = postStream.receiveAll(minimum = 100, maximumQueryTimeout = 1.seconds)
-                val postsToBeRelayed = mutableListOf<LorittaInternalRPCRequest.BlueskyPostRelayRequest>()
+                val postsToBeRelayed = mutableListOf<BlueskyPostRelayRequest>()
 
                 // We chunk due to limits on IN queries
                 posts.chunked(65_535)
@@ -52,14 +57,14 @@ class LorittaBlueskyRelay(val loritta: LorittaBot) {
                         if (trackedBlueskyAccounts.isNotEmpty()) {
                             // So we are tracking someone, sweet!
                             for (post in chunkPosts) {
-                                val tracks = mutableListOf<LorittaInternalRPCRequest.BlueskyPostRelayRequest.TrackInfo>()
+                                val tracks = mutableListOf<BlueskyPostRelayRequest.TrackInfo>()
 
                                 val relaysInfo = trackedBlueskyAccounts.filter { it[TrackedBlueskyAccounts.repo] == post.repo }
 
                                 for (relayInfo in relaysInfo) {
                                     // Add all tracks info
                                     tracks.add(
-                                        LorittaInternalRPCRequest.BlueskyPostRelayRequest.TrackInfo(
+                                        BlueskyPostRelayRequest.TrackInfo(
                                             relayInfo[TrackedBlueskyAccounts.guildId],
                                             relayInfo[TrackedBlueskyAccounts.channelId],
                                             relayInfo[TrackedBlueskyAccounts.message]
@@ -69,7 +74,7 @@ class LorittaBlueskyRelay(val loritta: LorittaBot) {
 
                                 if (tracks.isNotEmpty()) {
                                     postsToBeRelayed.add(
-                                        LorittaInternalRPCRequest.BlueskyPostRelayRequest(
+                                        BlueskyPostRelayRequest(
                                             post.repo,
                                             post.postId,
                                             tracks
@@ -92,7 +97,8 @@ class LorittaBlueskyRelay(val loritta: LorittaBot) {
                     val jobs = clustersThatThisPostNeedsToBeRelayedTo.map { cluster ->
                         cluster to GlobalScope.async {
                             withTimeout(25_000) {
-                                loritta.makeRPCRequest<LorittaInternalRPCResponse.BlueskyPostRelayResponse>(
+                                LorittaRPC.BlueskyPostRelay.execute(
+                                    loritta,
                                     cluster,
                                     postToBeRelayed
                                 )
@@ -104,8 +110,12 @@ class LorittaBlueskyRelay(val loritta: LorittaBot) {
                     for (job in jobs) {
                         try {
                             val relayResult = job.second.await()
-                            logger.info { "Bluesky Post Relay of ${postToBeRelayed.postId} by ${postToBeRelayed.repo} to Cluster ${job.first.id} (${job.first.name}) was successfully processed! Notified Guilds: ${relayResult.notifiedGuilds.size}" }
-                            totalNotifiedCount += relayResult.notifiedGuilds.size
+                            if (relayResult is BlueskyPostRelayResponse.Success) {
+                                logger.info { "Bluesky Post Relay of ${postToBeRelayed.postId} by ${postToBeRelayed.repo} to Cluster ${job.first.id} (${job.first.name}) was successfully processed! Notified Guilds: ${relayResult.notifiedGuilds.size}" }
+                                totalNotifiedCount += relayResult.notifiedGuilds.size
+                            } else {
+                                error("Relay result is not Success! Result: $relayResult")
+                            }
                         } catch (e: Exception) {
                             logger.warn(e) { "Bluesky Post Relay of ${postToBeRelayed.postId} by ${postToBeRelayed.repo} to Cluster ${job.first.id} (${job.first.name}) failed!" }
                         }

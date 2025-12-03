@@ -21,16 +21,4 @@ sealed class LorittaInternalRPCResponse {
             val instances: List<LorittaCluster>
         ) : GetLorittaInfoResponse()
     }
-
-    @Serializable
-    data object UpdateTwitchSubscriptionsResponse : LorittaInternalRPCResponse()
-
-    @Serializable
-    data class TwitchStreamOnlineEventResponse(val notifiedGuilds: List<Long>) : LorittaInternalRPCResponse()
-
-    @Serializable
-    data class BlueskyPostRelayResponse(val notifiedGuilds: List<Long>) : LorittaInternalRPCResponse()
-
-    @Serializable
-    data object DailyShopRefreshedResponse : LorittaInternalRPCResponse()
 }

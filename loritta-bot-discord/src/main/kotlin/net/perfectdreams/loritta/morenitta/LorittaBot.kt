@@ -105,6 +105,7 @@ import net.perfectdreams.loritta.morenitta.platform.discord.utils.BucketedContro
 import net.perfectdreams.loritta.morenitta.platform.discord.utils.JVMLorittaAssets
 import net.perfectdreams.loritta.morenitta.profile.ProfileDesignManager
 import net.perfectdreams.loritta.morenitta.raffles.LorittaRaffleTask
+import net.perfectdreams.loritta.morenitta.rpc.LorittaRPC
 import net.perfectdreams.loritta.morenitta.scheduledtasks.TaskManager
 import net.perfectdreams.loritta.morenitta.threads.RemindersThread
 import net.perfectdreams.loritta.morenitta.twitch.TwitchAPI

@@ -693,14 +693,6 @@ class ExecuteDashGuildScopedProcessor(private val internalWebServer: InternalWeb
                     return@newSuspendedTransaction DashGuildScopedResponse.UpsertGuildTwitchChannelResponse.Success(dashRequest.id!!)
                 }
 
-                // Schedule subscription creation
-                GlobalScope.launch {
-                    m.makeRPCRequest<LorittaInternalRPCResponse.UpdateTwitchSubscriptionsResponse>(
-                        m.lorittaMainCluster,
-                        LorittaInternalRPCRequest.UpdateTwitchSubscriptionsRequest
-                    )
-                }
-
                 response
             }
 

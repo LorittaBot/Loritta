@@ -7,6 +7,9 @@ import kotlinx.coroutines.withTimeout
 import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.cinnamon.pudding.tables.*
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.rpc.LorittaRPC
+import net.perfectdreams.loritta.morenitta.rpc.execute
+import net.perfectdreams.loritta.morenitta.rpc.payloads.DailyShopRefreshedRequest
 import net.perfectdreams.loritta.serializable.internal.requests.LorittaInternalRPCRequest
 import net.perfectdreams.loritta.serializable.internal.responses.LorittaInternalRPCResponse
 import org.jetbrains.exposed.dao.id.EntityID
@@ -42,10 +45,11 @@ class LorittaDailyShopUpdateTask(val loritta: LorittaBot) : Runnable {
 				val jobs = shards.map { cluster ->
 					cluster to GlobalScope.async {
 						withTimeout(25_000) {
-							loritta.makeRPCRequest<LorittaInternalRPCResponse.DailyShopRefreshedResponse>(
-								cluster,
-								LorittaInternalRPCRequest.DailyShopRefreshedRequest(resultId.value)
-							)
+                            LorittaRPC.DailyShopRefreshed.execute(
+                                loritta,
+                                cluster,
+                                DailyShopRefreshedRequest(resultId.value)
+                            )
 						}
 					}
 				}

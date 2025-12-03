@@ -1,15 +1,11 @@
 package net.perfectdreams.loritta.morenitta.websitedashboard.routes.banappeals
 
 import dev.minn.jda.ktx.messages.MessageCreate
-import io.ktor.client.request.get
-import io.ktor.client.request.post
-import io.ktor.client.request.setBody
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import kotlinx.html.div
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import net.perfectdreams.etherealgambi.client.EtherealGambiClient
 import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
@@ -18,9 +14,10 @@ import net.perfectdreams.loritta.banappeals.BanAppealResult
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BanAppeals
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.dashboard.EmbeddedToast
-import net.perfectdreams.loritta.morenitta.banappeals.BanAppeal
 import net.perfectdreams.loritta.morenitta.banappeals.BanAppealsUtils
-import net.perfectdreams.loritta.morenitta.banappeals.BanAppealsUtils.createStaffAppealMessage
+import net.perfectdreams.loritta.morenitta.rpc.LorittaRPC
+import net.perfectdreams.loritta.morenitta.rpc.payloads.NotifyBanAppealRequest
+import net.perfectdreams.loritta.morenitta.rpc.execute
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
@@ -31,7 +28,6 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresUserA
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
-import net.perfectdreams.loritta.morenitta.websiteinternal.InternalWebServer
 import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.serializable.UserBannedState
 import net.perfectdreams.loritta.serializable.UserId
@@ -138,20 +134,17 @@ class PostBanAppealsRoute(website: LorittaDashboardWebServer) : RequiresUserAuth
                     )
                 }
 
-                val cluster = DiscordUtils.getLorittaClusterForGuildId(website.loritta, 268353819409252352L)
-
-                val response = website.loritta.http.post(cluster.rpcUrl.removeSuffix("/") + "/ban-appeals/${result.appeal[BanAppeals.id].value}/notify") {
-                    setBody(
-                        Json.encodeToString(
-                            InternalWebServer.NotifyBanAppealRequest(
-                                268353819409252352L,
-                                739823666891849729L,
-                            )
-                        )
+                val response = LorittaRPC.NotifyBanAppeal.execute(
+                    website.loritta,
+                    DiscordUtils.getLorittaClusterForGuildId(website.loritta, 268353819409252352L),
+                    NotifyBanAppealRequest(
+                        result.appeal[BanAppeals.id].value,
+                        268353819409252352L,
+                        739823666891849729L,
                     )
-                }
+                )
 
-                if (response.status != HttpStatusCode.OK) {
+                /* if (response.status != HttpStatusCode.OK) {
                     call.respondHtmlFragment(status = HttpStatusCode.InternalServerError) {
                         blissShowToast(
                             createEmbeddedToast(
@@ -161,7 +154,7 @@ class PostBanAppealsRoute(website: LorittaDashboardWebServer) : RequiresUserAuth
                         )
                     }
                     return
-                }
+                } */
 
                 // We should ALWAYS send the DMs to the user that created the report, even tho they may be sending on behalf of someone else
                 // This is to avoid spamming innocent users
