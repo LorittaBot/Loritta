@@ -8,24 +8,26 @@ website:
         appealRules: "Regras do Apelo"
 
         beHonest:
-          title: "Seja Honesto:"
+          title: "Seja Honesto"
           description: "Nós temos provas sobre o seu banimento. Se a sua história contradizer as nossas provas, o seu apelo será rejeitado. Admitir o seu erro demonstra maturidade e mostra que você merece uma segunda chance."
 
         bePatient:
-          title: "Seja Paciente:"
+          title: "Seja Paciente"
           description: "A equipe analisará o seu apelo o mais breve possível. Enviar mensagens para a equipe pedindo para que analisem o seu apelo mais rápido não irá acelerar o processo e irá fazer que o seu apelo seja rejeitado."
 
         beAuthentic:
-          title: "Seja Autêntico:"
+          title: "Seja Autêntico"
           description: "Queremos ouvir as suas palavras, não as de um robô. Apelos escritos com inteligência artificial (como o ChatGPT) serão rejeitados."
 
         beRespectful:
-          title: "Seja Respeitoso:"
+          title: "Seja Respeitoso"
           description: "Lembre-se que há pessoas reais analisando seu apelo. Ofensas ou linguagem abusiva contra a nossa equipe fará que o seu apelo seja rejeitado."
 
         beDetailed:
-          title: "Seja Detalhado:"
+          title: "Seja Detalhado"
           description: "Evite respostas curtas como apenas \"desculpa\". Explique o contexto e suas ações. Se você dedicar tempo para explicar o seu lado, nós dedicaremos tempo para te ouvir."
+
+      goodLuck: "Boa sorte!"
 
       accountIds:
         title: "Quais são os IDs das suas contas do Discord?"
