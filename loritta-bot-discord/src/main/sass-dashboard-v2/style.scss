@@ -1151,7 +1151,7 @@ aside#that-wasnt-very-cash-money-of-you-fixed-sidebar-reserved-space {
 }
 
 #ban-appeal-wrapper {
-    background-color: var(--background-color);
+    background-color: var(--left-sidebar-background-color);
     color: var(--content-text-color);
     min-height: 100vh;
 
@@ -1160,6 +1160,11 @@ aside#that-wasnt-very-cash-money-of-you-fixed-sidebar-reserved-space {
     }
 
     #ban-appeal-content {
+        background-color: var(--background-color);
+        border-left: 1px solid var(--card-border-color);
+        border-right: 1px solid var(--card-border-color);
+        min-height: 100vh;
+
         max-width: 50em;
         margin-left: auto;
         margin-right: auto;
@@ -1170,5 +1175,10 @@ aside#that-wasnt-very-cash-money-of-you-fixed-sidebar-reserved-space {
         padding-right: 4em;
         padding-top: 1em;
         padding-bottom: 1em;
+
+        @media (500px >= width) {
+            padding-left: 1em;
+            padding-right: 1em;
+        }
     }
 }
