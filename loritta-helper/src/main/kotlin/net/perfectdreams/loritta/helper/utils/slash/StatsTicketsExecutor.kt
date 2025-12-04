@@ -24,6 +24,7 @@ class StatsTicketsExecutor(helper: LorittaHelper) : HelperExecutor(helper, Permi
                         TicketUtils.TicketSystemType.HELP_DESK_ENGLISH -> "Loritta Help Desk (English)"
                         TicketUtils.TicketSystemType.FIRST_FAN_ARTS_PORTUGUESE -> "Primeira Fan Art (Português)"
                         TicketUtils.TicketSystemType.SPARKLYPOWER_HELP_DESK_PORTUGUESE -> "SparklyPower Help Desk"
+                        TicketUtils.TicketSystemType.BAN_SUPPORT_PORTUGUESE -> "Suporte de Bans (Português)"
                     },
                     type.name
                 )
