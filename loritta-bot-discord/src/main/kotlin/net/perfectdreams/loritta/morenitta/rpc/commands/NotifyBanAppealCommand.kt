@@ -86,7 +86,6 @@ class NotifyBanAppealCommand(val loritta: LorittaBot) : LorittaRPCCommand(Loritt
 
         message.createThreadChannel("Apelo de Ban de ${appealFor.name} (${appealFor.id})")
             .setAutoArchiveDuration(ThreadChannel.AutoArchiveDuration.TIME_1_WEEK)
-            .setInvitable(false)
             .reason("Ticket created for ban appeal #${appeal.id}")
             .await()
 
