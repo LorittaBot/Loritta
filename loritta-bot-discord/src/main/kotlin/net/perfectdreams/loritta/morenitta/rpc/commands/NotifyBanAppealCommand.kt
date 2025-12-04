@@ -26,8 +26,16 @@ class NotifyBanAppealCommand(val loritta: LorittaBot) : LorittaRPCCommand(Loritt
     override suspend fun onRequest(call: ApplicationCall) {
         val request = Json.decodeFromString<NotifyBanAppealRequest>(call.receiveText())
 
-        val guild = loritta.lorittaShards.getGuildById(request.guildId)!!
-        val channel = guild.getGuildMessageChannelById(request.channelId)!!
+        val guild = loritta.lorittaShards.getGuildById(request.guildId)
+        if (guild == null) {
+            call.respondRPCResponse(NotifyBanAppealResponse.GuildNotFound)
+            return
+        }
+        val channel = guild.getGuildMessageChannelById(request.channelId)
+        if (channel == null) {
+            call.respondRPCResponse(NotifyBanAppealResponse.ChannelNotFound)
+            return
+        }
 
         val appealRow = loritta.transaction {
             BanAppeals

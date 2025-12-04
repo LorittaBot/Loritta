@@ -12,4 +12,10 @@ sealed class NotifyBanAppealResponse {
 
     @Serializable
     data object UserNotFound : NotifyBanAppealResponse()
+
+    @Serializable
+    data object GuildNotFound : NotifyBanAppealResponse()
+
+    @Serializable
+    data object ChannelNotFound : NotifyBanAppealResponse()
 }

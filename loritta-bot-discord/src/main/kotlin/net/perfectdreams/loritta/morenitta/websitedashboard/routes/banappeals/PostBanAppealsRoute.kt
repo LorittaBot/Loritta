@@ -213,6 +213,32 @@ class PostBanAppealsRoute(website: LorittaDashboardWebServer) : RequiresUserAuth
                             }
                             return
                         }
+                        NotifyBanAppealResponse.ChannelNotFound -> {
+                            call.respondHtmlFragment(status = HttpStatusCode.InternalServerError) {
+                                blissShowToast(
+                                    createEmbeddedToast(
+                                        EmbeddedToast.Type.WARN,
+                                        "Algo deu errado ao enviar o seu formulário!"
+                                    ) {
+                                        text("Canal de Apelos não encontrado")
+                                    }
+                                )
+                            }
+                            return
+                        }
+                        NotifyBanAppealResponse.GuildNotFound -> {
+                            call.respondHtmlFragment(status = HttpStatusCode.InternalServerError) {
+                                blissShowToast(
+                                    createEmbeddedToast(
+                                        EmbeddedToast.Type.WARN,
+                                        "Algo deu errado ao enviar o seu formulário!"
+                                    ) {
+                                        text("Servidor de Apelos não encontrado")
+                                    }
+                                )
+                            }
+                            return
+                        }
                         NotifyBanAppealResponse.Success -> {}
                     }
 
