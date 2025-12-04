@@ -70,7 +70,7 @@ class TicketUtils(val m: LorittaHelper) {
         ),
 
         // Portuguese Ban Support Channel
-        community.channels.firstFanArt to LorittaBanSupportTicketSystem(
+        banAppealsSupport.channels.supportId to LorittaBanSupportTicketSystem(
             m.jda,
             TicketSystemType.BAN_SUPPORT_PORTUGUESE,
             LanguageName.PORTUGUESE,
