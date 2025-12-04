@@ -33,8 +33,8 @@ website:
         title: "Quais são os IDs das suas contas do Discord?"
 
         description1: "Preencha com o ID de TODAS as suas outras contas, colocando um ID por linha. Se você só tem esta conta ({userName} ({userId})), pode deixar este campo em branco."
-        description2: "Precisamos saber todas as suas contas para garantir que, se seu apelo for aceito, todas as suas contas sejam desbanidas. Omitir contas pode te trazer problemas futuros, como ser banido por Evasão de Ban!"
-        description3: "Se você foi banido por regras que envolvem múltiplas contas, como Evasão de Ban ou Usar Múltiplas Contas no Daily, é imprescindível que você preencha este campo com as suas contas!"
+        description2: "Precisamos saber TODAS as suas contas para garantir que, se seu apelo for aceito, todas as suas contas sejam desbanidas. Omitir contas pode te trazer problemas futuros, como ser banido por Evasão de Ban por você ter uma conta que está banida! O seu apelo será rejeitado se você não passar o ID de TODAS as suas contas."
+        description3: "Se você foi banido por regras que envolvem múltiplas contas, como Evasão de Ban ou Usar Múltiplas Contas no Daily, você é OBRIGADO a colocar o ID de TODAS as suas contas!"
         description4: "Se no seu motivo de ban tem contas que você não reconhece, você provavelmente usou contas de outras pessoas, ou emprestou contas suas para outras pessoas. Nestes casos, você terá que provar que outras pessoas tiveram acesso a contas que você usou."
 
       whatDidYouDo:
