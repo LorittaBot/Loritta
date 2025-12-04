@@ -7,12 +7,17 @@ import kotlinx.datetime.toJavaInstant
 import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.components.separator.Separator
+import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.banappeals.BanAppealResult
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.pudding.tables.BanAppeals
 import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
+import net.perfectdreams.loritta.morenitta.utils.extensions.asUserNameCodeBlockPreviewTag
 import net.perfectdreams.loritta.morenitta.utils.extensions.convertToUserNameCodeBlockPreviewTag
+import java.time.Instant
 import kotlin.time.Duration.Companion.days
 
 object BanAppealsUtils {
@@ -153,6 +158,86 @@ object BanAppealsUtils {
                 "Rejeitar"
             ).withDisabled(alreadyReviewed)
         )
+    }
+
+    fun InlineMessage<*>.createAppealReceivedMessage(
+        loritta: LorittaBot,
+        appealId: Long
+    ) {
+        this.useComponentsV2 = true
+
+        container {
+            this.accentColorRaw = LorittaColors.BanAppealPending.rgb
+
+            section(Thumbnail("https://assets.perfectdreams.media/loritta/loritta-support.png")) {
+                text(
+                    buildString {
+                        appendLine("### Recebemos o seu apelo!")
+
+                        appendLine("Recebemos o seu apelo de ban! Em breve você terá uma resposta dizendo se o seu apelo foi aprovado ou não.")
+                        appendLine()
+                        appendLine("Se você precisar de ajuda com o seu apelo, você pode falar com a nossa equipe no [Tribunal da Loritta](${loritta.config.loritta.banAppeals.supportInviteUrl}). Lembrando que o servidor serve você tirar dúvidas ou para dar mais informações para a equipe, e não para você ir pedir para verem o seu apelo mais rápido.")
+                        appendLine()
+                        appendLine("**Boa sorte! ${Emotes.LoriLick}**")
+                        appendLine()
+                        appendLine("-# Apelo #$appealId")
+                    }
+                )
+            }
+        }
+    }
+
+    fun InlineMessage<*>.createAppealAcceptedMessage(
+        loritta: LorittaBot,
+        appealId: Long,
+        acceptedByUser: User
+    ) {
+        this.useComponentsV2 = true
+
+        container {
+            this.accentColorRaw = LorittaColors.BanAppealApproved.rgb
+
+            section(Thumbnail("https://stuff.loritta.website/emotes/lori-angel.png")) {
+                text(
+                    buildString {
+                        appendLine("### ${Emotes.LoriHappyJumping} Seu apelo foi aceito!")
+
+                        appendLine("Em breve você poderá usar a Loritta novamente!")
+                        appendLine()
+                        appendLine("O seu apelo foi aprovado por ${acceptedByUser.asUserNameCodeBlockPreviewTag(stripCodeMarksFromInput = false, stripLinksFromInput = false)}")
+                        appendLine()
+                        appendLine("-# Apelo #$appealId")
+                    }
+                )
+            }
+        }
+    }
+
+    fun InlineMessage<*>.createAppealDeniedMessage(
+        loritta: LorittaBot,
+        appealId: Long,
+        reason: String,
+        canSendAppealAfter: Instant
+    ) {
+        this.useComponentsV2 = true
+
+        container {
+            this.accentColorRaw = LorittaColors.BanAppealRejected.rgb
+
+            section(Thumbnail("https://stuff.loritta.website/emotes/lori-sob.png")) {
+                text(
+                    buildString {
+                        appendLine("### ${Emotes.LoriSob} Seu apelo foi rejeitado...")
+
+                        appendLine("**Motivo:** $reason")
+                        appendLine()
+                        appendLine("Você poderá enviar outro apelo em ${DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(canSendAppealAfter)}.")
+                        appendLine()
+                        appendLine("-# Apelo #$appealId")
+                    }
+                )
+            }
+        }
     }
 
     data class AppealCachedUserInfo(

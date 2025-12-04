@@ -23,6 +23,8 @@ import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.dashboard.EmbeddedToast
 import net.perfectdreams.loritta.morenitta.banappeals.BanAppealsUtils
+import net.perfectdreams.loritta.morenitta.banappeals.BanAppealsUtils.createAppealDeniedMessage
+import net.perfectdreams.loritta.morenitta.banappeals.BanAppealsUtils.createAppealReceivedMessage
 import net.perfectdreams.loritta.morenitta.rpc.LorittaRPC
 import net.perfectdreams.loritta.morenitta.rpc.payloads.NotifyBanAppealRequest
 import net.perfectdreams.loritta.morenitta.rpc.execute
@@ -223,27 +225,7 @@ class PostBanAppealsRoute(website: LorittaDashboardWebServer) : RequiresUserAuth
                         try {
                             privateChannel.sendMessage(
                                 MessageCreate {
-                                    this.useComponentsV2 = true
-
-                                    container {
-                                        this.accentColorRaw = LorittaColors.BanAppealPending.rgb
-
-                                        section(Thumbnail("https://assets.perfectdreams.media/loritta/loritta-support.png")) {
-                                            text(
-                                                buildString {
-                                                    appendLine("### Recebemos o seu apelo!")
-
-                                                    appendLine("Recebemos o seu apelo de ban! Em breve você terá uma resposta dizendo se o seu apelo foi aprovado ou não.")
-                                                    appendLine()
-                                                    appendLine("Se você precisar de ajuda com o seu apelo, você pode falar com a nossa equipe no [Tribunal da Loritta](${website.loritta.config.loritta.banAppeals.supportInviteUrl}). Lembrando que o servidor serve você tirar dúvidas ou para dar mais informações para a equipe, e não para você ir pedir para verem o seu apelo mais rápido.")
-                                                    appendLine()
-                                                    appendLine("**Boa sorte! ${Emotes.LoriLick}**")
-                                                    appendLine()
-                                                    appendLine("-# Apelo #${result.appeal[BanAppeals.id].value}")
-                                                }
-                                            )
-                                        }
-                                    }
+                                    createAppealReceivedMessage(website.loritta, result.appeal[BanAppeals.id].value)
                                 }
                             ).await()
 

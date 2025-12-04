@@ -15,19 +15,24 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.banappeals.BanAppealResult
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BanAppeals
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
 import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.banappeals.BanAppeal
 import net.perfectdreams.loritta.morenitta.banappeals.BanAppealsUtils
+import net.perfectdreams.loritta.morenitta.banappeals.BanAppealsUtils.createAppealAcceptedMessage
+import net.perfectdreams.loritta.morenitta.banappeals.BanAppealsUtils.createAppealDeniedMessage
 import net.perfectdreams.loritta.morenitta.banappeals.BanAppealsUtils.createStaffAppealMessage
 import net.perfectdreams.loritta.morenitta.interactions.InteractivityManager
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedComponentId
 import net.perfectdreams.loritta.morenitta.interactions.modals.options.modalString
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
+import net.perfectdreams.loritta.morenitta.utils.extensions.asUserNameCodeBlockPreviewTag
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
+import net.perfectdreams.loritta.morenitta.utils.extensions.convertToUserNameCodeBlockPreviewTag
 import net.perfectdreams.loritta.serializable.UserBannedState
 import net.perfectdreams.loritta.serializable.UserId
 import org.jetbrains.exposed.sql.ResultRow
@@ -193,23 +198,7 @@ class BanAppealInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
                     try {
                         privateChannel.sendMessage(
                             MessageCreate {
-                                this.useComponentsV2 = true
-
-                                container {
-                                    this.accentColorRaw = LorittaColors.BanAppealApproved.rgb
-
-                                    section(Thumbnail("https://stuff.loritta.website/emotes/lori-angel.png")) {
-                                        text(
-                                            buildString {
-                                                appendLine("### Seu apelo foi aceito!")
-
-                                                appendLine("Agora você pode usar a Loritta novamente!")
-                                                appendLine()
-                                                appendLine("-# Apelo #${result.appeal.id}")
-                                            }
-                                        )
-                                    }
-                                }
+                                createAppealAcceptedMessage(m, result.appeal.id, event.user)
                             }
                         ).await()
                     } catch (e: Exception) {
@@ -350,25 +339,7 @@ class BanAppealInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
                             try {
                                 privateChannel.sendMessage(
                                     MessageCreate {
-                                        this.useComponentsV2 = true
-
-                                        container {
-                                            this.accentColorRaw = LorittaColors.BanAppealRejected.rgb
-
-                                            section(Thumbnail("https://stuff.loritta.website/emotes/lori-sob.png")) {
-                                                text(
-                                                    buildString {
-                                                        appendLine("### Seu apelo foi rejeitado...")
-
-                                                        appendLine("**Motivo:** ${args[textInput]}")
-                                                        appendLine()
-                                                        appendLine("Você poderá enviar outro apelo em ${DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(result.appeal.submittedAt.plusSeconds(BanAppealsUtils.BAN_APPEAL_COOLDOWN.inWholeSeconds).toInstant())}.")
-                                                        appendLine()
-                                                        appendLine("-# Apelo #${result.appeal.id}")
-                                                    }
-                                                )
-                                            }
-                                        }
+                                       createAppealDeniedMessage(m, result.appeal.id, args[textInput], result.appeal.submittedAt.plusSeconds(BanAppealsUtils.BAN_APPEAL_COOLDOWN.inWholeSeconds).toInstant())
                                     }
                                 ).await()
                             } catch (e: Exception) {
