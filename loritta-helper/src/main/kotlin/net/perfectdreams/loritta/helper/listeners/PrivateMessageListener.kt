@@ -29,7 +29,7 @@ class PrivateMessageListener(val m: LorittaHelper) : ListenerAdapter() {
                     actionRow(
                         Button.of(
                             ButtonStyle.LINK,
-                            "https://appeals.loritta.website/br/?utm_source=discord&utm_medium=button&utm_campaign=unban-appeal&utm_content=appeal-old-helper-invoke"
+                            "https://appeals.loritta.website/br/?utm_source=discord&utm_medium=button&utm_campaign=unban-appeal&utm_content=appeal-old-helper-invoke",
                             "Enviar um Apelo de Ban"
                         ).withEmoji(Emoji.fromCustom("lori_angel", 964701052324675622L, false))
                     )
