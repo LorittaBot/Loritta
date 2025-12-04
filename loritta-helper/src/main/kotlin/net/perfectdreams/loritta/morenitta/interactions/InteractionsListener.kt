@@ -27,7 +27,7 @@ class InteractionsListener(private val loritta: LorittaHelper) : ListenerAdapter
     private var hasAlreadyGloballyUpdatedTheCommands = false
 
     override fun onReady(event: ReadyEvent) {
-        listOf(loritta.config.guilds.community.id, loritta.config.guilds.english.id, loritta.config.guilds.sparklyPower.id).forEach {
+        listOf(loritta.config.guilds.community.id, loritta.config.guilds.english.id, loritta.config.guilds.sparklyPower.id, loritta.config.guilds.banAppealsSupport.id).forEach {
             val guild = event.jda.getGuildById(it)!!
 
             val commands = loritta.commandManager.slashCommands.map { loritta.commandManager.convertDeclarationToJDA(it) } + loritta.commandManager.userCommands.map { loritta.commandManager.convertDeclarationToJDA(it) } + loritta.commandManager.messageCommands.map { loritta.commandManager.convertDeclarationToJDA(it) }
