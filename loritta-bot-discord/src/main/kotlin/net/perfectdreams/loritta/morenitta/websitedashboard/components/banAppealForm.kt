@@ -163,6 +163,10 @@ fun FlowContent.banAppealForm(
                     }
 
                     div {
+                        text(i18nContext.get(I18nKeysData.Website.BanAppeals.AppealForm.AccountIds.Description4))
+                    }
+
+                    div {
                         text("Não sabe copiar IDs? Então ")
                         a(href = "https://support.discord.com/hc/pt-br/articles/206346498-Onde-posso-encontrar-minhas-IDs-de-usu%C3%A1rio-servidor-e-mensagem", target = "_blank") {
                             text("clique aqui")
