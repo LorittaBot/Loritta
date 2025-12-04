@@ -29,6 +29,7 @@ import net.perfectdreams.loritta.helper.utils.tickets.TicketSystemTypeData
 import net.perfectdreams.loritta.helper.utils.tickets.TicketUtils
 import net.perfectdreams.loritta.helper.utils.tickets.systems.FirstFanArtTicketSystem
 import net.perfectdreams.loritta.helper.utils.tickets.systems.HelpDeskTicketSystem
+import net.perfectdreams.loritta.helper.utils.tickets.systems.LorittaBanSupportTicketSystem
 import net.perfectdreams.loritta.morenitta.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandDeclarationWrapper
@@ -55,6 +56,10 @@ class TicketSenderCommand(val helper: LorittaHelper) : SlashCommandDeclarationWr
                 choice(
                     "SparklyPower Suporte (Português)",
                     TicketUtils.TicketSystemType.SPARKLYPOWER_HELP_DESK_PORTUGUESE.name
+                )
+                choice(
+                    "Suporte de Apelos de Ban (Português)",
+                    TicketUtils.TicketSystemType.BAN_SUPPORT_PORTUGUESE.name
                 )
             }
         }
@@ -417,6 +422,33 @@ Antes de perguntar, verifique se a resposta dela não está no <#${systemInfo.fa
                                 """.trimMargin()
 
                             image = "https://loritta.website/v3/assets/img/faq/fanarts/banner.png"
+                        }
+
+                        actionRow(
+                            Button.of(
+                                net.dv8tion.jda.api.components.buttons.ButtonStyle.PRIMARY,
+                                "create_ticket:${
+                                    ComponentDataUtils.encode(
+                                        TicketSystemTypeData(systemInfo.systemType)
+                                    )
+                                }",
+                                i18nContext.get(I18nKeysData.Tickets.CreateTicket)
+                            ).withEmoji(Emoji.fromUnicode("➕"))
+                        )
+                    }
+                ).await()
+            } else if (systemInfo is LorittaBanSupportTicketSystem) {
+                channel.sendMessage(
+                    MessageCreate {
+                        embed {
+                            title = "Abra seu Ticket!"
+                            description = "Seja bem-vind@ ao Tribunal da Loritta! Um lugar para pessoas banidas conversarem com a Staff sobre seus casos!\n\nAntes de abrir um ticket, lembre-se de ler o <#${helper.config.guilds.banAppealsSupport.channels.guideId}>!"
+                            color = 2729726
+
+                            footer {
+                                name = "Equipe da Loritta™"
+                                iconUrl = "https://cdn.discordapp.com/emojis/623670395907866625.webp?size=96"
+                            }
                         }
 
                         actionRow(

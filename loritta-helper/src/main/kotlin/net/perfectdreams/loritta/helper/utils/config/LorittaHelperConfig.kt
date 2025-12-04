@@ -9,7 +9,8 @@ data class LorittaHelperConfig(
     val guilds: GuildHolderConfig,
     val tasks: TaskHolderConfig,
     val secretKey: String,
-    val pantufaUrl: String? = null
+    val pantufaUrl: String? = null,
+    val ignoreTimeoutsOnGuilds: Set<Long>
 ) {
     @Serializable
     data class InnerHelperConfig(
@@ -44,7 +45,8 @@ data class LorittaHelperConfig(
     data class GuildHolderConfig(
         val sparklyPower: SparklyPowerConfig,
         val community: CommunityConfig,
-        val english: EnglishConfig
+        val english: EnglishConfig,
+        val banAppealsSupport: BanAppealsSupportConfig
     ) {
         @Serializable
         data class SparklyPowerConfig(
@@ -125,6 +127,18 @@ data class LorittaHelperConfig(
             data class EnglishRolesConfig(
                 val englishSupport: Long,
                 val portugueseSupport: Long
+            )
+        }
+
+        @Serializable
+        data class BanAppealsSupportConfig(
+            val id: Long,
+            val channels: ChannelsConfig
+        ) {
+            @Serializable
+            data class ChannelsConfig(
+                val supportId: Long,
+                val guideId: Long
             )
         }
     }

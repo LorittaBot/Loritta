@@ -15,7 +15,7 @@ import java.time.Duration
 class LorittaBanTimeoutListener(val m: LorittaHelper): ListenerAdapter() {
     override fun onMessageReceived(event: MessageReceivedEvent) {
         // On any server that Loritta Helper is in...
-        if (isLorittaBanned(m, event.author.idLong)) {
+        if (event.guild.idLong !in m.config.ignoreTimeoutsOnGuilds && isLorittaBanned(m, event.author.idLong)) {
             event.guild.timeoutFor(event.author, Duration.ofDays(28))
                 .reason("User is Loritta Banned!")
                 .queue()

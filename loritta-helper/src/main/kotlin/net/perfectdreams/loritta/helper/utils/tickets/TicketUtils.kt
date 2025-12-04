@@ -5,6 +5,7 @@ import net.perfectdreams.loritta.helper.serverresponses.loritta.EnglishResponses
 import net.perfectdreams.loritta.helper.serverresponses.loritta.PortugueseResponses
 import net.perfectdreams.loritta.helper.serverresponses.sparklypower.SparklyPowerResponses
 import net.perfectdreams.loritta.helper.utils.tickets.systems.FirstFanArtTicketSystem
+import net.perfectdreams.loritta.helper.utils.tickets.systems.LorittaBanSupportTicketSystem
 import net.perfectdreams.loritta.helper.utils.tickets.systems.LorittaHelpDeskTicketSystem
 import net.perfectdreams.loritta.helper.utils.tickets.systems.SparklyPowerHelpDeskTicketSystem
 
@@ -12,6 +13,7 @@ class TicketUtils(val m: LorittaHelper) {
     private val community = m.config.guilds.community
     private val english = m.config.guilds.english
     private val sparklyPower = m.config.guilds.sparklyPower
+    private val banAppealsSupport = m.config.guilds.banAppealsSupport
 
     private val portugueseResponses = PortugueseResponses(m.config)
     private val englishResponses = EnglishResponses(m.config)
@@ -66,6 +68,15 @@ class TicketUtils(val m: LorittaHelper) {
             sparklyPower.channels.status,
             sparklyPower.roles.staff
         ),
+
+        // Portuguese Ban Support Channel
+        community.channels.firstFanArt to LorittaBanSupportTicketSystem(
+            m.jda,
+            TicketSystemType.BAN_SUPPORT_PORTUGUESE,
+            LanguageName.PORTUGUESE,
+            banAppealsSupport.id,
+            banAppealsSupport.channels.supportId
+        ),
     )
 
     fun getSystemBySystemType(type: TicketSystemType) = systems.values.first { it.systemType == type }
@@ -74,7 +85,8 @@ class TicketUtils(val m: LorittaHelper) {
         HELP_DESK_PORTUGUESE,
         HELP_DESK_ENGLISH,
         FIRST_FAN_ARTS_PORTUGUESE,
-        SPARKLYPOWER_HELP_DESK_PORTUGUESE
+        SPARKLYPOWER_HELP_DESK_PORTUGUESE,
+        BAN_SUPPORT_PORTUGUESE
     }
 
     enum class LanguageName {

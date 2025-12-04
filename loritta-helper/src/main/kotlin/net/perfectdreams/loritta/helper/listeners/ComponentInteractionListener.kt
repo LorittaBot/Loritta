@@ -308,6 +308,12 @@ class ComponentInteractionListener(val m: LorittaHelper) : ListenerAdapter() {
         try {
             val member = event.member!!
 
+            val ticketSystemTypeData = ComponentDataUtils.decode<TicketSystemTypeData>(data)
+            val systemInfo = m.ticketUtils.getSystemBySystemType(ticketSystemTypeData.systemType)
+            val language = systemInfo.getI18nContext(m.languageManager)
+
+            val hook = event.interaction.deferReply(true).await()
+
             // Check if user is banned from Loritta, because it is super annoying them creating tickets just to ask them to be unbanned
             val currentBanState = transaction(m.databases.lorittaDatabase) {
                 BannedUsers.selectAll().where {
@@ -323,15 +329,18 @@ class ComponentInteractionListener(val m: LorittaHelper) : ListenerAdapter() {
                     .firstOrNull()
             }
 
-            // If the user is banned, just ignore
-            if (currentBanState != null)
+            // If the user is Loritta banned, we will do some checks...
+            if (ticketSystemTypeData.systemType == TicketUtils.TicketSystemType.BAN_SUPPORT_PORTUGUESE) {
+                if (currentBanState == null) {
+                    hook.editOriginal("Você não pode abrir um ticket aqui pois você não está banido da Loritta! Se você precisa de ajuda com a Loritta, abra um ticket em https://discord.gg/loritta")
+                        .await()
+                    return
+                }
+            } else {
+                hook.editOriginal("Você não pode abrir um ticket aqui pois você está banido da Loritta! Use `/loritta apelo` para enviar um apelo de ban.")
+                    .await()
                 return
-
-            val ticketSystemTypeData = ComponentDataUtils.decode<TicketSystemTypeData>(data)
-            val systemInfo = m.ticketUtils.getSystemBySystemType(ticketSystemTypeData.systemType)
-            val language = systemInfo.getI18nContext(m.languageManager)
-
-            val hook = event.interaction.deferReply(true).await()
+            }
 
             if (systemInfo.systemType == TicketUtils.TicketSystemType.FIRST_FAN_ARTS_PORTUGUESE && member.roles.any { it.idLong == 341343754336337921L }) { // Desenhistas role
                 hook.editOriginal("Você já tem o cargo de desenhistas, você não precisa enviar uma \"Primeira Fan Art\" novamente! Caso queira enviar mais fan arts para a galeria, basta enviar em <#583406099047252044>")
