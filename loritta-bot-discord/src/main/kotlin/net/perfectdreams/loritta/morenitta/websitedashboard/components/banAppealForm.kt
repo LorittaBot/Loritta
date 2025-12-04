@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.websitedashboard.components
 
+import kotlinx.datetime.toJavaInstant
 import kotlinx.html.FlowContent
 import kotlinx.html.a
 import kotlinx.html.b
@@ -7,6 +8,7 @@ import kotlinx.html.div
 import kotlinx.html.fileInput
 import kotlinx.html.h1
 import kotlinx.html.h2
+import kotlinx.html.hr
 import kotlinx.html.id
 import kotlinx.html.img
 import kotlinx.html.li
@@ -20,7 +22,12 @@ import kotlinx.serialization.json.put
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
+import net.perfectdreams.loritta.morenitta.utils.Constants
+import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.serializable.UserBannedState
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 fun FlowContent.banAppealForm(
     i18nContext: I18nContext,
@@ -38,9 +45,43 @@ fun FlowContent.banAppealForm(
                 }
             }
 
-            ul {
-                li {
-                    text("Motivo do Ban: ${banState.reason}")
+            div {
+                div {
+                    b {
+                        text("Motivo do Ban:")
+                    }
+                    text(" ")
+                    text(banState.reason)
+                }
+
+                div {
+                    b {
+                        text("Banido em:")
+                    }
+                    text(" ")
+
+                    val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")
+                    val formattedDate = banState.bannedAt.toJavaInstant().atZone(Constants.LORITTA_TIMEZONE).format(formatter)
+
+                    text(formattedDate + " (" + DateUtils.formatDiscordLikeRelativeDate(i18nContext, Instant.now(), banState.bannedAt.toJavaInstant()) + ")")
+                }
+
+                div {
+                    b {
+                        text("Expira:")
+                    }
+                    text(" ")
+
+                    val expiresAt = banState.expiresAt
+                    if (expiresAt != null) {
+                        val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")
+                        val formattedDate = expiresAt.toJavaInstant().atZone(Constants.LORITTA_TIMEZONE).format(formatter)
+
+                        text(formattedDate + " (" + DateUtils.formatDiscordLikeRelativeDate(i18nContext, Instant.now(), expiresAt.toJavaInstant()) + ")")
+
+                    } else {
+                        text("Nunca (Permanente)")
+                    }
                 }
             }
 
@@ -48,55 +89,59 @@ fun FlowContent.banAppealForm(
                 text(i18nContext.get(I18nKeysData.Website.BanAppeals.AppealForm.Rules.AppealRules))
             }
 
-            ul {
-                li {
-                    b {
+            div {
+                style = "display: flex; gap: 24px; flex-direction: column;"
+
+                div {
+                    div {
+                        style = "font-weight: bold;"
                         text(i18nContext.get(I18nKeysData.Website.BanAppeals.AppealForm.Rules.BeHonest.Title))
                     }
-                    text(" ")
                     text(i18nContext.get(I18nKeysData.Website.BanAppeals.AppealForm.Rules.BeHonest.Description))
                 }
 
-                li {
-                    b {
+                div {
+                    div {
+                        style = "font-weight: bold;"
                         text(i18nContext.get(I18nKeysData.Website.BanAppeals.AppealForm.Rules.BePatient.Title))
                     }
-                    text(" ")
                     text(i18nContext.get(I18nKeysData.Website.BanAppeals.AppealForm.Rules.BePatient.Description))
                 }
 
-                li {
-                    b {
+                div {
+                    div {
+                        style = "font-weight: bold;"
                         text(i18nContext.get(I18nKeysData.Website.BanAppeals.AppealForm.Rules.BeAuthentic.Title))
                     }
-                    text(" ")
                     text(i18nContext.get(I18nKeysData.Website.BanAppeals.AppealForm.Rules.BeAuthentic.Description))
                 }
 
-                li {
-                    b {
+                div {
+                    div {
+                        style = "font-weight: bold;"
                         text(i18nContext.get(I18nKeysData.Website.BanAppeals.AppealForm.Rules.BeRespectful.Title))
                     }
-
-                    text(" ")
                     text(i18nContext.get(I18nKeysData.Website.BanAppeals.AppealForm.Rules.BeRespectful.Description))
                 }
 
-                li {
-                    b {
+                div {
+                    div {
+                        style = "font-weight: bold;"
                         text(i18nContext.get(I18nKeysData.Website.BanAppeals.AppealForm.Rules.BeDetailed.Title))
                     }
-
-                    text(" ")
                     text(i18nContext.get(I18nKeysData.Website.BanAppeals.AppealForm.Rules.BeDetailed.Description))
                 }
             }
 
             div {
                 style = "font-weight: bold; font-size: 24px;"
-                text("Boa sorte!")
+                text(i18nContext.get(I18nKeysData.Website.BanAppeals.AppealForm.GoodLuck))
+                text(" ")
+                img(src = "https://stuff.loritta.website/emotes/lori-lick.gif", classes = "discord-inline-emoji") {}
             }
         }
+
+        hr {}
 
         fieldWrapper {
             fieldInformationBlock {
