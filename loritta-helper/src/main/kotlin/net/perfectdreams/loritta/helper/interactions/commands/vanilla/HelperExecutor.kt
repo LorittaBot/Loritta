@@ -17,6 +17,7 @@ abstract class HelperExecutor(
             333601725862641664L, // SparklyPower Owners
             351473717194522647,  // Loritta Bodyguards Community
             421325022951637015L, // Loritta Bodyguards Support
+            1438662722924580974L // Loritta Staff Ban Support Portuguese
         )
 
         val HELPER_ROLES = listOf(
