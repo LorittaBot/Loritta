@@ -151,11 +151,15 @@ fun FlowContent.banAppealForm(
 
                 fieldDescription {
                     div {
-                        text("Preencha com o ID de TODAS as suas contas do Discord, um ID por linha. Você não precisa preencher se você só está banido na conta ${userInfo.name} (${userInfo.id}).")
+                        text(i18nContext.get(I18nKeysData.Website.BanAppeals.AppealForm.AccountIds.Description1(userInfo.name, userInfo.id.toString())))
                     }
 
                     div {
-                        text("Nós precisamos saber as suas contas pois, se você for desbanido enquanto você tiver outras contas banidas, você pode acabar sendo banido novamente!")
+                        text(i18nContext.get(I18nKeysData.Website.BanAppeals.AppealForm.AccountIds.Description2))
+                    }
+
+                    div {
+                        text(i18nContext.get(I18nKeysData.Website.BanAppeals.AppealForm.AccountIds.Description3))
                     }
 
                     div {
