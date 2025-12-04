@@ -340,9 +340,11 @@ class ComponentInteractionListener(val m: LorittaHelper) : ListenerAdapter() {
                         return
                     }
                 } else {
-                    hook.editOriginal("Você não pode abrir um ticket aqui pois você está banido da Loritta! Use `/loritta apelo` para enviar um apelo de ban.")
-                        .await()
-                    return
+                    if (currentBanState != null) {
+                        hook.editOriginal("Você não pode abrir um ticket aqui pois você está banido da Loritta! Use `/loritta apelo` para enviar um apelo de ban.")
+                            .await()
+                        return
+                    }
                 }
             }
 
