@@ -1182,3 +1182,12 @@ aside#that-wasnt-very-cash-money-of-you-fixed-sidebar-reserved-space {
         }
     }
 }
+
+a, a:visited {
+    color: var(--loritta-blue);
+    transition: 0.25s;
+
+    &:hover {
+        color: oklch(from var(--loritta-blue) calc(l - .1) c h)
+    }
+}
