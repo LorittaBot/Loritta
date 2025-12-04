@@ -25,6 +25,10 @@ class LorittaBanSupportTicketSystem(
                         language.get(I18nKeysData.Tickets.ThreadCreated.ReadyRoleMention("<@&${lorittaStaffRoleId}>")),
                         "<:lori_coffee:727631176432484473>",
                         mentionUser = true
+                    ),
+                    LorittaReply(
+                        "Você PRECISA ter aberto um apelo de ban pelo https://appeals.loritta.website/br/ ANTES de pedir ajuda sobre o seu apelo! Se você não abriu um apelo pelo website ainda, abra agora! Nós não iremos te desbanir se você não abrir um apelo.",
+                        mentionUser = false
                     )
                 )
                 )
