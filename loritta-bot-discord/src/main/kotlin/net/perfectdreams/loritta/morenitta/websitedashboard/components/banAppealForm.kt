@@ -46,7 +46,7 @@ fun FlowContent.banAppealForm(
         fieldWrapper {
             fieldInformationBlock {
                 fieldTitle {
-                    text("Quais são os IDs das suas contas do Discord?")
+                    text(i18nContext.get(I18nKeysData.Website.BanAppeals.AppealForm.AccountIds.Title))
                 }
 
                 fieldDescription {
@@ -88,7 +88,7 @@ fun FlowContent.banAppealForm(
         fieldWrapper {
             fieldInformationBlock {
                 fieldTitle {
-                    text("O que você fez para ser banido?")
+                    text(i18nContext.get(I18nKeysData.Website.BanAppeals.AppealForm.WhatDidYouDo.Title))
 
                     span {
                         style = "color: var(--loritta-red); margin-left: 4px;"
@@ -97,7 +97,7 @@ fun FlowContent.banAppealForm(
                 }
 
                 fieldDescription {
-                    text("Nós sabemos o motivo que você foi banido, mas a gente quer que você seja honesto e descreva o que você fez para ser banido.")
+                    text(i18nContext.get(I18nKeysData.Website.BanAppeals.AppealForm.WhatDidYouDo.Description))
                 }
             }
 
@@ -114,7 +114,7 @@ fun FlowContent.banAppealForm(
         fieldWrapper {
             fieldInformationBlock {
                 fieldTitle {
-                    text("Por que você quebrou as regras da Loritta?")
+                    text(i18nContext.get(I18nKeysData.Website.BanAppeals.AppealForm.WhyDidYouBreakThem.Title))
 
                     span {
                         style = "color: var(--loritta-red); margin-left: 4px;"
@@ -123,7 +123,7 @@ fun FlowContent.banAppealForm(
                 }
 
                 fieldDescription {
-                    text("Se você quebrou as regras, tem algum motivo por trás. Nós queremos saber o que te levou a quebrar as regras da Loritta ao invés de respeitá-las.")
+                    text(i18nContext.get(I18nKeysData.Website.BanAppeals.AppealForm.WhyDidYouBreakThem.Description))
                 }
             }
 
@@ -140,7 +140,7 @@ fun FlowContent.banAppealForm(
         fieldWrapper {
             fieldInformationBlock {
                 fieldTitle {
-                    text("Por que você deveria ser desbanido?")
+                    text(i18nContext.get(I18nKeysData.Website.BanAppeals.AppealForm.WhyShouldYouBeUnbanned.Title))
 
                     span {
                         style = "color: var(--loritta-red); margin-left: 4px;"
@@ -149,7 +149,7 @@ fun FlowContent.banAppealForm(
                 }
 
                 fieldDescription {
-                    text("Para a gente te dar uma segunda chance, nós precisamos acreditar que você não irá quebrar as regras da Loritta novamente.")
+                    text(i18nContext.get(I18nKeysData.Website.BanAppeals.AppealForm.WhyShouldYouBeUnbanned.Description))
                 }
             }
 
@@ -166,11 +166,11 @@ fun FlowContent.banAppealForm(
         fieldWrapper {
             fieldInformationBlock {
                 fieldTitle {
-                    text("Deseja comentar mais alguma coisa sobre o seu ban?")
+                    text(i18nContext.get(I18nKeysData.Website.BanAppeals.AppealForm.AdditionalComments.Title))
                 }
 
                 fieldDescription {
-                    text("Mande um recado para a equipe da Loritta!")
+                    text(i18nContext.get(I18nKeysData.Website.BanAppeals.AppealForm.AdditionalComments.Description))
                 }
             }
 
