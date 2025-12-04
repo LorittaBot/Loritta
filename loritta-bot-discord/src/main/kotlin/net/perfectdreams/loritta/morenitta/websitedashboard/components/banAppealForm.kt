@@ -287,20 +287,20 @@ fun FlowContent.banAppealForm(
         fieldWrapper {
             fieldInformationBlock {
                 fieldTitle {
-                    text("Imagens relacionadas com o banimento")
+                    text(i18nContext.get(I18nKeysData.Website.BanAppeals.AppealForm.BanImages.Title))
                 }
 
                 fieldDescription {
                     div {
-                        text("Você pode incluir aqui imagens relacionadas com o banimento, como provas que mostrem a sua inocência.")
+                        text(i18nContext.get(I18nKeysData.Website.BanAppeals.AppealForm.BanImages.Description1))
                     }
 
                     div {
-                        text("Se você tem um gato, você pode enviar uma foto dele!")
+                        text(i18nContext.get(I18nKeysData.Website.BanAppeals.AppealForm.BanImages.Description2))
                     }
 
                     div {
-                        text("Você pode enviar até 10 imagens.")
+                        text(i18nContext.get(I18nKeysData.Website.BanAppeals.AppealForm.BanImages.Description3))
                     }
                 }
             }

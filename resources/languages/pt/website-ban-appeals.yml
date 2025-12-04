@@ -47,3 +47,10 @@ website:
       additionalComments:
         title: "Quer comentar mais alguma coisa sobre o seu ban?"
         description: "Mande um recado para a equipe da Loritta!"
+
+      banImages:
+        title: "Imagens relacionadas com o banimento"
+
+        description1: "Inclua aqui imagens relacionadas com o banimento, como provas que mostrem a sua inocência."
+        description2: "Se você tem um gato, você pode enviar uma foto dele!"
+        description3: "Você pode enviar até 10 imagens. Você não precisa enviar uma imagem."
