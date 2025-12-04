@@ -19,6 +19,7 @@ tickets:
   ticketAutoClosedUserLeftServer: "Ticket was automatically closed because the creator of the ticket left the support server... :("
   threadCreated:
     ready: "Done! I prepared a ticket for you, please ask your question and wait until our support staff comes here to answer your question."
+    readyRoleMention: "Done! I prepared a ticket for you, please ask your question and wait until one of our {role} comes here to answer your question."
     questionTips: "Ask your question in a simple and objective way and, if needed, attach pictures. By doing this, you help {role} to have a better understanding of your question."
     pleaseRead: "AND I REALLY HOPE that you've already read {faqChannel} and {extras}, channels created with a lot of love and care, since your question may have been already answered there."
     afterAnswer: "After finding the solution to your problem, you can use `/closeticket` to close this ticket! And then everyone can live happily ever after~"

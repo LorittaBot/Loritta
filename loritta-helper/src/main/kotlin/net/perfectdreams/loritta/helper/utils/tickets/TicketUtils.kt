@@ -75,7 +75,8 @@ class TicketUtils(val m: LorittaHelper) {
             TicketSystemType.BAN_SUPPORT_PORTUGUESE,
             LanguageName.PORTUGUESE,
             banAppealsSupport.id,
-            banAppealsSupport.channels.supportId
+            banAppealsSupport.channels.supportId,
+            banAppealsSupport.roles.lorittaStaffRoleId
         ),
     )
 

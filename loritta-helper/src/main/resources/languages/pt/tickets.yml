@@ -20,6 +20,7 @@ tickets:
   ticketAutoClosedUserLeftServer: "Ticket foi automaticamente fechado pois o criador do ticket saiu do servidor de suporte... :("
   threadCreated:
     ready: "Prontinho! Eu criei um ticket para você, faça sua pergunta e aguarde até que um membro da equipe venha tirar sua dúvida."
+    readyRoleMention: "Prontinho! Eu criei um ticket para você, faça sua pergunta e aguarde até que um membro da {role} venha tirar sua dúvida."
     questionTips: "Faça sua pergunta de uma forma simples e objetiva, se você precisar, anexe imagens. Para que os {role} possam te ajudar com mais eficiência."
     pleaseRead: "E EU ESPERO que você tenha lido o {faqChannel} e {extras} que a gente fez com tanto amor e carinho, vai que sua pergunta já foi respondida lá."
     afterAnswer: "Após a sua pergunta ser respondida, você pode usar `/closeticket` para fechar o ticket! E depois todos podem viver felizes para sempre~"

@@ -15,13 +15,14 @@ class LorittaBanSupportTicketSystem(
     systemType: TicketUtils.TicketSystemType,
     language: TicketUtils.LanguageName,
     guildId: Long,
-    channelId: Long
+    channelId: Long,
+    lorittaStaffRoleId: Long
 ) : TicketSystem(jda, systemType, language, guildId, channelId, ThreadChannel.AutoArchiveDuration.TIME_3_DAYS) {
     override val ticketCreatedMessage: InlineMessage<*>.(User, I18nContext) -> Unit = { sender, language ->
         content = (
                 listOf(
                     LorittaReply(
-                        language.get(I18nKeysData.Tickets.ThreadCreated.Ready),
+                        language.get(I18nKeysData.Tickets.ThreadCreated.ReadyRoleMention("<@&${lorittaStaffRoleId}>")),
                         "<:lori_coffee:727631176432484473>",
                         mentionUser = true
                     )
