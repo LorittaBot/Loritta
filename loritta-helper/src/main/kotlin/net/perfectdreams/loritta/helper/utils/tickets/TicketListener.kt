@@ -54,6 +54,9 @@ class TicketListener(private val helper: LorittaHelper) {
             }
         }
 
+        if (systemInfo !is HelpDeskTicketSystem)
+            return
+
         val channelResponses = systemInfo.channelResponses
         val i18nContext = systemInfo.getI18nContext(helper.languageManager)
 
