@@ -184,6 +184,9 @@ fun FlowContent.banAppealForm(
                 attributes["bliss-post"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/form/account-ids"
                 attributes["bliss-swap:200"] = "body (innerHTML) -> #account-ids-output (innerHTML)"
                 attributes["bliss-include-json"] = "[name='accountIdsRaw']"
+                attributes["bliss-vals-json"] = buildJsonObject {
+                    put("formUserId", bannedUserId)
+                }.toString()
                 attributes["bliss-trigger"] = "input"
             }
 

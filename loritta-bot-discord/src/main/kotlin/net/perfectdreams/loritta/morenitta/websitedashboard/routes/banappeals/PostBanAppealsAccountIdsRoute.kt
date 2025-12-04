@@ -34,6 +34,7 @@ import java.util.UUID
 class PostBanAppealsAccountIdsRoute(website: LorittaDashboardWebServer) : RequiresUserAuthBanAppealsLocalizedRoute(website, "/form/account-ids") {
     @Serializable
     data class AccountIdsRequest(
+        val formUserId: Long,
         val accountIdsRaw: String
     )
 
@@ -45,6 +46,7 @@ class PostBanAppealsAccountIdsRoute(website: LorittaDashboardWebServer) : Requir
             .filter { it.isNotBlank() }
             .mapNotNull { it.toLongOrNull() }
             .distinct()
+            .filter { it != request.formUserId }
             .take(50) // Limit to 50 accounts
 
         val accounts = accountIds.mapNotNull {
