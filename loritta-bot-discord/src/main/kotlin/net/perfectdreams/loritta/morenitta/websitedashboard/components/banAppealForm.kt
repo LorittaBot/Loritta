@@ -2,9 +2,11 @@ package net.perfectdreams.loritta.morenitta.websitedashboard.components
 
 import kotlinx.html.FlowContent
 import kotlinx.html.a
+import kotlinx.html.b
 import kotlinx.html.div
 import kotlinx.html.fileInput
 import kotlinx.html.h1
+import kotlinx.html.h2
 import kotlinx.html.id
 import kotlinx.html.img
 import kotlinx.html.li
@@ -40,6 +42,59 @@ fun FlowContent.banAppealForm(
                 li {
                     text("Motivo do Ban: ${banState.reason}")
                 }
+            }
+
+            h2 {
+                text(i18nContext.get(I18nKeysData.Website.BanAppeals.AppealForm.Rules.AppealRules))
+            }
+
+            ul {
+                li {
+                    b {
+                        text(i18nContext.get(I18nKeysData.Website.BanAppeals.AppealForm.Rules.BeHonest.Title))
+                    }
+                    text(" ")
+                    text(i18nContext.get(I18nKeysData.Website.BanAppeals.AppealForm.Rules.BeHonest.Description))
+                }
+
+                li {
+                    b {
+                        text(i18nContext.get(I18nKeysData.Website.BanAppeals.AppealForm.Rules.BePatient.Title))
+                    }
+                    text(" ")
+                    text(i18nContext.get(I18nKeysData.Website.BanAppeals.AppealForm.Rules.BePatient.Description))
+                }
+
+                li {
+                    b {
+                        text(i18nContext.get(I18nKeysData.Website.BanAppeals.AppealForm.Rules.BeAuthentic.Title))
+                    }
+                    text(" ")
+                    text(i18nContext.get(I18nKeysData.Website.BanAppeals.AppealForm.Rules.BeAuthentic.Description))
+                }
+
+                li {
+                    b {
+                        text(i18nContext.get(I18nKeysData.Website.BanAppeals.AppealForm.Rules.BeRespectful.Title))
+                    }
+
+                    text(" ")
+                    text(i18nContext.get(I18nKeysData.Website.BanAppeals.AppealForm.Rules.BeRespectful.Description))
+                }
+
+                li {
+                    b {
+                        text(i18nContext.get(I18nKeysData.Website.BanAppeals.AppealForm.Rules.BeDetailed.Title))
+                    }
+
+                    text(" ")
+                    text(i18nContext.get(I18nKeysData.Website.BanAppeals.AppealForm.Rules.BeDetailed.Description))
+                }
+            }
+
+            div {
+                style = "font-weight: bold; font-size: 24px;"
+                text("Boa sorte!")
             }
         }
 

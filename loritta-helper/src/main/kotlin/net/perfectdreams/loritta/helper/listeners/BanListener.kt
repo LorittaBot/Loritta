@@ -23,6 +23,10 @@ class BanListener(val m: LorittaHelper) : ListenerAdapter() {
     override fun onGuildBan(event: GuildBanEvent) {
         val jda = event.jda
 
+        // Ignore bans on guilds that are being ignored
+        if (event.guild.idLong in m.config.ignoreBanSynchronizationOnGuilds)
+            return
+
         m.launch {
             logger.info { "User ${event.user} was banned in ${event.guild}, relaying ban!" }
 
@@ -46,21 +50,23 @@ class BanListener(val m: LorittaHelper) : ListenerAdapter() {
             logger.info { "Will relay ${event.user}'s ban with the reason $banForReason" }
 
             jda.guilds.forEach {
-                logger.info { "Checking if ${event.user} is banned in $it..." }
-                if (!it.selfMember.hasPermission(Permission.BAN_MEMBERS))
-                    logger.warn { "I don't have permission to ban members in $it!" }
-                else {
-                    val banInfoOnGuild = try {
-                        it.retrieveBan(event.user).await()
-                    } catch (e: ErrorResponseException) {
-                        // Ban does not exist
-                        null
-                    }
+                if (it.idLong !in m.config.ignoreBanSynchronizationOnGuilds) {
+                    logger.info { "Checking if ${event.user} is banned in $it..." }
+                    if (!it.selfMember.hasPermission(Permission.BAN_MEMBERS))
+                        logger.warn { "I don't have permission to ban members in $it!" }
+                    else {
+                        val banInfoOnGuild = try {
+                            it.retrieveBan(event.user).await()
+                        } catch (e: ErrorResponseException) {
+                            // Ban does not exist
+                            null
+                        }
 
-                    // If the banInfoOnGuild is null, then it means that the user is *not* banned on the server!
-                    if (banInfoOnGuild == null) {
-                        logger.info { "User ${event.user} is not banned yet in $it! Banning..." }
-                        it.ban(event.user, 0, TimeUnit.SECONDS).reason(banForReason).queue()
+                        // If the banInfoOnGuild is null, then it means that the user is *not* banned on the server!
+                        if (banInfoOnGuild == null) {
+                            logger.info { "User ${event.user} is not banned yet in $it! Banning..." }
+                            it.ban(event.user, 0, TimeUnit.SECONDS).reason(banForReason).queue()
+                        }
                     }
                 }
             }
