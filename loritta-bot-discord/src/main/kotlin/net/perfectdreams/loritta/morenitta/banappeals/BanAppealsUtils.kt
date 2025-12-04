@@ -211,15 +211,15 @@ object BanAppealsUtils {
                     }
                 )
             }
-
-            actionRow(
-                Button.of(
-                    ButtonStyle.LINK,
-                    "https://discord.gg/loritta",
-                    "Servidor da Comunidade da Loritta",
-                ).withEmoji(Emotes.LoriLick.toJDA())
-            )
         }
+
+        actionRow(
+            Button.of(
+                ButtonStyle.LINK,
+                "https://discord.gg/loritta",
+                "Servidor da Comunidade da Loritta",
+            ).withEmoji(Emotes.LoriLick.toJDA())
+        )
     }
 
     fun InlineMessage<*>.createAppealDeniedMessage(
