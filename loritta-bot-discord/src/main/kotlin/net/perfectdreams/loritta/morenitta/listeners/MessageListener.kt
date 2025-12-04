@@ -85,6 +85,7 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 	private val christmasStuffModule = DropChristmasStuffModule(loritta)
 	private val dropEaster2023StuffModule = DropEaster2023StuffModule(loritta)
 	private val dropPointsStuffModule = DropPointsStuffModule(loritta)
+    private val crazyManagerModule = CrazyManagerModule(loritta)
 
 	private val messageReceivedModules = mutableListOf(
 		automodModule,
@@ -98,6 +99,7 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 		checkBoostStatusModule,
 		addReactionForHeathecliffModule,
 		quirkyModule,
+        crazyManagerModule
 	)
 
 	private val messageEditedModules = mutableListOf(
