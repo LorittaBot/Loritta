@@ -5,6 +5,7 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import kotlinx.datetime.Instant
 import kotlinx.serialization.json.Json
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BanAppeals
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -72,7 +73,7 @@ class NotifyBanAppealCommand(val loritta: LorittaBot) : LorittaRPCCommand(Loritt
             return
         }
 
-        channel.sendMessage(
+        val message = channel.sendMessage(
             MessageCreate {
                 createStaffAppealMessage(
                     loritta,
@@ -82,6 +83,12 @@ class NotifyBanAppealCommand(val loritta: LorittaBot) : LorittaRPCCommand(Loritt
                 )
             }
         ).await()
+
+        message.createThreadChannel("Apelo de Ban de ${appealFor.name} (${appealFor.id})")
+            .setAutoArchiveDuration(ThreadChannel.AutoArchiveDuration.TIME_1_WEEK)
+            .setInvitable(false)
+            .reason("Ticket created for ban appeal #${appeal.id}")
+            .await()
 
         call.respondRPCResponse<NotifyBanAppealResponse>(NotifyBanAppealResponse.Success)
     }
