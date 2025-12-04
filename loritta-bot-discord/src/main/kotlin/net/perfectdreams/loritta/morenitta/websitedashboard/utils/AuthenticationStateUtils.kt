@@ -30,6 +30,9 @@ object AuthenticationStateUtils {
         }
     }
 
+    // For the "whole state" we use the Base64 URL Encoder/Decoder version
+    // For the inner state (the encrypted data and the data itself) we use the normal encoder
+    // WE CANNOT USE THE URL DECODER TO DECODE A NORMAL BASE64, IT WILL THROW ERRORS!!
     fun createStateAsBase64(state: AuthenticationState, loritta: LorittaBot): String {
         return Base64.getUrlEncoder()
             .encodeToString(
@@ -75,7 +78,7 @@ object AuthenticationStateUtils {
 
         val (dataEncoded, signatureEncoded) = parts
 
-        val data = Base64.getUrlDecoder().decode(dataEncoded).toString(Charsets.UTF_8)
+        val data = Base64.getDecoder().decode(dataEncoded).toString(Charsets.UTF_8)
         return if (verify(data, signatureEncoded, secretKey)) data else null
     }
 }
