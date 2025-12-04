@@ -1,5 +1,15 @@
 @use "../placeholders/reset-button-styling";
 
+// This is somewhat of an hack, we use :where to lower the specificity of the button rules
+:where(a, a:visited) {
+    color: var(--link-color);
+    transition: 0.25s;
+
+    &:hover {
+        color: oklch(from var(--link-color) calc(l - .1) c h)
+    }
+}
+
 // We shouldn't wrap buttons inside a tags! But here's a solution for the underline...
 a:has(.discord-button) {
   text-decoration: none;

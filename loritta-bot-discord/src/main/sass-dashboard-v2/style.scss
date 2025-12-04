@@ -152,6 +152,10 @@ $mobile-version: 1279px;
     // ===[ FANCY RADIO INPUT ]===
     --fancy-radio-input-selected-background-color: rgba(0, 0, 80, 0.05);
 
+    // ===[ LINKS ]===
+    // The link color for the light theme is a bit darker for accessibility purposes
+    --link-color: hsl(211, 82%, 46%);
+
     // ===[ SHADOWS ]===
     --shadow-color: hsl(241.2, 15%, 43%);
     // The first is the "hard shadow" around the object, the other one is a "soft" shadow
@@ -199,6 +203,9 @@ $mobile-version: 1279px;
 
     // ===[ FANCY RADIO INPUT ]===
     --fancy-radio-input-selected-background-color: hsl(270, 25%, 50%, 0.1);;
+
+    // ===[ LINKS ]===
+    --link-color: var(--loritta-blue);
 
     // ===[ DISCORD MESSAGE PREVIEW ]===
     --discord-embed-background-color: #242429;
@@ -1180,14 +1187,5 @@ aside#that-wasnt-very-cash-money-of-you-fixed-sidebar-reserved-space {
             padding-left: 1em;
             padding-right: 1em;
         }
-    }
-}
-
-a, a:visited {
-    color: var(--loritta-blue);
-    transition: 0.25s;
-
-    &:hover {
-        color: oklch(from var(--loritta-blue) calc(l - .1) c h)
     }
 }
