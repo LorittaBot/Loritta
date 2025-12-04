@@ -97,7 +97,7 @@ class CrazyManagerModule(val loritta: LorittaBot) : MessageReceivedModule {
                                             appendLine("### ${Emotes.LoriDemon} O gerente ficou maluco!")
                                             appendLine("Como presente de final de ano, estamos sendo generosos e desbanindo pessoas que foram banidas da Loritta, até aquelas que receberam um ban permanente!")
                                             appendLine()
-                                            appendLine("**Atualmente você está banido da Loritta por ${banState?.reason}**")
+                                            appendLine("**Atualmente você está banido da Loritta por ${banState.reason}**")
                                             appendLine()
                                             appendLine("**${Emotes.LoriLurk} Condições**")
                                             appendLine("* Você precisa estar banido há mais de três meses")
