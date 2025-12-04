@@ -17,6 +17,7 @@ import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.asUserNameCodeBlockPreviewTag
 import net.perfectdreams.loritta.morenitta.utils.extensions.convertToUserNameCodeBlockPreviewTag
+import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import java.time.Instant
 import kotlin.time.Duration.Companion.days
 
@@ -210,6 +211,14 @@ object BanAppealsUtils {
                     }
                 )
             }
+
+            actionRow(
+                Button.of(
+                    ButtonStyle.LINK,
+                    "https://discord.gg/loritta",
+                    "Servidor da Comunidade da Loritta",
+                ).withEmoji(Emotes.LoriLick.toJDA())
+            )
         }
     }
 
