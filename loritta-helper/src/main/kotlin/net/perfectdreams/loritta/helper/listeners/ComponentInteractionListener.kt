@@ -35,6 +35,7 @@ import net.perfectdreams.loritta.helper.utils.tickets.TicketSystemTypeData
 import net.perfectdreams.loritta.helper.utils.tickets.TicketUtils
 import net.perfectdreams.loritta.helper.utils.tickets.TicketsCache
 import net.perfectdreams.loritta.helper.utils.tickets.systems.HelpDeskTicketSystem
+import net.perfectdreams.loritta.helper.utils.tickets.systems.LorittaBanSupportTicketSystem
 import net.perfectdreams.loritta.helper.utils.tickets.systems.SparklyPowerHelpDeskTicketSystem
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -418,8 +419,8 @@ class ComponentInteractionListener(val m: LorittaHelper) : ListenerAdapter() {
             // We need to add the user to the thread after it is unarchived!
             threadChannel.addThreadMember(event.user).await()
 
-            if (systemInfo is HelpDeskTicketSystem) {
-                val supportRole = member.guild.getRoleById(systemInfo.supportRoleId)
+            suspend fun removeNonStaff(requiredRoleId: Long) {
+                val supportRole = member.guild.getRoleById(requiredRoleId)
 
                 if (supportRole != null) {
                     // Attempt to remove any thread member that isn't the user or staff
@@ -430,8 +431,13 @@ class ComponentInteractionListener(val m: LorittaHelper) : ListenerAdapter() {
                         }
                     }
                 } else {
-                    logger.warn("Missing role ${systemInfo.supportRoleId} in ${member.guild.idLong}! Bug?")
+                    logger.warn("Missing role $requiredRoleId in ${member.guild.idLong}! Bug?")
                 }
+            }
+            if (systemInfo is HelpDeskTicketSystem) {
+                removeNonStaff(systemInfo.supportRoleId)
+            } else if (systemInfo is LorittaBanSupportTicketSystem) {
+                removeNonStaff(systemInfo.lorittaStaffRoleId)
             }
 
             cachedTickets.tickets[event.user.idLong] = TicketsCache.DiscordThreadTicketData(ticketThreadId)

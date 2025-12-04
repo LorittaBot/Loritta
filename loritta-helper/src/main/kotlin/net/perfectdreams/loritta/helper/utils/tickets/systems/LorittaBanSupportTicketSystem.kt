@@ -16,7 +16,7 @@ class LorittaBanSupportTicketSystem(
     language: TicketUtils.LanguageName,
     guildId: Long,
     channelId: Long,
-    lorittaStaffRoleId: Long
+    val lorittaStaffRoleId: Long
 ) : TicketSystem(jda, systemType, language, guildId, channelId, ThreadChannel.AutoArchiveDuration.TIME_3_DAYS) {
     override val ticketCreatedMessage: InlineMessage<*>.(User, I18nContext) -> Unit = { sender, language ->
         content = (
