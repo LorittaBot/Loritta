@@ -21,6 +21,7 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
 import net.perfectdreams.loritta.helper.LorittaHelper
 import net.perfectdreams.loritta.helper.i18n.I18nKeysData
+import net.perfectdreams.loritta.helper.interactions.commands.vanilla.HelperExecutor
 import net.perfectdreams.loritta.helper.tables.SelectedResponsesLog
 import net.perfectdreams.loritta.helper.tables.StartedSupportSolicitations
 import net.perfectdreams.loritta.helper.utils.ComponentDataUtils
@@ -330,16 +331,19 @@ class ComponentInteractionListener(val m: LorittaHelper) : ListenerAdapter() {
             }
 
             // If the user is Loritta banned, we will do some checks...
-            if (ticketSystemTypeData.systemType == TicketUtils.TicketSystemType.BAN_SUPPORT_PORTUGUESE) {
-                if (currentBanState == null) {
-                    hook.editOriginal("Você não pode abrir um ticket aqui pois você não está banido da Loritta! Se você precisa de ajuda com a Loritta, abra um ticket em https://discord.gg/loritta")
+            val canBypassBanCheck = member.unsortedRoles.any { it.idLong in HelperExecutor.ADMIN_ROLES }
+            if (!canBypassBanCheck) {
+                if (ticketSystemTypeData.systemType == TicketUtils.TicketSystemType.BAN_SUPPORT_PORTUGUESE) {
+                    if (currentBanState == null) {
+                        hook.editOriginal("Você não pode abrir um ticket aqui pois você não está banido da Loritta! Se você precisa de ajuda com a Loritta, abra um ticket em https://discord.gg/loritta")
+                            .await()
+                        return
+                    }
+                } else {
+                    hook.editOriginal("Você não pode abrir um ticket aqui pois você está banido da Loritta! Use `/loritta apelo` para enviar um apelo de ban.")
                         .await()
                     return
                 }
-            } else {
-                hook.editOriginal("Você não pode abrir um ticket aqui pois você está banido da Loritta! Use `/loritta apelo` para enviar um apelo de ban.")
-                    .await()
-                return
             }
 
             if (systemInfo.systemType == TicketUtils.TicketSystemType.FIRST_FAN_ARTS_PORTUGUESE && member.roles.any { it.idLong == 341343754336337921L }) { // Desenhistas role
