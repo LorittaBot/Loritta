@@ -10,7 +10,7 @@ data class LorittaHelperConfig(
     val tasks: TaskHolderConfig,
     val secretKey: String,
     val pantufaUrl: String? = null,
-    val ignoreTimeoutsOnGuilds: Set<Long>
+    val ignoreLorittaBanTimeoutsOnGuilds: Set<Long>
 ) {
     @Serializable
     data class InnerHelperConfig(

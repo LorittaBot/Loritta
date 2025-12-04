@@ -5,17 +5,13 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
 import net.perfectdreams.loritta.helper.LorittaHelper
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.greaterEq
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.isNotNull
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.isNull
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Duration
 
 class LorittaBanTimeoutListener(val m: LorittaHelper): ListenerAdapter() {
     override fun onMessageReceived(event: MessageReceivedEvent) {
         // On any server that Loritta Helper is in...
-        if (event.guild.idLong !in m.config.ignoreTimeoutsOnGuilds && isLorittaBanned(m, event.author.idLong)) {
+        if (event.guild.idLong !in m.config.ignoreLorittaBanTimeoutsOnGuilds && isLorittaBanned(m, event.author.idLong)) {
             event.guild.timeoutFor(event.author, Duration.ofDays(28))
                 .reason("User is Loritta Banned!")
                 .queue()
