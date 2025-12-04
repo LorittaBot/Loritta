@@ -27,7 +27,7 @@ class LorittaBanSupportTicketSystem(
                         mentionUser = true
                     ),
                     LorittaReply(
-                        "Você PRECISA ter aberto um apelo de ban pelo https://appeals.loritta.website/br/ ANTES de pedir ajuda sobre o seu apelo! Se você não abriu um apelo pelo website ainda, abra agora! Nós não iremos te desbanir se você não abrir um apelo.",
+                        "Você PRECISA ter aberto um apelo de ban pelo https://appeals.loritta.website/br/?utm_source=discord&utm_medium=link&utm_campaign=unban-appeal&utm_content=appeal-ban-support ANTES de pedir ajuda sobre o seu apelo! Se você não abriu um apelo pelo website ainda, abra agora! Nós não iremos te desbanir se você não abrir um apelo.",
                         mentionUser = false
                     )
                 )
