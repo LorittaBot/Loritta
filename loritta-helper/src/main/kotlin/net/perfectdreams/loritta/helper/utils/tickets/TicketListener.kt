@@ -35,8 +35,6 @@ class TicketListener(private val helper: LorittaHelper) {
         val parentChannel = channel.parentChannel
 
         val systemInfo = helper.ticketUtils.systems[parentChannel.idLong]!!
-        if (systemInfo !is HelpDeskTicketSystem)
-            return
 
         // Track user message
         transaction(helper.databases.helperDatabase) {
