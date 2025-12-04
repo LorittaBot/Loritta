@@ -2,3 +2,23 @@ website:
   banAppeals:
     title: "Central de Apelos da Loritta"
     titleShort: "Apelos da Loritta"
+
+    appealForm:
+      accountIds:
+        title: "Quais são os IDs das suas contas do Discord?"
+
+      whatDidYouDo:
+        title: "O que você fez para ser banido?"
+        description: "Nós já sabemos o motivo, mas queremos que você seja honesto e conte, com suas palavras, o que você fez para ser banido."
+
+      whyDidYouBreakThem:
+        title: "Por que você quebrou as regras da Loritta?"
+        description: "Se você quebrou as regras, tem algum motivo por trás. Queremos saber o que te levou a quebrar as regras ao invés de respeitá-las."
+
+      whyShouldYouBeUnbanned:
+        title: "Por que você deveria ser desbanido?"
+        description: "Para darmos uma segunda chance, precisamos confiar que você não quebrará as regras da Loritta novamente."
+
+      additionalComments:
+        title: "Quer comentar mais alguma coisa sobre o seu ban?"
+        description: "Mande um recado para a equipe da Loritta!"

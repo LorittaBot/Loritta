@@ -42,9 +42,10 @@ class PostBanAppealsAccountIdsRoute(website: LorittaDashboardWebServer) : Requir
         val accountIds = request.accountIdsRaw
             .split(Regex("[,.\n ]"))
             .map { it.trim() }
-            .filter { it.isNotBlank()}
+            .filter { it.isNotBlank() }
             .mapNotNull { it.toLongOrNull() }
             .distinct()
+            .take(50) // Limit to 50 accounts
 
         val accounts = accountIds.mapNotNull {
             website.loritta.lorittaShards.retrieveUserInfoById(it)
@@ -57,7 +58,10 @@ class PostBanAppealsAccountIdsRoute(website: LorittaDashboardWebServer) : Requir
         call.respondHtmlFragment {
             for (account in accounts) {
                 div {
-                    inlineNullableUserDisplay(account.id, account)
+                    div {
+                        style = "color: var(--loritta-green); font-weight: bold;"
+                        inlineNullableUserDisplay(account.id, account)
+                    }
 
                     val banState = banStateOfEachAccount[account.id]
 

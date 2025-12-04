@@ -62,7 +62,7 @@ class BanAppealsOverrideRoute(website: LorittaDashboardWebServer) : RequiresUser
 
                             fieldDescription {
                                 div {
-                                    text("Se você perdeu acesso a sua conta banida ou está usando outra conta agora, você pode enviar um apelo para ela colocando o ID dela aqui!")
+                                    text("Se você perdeu acesso a sua conta banida ou está usando outra conta, você pode enviar um apelo para ela colocando o ID dela aqui!")
                                 }
 
                                 div {
