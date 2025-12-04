@@ -270,7 +270,7 @@ class PostBanAppealsRoute(website: LorittaDashboardWebServer) : RequiresUserAuth
                                 p {
                                     text("Se você precisar de ajuda com o seu apelo, você pode falar com a nossa equipe no ")
 
-                                    a(href = website.loritta.config.loritta.banAppeals.supportInviteUrl) {
+                                    a(href = website.loritta.config.loritta.banAppeals.supportInviteUrl, target = "_blank") {
                                         text("Tribunal da Loritta")
                                     }
 
