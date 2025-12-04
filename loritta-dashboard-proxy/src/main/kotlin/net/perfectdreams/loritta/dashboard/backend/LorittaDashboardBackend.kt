@@ -25,6 +25,7 @@ import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.dashboard.backend.configs.LorittaDashboardBackendConfig
 import net.perfectdreams.loritta.dashboard.backend.utils.writeSseEvent
 import java.net.http.HttpResponse
+import java.util.TreeSet
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
 
@@ -79,6 +80,18 @@ class LorittaDashboardBackend(val config: LorittaDashboardBackendConfig) {
         .build()
 
     fun start() {
+        // VERY HACKY WORKAROUND to allow using "Host" on the Java client
+        // See https://youtrack.jetbrains.com/issue/KTOR-9158/Cannot-override-the-Host-header-with-the-Java-client-engine
+        val clazz = Class.forName("io.ktor.client.engine.java.JavaHttpRequestKt")
+
+        clazz.getDeclaredField("DISALLOWED_HEADERS").apply {
+            this.isAccessible = true
+            val treeSet = this.get(null) as TreeSet<String>
+            treeSet.remove("Host")
+        }
+
+        System.setProperty("jdk.httpclient.allowRestrictedHeaders", "host")
+
         val server = embeddedServer(Netty, port = 8080) {
             routing {
                 get("/hewwo") {
