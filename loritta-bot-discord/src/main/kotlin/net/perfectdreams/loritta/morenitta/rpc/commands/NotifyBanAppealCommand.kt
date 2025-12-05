@@ -6,6 +6,7 @@ import io.ktor.server.request.*
 import kotlinx.datetime.Instant
 import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
+import net.perfectdreams.loritta.cinnamon.pudding.tables.BanAppealMessages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BanAppeals
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -15,12 +16,15 @@ import net.perfectdreams.loritta.morenitta.banappeals.BanAppealsUtils.createStaf
 import net.perfectdreams.loritta.morenitta.rpc.LorittaRPC
 import net.perfectdreams.loritta.morenitta.rpc.payloads.NotifyBanAppealRequest
 import net.perfectdreams.loritta.morenitta.rpc.payloads.NotifyBanAppealResponse
+import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.serializable.UserBannedState
 import net.perfectdreams.loritta.serializable.UserId
+import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
+import java.time.OffsetDateTime
 
 class NotifyBanAppealCommand(val loritta: LorittaBot) : LorittaRPCCommand(LorittaRPC.NotifyBanAppeal) {
     override suspend fun onRequest(call: ApplicationCall) {
@@ -91,6 +95,16 @@ class NotifyBanAppealCommand(val loritta: LorittaBot) : LorittaRPCCommand(Loritt
                 )
             }
         ).await()
+
+        loritta.transaction {
+            BanAppealMessages.insert {
+                it[BanAppealMessages.guildId] = message.guild.idLong
+                it[BanAppealMessages.channelId] = message.channel.idLong
+                it[BanAppealMessages.messageId] = message.idLong
+                it[BanAppealMessages.sentAt] = OffsetDateTime.now(Constants.LORITTA_TIMEZONE)
+                it[BanAppealMessages.appeal] = appeal.id
+            }
+        }
 
         message.createThreadChannel("Apelo de Ban de ${appealFor.name} (${appealFor.id})")
             .setAutoArchiveDuration(ThreadChannel.AutoArchiveDuration.TIME_1_WEEK)

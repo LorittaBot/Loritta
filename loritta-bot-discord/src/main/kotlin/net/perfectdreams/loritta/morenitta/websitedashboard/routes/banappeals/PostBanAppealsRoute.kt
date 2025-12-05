@@ -130,8 +130,8 @@ class PostBanAppealsRoute(website: LorittaDashboardWebServer) : RequiresUserAuth
                     }
                     .firstOrNull()
 
-                if (activeBanAppeal != null)
-                    return@transaction AppealCreationResult.OnCooldown(now, activeBanAppeal[BanAppeals.submittedAt].plusSeconds(BanAppealsUtils.BAN_APPEAL_COOLDOWN.inWholeSeconds))
+                // if (activeBanAppeal != null)
+                //     return@transaction AppealCreationResult.OnCooldown(now, activeBanAppeal[BanAppeals.submittedAt].plusSeconds(BanAppealsUtils.BAN_APPEAL_COOLDOWN.inWholeSeconds))
 
                 val banState = website.loritta.pudding.users.getUserBannedState(UserId(request.userId))
                 if (banState == null)
