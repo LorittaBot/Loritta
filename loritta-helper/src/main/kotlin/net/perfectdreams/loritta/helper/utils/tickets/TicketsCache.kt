@@ -28,14 +28,16 @@ class TicketsCache(
                 .retrieveActiveThreads()
                 .await()
                 .forEach {
-                    val name = it.name
-                    if (!name.contains("(") && !name.contains(")"))
-                        return@forEach
+                    if (it.parentChannel == channel) {
+                        val name = it.name
+                        if (!name.contains("(") && !name.contains(")"))
+                            return@forEach
 
-                    val onlyTheId = name.substringAfterLast("(").substringBeforeLast(")")
-                    val userIdAsLong = onlyTheId.toLongOrNull() ?: return@forEach
+                        val onlyTheId = name.substringAfterLast("(").substringBeforeLast(")")
+                        val userIdAsLong = onlyTheId.toLongOrNull() ?: return@forEach
 
-                    tickets[userIdAsLong] = DiscordThreadTicketData(it.idLong)
+                        tickets[userIdAsLong] = DiscordThreadTicketData(it.idLong)
+                    }
                 }
 
 
