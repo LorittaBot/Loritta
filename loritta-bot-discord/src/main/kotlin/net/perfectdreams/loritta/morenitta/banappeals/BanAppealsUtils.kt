@@ -237,10 +237,11 @@ object BanAppealsUtils {
                 text(
                     buildString {
                         appendLine("### ${Emotes.LoriSob} Seu apelo foi rejeitado...")
-
                         appendLine("**Motivo:** $reason")
                         appendLine()
                         appendLine("Você poderá enviar outro apelo em ${DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(canSendAppealAfter)}.")
+                        appendLine()
+                        appendLine("Se você acha que a rejeição foi injusta, ou se você acha que faltou mais contexto sobre o seu apelo, você pode entrar no [Tribunal da Loritta](${loritta.config.loritta.banAppeals.supportInviteUrl}) e abrir um ticket de suporte para explicar mais sobre a situação.")
                         appendLine()
                         appendLine("-# Apelo #$appealId")
                     }
