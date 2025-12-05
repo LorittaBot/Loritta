@@ -16,6 +16,7 @@ class ServerBanSupportTicketSystem(
     language: TicketUtils.LanguageName,
     guildId: Long,
     channelId: Long,
+    val supportForGuildId: Long,
     val staffRoleId: Long,
     val inviteUrl: String
 ) : TicketSystem(jda, systemType, language, guildId, channelId, ThreadChannel.AutoArchiveDuration.TIME_3_DAYS) {

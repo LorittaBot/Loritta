@@ -352,7 +352,7 @@ class ComponentInteractionListener(val m: LorittaHelper) : ListenerAdapter() {
                 }
 
                 if (systemInfo is ServerBanSupportTicketSystem) {
-                    val guild = m.jda.getGuildById(systemInfo.guildId)!!
+                    val guild = m.jda.getGuildById(systemInfo.supportForGuildId)!!
 
                     try {
                         // Just attempt to retrieve the ban as-is

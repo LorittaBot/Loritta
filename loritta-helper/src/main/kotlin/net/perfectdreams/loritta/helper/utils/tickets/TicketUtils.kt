@@ -85,8 +85,9 @@ class TicketUtils(val m: LorittaHelper) {
             m.jda,
             TicketSystemType.SERVER_BAN_SUPPORT_LORITTA_COMMUNITY,
             LanguageName.PORTUGUESE,
+            sparklyPower.id,
             banAppealsSupport.id,
-            banAppealsSupport.channels.lorittaCommunityBanSupportId,
+            community.id,
             banAppealsSupport.roles.lorittaStaffRoleId,
             "https://discord.gg/loritta"
         ),
@@ -98,6 +99,7 @@ class TicketUtils(val m: LorittaHelper) {
             LanguageName.PORTUGUESE,
             banAppealsSupport.id,
             banAppealsSupport.channels.sparklyPowerBanSupportId,
+            sparklyPower.id,
             banAppealsSupport.roles.sparklyPowerStaffRoleId,
             "https://discord.gg/sparklypower"
         )
