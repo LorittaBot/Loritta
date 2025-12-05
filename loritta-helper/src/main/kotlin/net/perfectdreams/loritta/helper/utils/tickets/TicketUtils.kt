@@ -92,7 +92,7 @@ class TicketUtils(val m: LorittaHelper) {
         ),
 
         // SparklyPower Discord Server Ban Support Channel
-        banAppealsSupport.channels.lorittaCommunityBanSupportId to ServerBanSupportTicketSystem(
+        banAppealsSupport.channels.sparklyPowerBanSupportId to ServerBanSupportTicketSystem(
             m.jda,
             TicketSystemType.SERVER_BAN_SUPPORT_SPARKLYPOWER,
             LanguageName.PORTUGUESE,
