@@ -16,6 +16,8 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.exceptions.ErrorResponseException
+import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.api.utils.FileUpload
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
@@ -36,6 +38,7 @@ import net.perfectdreams.loritta.helper.utils.tickets.TicketUtils
 import net.perfectdreams.loritta.helper.utils.tickets.TicketsCache
 import net.perfectdreams.loritta.helper.utils.tickets.systems.HelpDeskTicketSystem
 import net.perfectdreams.loritta.helper.utils.tickets.systems.LorittaBanSupportTicketSystem
+import net.perfectdreams.loritta.helper.utils.tickets.systems.ServerBanSupportTicketSystem
 import net.perfectdreams.loritta.helper.utils.tickets.systems.SparklyPowerHelpDeskTicketSystem
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -344,6 +347,24 @@ class ComponentInteractionListener(val m: LorittaHelper) : ListenerAdapter() {
                     if (currentBanState != null) {
                         hook.editOriginal("Você não pode abrir um ticket aqui pois você está banido da Loritta! Use `/loritta apelo` para enviar um apelo de ban.")
                             .await()
+                        return
+                    }
+                }
+
+                if (systemInfo is ServerBanSupportTicketSystem) {
+                    val guild = m.jda.getGuildById(systemInfo.guildId)!!
+
+                    try {
+                        // Just attempt to retrieve the ban as-is
+                        guild.retrieveBan(event.user).await()
+                    } catch (e: ErrorResponseException) {
+                        if (e.errorResponse == ErrorResponse.UNKNOWN_BAN) {
+                            hook.editOriginal("Você não pode abrir um ticket aqui pois você não está banido no servidor! Tente entrar novamente no servidor ${systemInfo.inviteUrl}")
+                                .await()
+                            return
+                        }
+
+                        logger.warn(e) { "Something unexpected happened while trying to query ${event.user.idLong} ban in ${systemInfo.guildId}!" }
                         return
                     }
                 }

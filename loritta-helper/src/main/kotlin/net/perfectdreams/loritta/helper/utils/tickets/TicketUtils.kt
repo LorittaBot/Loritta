@@ -7,6 +7,7 @@ import net.perfectdreams.loritta.helper.serverresponses.sparklypower.SparklyPowe
 import net.perfectdreams.loritta.helper.utils.tickets.systems.FirstFanArtTicketSystem
 import net.perfectdreams.loritta.helper.utils.tickets.systems.LorittaBanSupportTicketSystem
 import net.perfectdreams.loritta.helper.utils.tickets.systems.LorittaHelpDeskTicketSystem
+import net.perfectdreams.loritta.helper.utils.tickets.systems.ServerBanSupportTicketSystem
 import net.perfectdreams.loritta.helper.utils.tickets.systems.SparklyPowerHelpDeskTicketSystem
 
 class TicketUtils(val m: LorittaHelper) {
@@ -78,6 +79,28 @@ class TicketUtils(val m: LorittaHelper) {
             banAppealsSupport.channels.supportId,
             banAppealsSupport.roles.lorittaStaffRoleId
         ),
+
+        // Loritta Community Discord Server Ban Support Channel
+        banAppealsSupport.channels.lorittaCommunityBanSupportId to ServerBanSupportTicketSystem(
+            m.jda,
+            TicketSystemType.SERVER_BAN_SUPPORT_LORITTA_COMMUNITY,
+            LanguageName.PORTUGUESE,
+            banAppealsSupport.id,
+            banAppealsSupport.channels.lorittaCommunityBanSupportId,
+            banAppealsSupport.roles.lorittaStaffRoleId,
+            "https://discord.gg/loritta"
+        ),
+
+        // SparklyPower Discord Server Ban Support Channel
+        banAppealsSupport.channels.lorittaCommunityBanSupportId to ServerBanSupportTicketSystem(
+            m.jda,
+            TicketSystemType.SERVER_BAN_SUPPORT_SPARKLYPOWER,
+            LanguageName.PORTUGUESE,
+            banAppealsSupport.id,
+            banAppealsSupport.channels.sparklyPowerBanSupportId,
+            banAppealsSupport.roles.sparklyPowerStaffRoleId,
+            "https://discord.gg/sparklypower"
+        )
     )
 
     fun getSystemBySystemType(type: TicketSystemType) = systems.values.first { it.systemType == type }
@@ -87,7 +110,9 @@ class TicketUtils(val m: LorittaHelper) {
         HELP_DESK_ENGLISH,
         FIRST_FAN_ARTS_PORTUGUESE,
         SPARKLYPOWER_HELP_DESK_PORTUGUESE,
-        BAN_SUPPORT_PORTUGUESE
+        BAN_SUPPORT_PORTUGUESE,
+        SERVER_BAN_SUPPORT_LORITTA_COMMUNITY,
+        SERVER_BAN_SUPPORT_SPARKLYPOWER
     }
 
     enum class LanguageName {

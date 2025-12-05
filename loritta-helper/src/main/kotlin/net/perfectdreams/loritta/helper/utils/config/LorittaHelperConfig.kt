@@ -140,12 +140,15 @@ data class LorittaHelperConfig(
             @Serializable
             data class ChannelsConfig(
                 val supportId: Long,
-                val guideId: Long
+                val guideId: Long,
+                val lorittaCommunityBanSupportId: Long,
+                val sparklyPowerBanSupportId: Long
             )
 
             @Serializable
             data class RolesConfig(
-                val lorittaStaffRoleId: Long
+                val lorittaStaffRoleId: Long,
+                val sparklyPowerStaffRoleId: Long
             )
         }
     }

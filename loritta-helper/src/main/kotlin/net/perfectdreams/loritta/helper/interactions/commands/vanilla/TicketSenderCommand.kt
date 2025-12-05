@@ -30,6 +30,7 @@ import net.perfectdreams.loritta.helper.utils.tickets.TicketUtils
 import net.perfectdreams.loritta.helper.utils.tickets.systems.FirstFanArtTicketSystem
 import net.perfectdreams.loritta.helper.utils.tickets.systems.HelpDeskTicketSystem
 import net.perfectdreams.loritta.helper.utils.tickets.systems.LorittaBanSupportTicketSystem
+import net.perfectdreams.loritta.helper.utils.tickets.systems.ServerBanSupportTicketSystem
 import net.perfectdreams.loritta.morenitta.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandDeclarationWrapper
@@ -60,6 +61,14 @@ class TicketSenderCommand(val helper: LorittaHelper) : SlashCommandDeclarationWr
                 choice(
                     "Suporte de Apelos de Ban (Português)",
                     TicketUtils.TicketSystemType.BAN_SUPPORT_PORTUGUESE.name
+                )
+                choice(
+                    "Suporte de Apelos de Ban do Servidor (Loritta)",
+                    TicketUtils.TicketSystemType.SERVER_BAN_SUPPORT_LORITTA_COMMUNITY.name
+                )
+                choice(
+                    "Suporte de Apelos de Ban do Servidor (SparklyPower)",
+                    TicketUtils.TicketSystemType.SERVER_BAN_SUPPORT_SPARKLYPOWER.name
                 )
             }
         }
@@ -464,6 +473,64 @@ Antes de perguntar, verifique se a resposta dela não está no <#${systemInfo.fa
                         )
                     }
                 ).await()
+            } else if (systemInfo is ServerBanSupportTicketSystem) {
+                if (ticketSystemType == TicketUtils.TicketSystemType.SERVER_BAN_SUPPORT_LORITTA_COMMUNITY) {
+                    channel.sendMessage(
+                        MessageCreate {
+                            embed {
+                                title = "Abra seu Ticket!"
+                                description = "Seja bem-vind@ ao Tribunal da Loritta! Um lugar para pessoas banidas do Servidor no Discord da Comunidade da Loritta conversarem com a Staff sobre seus casos!\n\nAntes de abrir um ticket, lembre-se de ler o <#${helper.config.guilds.banAppealsSupport.channels.guideId}>!"
+                                color = 2729726
+
+                                footer {
+                                    name = "Equipe da Loritta™"
+                                    iconUrl = "https://cdn.discordapp.com/emojis/623670395907866625.webp?size=96"
+                                }
+                            }
+
+                            actionRow(
+                                Button.of(
+                                    net.dv8tion.jda.api.components.buttons.ButtonStyle.PRIMARY,
+                                    "create_ticket:${
+                                        ComponentDataUtils.encode(
+                                            TicketSystemTypeData(systemInfo.systemType)
+                                        )
+                                    }",
+                                    i18nContext.get(I18nKeysData.Tickets.CreateTicket)
+                                ).withEmoji(Emoji.fromUnicode("➕"))
+                            )
+                        }
+                    ).await()
+                }
+
+                if (ticketSystemType == TicketUtils.TicketSystemType.SERVER_BAN_SUPPORT_SPARKLYPOWER) {
+                    channel.sendMessage(
+                        MessageCreate {
+                            embed {
+                                title = "Abra seu Ticket!"
+                                description = "Seja bem-vind@ ao Tribunal da Loritta! Um lugar para pessoas banidas do Servidor no Discord do SparklyPower conversarem com a Staff sobre seus casos!\n\nAntes de abrir um ticket, lembre-se de ler o <#${helper.config.guilds.banAppealsSupport.channels.guideId}>!"
+                                color = 15568128
+
+                                footer {
+                                    name = "Equipe do SparklyPower™"
+                                    iconUrl = "https://cdn.discordapp.com/emojis/623670395907866625.webp?size=96"
+                                }
+                            }
+
+                            actionRow(
+                                Button.of(
+                                    net.dv8tion.jda.api.components.buttons.ButtonStyle.PRIMARY,
+                                    "create_ticket:${
+                                        ComponentDataUtils.encode(
+                                            TicketSystemTypeData(systemInfo.systemType)
+                                        )
+                                    }",
+                                    i18nContext.get(I18nKeysData.Tickets.CreateTicket)
+                                ).withEmoji(Emoji.fromUnicode("➕"))
+                            )
+                        }
+                    ).await()
+                }
             }
         }
     }
