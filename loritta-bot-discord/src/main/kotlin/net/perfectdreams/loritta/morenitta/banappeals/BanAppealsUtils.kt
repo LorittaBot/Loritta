@@ -205,6 +205,12 @@ object BanAppealsUtils {
 
                         appendLine("Em breve você poderá usar a Loritta novamente!")
                         appendLine()
+                        appendLine("* Se você foi banido do SparklyPower (Servidor de Minecraft da Loritta), você terá que entrar no servidor do SparklyPower para pedir o unban da sua conta.")
+                        appendLine("* Se você foi banido do servidor da Comunidade da Loritta no Discord ou o Servidor do SparklyPower no Discord, você terá que entrar no servidor do Tribunal da Loritta para pedir unban nos servidores.")
+                        appendLine("* Se passar alguns minutos e você ainda não for desbanido da Loritta, talvez quem aprovou o seu apelo esqueceu de te desbanir... Neste caso, basta você entrar no servidor do Tribunal da Loritta e abrir um ticket de suporte, junto com o ID do seu apelo.")
+                        appendLine()
+                        appendLine("**Que bom ter você de volta, a Loritta sentiu saudades.** ${Emotes.LoriHeart}")
+                        appendLine()
                         appendLine("O seu apelo foi aprovado por ${acceptedByUser.asUserNameCodeBlockPreviewTag(stripCodeMarksFromInput = false, stripLinksFromInput = false)}")
                         appendLine()
                         appendLine("-# Apelo #$appealId")
@@ -218,7 +224,17 @@ object BanAppealsUtils {
                 ButtonStyle.LINK,
                 "https://discord.gg/loritta",
                 "Servidor da Comunidade da Loritta",
-            ).withEmoji(Emotes.LoriLick.toJDA())
+            ).withEmoji(Emotes.LoriLick.toJDA()),
+            Button.of(
+                ButtonStyle.LINK,
+                "https://discord.gg/sparklypower",
+                "Servidor do SparklyPower",
+            ).withEmoji(Emotes.PantufaLick.toJDA()),
+            Button.of(
+                ButtonStyle.LINK,
+                loritta.config.loritta.banAppeals.supportInviteUrl,
+                "Tribunal da Loritta",
+            ).withEmoji(Emotes.LoriBanHammer.toJDA())
         )
     }
 
