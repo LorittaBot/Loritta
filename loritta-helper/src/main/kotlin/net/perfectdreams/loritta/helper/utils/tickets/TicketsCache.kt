@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.helper.utils.tickets
 import dev.minn.jda.ktx.generics.getChannel
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import mu.KotlinLogging
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.perfectdreams.loritta.helper.utils.extensions.await
@@ -12,6 +13,10 @@ class TicketsCache(
     val guildId: Long,
     val channelId: Long
 ) {
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
+
     val tickets = mutableMapOf<Long, DiscordThreadTicketData>()
     // Avoids dupe threads being created when the cache is not populated yet
     val mutex = Mutex()
@@ -20,8 +25,19 @@ class TicketsCache(
     // opening a ticket, it takes a looong time (1+ minute) just to create it, which is kinda bad for UX
     suspend fun populateCache() {
         mutex.withLock {
-            val guild = jda.getGuildById(guildId)!!
-            val channel = guild.getTextChannelById(channelId)!!
+            val guild = jda.getGuildById(guildId)
+
+            if (guild == null) {
+                logger.warn { "Guild $guildId not found! Bug?" }
+                return@withLock
+            }
+
+            val channel = guild.getTextChannelById(channelId)
+
+            if (channel == null) {
+                logger.warn { "Channel $channelId not found in guild $guildId! Bug?" }
+                return@withLock
+            }
 
             // Populate cache with the active threads
             guild
