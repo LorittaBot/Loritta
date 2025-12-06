@@ -6,7 +6,6 @@ import dev.minn.jda.ktx.messages.MessageCreate
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.datetime.toJavaInstant
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
@@ -14,7 +13,6 @@ import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.utils.TimeFormat
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DropCalls
@@ -31,7 +29,6 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.SonhosPa
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.serializable.StoredDropCallTransaction
-import net.perfectdreams.loritta.serializable.StoredDropChatTransaction
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.plus
@@ -191,7 +188,7 @@ class DropCall(
                         dropCallId
                     }
 
-                    is SonhosUtils.SonhosCheckResult.NotEnoughSonhos -> return@transaction DropResult.MoneySourceNotEnoughSonhos
+                    is SonhosUtils.SonhosCheckResult.NotEnoughSonhos -> return@transaction DropResult.MoneySourceNotEnoughSonhos(totalSonhosPayout)
                 }
             } else {
                 createDropCall()
@@ -279,7 +276,7 @@ class DropCall(
                 }.failOnInvalidReply(false).await()
             }
 
-            DropResult.MoneySourceNotEnoughSonhos -> {
+            is DropResult.MoneySourceNotEnoughSonhos -> {
                 channel.sendMessage(
                     MessageCreate {
                         this.useComponentsV2 = true
@@ -289,8 +286,8 @@ class DropCall(
 
                             this.text(
                                 buildString {
-                                    appendLine("### ${loritta.emojiManager.get(LorittaEmojis.LoriConfetti)} ${i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.SonhosDropHasEnded)}")
-                                    appendLine("*${i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.TheCreatorDoesNotHaveEnoughSonhos)}* ${Emotes.LoriSob}")
+                                    appendLine("### ${loritta.emojiManager.get(LorittaEmojis.LoriConfetti)} ${i18nContext.get(I18nKeysData.Commands.Command.Drop.Call.SonhosDropHasEnded)}")
+                                    appendLine("*${i18nContext.get(I18nKeysData.Commands.Command.Drop.TheCreatorDoesNotHaveEnoughSonhos(creator.asMention, SonhosUtils.getSonhosEmojiOfQuantity(result.totalSonhosPayout), result.totalSonhosPayout))}* ${Emotes.LoriSob}")
                                     appendLine()
                                     appendLine(i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.NoSonhosDistributedNotEnoughSonhos))
                                     appendLine()
@@ -315,7 +312,7 @@ class DropCall(
 
                             this.text(
                                 buildString {
-                                    appendLine("### ${loritta.emojiManager.get(LorittaEmojis.LoriConfetti)} ${i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.SonhosDropHasEnded)}")
+                                    appendLine("### ${loritta.emojiManager.get(LorittaEmojis.LoriConfetti)} ${i18nContext.get(I18nKeysData.Commands.Command.Drop.Call.SonhosDropHasEnded)}")
                                     appendLine("*${i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.NoOneParticipatedOnTheDrop)}* ${Emotes.LoriSob}")
                                     appendLine()
                                     appendLine(i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.NoSonhosDistributedNoParticipants))
@@ -338,6 +335,6 @@ class DropCall(
     private sealed class DropResult {
         data class Success(val dropId: Long, val winners: List<User>) : DropResult()
         data object NoWinners : DropResult()
-        data object MoneySourceNotEnoughSonhos : DropResult()
+        data class MoneySourceNotEnoughSonhos(val totalSonhosPayout: Long) : DropResult()
     }
 }

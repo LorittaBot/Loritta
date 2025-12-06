@@ -309,7 +309,7 @@ class DropChat(
                             dropChatId
                         }
 
-                        is SonhosUtils.SonhosCheckResult.NotEnoughSonhos -> return@transaction DropResult.MoneySourceNotEnoughSonhos
+                        is SonhosUtils.SonhosCheckResult.NotEnoughSonhos -> return@transaction DropResult.MoneySourceNotEnoughSonhos(totalSonhosPayout)
                     }
                 } else {
                     createDropChat()
@@ -395,7 +395,7 @@ class DropChat(
                     }.failOnInvalidReply(false).await()
                 }
 
-                DropResult.MoneySourceNotEnoughSonhos -> {
+                is DropResult.MoneySourceNotEnoughSonhos -> {
                     channel.sendMessage(
                         MessageCreate {
                             this.useComponentsV2 = true
@@ -406,7 +406,7 @@ class DropChat(
                                 this.text(
                                     buildString {
                                         appendLine("### ${loritta.emojiManager.get(LorittaEmojis.LoriConfetti)} ${i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.SonhosDropHasEnded)}")
-                                        appendLine("*${i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.TheCreatorDoesNotHaveEnoughSonhos)}* ${Emotes.LoriSob}")
+                                        appendLine("*${i18nContext.get(I18nKeysData.Commands.Command.Drop.TheCreatorDoesNotHaveEnoughSonhos(creator.asMention, SonhosUtils.getSonhosEmojiOfQuantity(result.totalSonhosPayout), result.totalSonhosPayout))}* ${Emotes.LoriSob}")
                                         appendLine()
                                         appendLine(i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.NoSonhosDistributedNotEnoughSonhos))
                                     }
@@ -426,6 +426,6 @@ class DropChat(
 
     private sealed class DropResult {
         data class Success(val dropId: Long) : DropResult()
-        data object MoneySourceNotEnoughSonhos : DropResult()
+        data class MoneySourceNotEnoughSonhos(val totalSonhosPayout: Long) : DropResult()
     }
 }

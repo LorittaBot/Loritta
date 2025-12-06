@@ -16,6 +16,7 @@ dropTooLong: "A duração do drop é longa demais! Um drop deve durar, no máxim
 totalSonhosDistributed: "No total, {sonhosEmoji} **{sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** de {creatorMention} foram distribuídos!"
 totalSonhosDistributedAdmin: "No total, {sonhosEmoji} **{sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** foram distribuídos!"
 thanksTheCreatorForTheDrop: "Agradeçam {userMention} pelo drop!"
+theCreatorDoesNotHaveEnoughSonhos: "O criador do drop ({userMention}) não tem sonhos suficientes ({sonhosEmoji} **{sonhos,plural, =0 {# Sonhos} one {# Sonho} other {# Sonhos}}**) para financiar os ganhadores..."
 
 chat:
   label: "chat"
@@ -29,7 +30,6 @@ chat:
   winnersQuantity: "**Quantidade de Vencedores:** {winners,plural, =0 {# vencedores} one {# vencedor} other {# vencedores}}"
   sonhosDropHasEnded: "Drop de Sonhos no Chat acabou!"
   noOneParticipatedOnTheDrop: "Ninguém participou deste drop..."
-  theCreatorDoesNotHaveEnoughSonhos: "O criador do drop não tem sonhos suficientes para financiar os ganhadores..."
   participants: "Participantes ({participantsCount})"
   noOneOnTheDropYet: "Ninguém... por enquanto!"
   theDropWillEnd: "O drop irá acabar automaticamente {time} ou quando tiver {participantCount,plural, =0 {# participantes} one {# participante} other {# participantes}}!"
