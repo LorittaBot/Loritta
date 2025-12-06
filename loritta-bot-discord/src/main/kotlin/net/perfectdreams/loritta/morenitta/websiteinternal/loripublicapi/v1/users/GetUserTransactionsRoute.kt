@@ -544,6 +544,18 @@ class GetUserTransactionsRoute(m: LorittaBot) : LoriPublicAPIRoute(
                     transaction.receivedById,
                     transaction.guildId
                 )
+                is net.perfectdreams.loritta.serializable.DropCallTransaction -> DropCallTransaction(
+                    transaction.id,
+                    transaction.transactionType,
+                    transaction.timestamp,
+                    transaction.user,
+                    transaction.sonhos,
+                    transaction.dropId,
+                    transaction.charged,
+                    transaction.givenById,
+                    transaction.receivedById,
+                    transaction.guildId
+                )
             }
         }
     }
@@ -1107,6 +1119,21 @@ class GetUserTransactionsRoute(m: LorittaBot) : LoriPublicAPIRoute(
 
     @Serializable
     data class DropChatTransaction(
+        override val id: Long,
+        override val transactionType: TransactionType,
+        override val timestamp: kotlinx.datetime.Instant,
+        @Serializable(UserIdAsStringSerializer::class)
+        override val user: UserId,
+        val sonhos: Long,
+        val dropId: Long,
+        val charged: Boolean,
+        val givenById: Long?,
+        val receivedById: Long,
+        val guildId: Long
+    ) : SonhosTransaction()
+
+    @Serializable
+    data class DropCallTransaction(
         override val id: Long,
         override val transactionType: TransactionType,
         override val timestamp: kotlinx.datetime.Instant,

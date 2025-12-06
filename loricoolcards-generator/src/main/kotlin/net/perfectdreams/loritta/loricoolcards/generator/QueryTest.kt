@@ -324,6 +324,7 @@ suspend fun main() {
                     is StoredBlackjackSplitTransaction -> TODO()
                     is StoredBlackjackTiedTransaction -> TODO()
                     is StoredDropChatTransaction -> TODO()
+                    is StoredDropCallTransaction -> TODO()
                 }
             }
     }

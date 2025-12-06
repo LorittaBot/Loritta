@@ -1,6 +1,22 @@
 label: "drop"
 description: "Comandos relacionados ao sistema de drops de sonhos da Loritta!"
 
+channelIsNotMessageChannel: "Eu não consigo enviar a mensagem do drop no canal {channelMention} pois ele não é um canal de texto!"
+lorittaCantSpeakOnChannel: "Eu não consigo enviar a mensagem do drop no canal {channelMention} pois eu não tenho permissão para falar lá!"
+userCantSpeakOnChannel: "Eu não consigo enviar a mensagem do drop no canal {channelMention} pois você não tem permissão para falar lá!"
+lorittaDoesNotHavePermissionToSendEmbeds: "Eu não consigo fazer um drop no canal {channelMention} pois eu não tenho permissão para enviar embeds lá!"
+lorittaDoesNotHavePermissionToViewChannelHistory: "Eu não consigo fazer um drop no canal {channelMention} pois eu não tenho permissão para ver o histórico do canal lá!"
+youCannotStartAAdminDrop: "Você não pode iniciar um drop deste tipo, pois você não é da equipe da Loritta!"
+selfAccountIsTooNewToCreateADrop: "Espere aí, a sua conta é muito nova! Antes de poder fazer um drop, você precisa aguardar até {time} ({timeRelative}) antes de começar a fazer drops de sonhos."
+selfAccountNeedsToGetDailyToCreateADrop: "Parece que você nunca pegou uma recompensa diária, você só pode fazer um drop de sonhos após pegar a sua recompensa diária pelo ou menos uma vez na sua vida. Que tal pegar agora? {dailyCommand}"
+selfAccountIsTooNewToJoinADrop: "Espere aí, a sua conta é muito nova! Antes de poder entrar neste drop, você precisa aguardar até {time} ({timeRelative}) antes de poder entrar em drops de sonhos."
+selfAccountNeedsToGetDailyToJoinADrop: "Parece que você nunca pegou uma recompensa diária, você só pode entrar em um drop de sonhos após pegar a sua recompensa diária pelo ou menos uma vez na sua vida. Que tal pegar agora? {dailyCommand}"
+tooManySonhos: "Você não pode criar um drop que dá mais de {sonhosEmoji} {sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} por participante!"
+dropTooLong: "A duração do drop é longa demais! Um drop deve durar, no máximo, cinco minutos."
+totalSonhosDistributed: "No total, {sonhosEmoji} **{sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** de {creatorMention} foram distribuídos!"
+totalSonhosDistributedAdmin: "No total, {sonhosEmoji} **{sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** foram distribuídos!"
+thanksTheCreatorForTheDrop: "Agradeçam {userMention} pelo drop!"
+
 chat:
   label: "chat"
   description: "Inicia um drop de sonhos no chat"
@@ -8,39 +24,26 @@ chat:
   participate: "Participar ({participantsCount})"
 
   creatorOfTheDrop: "Drop de {userMention}"
-  sonhosDrop: "Drop de Sonhos!"
+  sonhosDrop: "Drop de Sonhos no Chat!"
   sonhosQuantity: "**Quantidade de Sonhos:** {sonhosEmoji} {sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
   winnersQuantity: "**Quantidade de Vencedores:** {winners,plural, =0 {# vencedores} one {# vencedor} other {# vencedores}}"
-  sonhosDropHasEnded: "Drop de Sonhos acabou!"
+  sonhosDropHasEnded: "Drop de Sonhos no Chat acabou!"
   noOneParticipatedOnTheDrop: "Ninguém participou deste drop..."
   theCreatorDoesNotHaveEnoughSonhos: "O criador do drop não tem sonhos suficientes para financiar os ganhadores..."
   participants: "Participantes ({participantsCount})"
   noOneOnTheDropYet: "Ninguém... por enquanto!"
   theDropWillEnd: "O drop irá acabar automaticamente {time} ou quando tiver {participantCount,plural, =0 {# participantes} one {# participante} other {# participantes}}!"
-  totalSonhosDistributed: "No total, {sonhosEmoji} **{sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** foram distribuídos!"
   noSonhosDistributedNoParticipants: "No total, nenhum sonho foi distribuído pois ninguém entrou no drop..."
   noSonhosDistributedNotEnoughSonhos: "No total, nenhum sonho foi distribuído pois o criador não teve sonhos suficientes..."
   userWonSonhos: "{userMention} ganhou {sonhosEmoji} **{sonhos,plural, =0 {# Sonhos} one {# Sonho} other {# Sonhos}}**!"
-  dropId: "Chat Drop #{dropId}"
+  dropId: "Drop Chat #{dropId}"
   dropCreated: "Drop iniciado! {messageUrl}"
-  dropTooLong: "A duração do drop é longa demais! Um drop deve durar, no máximo, cinco minutos."
   dropTooShort: "A duração do drop é curta demais! Um drop deve durar, no mínimo, um segundo."
   tryingToDropZeroSonhos: "Uau, incrível! Você vai fazer um drop com *zero* sonhos, maravilha! Menos trabalho para mim, porque isso significa que não preciso criar um drop para você."
   tryingToDropLessThanZeroSonhos: "Uau, excelente! Você vai fazer um drop com sonhos *negativos*, extraordinário! Será que sonhos negativos seriam... *pesadelos*? Eu sei, eu sei... Sou um gênio."
-  channelIsNotMessageChannel: "Eu não consigo fazer um drop no canal {channelMention} pois ele não é um canal de texto!"
-  lorittaCantSpeakOnChannel: "Eu não consigo fazer um drop no canal {channelMention} pois eu não tenho permissão para falar lá!"
-  userCantSpeakOnChannel: "Eu não consigo fazer um drop no canal {channelMention} pois você não tem permissão para falar lá!"
-  lorittaDoesNotHavePermissionToSendEmbeds: "Eu não consigo fazer um sorteio no canal {channelMention} pois eu não tenho permissão para enviar embeds lá!"
-  lorittaDoesNotHavePermissionToViewChannelHistory: "Eu não consigo fazer um sorteio no canal {channelMention} pois eu não tenho permissão para ver o histórico do canal lá!"
   invalidParticipantsCount: "A quantidade máxima de participantes precisa ser entre {minParticipantsCount,number,#} e {maxParticipantsCount,number,#}!"
   invalidWinnersCount: "A quantidade máxima de vencedores precisa ser entre {minWinnersCount,number,#} e {maxWinnersCount,number,#}!"
   youMustHaveMoreParticipantsThanWinners: "A quantidade máxima de vencedores precisa ser menor ou igual a quantidade máxima de participantes!"
-  youCannotStartAAdminDrop: "Você não pode iniciar um drop deste tipo, pois você não é um administrador da Loritta!"
-  tooManySonhos: "Você não pode criar um drop que dá mais de {sonhosEmoji} {sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} por participante!"
-  selfAccountIsTooNewToCreateADrop: "Espere aí, a sua conta é muito nova! Antes de poder fazer um drop, você precisa aguardar até {time} ({timeRelative}) antes de começar a fazer drops de sonhos."
-  selfAccountNeedsToGetDailyToCreateADrop: "Parece que você nunca pegou uma recompensa diária, você só pode fazer um drop de sonhos após pegar a sua recompensa diária pelo ou menos uma vez na sua vida. Que tal pegar agora? {dailyCommand}"
-  selfAccountIsTooNewToJoinADrop: "Espere aí, a sua conta é muito nova! Antes de poder entrar neste drop, você precisa aguardar até {time} ({timeRelative}) antes de poder entrar em drops de sonhos."
-  selfAccountNeedsToGetDailyToJoinADrop: "Parece que você nunca pegou uma recompensa diária, você só pode entrar em um drop de sonhos após pegar a sua recompensa diária pelo ou menos uma vez na sua vida. Que tal pegar agora? {dailyCommand}"
 
   joinDrop:
     thisDropHasEnded: "Este drop acabou!"
@@ -55,8 +58,35 @@ chat:
     maxWinners:
       text: "Quantidade máxima de pessoas que irão ganhar sonhos"
     channel:
-      text: "O canal onde o drop será feito"
+      text: "O canal onde a mensagem do drop será enviada"
     duration:
       text: "A duração do drop"
+    lorittaAdmin:
+      text: "Se ativado, os sonhos não serão cobrados do usuário que criou o drop"
+
+call:
+  label: "call"
+  description: "Inicia um drop de sonhos em uma call"
+  channelIsNotVoiceChannel: "Eu não consigo fazer um drop no canal {channelMention} pois ele não é um canal de voz!"
+
+  participants: "Participantes"
+  sonhosDrop: "Drop de Sonhos na Call!"
+  sonhosDropHasEnded: "Drop de Sonhos na Call acabou!"
+  theDropWillEnd: "O drop irá acabar automaticamente {time}!"
+  dropId: "Drop Call #{dropId}"
+  voiceDropRequirements: "Para participar do drop, você precisa ter pego a recompensa diária da Loritta alguma vez na vida, como também a sua conta precisa ter mais de 7 dias de vida!"
+  dropTooShort: "A duração do drop é curta demais! Um drop deve durar, no mínimo, um segundo. Se você quer fazer um drop de call instantâneo, basta não preencher a opção da duração do drop!"
+
+  options:
+    sonhos:
+      text: "Quantos sonhos serão dados para cada usuário"
+    maxWinners:
+      text: "Quantidade máxima de pessoas que irão ganhar sonhos"
+    channel:
+      text: "O canal onde a mensagem do drop será enviada"
+    voiceChannel:
+      text: "O canal de voz onde as pessoas precisam estar para participar do drop"
+    duration:
+      text: "A duração do drop, você pode não usar esta opção para criar um drop call instantâneo"
     lorittaAdmin:
       text: "Se ativado, os sonhos não serão cobrados do usuário que criou o drop"

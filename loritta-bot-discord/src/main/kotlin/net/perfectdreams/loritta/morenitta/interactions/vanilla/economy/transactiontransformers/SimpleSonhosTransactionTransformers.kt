@@ -69,16 +69,16 @@ object SimpleSonhosTransactionTransformers {
         )
     }
 
-    val DropChatTransformer = SimpleSonhosTransactionTransformer<DropChatTransaction> { transformerInstance, loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction ->
-        fun formatGuildInfo(guildInfo: DropChatTransaction.GuildInfo): String {
-            val inviteUrl = guildInfo.guildInviteId
-            return if (inviteUrl != null) {
-                "`${guildInfo.guildName}` [`discord.gg/$inviteUrl`]"
-            } else {
-                "`${guildInfo.guildName}`"
-            }
+    private fun formatGuildInfo(guildInfo: DropGuildInfo): String {
+        val inviteUrl = guildInfo.guildInviteId
+        return if (inviteUrl != null) {
+            "`${guildInfo.guildName}` [`discord.gg/$inviteUrl`]"
+        } else {
+            "`${guildInfo.guildName}`"
         }
+    }
 
+    val DropChatTransformer = SimpleSonhosTransactionTransformer<DropChatTransaction> { transformerInstance, loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction ->
         val givenById = transaction.givenById
         if (givenById != null) {
             val giverUserInfo = cachedUserInfos.getOrPut(UserId(givenById)) { loritta.lorittaShards.retrieveUserInfoById(givenById) }
@@ -161,6 +161,98 @@ object SimpleSonhosTransactionTransformers {
                 append(
                     i18nContext.get(
                         SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.Drop.ChatReceivedAdmin(
+                            transaction.sonhos,
+                            transaction.guildId.toString()
+                        )
+                    )
+                )
+            }
+        }
+    }
+
+    val DropCallTransformer = SimpleSonhosTransactionTransformer<DropCallTransaction> { transformerInstance, loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction ->
+        val givenById = transaction.givenById
+        if (givenById != null) {
+            val giverUserInfo = cachedUserInfos.getOrPut(UserId(givenById)) { loritta.lorittaShards.retrieveUserInfoById(givenById) }
+            val receiverUserInfo = cachedUserInfos.getOrPut(UserId(transaction.receivedById)) { loritta.lorittaShards.retrieveUserInfoById(transaction.receivedById) }
+
+            if (transaction.charged) {
+                with(transformerInstance) {
+                    appendMoneyLostEmoji()
+                }
+
+                val guildInfo = transaction.guildInfo
+                if (guildInfo != null) {
+                    append(
+                        i18nContext.get(
+                            SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.Drop.CallSentWithGuildInformation(
+                                transaction.sonhos,
+                                convertToUserNameCodeBlockPreviewTag(transaction.receivedById, receiverUserInfo?.name, receiverUserInfo?.globalName, receiverUserInfo?.discriminator),
+                                formatGuildInfo(guildInfo),
+                                transaction.guildId.toString()
+                            )
+                        )
+                    )
+                } else {
+                    append(
+                        i18nContext.get(
+                            SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.Drop.CallSent(
+                                transaction.sonhos,
+                                convertToUserNameCodeBlockPreviewTag(transaction.receivedById, receiverUserInfo?.name, receiverUserInfo?.globalName, receiverUserInfo?.discriminator),
+                                transaction.guildId.toString()
+                            )
+                        )
+                    )
+                }
+            } else {
+                with(transformerInstance) {
+                    appendMoneyEarnedEmoji()
+                }
+
+                val guildInfo = transaction.guildInfo
+                if (guildInfo != null) {
+                    append(
+                        i18nContext.get(
+                            SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.Drop.CallReceivedWithGuildInformation(
+                                transaction.sonhos,
+                                convertToUserNameCodeBlockPreviewTag(transaction.receivedById, giverUserInfo?.name, giverUserInfo?.globalName, giverUserInfo?.discriminator),
+                                formatGuildInfo(guildInfo),
+                                transaction.guildId.toString()
+                            )
+                        )
+                    )
+                } else {
+                    append(
+                        i18nContext.get(
+                            SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.Drop.CallReceived(
+                                transaction.sonhos,
+                                convertToUserNameCodeBlockPreviewTag(transaction.receivedById, giverUserInfo?.name, giverUserInfo?.globalName, giverUserInfo?.discriminator),
+                                transaction.guildId.toString()
+                            )
+                        )
+                    )
+                }
+            }
+        } else {
+            with(transformerInstance) {
+                appendMoneyEarnedEmoji()
+            }
+
+            val guildInfo = transaction.guildInfo
+            if (guildInfo != null) {
+                append(
+                    i18nContext.get(
+                        SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.Drop.CallReceivedWithGuildInformationAdmin(
+                            transaction.sonhos,
+                            formatGuildInfo(guildInfo),
+                            transaction.guildId.toString()
+                        )
+                    )
+                )
+            } else {
+                append(
+                    i18nContext.get(
+                        SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.Drop.CallReceivedAdmin(
                             transaction.sonhos,
                             transaction.guildId.toString()
                         )

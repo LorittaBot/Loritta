@@ -345,6 +345,7 @@ class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandE
 
                         // ===[ DROP ]===
                         is DropChatTransaction -> SimpleSonhosTransactionTransformers.DropChatTransformer
+                        is DropCallTransaction -> SimpleSonhosTransactionTransformers.DropCallTransformer
 
                         // This should never happen because we do a left join with a "isNotNull" check
                         is UnknownSonhosTransaction -> UnknownSonhosTransactionTransformer

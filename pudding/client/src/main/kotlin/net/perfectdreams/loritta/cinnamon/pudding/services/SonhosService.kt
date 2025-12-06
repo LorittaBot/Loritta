@@ -410,7 +410,48 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
                                 stored.receivedById,
                                 stored.guildId,
                                 if (showGuildInformationOnTransactions == true && guildName != null && plan.showDropGuildInfoOnTransactions) {
-                                    DropChatTransaction.GuildInfo(
+                                    DropGuildInfo(
+                                        guildName,
+                                        guildInviteCode
+                                    )
+                                } else null
+                            )
+                        }
+
+                        is StoredDropCallTransaction -> {
+                            val dropsConfig = dropsConfigs.firstOrNull { it[DropsConfigs.id].value == stored.guildId }
+
+                            // This is... not great
+                            val plan = if (dropsConfig != null) {
+                                val value = DonationKeys.selectAll().where { DonationKeys.activeIn eq dropsConfig[DropsConfigs.id] and (DonationKeys.expiresAt greaterEq System.currentTimeMillis()) }
+                                    .toList()
+                                    .sumOf {
+                                        // This is a weird workaround that fixes users complaining that 19.99 + 19.99 != 40 (it equals to 39.38()
+                                        ceil(it[DonationKeys.value])
+                                    }
+
+                                ServerPremiumPlans.getPlanFromValue(value)
+                            } else {
+                                ServerPremiumPlans.Free
+                            }
+
+                            val showGuildInformationOnTransactions = dropsConfig?.get(DropsConfigs.showGuildInformationOnTransactions)
+                            val guildName = dropsConfig?.get(DropsConfigs.guildName)
+                            val guildInviteCode = dropsConfig?.get(DropsConfigs.guildInviteCode)
+
+                            DropCallTransaction(
+                                it[SimpleSonhosTransactionsLog.id].value,
+                                it[SimpleSonhosTransactionsLog.type],
+                                it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
+                                UserId(it[SimpleSonhosTransactionsLog.user].value),
+                                it[SimpleSonhosTransactionsLog.sonhos],
+                                stored.dropId,
+                                stored.charged,
+                                stored.givenById,
+                                stored.receivedById,
+                                stored.guildId,
+                                if (showGuildInformationOnTransactions == true && guildName != null && plan.showDropGuildInfoOnTransactions) {
+                                    DropGuildInfo(
                                         guildName,
                                         guildInviteCode
                                     )

@@ -526,11 +526,25 @@ data class DropChatTransaction(
     val givenById: Long?,
     val receivedById: Long,
     val guildId: Long,
-    val guildInfo: GuildInfo?
-) : SonhosTransaction() {
-    @Serializable
-    data class GuildInfo(
-        val guildName: String,
-        val guildInviteId: String?
-    )
-}
+    val guildInfo: DropGuildInfo?
+) : SonhosTransaction()
+@Serializable
+data class DropCallTransaction(
+    override val id: Long,
+    override val transactionType: TransactionType,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val sonhos: Long,
+    val dropId: Long,
+    val charged: Boolean,
+    val givenById: Long?,
+    val receivedById: Long,
+    val guildId: Long,
+    val guildInfo: DropGuildInfo?
+) : SonhosTransaction()
+
+@Serializable
+data class DropGuildInfo(
+    val guildName: String,
+    val guildInviteId: String?
+)
