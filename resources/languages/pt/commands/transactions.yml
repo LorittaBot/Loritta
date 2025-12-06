@@ -78,6 +78,15 @@ types:
     insurancePayout: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} do seguro na partida #{matchId} de Blackjack"
     doubleDown: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para dobrar a aposta na partida #{matchId} de Blackjack"
     refunded: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} como reembolso na partida #{matchId} de Blackjack pois a Loritta reiniciou durante a partida"
+  drop:
+    title: "Drops de Sonhos"
+    description: "Transações relacionadas a drops de sonhos"
+    chatReceived: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} de {giverUserPreview} no drop de sonhos no servidor `{guildId}`"
+    chatReceivedWithGuildInformation: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} de {giverUserPreview} no drop de sonhos no servidor {guildName} (`{guildId}`)"
+    chatReceivedAdmin: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} no drop de sonhos no servidor `{guildId}`"
+    chatReceivedWithGuildInformationAdmin: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} no drop de sonhos no servidor {guildName} (`{guildId}`)"
+    chatSent: "Enviou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para {receivedUserPreview} no drop de sonhos no servidor `{guildId}`"
+    chatSentWithGuildInformation: "Enviou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para {receivedUserPreview} no drop de sonhos no servidor {guildName} (`{guildId}`)"
   shipEffect:
     title: "Subornos de Ship"
     description: "Transações relacionadas com subornos ao oráculo do amor"

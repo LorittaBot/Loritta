@@ -1,17 +1,11 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.transactiontransformers
 
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.SonhosCommand
-import net.perfectdreams.loritta.serializable.BlackjackDoubleDownTransaction
-import net.perfectdreams.loritta.serializable.BlackjackInsurancePayoutTransaction
-import net.perfectdreams.loritta.serializable.BlackjackInsuranceTransaction
-import net.perfectdreams.loritta.serializable.BlackjackJoinedTransaction
-import net.perfectdreams.loritta.serializable.BlackjackPayoutTransaction
-import net.perfectdreams.loritta.serializable.BlackjackRefundTransaction
-import net.perfectdreams.loritta.serializable.BlackjackSplitTransaction
-import net.perfectdreams.loritta.serializable.BlackjackTiedTransaction
+import net.perfectdreams.loritta.morenitta.utils.extensions.convertToUserNameCodeBlockPreviewTag
+import net.perfectdreams.loritta.serializable.*
 
 object SimpleSonhosTransactionTransformers {
-    val BlackjackDoubleDownTransactionTransformer = SimpleSonhosTransactionTransformer<BlackjackDoubleDownTransaction>(false) { _, i18nContext, transaction ->
+    val BlackjackDoubleDownTransactionTransformer = SimpleSonhosTransactionTransformer<BlackjackDoubleDownTransaction>(false) { _, _, i18nContext, cachedUserInfo, cachedUserInfos, transaction ->
         append(
             i18nContext.get(
                 SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.Blackjack.DoubleDown(quantity = transaction.sonhos, matchId = transaction.matchId)
@@ -19,7 +13,7 @@ object SimpleSonhosTransactionTransformers {
         )
     }
 
-    val BlackjackRefundTransactionTransformer = SimpleSonhosTransactionTransformer<BlackjackRefundTransaction>(true) { _, i18nContext, transaction ->
+    val BlackjackRefundTransactionTransformer = SimpleSonhosTransactionTransformer<BlackjackRefundTransaction>(true) { _, _, i18nContext, cachedUserInfo, cachedUserInfos, transaction ->
         append(
             i18nContext.get(
                 SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.Blackjack.Refunded(quantity = transaction.sonhos, matchId = transaction.matchId)
@@ -27,7 +21,7 @@ object SimpleSonhosTransactionTransformers {
         )
     }
 
-    val BlackjackInsuranceTransactionTransformer = SimpleSonhosTransactionTransformer<BlackjackInsuranceTransaction>(false) { _, i18nContext, transaction ->
+    val BlackjackInsuranceTransactionTransformer = SimpleSonhosTransactionTransformer<BlackjackInsuranceTransaction>(false) { _, _, i18nContext, cachedUserInfo, cachedUserInfos, transaction ->
         append(
             i18nContext.get(
                 SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.Blackjack.Insurance(quantity = transaction.sonhos, matchId = transaction.matchId)
@@ -35,7 +29,7 @@ object SimpleSonhosTransactionTransformers {
         )
     }
 
-    val BlackjackInsurancePayoutTransactionTransformer = SimpleSonhosTransactionTransformer<BlackjackInsurancePayoutTransaction>(true) { _, i18nContext, transaction ->
+    val BlackjackInsurancePayoutTransactionTransformer = SimpleSonhosTransactionTransformer<BlackjackInsurancePayoutTransaction>(true) { _, _, i18nContext, cachedUserInfo, cachedUserInfos, transaction ->
         append(
             i18nContext.get(
                 SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.Blackjack.InsurancePayout(quantity = transaction.sonhos, matchId = transaction.matchId)
@@ -43,7 +37,7 @@ object SimpleSonhosTransactionTransformers {
         )
     }
 
-    val BlackjackTiedTransactionTransformer = SimpleSonhosTransactionTransformer<BlackjackTiedTransaction>(true) { _, i18nContext, transaction ->
+    val BlackjackTiedTransactionTransformer = SimpleSonhosTransactionTransformer<BlackjackTiedTransaction>(true) { _, _, i18nContext, cachedUserInfo, cachedUserInfos, transaction ->
         append(
             i18nContext.get(
                 SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.Blackjack.Tied(quantity = transaction.sonhos, matchId = transaction.matchId)
@@ -51,7 +45,7 @@ object SimpleSonhosTransactionTransformers {
         )
     }
 
-    val BlackjackJoinedTransactionTransformer = SimpleSonhosTransactionTransformer<BlackjackJoinedTransaction>(false) { _, i18nContext, transaction ->
+    val BlackjackJoinedTransactionTransformer = SimpleSonhosTransactionTransformer<BlackjackJoinedTransaction>(false) { _, _, i18nContext, cachedUserInfo, cachedUserInfos, transaction ->
         append(
             i18nContext.get(
                 SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.Blackjack.Joined(quantity = transaction.sonhos, matchId = transaction.matchId)
@@ -59,7 +53,7 @@ object SimpleSonhosTransactionTransformers {
         )
     }
 
-    val BlackjackSplitTransactionTransformer = SimpleSonhosTransactionTransformer<BlackjackSplitTransaction>(false) { _, i18nContext, transaction ->
+    val BlackjackSplitTransactionTransformer = SimpleSonhosTransactionTransformer<BlackjackSplitTransaction>(false) { _, _, i18nContext, cachedUserInfo, cachedUserInfos, transaction ->
         append(
             i18nContext.get(
                 SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.Blackjack.Split(quantity = transaction.sonhos, matchId = transaction.matchId)
@@ -67,11 +61,112 @@ object SimpleSonhosTransactionTransformers {
         )
     }
 
-    val BlackjackPayoutTransactionTransformer = SimpleSonhosTransactionTransformer<BlackjackPayoutTransaction>(true) { _, i18nContext, transaction ->
+    val BlackjackPayoutTransactionTransformer = SimpleSonhosTransactionTransformer<BlackjackPayoutTransaction>(true) { _, _, i18nContext, cachedUserInfo, cachedUserInfos, transaction ->
         append(
             i18nContext.get(
                 SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.Blackjack.Payout(quantity = transaction.sonhos, matchId = transaction.matchId)
             )
         )
+    }
+
+    val DropChatTransformer = SimpleSonhosTransactionTransformer<DropChatTransaction> { transformerInstance, loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction ->
+        fun formatGuildInfo(guildInfo: DropChatTransaction.GuildInfo): String {
+            val inviteUrl = guildInfo.guildInviteId
+            return if (inviteUrl != null) {
+                "`${guildInfo.guildName}` [`discord.gg/$inviteUrl`]"
+            } else {
+                "`${guildInfo.guildName}`"
+            }
+        }
+
+        val givenById = transaction.givenById
+        if (givenById != null) {
+            val giverUserInfo = cachedUserInfos.getOrPut(UserId(givenById)) { loritta.lorittaShards.retrieveUserInfoById(givenById) }
+            val receiverUserInfo = cachedUserInfos.getOrPut(UserId(transaction.receivedById)) { loritta.lorittaShards.retrieveUserInfoById(transaction.receivedById) }
+
+            if (transaction.charged) {
+                with(transformerInstance) {
+                    appendMoneyLostEmoji()
+                }
+
+                val guildInfo = transaction.guildInfo
+                if (guildInfo != null) {
+                    append(
+                        i18nContext.get(
+                            SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.Drop.ChatSentWithGuildInformation(
+                                transaction.sonhos,
+                                convertToUserNameCodeBlockPreviewTag(transaction.receivedById, receiverUserInfo?.name, receiverUserInfo?.globalName, receiverUserInfo?.discriminator),
+                                formatGuildInfo(guildInfo),
+                                transaction.guildId.toString()
+                            )
+                        )
+                    )
+                } else {
+                    append(
+                        i18nContext.get(
+                            SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.Drop.ChatSent(
+                                transaction.sonhos,
+                                convertToUserNameCodeBlockPreviewTag(transaction.receivedById, receiverUserInfo?.name, receiverUserInfo?.globalName, receiverUserInfo?.discriminator),
+                                transaction.guildId.toString()
+                            )
+                        )
+                    )
+                }
+            } else {
+                with(transformerInstance) {
+                    appendMoneyEarnedEmoji()
+                }
+
+                val guildInfo = transaction.guildInfo
+                if (guildInfo != null) {
+                    append(
+                        i18nContext.get(
+                            SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.Drop.ChatReceivedWithGuildInformation(
+                                transaction.sonhos,
+                                convertToUserNameCodeBlockPreviewTag(transaction.receivedById, giverUserInfo?.name, giverUserInfo?.globalName, giverUserInfo?.discriminator),
+                                formatGuildInfo(guildInfo),
+                                transaction.guildId.toString()
+                            )
+                        )
+                    )
+                } else {
+                    append(
+                        i18nContext.get(
+                            SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.Drop.ChatReceived(
+                                transaction.sonhos,
+                                convertToUserNameCodeBlockPreviewTag(transaction.receivedById, giverUserInfo?.name, giverUserInfo?.globalName, giverUserInfo?.discriminator),
+                                transaction.guildId.toString()
+                            )
+                        )
+                    )
+                }
+            }
+        } else {
+            with(transformerInstance) {
+                appendMoneyEarnedEmoji()
+            }
+
+            val guildInfo = transaction.guildInfo
+            if (guildInfo != null) {
+                append(
+                    i18nContext.get(
+                        SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.Drop.ChatReceivedWithGuildInformationAdmin(
+                            transaction.sonhos,
+                            formatGuildInfo(guildInfo),
+                            transaction.guildId.toString()
+                        )
+                    )
+                )
+            } else {
+                append(
+                    i18nContext.get(
+                        SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.Drop.ChatReceivedAdmin(
+                            transaction.sonhos,
+                            transaction.guildId.toString()
+                        )
+                    )
+                )
+            }
+        }
     }
 }

@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.loricoolcards.generator
 
 import kotlinx.datetime.toKotlinInstant
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalMatchmakingResults
@@ -324,6 +323,7 @@ suspend fun main() {
                     is StoredBlackjackRefundTransaction -> TODO()
                     is StoredBlackjackSplitTransaction -> TODO()
                     is StoredBlackjackTiedTransaction -> TODO()
+                    is StoredDropChatTransaction -> TODO()
                 }
             }
     }

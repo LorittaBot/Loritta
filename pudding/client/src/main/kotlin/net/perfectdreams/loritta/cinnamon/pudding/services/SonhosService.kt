@@ -6,7 +6,9 @@ import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.tables.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.Raffles
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.DropsConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.simpletransactions.SimpleSonhosTransactionsLog
+import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.serializable.*
 import net.perfectdreams.loritta.serializable.SonhosTransaction
@@ -14,6 +16,7 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.greaterEq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.lessEq
 import java.time.Instant
+import kotlin.math.ceil
 import kotlin.reflect.KClass
 import kotlin.reflect.full.primaryConstructor
 import kotlin.time.Duration.Companion.days
@@ -124,6 +127,12 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
                 }
                 .toList()
 
+            val dropsConfigs = DropsConfigs.selectAll()
+                .where {
+                    DropsConfigs.id inList storedTransactions.filterIsInstance<StoredDropChatTransaction>().map { it.guildId }
+                }
+                .toList()
+
             rowToStoredTransactions
                 .map { (it, stored) ->
                     /**
@@ -135,7 +144,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
                      */
                     fun <T : Any> createUsingReflection(
                         clazz: KClass<T>,
-                        vararg args: Any
+                        vararg args: Any?
                     ): T {
                         val kargs = args.toMutableList()
                         kargs.addAll(
@@ -367,6 +376,47 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
                         is StoredBlackjackDoubleDownTransaction -> createUsingReflection(BlackjackDoubleDownTransaction::class, stored.matchId)
 
                         is StoredBlackjackRefundTransaction -> createUsingReflection(BlackjackRefundTransaction::class, stored.matchId)
+
+                        is StoredDropChatTransaction -> {
+                            val dropsConfig = dropsConfigs.firstOrNull { it[DropsConfigs.id].value == stored.guildId }
+
+                            // This is... not great
+                            val plan = if (dropsConfig != null) {
+                                val value = DonationKeys.selectAll().where { DonationKeys.activeIn eq dropsConfig[DropsConfigs.id] and (DonationKeys.expiresAt greaterEq System.currentTimeMillis()) }
+                                    .toList()
+                                    .sumOf {
+                                        // This is a weird workaround that fixes users complaining that 19.99 + 19.99 != 40 (it equals to 39.38()
+                                        ceil(it[DonationKeys.value])
+                                    }
+
+                                ServerPremiumPlans.getPlanFromValue(value)
+                            } else {
+                                ServerPremiumPlans.Free
+                            }
+
+                            val showGuildInformationOnTransactions = dropsConfig?.get(DropsConfigs.showGuildInformationOnTransactions)
+                            val guildName = dropsConfig?.get(DropsConfigs.guildName)
+                            val guildInviteCode = dropsConfig?.get(DropsConfigs.guildInviteCode)
+
+                            DropChatTransaction(
+                                it[SimpleSonhosTransactionsLog.id].value,
+                                it[SimpleSonhosTransactionsLog.type],
+                                it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
+                                UserId(it[SimpleSonhosTransactionsLog.user].value),
+                                it[SimpleSonhosTransactionsLog.sonhos],
+                                stored.dropId,
+                                stored.charged,
+                                stored.givenById,
+                                stored.receivedById,
+                                stored.guildId,
+                                if (showGuildInformationOnTransactions == true && guildName != null && plan.showDropGuildInfoOnTransactions) {
+                                    DropChatTransaction.GuildInfo(
+                                        guildName,
+                                        guildInviteCode
+                                    )
+                                } else null
+                            )
+                        }
 
                         is StoredEmojiFightBetSonhosTransaction -> {
                             val emojiFightMatchmakingResult = emojiFightMatchmakingResults.first { it[EmojiFightMatchmakingResults.id].value == stored.emojiFightMatchmakingResultsId }

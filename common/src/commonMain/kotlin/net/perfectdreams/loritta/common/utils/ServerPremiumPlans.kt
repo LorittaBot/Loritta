@@ -14,6 +14,7 @@ interface ServerPremiumPlans {
 	val maxLevelUpRoles: Int
 	val dailyMultiplier: Double
 	val globalXpMultiplier: Double
+    val showDropGuildInfoOnTransactions: Boolean
 
 	companion object {
 		fun getPlanFromValue(value: Double) = when {
@@ -38,7 +39,8 @@ interface ServerPremiumPlans {
 		override val maxLevelUpRoles = 15
 		override val dailyMultiplier = 1.0
 		override val globalXpMultiplier = 1.0
-	}
+        override val showDropGuildInfoOnTransactions = false
+    }
 
 	object Essential : ServerPremiumPlans {
 		override val cost = 19.99
@@ -54,6 +56,7 @@ interface ServerPremiumPlans {
 		override val maxLevelUpRoles = 15
 		override val dailyMultiplier = 1.25
 		override val globalXpMultiplier = dailyMultiplier
+        override val showDropGuildInfoOnTransactions = false
 	}
 
 	object Recommended : ServerPremiumPlans {
@@ -70,6 +73,7 @@ interface ServerPremiumPlans {
 		override val maxLevelUpRoles = 30
 		override val dailyMultiplier = 1.5
 		override val globalXpMultiplier = dailyMultiplier
+        override val showDropGuildInfoOnTransactions = false
 	}
 
 	object Complete : ServerPremiumPlans {
@@ -86,5 +90,6 @@ interface ServerPremiumPlans {
 		override val maxLevelUpRoles = 100
 		override val dailyMultiplier = 2.0
 		override val globalXpMultiplier = dailyMultiplier
+        override val showDropGuildInfoOnTransactions = true
 	}
 }

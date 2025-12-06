@@ -130,8 +130,8 @@ fun FlowContent.guildDashLeftSidebarEntries(
         text("Loritta")
     }
 
-    aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/reaction-events", "Evento de Reações da Loritta", SVGIcons.Sparkles, selectedGuildSection == GuildDashboardSection.LORITTA_REACTION_EVENTS,  true)
-    aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/daily-shop-trinkets", i18nContext.get(DashboardI18nKeysData.DailyShopTrinkets.Title), SVGIcons.ShoppingBag, selectedGuildSection == GuildDashboardSection.LORITTA_TRINKETS_SHOP, true)
+    aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/reaction-events", "Evento de Reações da Loritta", SVGIcons.Sparkles, selectedGuildSection == GuildDashboardSection.LORITTA_REACTION_EVENTS,  false)
+    aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/daily-shop-trinkets", i18nContext.get(DashboardI18nKeysData.DailyShopTrinkets.Title), SVGIcons.ShoppingBag, selectedGuildSection == GuildDashboardSection.LORITTA_TRINKETS_SHOP, false)
 
     leftSidebarHr()
 
@@ -142,4 +142,5 @@ fun FlowContent.guildDashLeftSidebarEntries(
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/premium-keys", i18nContext.get(DashboardI18nKeysData.PremiumKeys.Title), SVGIcons.Key, selectedGuildSection == GuildDashboardSection.PREMIUM_KEYS,  false)
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/badge", i18nContext.get(DashboardI18nKeysData.Badge.Title), SVGIcons.Seal, selectedGuildSection == GuildDashboardSection.CUSTOM_BADGE,  false)
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/daily-multiplier", i18nContext.get(DashboardI18nKeysData.DailyMultiplier.Title), SVGIcons.ShootingStar, selectedGuildSection == GuildDashboardSection.DAILY_MULTIPLIER,  false)
+    aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/drops", i18nContext.get(DashboardI18nKeysData.Drops.Title), SVGIcons.Balloon, selectedGuildSection == GuildDashboardSection.LORITTA_DROPS,  true)
 }

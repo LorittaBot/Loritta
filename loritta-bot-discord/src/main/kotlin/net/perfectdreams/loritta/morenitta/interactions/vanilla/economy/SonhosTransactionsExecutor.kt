@@ -343,6 +343,9 @@ class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandE
                         is BlackjackDoubleDownTransaction -> SimpleSonhosTransactionTransformers.BlackjackDoubleDownTransactionTransformer
                         is BlackjackRefundTransaction -> SimpleSonhosTransactionTransformers.BlackjackRefundTransactionTransformer
 
+                        // ===[ DROP ]===
+                        is DropChatTransaction -> SimpleSonhosTransactionTransformers.DropChatTransformer
+
                         // This should never happen because we do a left join with a "isNotNull" check
                         is UnknownSonhosTransaction -> UnknownSonhosTransactionTransformer
                     }

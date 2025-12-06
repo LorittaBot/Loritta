@@ -18,4 +18,8 @@ object LorittaColors {
     val BanAppealPending = LorittaAqua
     val BanAppealApproved = Color(41, 133, 70)
     val BanAppealRejected = Color(218, 55, 60)
+
+    val SonhosDrop = LorittaAqua
+    val SonhosDropSuccess = Color(41, 133, 70)
+    val SonhosDropEmpty = Color(218, 55, 60)
 }

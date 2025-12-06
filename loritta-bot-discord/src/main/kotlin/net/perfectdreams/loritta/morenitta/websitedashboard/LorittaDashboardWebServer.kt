@@ -85,6 +85,9 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.dailym
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.dailymultiplier.PutDailyMultiplierGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.dailyshoptrinkets.DailyShopTrinketsGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.dailyshoptrinkets.PutDailyShopTrinketsGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.drops.DropsGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.drops.PostDropsInviteGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.drops.PutDropsGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.eventlog.EventLogGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.eventlog.PutEventLogGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.xprewards.PostAddRoleRewardGuildDashboardRoute
@@ -470,6 +473,11 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
         PostAddRoleXPBlockersGuildDashboardRoute(this),
         PostRemoveRoleXPBlockersGuildDashboardRoute(this),
         PutXPBlockersGuildDashboardRoute(this),
+
+        // Drops
+        DropsGuildDashboardRoute(this),
+        PutDropsGuildDashboardRoute(this),
+        PostDropsInviteGuildDashboardRoute(this),
 
         // Special
         DiscordLoginUserDashboardRoute(this),

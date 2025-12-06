@@ -45,6 +45,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.*
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.discord.*
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.*
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.blackjack.BlackjackCommand
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.drop.DropCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`.*
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`.text.TextTransformCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.*
@@ -337,6 +338,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         register(LigarCommand(loritta))
         register(SonhosAtmUserCommand(loritta))
         register(BlackjackCommand(loritta))
+        register(DropCommand(loritta))
 
         // ===[ MINECRAFT ]===
         register(MinecraftCommand(loritta))

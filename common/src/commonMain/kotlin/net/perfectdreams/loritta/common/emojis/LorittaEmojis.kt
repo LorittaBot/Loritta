@@ -24,6 +24,7 @@ object LorittaEmojis {
     val LoriExpressionless = applicationEmoji("lori_expressionless")
     val LoriComfy = applicationEmoji("lori_comfy")
     val LoriCoffee = applicationEmoji("lori_coffee")
+    val LoriConfetti = applicationEmoji("lori_confetti")
 
     // Card Clubs
     val CardClubs = applicationEmoji("card_clubs")

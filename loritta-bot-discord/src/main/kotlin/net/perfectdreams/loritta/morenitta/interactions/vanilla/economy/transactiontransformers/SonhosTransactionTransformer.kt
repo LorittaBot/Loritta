@@ -47,9 +47,30 @@ interface SonhosTransactionTransformer<T : SonhosTransaction> {
 /**
  * A "simple" sonhos transaction transformer for transactions that do not require a lot of checks and weird states
  */
+fun <T : SonhosTransaction> SimpleSonhosTransactionTransformer(block: suspend StringBuilder.(SonhosTransactionTransformer<T>, LorittaBot, I18nContext, CachedUserInfo, MutableMap<UserId, CachedUserInfo?>, T) -> (Unit)): SonhosTransactionTransformer<T> {
+    return object: SonhosTransactionTransformer<T> {
+        override suspend fun transform(
+            loritta: LorittaBot,
+            i18nContext: I18nContext,
+            cachedUserInfo: CachedUserInfo,
+            cachedUserInfos: MutableMap<UserId, CachedUserInfo?>,
+            transaction: T
+        ): suspend StringBuilder.() -> Unit {
+            val transformerInstance = this
+
+            return {
+                block(transformerInstance, loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+            }
+        }
+    }
+}
+
+/**
+ * A "simple" sonhos transaction transformer for transactions that do not require a lot of checks and weird states
+ */
 fun <T : SonhosTransaction> SimpleSonhosTransactionTransformer(
     earnedMoney: Boolean,
-    block: suspend StringBuilder.(LorittaBot, I18nContext, T) -> (Unit)
+    block: suspend StringBuilder.(SonhosTransactionTransformer<T>, LorittaBot, I18nContext, CachedUserInfo, MutableMap<UserId, CachedUserInfo?>, T) -> (Unit)
 ): SonhosTransactionTransformer<T> {
     return object: SonhosTransactionTransformer<T> {
         override suspend fun transform(
@@ -58,13 +79,17 @@ fun <T : SonhosTransaction> SimpleSonhosTransactionTransformer(
             cachedUserInfo: CachedUserInfo,
             cachedUserInfos: MutableMap<UserId, CachedUserInfo?>,
             transaction: T
-        ): suspend StringBuilder.() -> Unit = {
-            if (earnedMoney)
-                appendMoneyEarnedEmoji()
-            else
-                appendMoneyLostEmoji()
+        ): suspend StringBuilder.() -> Unit {
+            val transformerInstance = this
 
-            block(loritta, i18nContext, transaction)
+            return {
+                if (earnedMoney)
+                    appendMoneyEarnedEmoji()
+                else
+                    appendMoneyLostEmoji()
+
+                block(transformerInstance, loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+            }
         }
     }
 }

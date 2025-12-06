@@ -1,0 +1,410 @@
+package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.drop
+
+import dev.minn.jda.ktx.interactions.components.Thumbnail
+import dev.minn.jda.ktx.messages.InlineMessage
+import dev.minn.jda.ktx.messages.MessageCreate
+import dev.minn.jda.ktx.messages.MessageEdit
+import kotlinx.coroutines.*
+import kotlinx.coroutines.future.await
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.datetime.toJavaInstant
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
+import net.dv8tion.jda.api.utils.TimeFormat
+import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
+import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.pudding.tables.DropChatParticipants
+import net.perfectdreams.loritta.cinnamon.pudding.tables.DropChats
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.DropsConfigs
+import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
+import net.perfectdreams.loritta.common.emojis.LorittaEmojis
+import net.perfectdreams.loritta.common.utils.LorittaColors
+import net.perfectdreams.loritta.common.utils.TransactionType
+import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.SonhosPayExecutor
+import net.perfectdreams.loritta.morenitta.utils.Constants
+import net.perfectdreams.loritta.morenitta.utils.VacationModeUtils
+import net.perfectdreams.loritta.morenitta.utils.extensions.await
+import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
+import net.perfectdreams.loritta.serializable.StoredDropChatTransaction
+import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.plus
+import java.time.Duration
+import java.time.Instant
+import java.time.OffsetDateTime
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.toKotlinDuration
+
+class DropChat(
+    val loritta: LorittaBot,
+    val guild: Guild,
+    val creator: User,
+    val channel: MessageChannel,
+    val sonhos: Long,
+    val maxParticipants: Int,
+    val winners: Int,
+    val duration: Duration,
+    val i18nContext: I18nContext,
+    val chargeCreatorSonhos: Boolean
+) {
+    companion object {
+        // We have a max value to avoid overflow issues
+        const val MAX_SONHOS_PER_PARTICIPANT = 1_000_000_000_000L
+    }
+
+    // Should be initialized AFTER the message has been sent
+    var originalDropMessage: Message? = null
+    var finished = false
+    val startedAt = Instant.now()
+
+    val mutex = Mutex()
+    val participatingUsers = mutableSetOf<User>()
+    val participateButton = loritta.interactivityManager.button(
+        false,
+        ButtonStyle.PRIMARY,
+        i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.Participate(0)),
+        {
+            emoji = Emotes.LoriSunglasses.toJDA()
+        }
+    ) { context ->
+        val hook = context.deferEditAsync()
+
+        mutex.withLock {
+            if (this.finished) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.JoinDrop.ThisDropHasEnded),
+                        Emotes.LoriSob
+                    )
+                }
+                return@button
+            }
+
+            if (this@DropChat.participatingUsers.contains(context.user)) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.JoinDrop.YouAlreadyParticipatingOnThisDrop),
+                        Emotes.Error
+                    )
+                }
+                return@button
+            }
+
+            when (val result = SonhosPayExecutor.checkIfAccountIsOldEnoughToReceiveSonhos(context.user)) {
+                SonhosPayExecutor.Companion.OtherAccountOldEnoughResult.Success -> {}
+                is SonhosPayExecutor.Companion.OtherAccountOldEnoughResult.NotOldEnough -> {
+                    context.reply(true) {
+                        styled(
+                            context.i18nContext.get(
+                                I18nKeysData.Commands.Command.Drop.Chat.SelfAccountIsTooNewToJoinADrop(
+                                    TimeFormat.DATE_TIME_LONG.format(result.allowedAfterTimestamp.toJavaInstant()),
+                                    TimeFormat.RELATIVE.format(result.allowedAfterTimestamp.toJavaInstant())
+                                )
+                            ),
+                            Constants.ERROR
+                        )
+                    }
+                    return@button
+                }
+            }
+
+            when (SonhosPayExecutor.checkIfAccountGotDailyAtLeastOnce(loritta, context.member)) {
+                SonhosPayExecutor.Companion.AccountGotDailyAtLeastOnceResult.Success -> {}
+                SonhosPayExecutor.Companion.AccountGotDailyAtLeastOnceResult.HaventGotDailyOnce -> {
+                    context.reply(true) {
+                        styled(
+                            context.i18nContext.get(
+                                I18nKeysData.Commands.Command.Drop.Chat.SelfAccountNeedsToGetDailyToJoinADrop(loritta.commandMentions.daily)
+                            ),
+                            Emotes.LoriSob
+                        )
+                    }
+                    return@button
+                }
+            }
+
+            if (VacationModeUtils.checkIfWeAreOnVacation(context, true))
+                return@button
+
+            this@DropChat.participatingUsers.add(context.user)
+
+            updateMessageJob?.cancel()
+            updateMessageJob = scope.launch {
+                // This is a "debounce", where it will be executed after 5 seconds UNLESS if another user enters the drop
+                delay(5.seconds)
+
+                hook
+                    .await()
+                    .editOriginal(
+                        MessageEdit {
+                            createDropMessage()
+                        }
+                    )
+                    .await()
+            }
+
+            context.reply(true) {
+                styled(
+                    context.i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.JoinDrop.YouAreNowParticipating),
+                    Emotes.LoriSunglasses
+                )
+            }
+
+            if (this@DropChat.participatingUsers.size == this@DropChat.maxParticipants) {
+                this@DropChat.finishDrop()
+            }
+        }
+    }
+
+    val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+    var updateMessageJob: Job? = null
+
+    fun startDropAutoFinishTask() {
+        scope.launch {
+            delay(duration.toKotlinDuration())
+
+            mutex.withLock {
+                finishDrop()
+            }
+        }
+    }
+
+    fun InlineMessage<*>.createDropMessage() {
+        this.useComponentsV2 = true
+
+        container {
+            this.accentColorRaw = LorittaColors.SonhosDrop.rgb
+
+            this.section(Thumbnail("https://stuff.loritta.website/loritta-sonhos-glasses-yafyr.gif")) {
+                this.text(
+                    buildString {
+                        appendLine("### ${loritta.emojiManager.get(LorittaEmojis.LoriConfetti)} ${i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.SonhosDrop)}")
+                        appendLine("**${i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.CreatorOfTheDrop(creator.asMention))}**")
+                        appendLine(i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.SonhosQuantity(SonhosUtils.getSonhosEmojiOfQuantity(sonhos), sonhos)))
+                        appendLine(i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.WinnersQuantity(winners)))
+                        appendLine()
+                        appendLine("**${i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.Participants(participatingUsers.size))}:**")
+                        if (participatingUsers.isNotEmpty()) {
+                            for (user in participatingUsers) {
+                                appendLine(user.asMention)
+                            }
+                        } else {
+                            appendLine("*${i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.NoOneOnTheDropYet)}*")
+                        }
+                        appendLine()
+                        appendLine("-# ${i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.TheDropWillEnd(TimeFormat.RELATIVE.format(startedAt.plus(duration)), maxParticipants))}")
+                    }
+                )
+            }
+        }
+
+        actionRow(
+            participateButton
+                .withLabel(i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.Participate(participatingUsers.size)))
+                .withDisabled(this@DropChat.finished)
+        )
+    }
+
+    suspend fun finishDrop() {
+        if (this.finished)
+            return
+
+        this.finished = true
+
+        val originalDropMessage = this.originalDropMessage
+
+        if (originalDropMessage != null) {
+            updateMessageJob?.cancel()
+            originalDropMessage.editMessage(
+                MessageEdit {
+                    createDropMessage()
+                }
+            ).await()
+
+            val winners = participatingUsers
+                .shuffled(loritta.random)
+                .take(winners)
+                .toSet()
+
+            if (winners.isEmpty()) {
+                channel.sendMessage(
+                    MessageCreate {
+                        this.useComponentsV2 = true
+
+                        this.container {
+                            this.accentColorRaw = LorittaColors.SonhosDropEmpty.rgb
+
+                            this.text(
+                                buildString {
+                                    appendLine("### ${loritta.emojiManager.get(LorittaEmojis.LoriConfetti)} ${i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.SonhosDropHasEnded)}")
+                                    appendLine("*${i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.NoOneParticipatedOnTheDrop)}* ${Emotes.LoriSob}")
+                                    appendLine()
+                                    appendLine(i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.NoSonhosDistributedNoParticipants))
+                                }
+                            )
+                        }
+                    }
+                ).setMessageReference(originalDropMessage.idLong).failOnInvalidReply(false).await()
+            } else {
+                fun createDropChat(): EntityID<Long> {
+                    return DropChats.insertAndGetId {
+                        it[DropChats.guildId] = guild.idLong
+                        it[DropChats.channelId] = channel.idLong
+                        it[DropChats.messageId] = originalDropMessage.idLong
+                        it[DropChats.startedById] = creator.idLong
+                        it[DropChats.moneySourceId] = if (chargeCreatorSonhos) creator.idLong else null
+                        it[DropChats.startedAt] = this@DropChat.startedAt.atZone(Constants.LORITTA_TIMEZONE).toOffsetDateTime()
+                        it[DropChats.endedAt] = OffsetDateTime.now(Constants.LORITTA_TIMEZONE)
+                        it[DropChats.participantPayout] = sonhos
+                        it[DropChats.maxParticipants] = this@DropChat.maxParticipants
+                        it[DropChats.maxWinners] = this@DropChat.winners
+                        it[DropChats.participants] = this@DropChat.participatingUsers.size
+                        it[DropChats.winners] = winners.size
+                    }
+                }
+
+                // Add sonhos for each winner
+                val result = loritta.transaction {
+                    // Update the guild information with the data
+                    DropsConfigs.update({ DropsConfigs.id eq guild.idLong and (DropsConfigs.showGuildInformationOnTransactions eq true) }) {
+                        it[DropsConfigs.guildName] = guild.name
+                    }
+
+                    val dropChatId = if (this@DropChat.chargeCreatorSonhos) {
+                        // Check if the owner has enough sonhos to do this drop
+                        val totalSonhosPayout = sonhos * winners.size
+                        val result = SonhosUtils.checkIfUserHasEnoughSonhos(creator.idLong, totalSonhosPayout)
+
+                        when (result) {
+                            SonhosUtils.SonhosCheckResult.Success -> {
+                                val dropChatId = createDropChat()
+
+                                Profiles.update({ Profiles.id eq creator.idLong }) {
+                                    with(SqlExpressionBuilder) {
+                                        it[Profiles.money] = Profiles.money - totalSonhosPayout
+                                    }
+                                }
+
+                                dropChatId
+                            }
+
+                            is SonhosUtils.SonhosCheckResult.NotEnoughSonhos -> return@transaction DropResult.MoneySourceNotEnoughSonhos
+                        }
+                    } else {
+                        createDropChat()
+                    }
+
+                    for (participant in participatingUsers) {
+                        DropChatParticipants.insert {
+                            it[DropChatParticipants.userId] = participant.idLong
+                            it[DropChatParticipants.dropChat] = dropChatId
+                            it[DropChatParticipants.won] = participant in winners
+                        }
+                    }
+
+                    for (winner in winners) {
+                        Profiles.update({ Profiles.id eq winner.idLong }) {
+                            it[Profiles.money] = Profiles.money + sonhos
+                        }
+
+                        if (this@DropChat.chargeCreatorSonhos) {
+                            SimpleSonhosTransactionsLogUtils.insert(
+                                creator.idLong,
+                                Instant.now(),
+                                TransactionType.DROP,
+                                sonhos,
+                                StoredDropChatTransaction(
+                                    dropChatId.value,
+                                    true,
+                                    creator.idLong,
+                                    winner.idLong,
+                                    guild.idLong
+                                )
+                            )
+                        }
+
+                        SimpleSonhosTransactionsLogUtils.insert(
+                            winner.idLong,
+                            Instant.now(),
+                            TransactionType.DROP,
+                            sonhos,
+                            StoredDropChatTransaction(
+                                dropChatId.value,
+                                false,
+                                if (this@DropChat.chargeCreatorSonhos) creator.idLong else null,
+                                winner.idLong,
+                                guild.idLong
+                            )
+                        )
+                    }
+
+                    return@transaction DropResult.Success(dropChatId.value)
+                }
+
+                when (result) {
+                    is DropResult.Success -> {
+                        channel.sendMessage(
+                            MessageCreate {
+                                this.useComponentsV2 = true
+
+                                this.container {
+                                    this.accentColorRaw = LorittaColors.SonhosDropSuccess.rgb
+
+                                    this.text(
+                                        buildString {
+                                            appendLine("### ${loritta.emojiManager.get(LorittaEmojis.LoriConfetti)} ${i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.SonhosDropHasEnded)}")
+                                            for (winner in winners) {
+                                                appendLine(i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.UserWonSonhos(winner.asMention, SonhosUtils.getSonhosEmojiOfQuantity(sonhos), sonhos)))
+                                            }
+                                            appendLine()
+                                            appendLine(i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.TotalSonhosDistributed(SonhosUtils.getSonhosEmojiOfQuantity(sonhos * winners.size), sonhos)))
+                                            appendLine()
+                                            appendLine("-# ${i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.DropId(result.dropId))}")
+                                        }
+                                    )
+                                }
+                            }
+                        ).setMessageReference(originalDropMessage.idLong).failOnInvalidReply(false).await()
+                    }
+
+                    DropResult.MoneySourceNotEnoughSonhos -> {
+                        channel.sendMessage(
+                            MessageCreate {
+                                this.useComponentsV2 = true
+
+                                this.container {
+                                    this.accentColorRaw = LorittaColors.SonhosDropEmpty.rgb
+
+                                    this.text(
+                                        buildString {
+                                            appendLine("### ${loritta.emojiManager.get(LorittaEmojis.LoriConfetti)} ${i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.SonhosDropHasEnded)}")
+                                            appendLine("*${i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.TheCreatorDoesNotHaveEnoughSonhos)}* ${Emotes.LoriSob}")
+                                            appendLine()
+                                            appendLine(i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.NoSonhosDistributedNotEnoughSonhos))
+                                        }
+                                    )
+                                }
+                            }
+                        ).setMessageReference(originalDropMessage.idLong).failOnInvalidReply(false).await()
+                    }
+                }
+            }
+        }
+
+        scope.cancel()
+    }
+
+    private sealed class DropResult {
+        data class Success(val dropId: Long) : DropResult()
+        data object MoneySourceNotEnoughSonhos : DropResult()
+    }
+}

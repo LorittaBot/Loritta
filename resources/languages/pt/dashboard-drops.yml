@@ -1,0 +1,14 @@
+website:
+  dashboard:
+    drops:
+      title: "Drops da Loritta"
+      description:
+      - "Recompense os membros do seu servidor com drops de sonhos! Drops são sorteios rápidos que você distribui seus sonhos para usuários que participaram do drop. Você pode iniciar drops no seu servidor usando {dropCommand}."
+      showGuildInformationOnTransactions:
+        toggle: "Mostrar informações do servidor nas transações de drops da Loritta"
+        description: "Se ativado, as informações do seu servidor (nome e convite) serão mostradas no comando de transações da Loritta nas transações relacionadas aos drops que foram feitos no seu servidor."
+        serverInvite: "Convite do Servidor"
+        loadingInviteInformation: "Carregando informações do convite..."
+        noInviteConfigured: "Nenhum convite configurado! Ao deixar o convite vazio, apenas o nome do servidor irá aparecer nas transações."
+        invalidInviteUrl: "Link do convite inválido!"
+        invalidInvite: "Não foi possível carregar as informações do convite!"

@@ -212,3 +212,12 @@ data class StoredBlackjackDoubleDownTransaction(val matchId: Long) : StoredSonho
 
 @Serializable
 data class StoredBlackjackRefundTransaction(val matchId: Long) : StoredSonhosTransaction()
+
+@Serializable
+data class StoredDropChatTransaction(
+    val dropId: Long,
+    val charged: Boolean,
+    val givenById: Long?,
+    val receivedById: Long,
+    val guildId: Long
+) : StoredSonhosTransaction()
