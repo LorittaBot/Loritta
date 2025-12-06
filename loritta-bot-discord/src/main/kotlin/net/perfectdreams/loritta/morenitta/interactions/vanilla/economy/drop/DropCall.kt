@@ -112,7 +112,8 @@ class DropCall(
         // This is a bit trickier to figure out, because users may not have all the required requirements to actually PARTICIPATE on this
         // So instead of implementing it like how DropChat works, we will do things differently
         val participantsAtTheTimeOfFinish = voiceChannel.members
-            .filter { !it.user.isBot }
+            // Filter out bots and filter out the creator of the drop
+            .filter { !it.user.isBot && if (chargeCreatorSonhos) it.user.idLong != creator.idLong else true }
             .map { it.user }
             .shuffled(loritta.random)
             .toSet()

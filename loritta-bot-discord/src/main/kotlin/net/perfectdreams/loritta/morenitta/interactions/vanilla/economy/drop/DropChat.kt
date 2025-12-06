@@ -99,6 +99,16 @@ class DropChat(
                 return@button
             }
 
+            if (this@DropChat.chargeCreatorSonhos && context.user.idLong == creator.idLong) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.JoinDrop.YouCannotParticipateInYourOwnDrop),
+                        Emotes.Error
+                    )
+                }
+                return@button
+            }
+
             when (val result = SonhosPayExecutor.checkIfAccountIsOldEnoughToReceiveSonhos(context.user)) {
                 SonhosPayExecutor.Companion.OtherAccountOldEnoughResult.Success -> {}
                 is SonhosPayExecutor.Companion.OtherAccountOldEnoughResult.NotOldEnough -> {

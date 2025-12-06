@@ -49,6 +49,7 @@ chat:
     thisDropHasEnded: "Este drop acabou!"
     youAlreadyParticipatingOnThisDrop: "Você já está participando deste drop!"
     youAreNowParticipating: "Você agora está participando do drop, boa sorte!"
+    youCannotParticipateInYourOwnDrop: "Você não pode participar do seu próprio drop!"
 
   options:
     sonhos:
