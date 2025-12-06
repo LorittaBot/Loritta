@@ -51,7 +51,7 @@ class DropChat(
     val channel: MessageChannel,
     val sonhos: Long,
     val maxParticipants: Int,
-    val winners: Int,
+    val maxWinners: Int,
     val duration: Duration,
     val i18nContext: I18nContext,
     val chargeCreatorSonhos: Boolean
@@ -190,7 +190,7 @@ class DropChat(
                         appendLine("### ${loritta.emojiManager.get(LorittaEmojis.LoriConfetti)} ${i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.SonhosDrop)}")
                         appendLine("**${i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.CreatorOfTheDrop(creator.asMention))}**")
                         appendLine(i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.SonhosQuantity(SonhosUtils.getSonhosEmojiOfQuantity(sonhos), sonhos)))
-                        appendLine(i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.WinnersQuantity(winners)))
+                        appendLine(i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.WinnersQuantity(maxWinners)))
                         appendLine()
                         appendLine("**${i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.Participants(participatingUsers.size))}:**")
                         if (participatingUsers.isNotEmpty()) {
@@ -232,7 +232,7 @@ class DropChat(
 
             val winners = participatingUsers
                 .shuffled(loritta.random)
-                .take(winners)
+                .take(maxWinners)
                 .toSet()
 
             if (winners.isEmpty()) {
@@ -266,7 +266,7 @@ class DropChat(
                         it[DropChats.endedAt] = OffsetDateTime.now(Constants.LORITTA_TIMEZONE)
                         it[DropChats.participantPayout] = sonhos
                         it[DropChats.maxParticipants] = this@DropChat.maxParticipants
-                        it[DropChats.maxWinners] = this@DropChat.winners
+                        it[DropChats.maxWinners] = this@DropChat.maxWinners
                         it[DropChats.participants] = this@DropChat.participatingUsers.size
                         it[DropChats.winners] = winners.size
                     }
