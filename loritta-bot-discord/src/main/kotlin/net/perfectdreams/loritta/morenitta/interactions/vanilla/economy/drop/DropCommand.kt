@@ -87,7 +87,7 @@ class DropCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 return null
             }
 
-            if (sonhos >= DropCall.MAX_SONHOS_PER_PARTICIPANT) {
+            if (sonhos >= maxSonhosPerParticipant) {
                 context.reply(false) {
                     styled(
                         context.i18nContext.get(I18N_PREFIX.TooManySonhos(SonhosUtils.getSonhosEmojiOfQuantity(DropChat.MAX_SONHOS_PER_PARTICIPANT), DropChat.MAX_SONHOS_PER_PARTICIPANT)),
