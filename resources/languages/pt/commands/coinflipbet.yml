@@ -5,12 +5,13 @@ participate: "Participar ({quantity,number}/2)"
 startBet: "{invitedUser}, {user} quer fazer uma aposta com você! Cada um irá pagar {sonhosEmoji} **{sonhosBetQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} ({sonhosTaxQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} de taxa para jogar rs)**. Se cair **Coroa**, você irá ganhar **{sonhosVictoryQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}**, se cair **Cara**, {invitedUser} irá ganhar **{sonhosVictoryQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}**! E aí, vai encarar?"
 startBetNoTax: "{invitedUser}, {user} quer fazer uma aposta com você! Cada um irá pagar {sonhosEmoji} **{sonhosBetQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (sem precisar pagar taxa!)**. Se cair **Coroa**, você irá ganhar **{sonhosVictoryQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}**, se cair **Cara**, {invitedUser} irá ganhar **{sonhosVictoryQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}**! E aí, vai encarar?"
 startBetPremiumUser: "Como {premiumPlanUser} é um usuário premium recomendado, essa daqui vai por conta da casa, sem nenhuma taxa!"
-
-startBetLorittaCommunity: "Ao invés de desembolsar {defaultRewardTax,number,#.##%} em taxas, você só precisará pagar {communityRewardTax,number,#.##%} ao fazer suas apostas no servidor da Loritta. Aproveite!"
-startBetLorittaCommunityWeekend: "Durante o final de semana, as taxas ficam por nossa conta, pois você está apostando no servidor da Loritta. Aproveite!"
-
-startBetPremiumServer: "Ao invés de desembolsar {defaultRewardTax,number,#.##%} em taxas, você só precisará pagar {communityRewardTax,number,#.##%} ao fazer suas apostas neste servidor. Aproveite!"
-startBetPremiumServerWeekend: "Durante o final de semana, as taxas ficam por nossa conta, pois você está apostando neste servidor. Aproveite!"
+startBetPremiumServerMonday: "**Durante as segundas-feiras, as taxas de apostas ficam por conta de `{guildName}`**. Aproveite!"
+startBetPremiumServerTuesday: "**Durante as terças-feiras, as taxas de apostas ficam por conta de `{guildName}`**. Aproveite!"
+startBetPremiumServerWednesday: "**Durante as quartas-feiras, as taxas de apostas ficam por conta de `{guildName}`**. Aproveite!"
+startBetPremiumServerThursday: "**Durante as quintas-feiras, as taxas de apostas ficam por conta de `{guildName}`**. Aproveite!"
+startBetPremiumServerFriday: "**Durante as sextas-feiras, as taxas de apostas ficam por conta de `{guildName}`**. Aproveite!"
+startBetPremiumServerSaturday: "**Durante os sábados, as taxas de apostas ficam por conta de `{guildName}`**. Aproveite!"
+startBetPremiumServerSunday: "**Durante os domingos, as taxas de apostas ficam por conta de `{guildName}`**. Aproveite!"
 
 youAreNotParticipatingOnThisBet: "Você não está participando desta aposta!"
 

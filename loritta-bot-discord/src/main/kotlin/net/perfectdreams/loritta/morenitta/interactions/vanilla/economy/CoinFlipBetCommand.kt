@@ -1,7 +1,5 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy
 
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.dv8tion.jda.api.entities.User
@@ -34,7 +32,6 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.Applica
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.reactionevents.ReactionEventsAttributes
 import net.perfectdreams.loritta.morenitta.utils.*
-import net.perfectdreams.loritta.morenitta.utils.extensions.refreshInDeferredTransaction
 import net.perfectdreams.loritta.morenitta.website.routes.user.dashboard.ClaimedWebsiteCoupon
 import net.perfectdreams.loritta.serializable.SonhosPaymentReason
 import net.perfectdreams.loritta.serializable.StoredCoinFlipBetTransaction
@@ -43,6 +40,7 @@ import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.selectAll
+import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDateTime
 import java.util.*
@@ -127,22 +125,16 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                     1.0
                 )
             } else {
-                val specialTotalRewardChange = SonhosUtils.getSpecialTotalCoinFlipReward(context.guildOrNull, UserPremiumPlans.Free.totalCoinFlipReward)
+                val specialTotalRewardChange = loritta.transaction { SonhosUtils.getSpecialTotalCoinFlipReward(context.guildOrNull, UserPremiumPlans.Free.totalCoinFlipReward) }
 
                 taxResult = when (specialTotalRewardChange) {
-                    is SonhosUtils.SpecialTotalCoinFlipReward.LorittaCommunity -> {
-                        CoinFlipTaxResult.LorittaCommunity(
-                            specialTotalRewardChange.isWeekend,
-                            specialTotalRewardChange.value
-                        )
-                    }
                     is SonhosUtils.SpecialTotalCoinFlipReward.NoChange -> {
                         CoinFlipTaxResult.Default(UserPremiumPlans.Free.totalCoinFlipReward)
                     }
 
-                    is SonhosUtils.SpecialTotalCoinFlipReward.PremiumCommunity -> {
-                        CoinFlipTaxResult.PremiumCommunity(
-                            specialTotalRewardChange.isSpecialDay,
+                    is SonhosUtils.SpecialTotalCoinFlipReward.PremiumCommunityOverride -> {
+                        CoinFlipTaxResult.PremiumCommunityOverride(
+                            specialTotalRewardChange.dayOfTheWeek,
                             specialTotalRewardChange.value
                         )
                     }
@@ -270,107 +262,35 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
 
             context.reply(false) {
                 when (taxResult) {
-                    is CoinFlipTaxResult.LorittaCommunity -> {
-                        if (taxResult.isWeekend && hasNoTax) {
-                            styled(
-                                context.i18nContext
-                                    .get(
-                                        I18nKeysData.Commands.Command.Coinflipbet.StartBetNoTax(
-                                            invitedUser.asMention,
-                                            context.user.asMention,
-                                            SonhosUtils.getSonhosEmojiOfQuantity(money),
-                                            number,
-                                            money,
-                                        )
-                                    ),
-                                Emotes.LORI_RICH,
-                            )
+                    is CoinFlipTaxResult.PremiumCommunityOverride -> {
+                        styled(
+                            context.i18nContext
+                                .get(
+                                    I18nKeysData.Commands.Command.Coinflipbet.StartBetNoTax(
+                                        invitedUser.asMention,
+                                        context.user.asMention,
+                                        SonhosUtils.getSonhosEmojiOfQuantity(money),
+                                        number,
+                                        money,
+                                    )
+                                ),
+                            Emotes.LORI_RICH,
+                        )
 
-                            styled(
-                                context.i18nContext
-                                    .get(
-                                        I18nKeysData.Commands.Command.Coinflipbet.StartBetLorittaCommunityWeekend
-                                    ),
-                                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriKiss
-                            )
-                        } else {
-                            styled(
-                                context.i18nContext
-                                    .get(
-                                        I18nKeysData.Commands.Command.Coinflipbet.StartBet(
-                                            invitedUser.asMention,
-                                            context.user.asMention,
-                                            SonhosUtils.getSonhosEmojiOfQuantity(money),
-                                            number,
-                                            tax ?: 0L,
-                                            money
-                                        )
-                                    ),
-                                Emotes.LORI_RICH,
-                            )
-
-                            styled(
-                                context.i18nContext
-                                    .get(
-                                        I18nKeysData.Commands.Command.Coinflipbet.StartBetLorittaCommunity(
-                                            1.0 - UserPremiumPlans.Free.totalCoinFlipReward,
-                                            1.0 - taxResult.totalRewardPercentage
-                                        )
-                                    ),
-                                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriKiss
-                            )
-                        }
-                    }
-                    is CoinFlipTaxResult.PremiumCommunity -> {
-                        if (taxResult.isSpecialDay && hasNoTax) {
-                            styled(
-                                context.i18nContext
-                                    .get(
-                                        I18nKeysData.Commands.Command.Coinflipbet.StartBetNoTax(
-                                            invitedUser.asMention,
-                                            context.user.asMention,
-                                            SonhosUtils.getSonhosEmojiOfQuantity(money),
-                                            number,
-                                            money,
-                                        )
-                                    ),
-                                Emotes.LORI_RICH,
-                            )
-
-                            styled(
-                                context.i18nContext
-                                    .get(
-                                        I18nKeysData.Commands.Command.Coinflipbet.StartBetPremiumServerWeekend
-                                    ),
-                                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriKiss
-                            )
-                        } else {
-                            styled(
-                                context.i18nContext
-                                    .get(
-                                        I18nKeysData.Commands.Command.Coinflipbet.StartBet(
-                                            invitedUser.asMention,
-                                            context.user.asMention,
-                                            SonhosUtils.getSonhosEmojiOfQuantity(money),
-                                            number,
-                                            tax ?: 0L,
-                                            money
-                                        )
-                                    ),
-                                Emotes.LORI_RICH,
-                            )
-
-                            styled(
-                                context.i18nContext
-                                    .get(
-                                        I18nKeysData.Commands.Command.Coinflipbet.StartBetPremiumServer(
-                                            1.0 - UserPremiumPlans.Free.totalCoinFlipReward,
-                                            1.0 - taxResult.totalRewardPercentage
-                                        )
-                                    ),
-                                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriKiss
-                            )
-                        }
+                        styled(
+                            context.i18nContext.get(
+                                when (taxResult.dayOfTheWeek) {
+                                    DayOfWeek.MONDAY -> I18nKeysData.Commands.Command.Coinflipbet.StartBetPremiumServerMonday(context.guild.name)
+                                    DayOfWeek.TUESDAY -> I18nKeysData.Commands.Command.Coinflipbet.StartBetPremiumServerTuesday(context.guild.name)
+                                    DayOfWeek.WEDNESDAY -> I18nKeysData.Commands.Command.Coinflipbet.StartBetPremiumServerWednesday(context.guild.name)
+                                    DayOfWeek.THURSDAY -> I18nKeysData.Commands.Command.Coinflipbet.StartBetPremiumServerThursday(context.guild.name)
+                                    DayOfWeek.FRIDAY -> I18nKeysData.Commands.Command.Coinflipbet.StartBetPremiumServerFriday(context.guild.name)
+                                    DayOfWeek.SATURDAY -> I18nKeysData.Commands.Command.Coinflipbet.StartBetPremiumServerSaturday(context.guild.name)
+                                    DayOfWeek.SUNDAY -> I18nKeysData.Commands.Command.Coinflipbet.StartBetPremiumServerSunday(context.guild.name)
+                                }
+                            ),
+                            net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriKiss
+                        )
                     }
                     is CoinFlipTaxResult.PremiumUser -> {
                         styled(
@@ -739,8 +659,7 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
     }
 
     sealed class CoinFlipTaxResult(val totalRewardPercentage: Double) {
-        class LorittaCommunity(val isWeekend: Boolean, totalRewardPercentage: Double) : CoinFlipTaxResult(totalRewardPercentage)
-        class PremiumCommunity(val isSpecialDay: Boolean, totalRewardPercentage: Double) : CoinFlipTaxResult(totalRewardPercentage)
+        class PremiumCommunityOverride(val dayOfTheWeek: DayOfWeek, totalRewardPercentage: Double) : CoinFlipTaxResult(totalRewardPercentage)
         class PremiumUser(val premiumUser: User, totalRewardPercentage: Double) : CoinFlipTaxResult(totalRewardPercentage)
         class Default(totalRewardPercentage: Double) : CoinFlipTaxResult(totalRewardPercentage)
     }

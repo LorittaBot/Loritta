@@ -14,6 +14,7 @@ import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
 import net.perfectdreams.loritta.cinnamon.pudding.tables.EconomyState
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.TaxFreeDaysConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
 import net.perfectdreams.loritta.common.utils.GACampaigns
 import net.perfectdreams.loritta.common.utils.TransactionType
@@ -46,6 +47,16 @@ object SonhosUtils {
         Emotes.GabrielaHanglooseRight,
         Emotes.PantufaHanglooseRight,
         Emotes.PowerHanglooseRight
+    )
+
+    val DAYS_OF_THE_WEEK_WITHOUT_TAXES = setOf(
+        DayOfWeek.FRIDAY,
+        DayOfWeek.SATURDAY
+    )
+
+    private val DAYS_CONFIG_CHECK = mapOf(
+        DayOfWeek.FRIDAY to TaxFreeDaysConfigs.enabledDuringFriday,
+        DayOfWeek.SATURDAY to TaxFreeDaysConfigs.enabledDuringSaturday
     )
 
     fun insufficientSonhos(profile: PuddingUserProfile?, howMuchItCosts: Long) = insufficientSonhos(profile?.money ?: 0L, howMuchItCosts)
@@ -252,30 +263,24 @@ object SonhosUtils {
     }
 
     fun getSpecialTotalCoinFlipReward(guild: Guild?, currentTax: Double): SpecialTotalCoinFlipReward {
-        // No need to change
-        if (currentTax == 1.0)
+        if (currentTax == 1.0 || guild == null)
             return SpecialTotalCoinFlipReward.NoChange(currentTax)
 
-        if (guild?.idLong == Constants.PORTUGUESE_SUPPORT_GUILD_ID) {
-            val today = LocalDate.now(Constants.LORITTA_TIMEZONE)
-            return if (today.dayOfWeek == DayOfWeek.SATURDAY || today.dayOfWeek == DayOfWeek.SUNDAY) {
-                // No tax during weekends poggies!!!
-                SpecialTotalCoinFlipReward.LorittaCommunity(1.0, true)
-            } else {
-                // 2.5% any other day
-                SpecialTotalCoinFlipReward.LorittaCommunity(0.975, false)
-            }
-        }
+        val config = TaxFreeDaysConfigs.selectAll()
+            .where { TaxFreeDaysConfigs.id eq guild.idLong }
+            .firstOrNull()
 
-        if (guild?.idLong == 1204104683380285520L) {
-            val today = LocalDate.now(Constants.LORITTA_TIMEZONE)
-            return if (today.dayOfWeek == DayOfWeek.FRIDAY || today.dayOfWeek == DayOfWeek.SATURDAY) {
-                // No tax during weekends poggies!!!
-                SpecialTotalCoinFlipReward.PremiumCommunity(1.0, true)
-            } else {
-                // 2.5% any other day
-                SpecialTotalCoinFlipReward.PremiumCommunity(0.975, false)
-            }
+        val today = LocalDate.now(Constants.LORITTA_TIMEZONE)
+
+        val todayColumn = DAYS_CONFIG_CHECK[today.dayOfWeek]
+
+        val isTodayTaxFreeEnabled = if (config != null && todayColumn != null) {
+            config[todayColumn]
+        } else false
+
+        if (isTodayTaxFreeEnabled && today.dayOfWeek in DAYS_OF_THE_WEEK_WITHOUT_TAXES) {
+            // No tax during special days poggies!!
+            return SpecialTotalCoinFlipReward.PremiumCommunityOverride(1.0, today.dayOfWeek)
         }
 
         return SpecialTotalCoinFlipReward.NoChange(currentTax)
@@ -382,8 +387,7 @@ object SonhosUtils {
     }
 
     sealed class SpecialTotalCoinFlipReward(val value: Double) {
-        class LorittaCommunity(value: Double, val isWeekend: Boolean) : SpecialTotalCoinFlipReward(value)
-        class PremiumCommunity(value: Double, val isSpecialDay: Boolean) : SpecialTotalCoinFlipReward(value)
+        class PremiumCommunityOverride(value: Double, val dayOfTheWeek: DayOfWeek) : SpecialTotalCoinFlipReward(value)
         class NoChange(value: Double) : SpecialTotalCoinFlipReward(value)
     }
 }

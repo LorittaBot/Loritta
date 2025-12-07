@@ -143,4 +143,5 @@ fun FlowContent.guildDashLeftSidebarEntries(
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/badge", i18nContext.get(DashboardI18nKeysData.Badge.Title), SVGIcons.Seal, selectedGuildSection == GuildDashboardSection.CUSTOM_BADGE,  false)
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/daily-multiplier", i18nContext.get(DashboardI18nKeysData.DailyMultiplier.Title), SVGIcons.ShootingStar, selectedGuildSection == GuildDashboardSection.DAILY_MULTIPLIER,  false)
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/drops", i18nContext.get(DashboardI18nKeysData.Drops.Title), SVGIcons.Balloon, selectedGuildSection == GuildDashboardSection.LORITTA_DROPS,  true)
+    aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/tax-free-days", i18nContext.get(DashboardI18nKeysData.TaxFreeDays.Title), SVGIcons.CalendarStar, selectedGuildSection == GuildDashboardSection.LORITTA_TAX_FREE_DAYS,  true)
 }

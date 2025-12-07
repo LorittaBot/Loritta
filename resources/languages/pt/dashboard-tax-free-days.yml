@@ -1,0 +1,13 @@
+website:
+  dashboard:
+    taxFreeDays:
+      title: "Dias Sem Taxas"
+      description:
+      - "Mime os usuários do seu servidor removendo as taxas dos comandos de aposta da Loritta! Assim, você incentiva que voltem ao seu servidor para aproveitarem os comandos, sem sofrerem com o governo passando a mão nos sonhos deles."
+
+      fridayWithoutTaxes:
+        toggle: "Sextas sem Taxas"
+        description: "Se ativado, apostas no seu servidor de {coinFlipBetCommand} e {emojiFightBetCommand} não terão taxas durante as sextas-feiras."
+      saturdayWithoutTaxes:
+        toggle: "Sábados sem Taxas"
+        description: "Se ativado, apostas no seu servidor de {coinFlipBetCommand} e {emojiFightBetCommand} não terão taxas durante os sábados."
