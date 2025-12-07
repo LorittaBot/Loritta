@@ -56,6 +56,7 @@ object SVGIcons {
     val Bell = register("bell-simple", "/svg_icons/phosphor/fill/bell-simple.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
     val Balloon = register("balloon", "/svg_icons/phosphor/fill/balloon.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
     val CalendarStar = register("calendar-star", "/svg_icons/phosphor/fill/calendar-star.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
+    val Fire = register("fire", "/svg_icons/phosphor/fill/fire-simple.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
 
     val SlashCommand = register("slash-command", "/svg_icons/discord/slash-command.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
     val TextChannel = register("text-channel", "/svg_icons/discord/text-channel.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
