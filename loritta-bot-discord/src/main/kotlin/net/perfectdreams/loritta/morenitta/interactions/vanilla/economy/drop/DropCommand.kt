@@ -53,6 +53,7 @@ class DropCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             if (!isLorittaAdminOption)
                 return true
 
+            // Because the command is restricted to only users with message manage, we don't actually NEED to check the roles too (hooray)
             if (context.guildId !in ALLOWED_LORITTA_ADMIN_GUILDS) {
                 context.reply(true) {
                     styled(
