@@ -34,7 +34,7 @@ class PostBanAppealsOverrideRoute(website: LorittaDashboardWebServer) : Requires
 
     override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
         val request = Json.decodeFromString<BanAppealOverrideRequest>(call.receiveText())
-        val userId = request.userId.toLongOrNull()
+        val userId = request.userId.trim().toLongOrNull()
 
         if (userId == null) {
             call.respondHtmlFragment(status = HttpStatusCode.BadRequest) {
