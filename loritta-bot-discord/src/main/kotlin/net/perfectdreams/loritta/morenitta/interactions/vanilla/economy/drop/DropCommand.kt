@@ -53,7 +53,7 @@ class DropCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             if (!isLorittaAdminOption)
                 return true
 
-            if (context.guildId in ALLOWED_LORITTA_ADMIN_GUILDS) {
+            if (context.guildId !in ALLOWED_LORITTA_ADMIN_GUILDS) {
                 context.reply(true) {
                     styled(
                         context.i18nContext.get(I18N_PREFIX.YouCannotStartAAdminDrop),
