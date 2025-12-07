@@ -243,6 +243,16 @@ class DropCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 return
             }
 
+            if (chargeCreatorSonhos && (winners * sonhos) > selfUserProfile.money) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(SonhosUtils.insufficientSonhos(selfUserProfile.money, winners * sonhos)),
+                        Constants.ERROR
+                    )
+                }
+                return
+            }
+
             when (val result = SonhosPayExecutor.checkIfAccountIsOldEnoughToSendSonhos(context.user)) {
                 SonhosPayExecutor.Companion.OtherAccountOldEnoughResult.Success -> {}
                 is SonhosPayExecutor.Companion.OtherAccountOldEnoughResult.NotOldEnough -> {
@@ -475,6 +485,16 @@ class DropCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 return
             }
 
+            if (chargeCreatorSonhos && (winners * sonhos) > selfUserProfile.money) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(SonhosUtils.insufficientSonhos(selfUserProfile.money, winners * sonhos)),
+                        Constants.ERROR
+                    )
+                }
+                return
+            }
+            
             when (val result = SonhosPayExecutor.checkIfAccountIsOldEnoughToSendSonhos(context.user)) {
                 SonhosPayExecutor.Companion.OtherAccountOldEnoughResult.Success -> {}
                 is SonhosPayExecutor.Companion.OtherAccountOldEnoughResult.NotOldEnough -> {
