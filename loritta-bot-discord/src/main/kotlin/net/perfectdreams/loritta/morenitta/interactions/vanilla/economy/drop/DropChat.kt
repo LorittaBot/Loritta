@@ -397,6 +397,8 @@ class DropChat(
 
             when (result) {
                 is DropResult.Success -> {
+                    val totalSonhosDistributed = sonhos * winners.size
+
                     channel.sendMessage(
                         MessageCreate {
                             this.useComponentsV2 = true
@@ -412,9 +414,9 @@ class DropChat(
                                         }
                                         appendLine()
                                         if (chargeCreatorSonhos) {
-                                            appendLine(i18nContext.get(I18nKeysData.Commands.Command.Drop.TotalSonhosDistributed(SonhosUtils.getSonhosEmojiOfQuantity(sonhos * winners.size), sonhos, creator.asMention)))
+                                            appendLine(i18nContext.get(I18nKeysData.Commands.Command.Drop.TotalSonhosDistributed(SonhosUtils.getSonhosEmojiOfQuantity(totalSonhosDistributed), totalSonhosDistributed, creator.asMention)))
                                         } else {
-                                            appendLine(i18nContext.get(I18nKeysData.Commands.Command.Drop.TotalSonhosDistributedAdmin(SonhosUtils.getSonhosEmojiOfQuantity(sonhos * winners.size), sonhos)))
+                                            appendLine(i18nContext.get(I18nKeysData.Commands.Command.Drop.TotalSonhosDistributedAdmin(SonhosUtils.getSonhosEmojiOfQuantity(totalSonhosDistributed), totalSonhosDistributed)))
                                         }
                                         appendLine()
                                         appendLine("${DropCommand.Licks.random()} **${i18nContext.get(I18nKeysData.Commands.Command.Drop.ThanksTheCreatorForTheDrop(creator.asMention))}**")
