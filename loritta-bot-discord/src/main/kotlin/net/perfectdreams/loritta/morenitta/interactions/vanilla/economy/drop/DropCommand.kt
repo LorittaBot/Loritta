@@ -42,11 +42,18 @@ class DropCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             net.perfectdreams.loritta.cinnamon.emotes.Emotes.PowerLick,
         )
 
+        val ALLOWED_LORITTA_ADMIN_GUILDS = setOf(
+            297732013006389252L, // Loritta
+            268353819409252352L, // Ideias Aleatórias
+            320248230917046282L, // SparklyPower
+            1204104683380285520L // Vortex
+        )
+
         suspend fun checkChargeCreatorSonhos(context: UnleashedContext, isLorittaAdminOption: Boolean): Boolean? {
             if (!isLorittaAdminOption)
                 return true
 
-            if (context.guildId != 297732013006389252L && context.guildId != 268353819409252352L && context.guildId != 268353819409252353L && context.guildId != 1204104683380285520L) {
+            if (context.guildId in ALLOWED_LORITTA_ADMIN_GUILDS) {
                 context.reply(true) {
                     styled(
                         context.i18nContext.get(I18N_PREFIX.YouCannotStartAAdminDrop),
@@ -494,7 +501,7 @@ class DropCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 }
                 return
             }
-            
+
             when (val result = SonhosPayExecutor.checkIfAccountIsOldEnoughToSendSonhos(context.user)) {
                 SonhosPayExecutor.Companion.OtherAccountOldEnoughResult.Success -> {}
                 is SonhosPayExecutor.Companion.OtherAccountOldEnoughResult.NotOldEnough -> {
