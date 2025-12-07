@@ -78,58 +78,27 @@ class DropChat(
     ) { context ->
         val hook = context.deferEditAsync()
 
-        mutex.withLock {
-            if (this.finished) {
-                context.reply(true) {
-                    styled(
-                        context.i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.JoinDrop.ThisDropHasEnded),
-                        Emotes.LoriSob
-                    )
-                }
-                return@button
-            }
+        val result = mutex.withLock {
+            if (this.finished)
+                return@withLock DropJoinResult.ThisDropHasEnded
 
-            if (this@DropChat.participatingUsers.contains(context.user)) {
-                context.reply(true) {
-                    styled(
-                        context.i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.JoinDrop.YouAlreadyParticipatingOnThisDrop),
-                        Emotes.Error
-                    )
-                }
-                return@button
-            }
+            if (this@DropChat.participatingUsers.contains(context.user))
+                return@withLock DropJoinResult.YouAreAlreadyParticipatingOnThisDrop
 
-            if (this@DropChat.chargeCreatorSonhos && context.user.idLong == creator.idLong) {
-                context.reply(true) {
-                    styled(
-                        context.i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.JoinDrop.YouCannotParticipateInYourOwnDrop),
-                        Emotes.Error
-                    )
-                }
-                return@button
-            }
+            if (this@DropChat.chargeCreatorSonhos && context.user.idLong == creator.idLong)
+                return@withLock DropJoinResult.YouCannotParticipateOnYourOwnDrop
 
             when (val result = SonhosPayExecutor.checkIfAccountIsOldEnoughToReceiveSonhos(context.user)) {
                 SonhosPayExecutor.Companion.OtherAccountOldEnoughResult.Success -> {}
                 is SonhosPayExecutor.Companion.OtherAccountOldEnoughResult.NotOldEnough -> {
-                    context.reply(true) {
-                        styled(
-                            context.i18nContext.get(
-                                I18nKeysData.Commands.Command.Drop.SelfAccountIsTooNewToJoinADrop(
-                                    TimeFormat.DATE_TIME_LONG.format(result.allowedAfterTimestamp.toJavaInstant()),
-                                    TimeFormat.RELATIVE.format(result.allowedAfterTimestamp.toJavaInstant())
-                                )
-                            ),
-                            Constants.ERROR
-                        )
-                    }
-                    return@button
+                    return@withLock DropJoinResult.SelfAccountIsTooNewToJoinADrop(result.allowedAfterTimestamp)
                 }
             }
 
             when (SonhosPayExecutor.checkIfAccountGotDailyAtLeastOnce(loritta, context.member)) {
                 SonhosPayExecutor.Companion.AccountGotDailyAtLeastOnceResult.Success -> {}
                 SonhosPayExecutor.Companion.AccountGotDailyAtLeastOnceResult.HaventGotDailyOnce -> {
+                    return@withLock DropJoinResult.SelfAccountNeedsToGetDailyToJoinADrop
                     context.reply(true) {
                         styled(
                             context.i18nContext.get(
@@ -142,8 +111,11 @@ class DropChat(
                 }
             }
 
-            if (VacationModeUtils.checkIfWeAreOnVacation(context, true))
-                return@button
+            // Are we in vacation?
+            val vacationUntil = context.lorittaUser.profile.vacationUntil
+            if (vacationUntil != null && vacationUntil > Instant.now()) {
+                return@withLock DropJoinResult.SelfAccountIsOnVacation(vacationUntil)
+            }
 
             this@DropChat.participatingUsers.add(context.user)
 
@@ -162,15 +134,76 @@ class DropChat(
                     .await()
             }
 
-            context.reply(true) {
-                styled(
-                    context.i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.JoinDrop.YouAreNowParticipating),
-                    Emotes.LoriSunglasses
-                )
-            }
-
             if (this@DropChat.participatingUsers.size == this@DropChat.maxParticipants) {
                 this@DropChat.finishDrop()
+            }
+
+            return@withLock DropJoinResult.YouAreNowParticipating
+        }
+
+        when (result) {
+            DropJoinResult.YouAreNowParticipating -> {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.JoinDrop.YouAreNowParticipating),
+                        Emotes.LoriSunglasses
+                    )
+                }
+            }
+            is DropJoinResult.SelfAccountIsOnVacation -> {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18nKeysData.Commands.Command.Vacation.YouAreOnVacation(TimeFormat.DATE_TIME_LONG.format(result.vacationUntil))),
+                        Emotes.LoriSleeping
+                    )
+                }
+            }
+            is DropJoinResult.SelfAccountIsTooNewToJoinADrop -> {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(
+                            I18nKeysData.Commands.Command.Drop.SelfAccountIsTooNewToJoinADrop(
+                                TimeFormat.DATE_TIME_LONG.format(result.allowedAfterTimestamp.toJavaInstant()),
+                                TimeFormat.RELATIVE.format(result.allowedAfterTimestamp.toJavaInstant())
+                            )
+                        ),
+                        Constants.ERROR
+                    )
+                }
+            }
+            DropJoinResult.SelfAccountNeedsToGetDailyToJoinADrop -> {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(
+                            I18nKeysData.Commands.Command.Drop.SelfAccountNeedsToGetDailyToJoinADrop(loritta.commandMentions.daily)
+                        ),
+                        Emotes.LoriSob
+                    )
+                }
+            }
+            DropJoinResult.ThisDropHasEnded -> {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.JoinDrop.ThisDropHasEnded),
+                        Emotes.LoriSob
+                    )
+                }
+            }
+            DropJoinResult.YouAreAlreadyParticipatingOnThisDrop -> {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.JoinDrop.YouAlreadyParticipatingOnThisDrop),
+                        Emotes.Error
+                    )
+                }
+            }
+            DropJoinResult.YouCannotParticipateOnYourOwnDrop -> {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.JoinDrop.YouCannotParticipateInYourOwnDrop),
+                        Emotes.Error
+                    )
+                }
             }
         }
     }
@@ -422,6 +455,16 @@ class DropChat(
         }
 
         scope.cancel()
+    }
+
+    private sealed class DropJoinResult {
+        data object YouAreNowParticipating : DropJoinResult()
+        data object ThisDropHasEnded : DropJoinResult()
+        data object YouAreAlreadyParticipatingOnThisDrop : DropJoinResult()
+        data object YouCannotParticipateOnYourOwnDrop : DropJoinResult()
+        data class SelfAccountIsTooNewToJoinADrop(val allowedAfterTimestamp: kotlinx.datetime.Instant) : DropJoinResult()
+        data object SelfAccountNeedsToGetDailyToJoinADrop : DropJoinResult()
+        data class SelfAccountIsOnVacation(val vacationUntil: Instant) : DropJoinResult()
     }
 
     private sealed class DropResult {
