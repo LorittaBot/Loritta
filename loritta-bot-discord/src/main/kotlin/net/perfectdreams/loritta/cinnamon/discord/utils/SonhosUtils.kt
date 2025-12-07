@@ -12,11 +12,13 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
+import net.perfectdreams.loritta.cinnamon.pudding.tables.DonationKeys
 import net.perfectdreams.loritta.cinnamon.pudding.tables.EconomyState
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.TaxFreeDaysConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
 import net.perfectdreams.loritta.common.utils.GACampaigns
+import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -31,10 +33,12 @@ import net.perfectdreams.loritta.morenitta.website.routes.user.dashboard.Claimed
 import net.perfectdreams.loritta.serializable.StoredSonhosTransaction
 import net.perfectdreams.loritta.serializable.UserId
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.update
 import java.time.*
 import java.util.*
+import kotlin.math.ceil
 
 object SonhosUtils {
     private val UPSELL_LORICOOLCARDS_AFTER = ZonedDateTime.of(2024, 11, 1, 0, 0, 0, 0, Constants.LORITTA_TIMEZONE)
@@ -57,6 +61,11 @@ object SonhosUtils {
     private val DAYS_CONFIG_CHECK = mapOf(
         DayOfWeek.FRIDAY to TaxFreeDaysConfigs.enabledDuringFriday,
         DayOfWeek.SATURDAY to TaxFreeDaysConfigs.enabledDuringSaturday
+    )
+
+    private val DAYS_PLAN_CHECK = mapOf(
+        DayOfWeek.FRIDAY to ServerPremiumPlans::taxFreeFridays,
+        DayOfWeek.SATURDAY to ServerPremiumPlans::taxFreeSaturdays
     )
 
     fun insufficientSonhos(profile: PuddingUserProfile?, howMuchItCosts: Long) = insufficientSonhos(profile?.money ?: 0L, howMuchItCosts)
@@ -270,6 +279,15 @@ object SonhosUtils {
             .where { TaxFreeDaysConfigs.id eq guild.idLong }
             .firstOrNull()
 
+        // This is... not great
+        val plan = DonationKeys.selectAll().where { DonationKeys.activeIn eq guild.idLong and (DonationKeys.expiresAt greaterEq System.currentTimeMillis()) }
+            .toList()
+            .sumOf {
+                // This is a weird workaround that fixes users complaining that 19.99 + 19.99 != 40 (it equals to 39.38()
+                ceil(it[DonationKeys.value])
+            }
+            .let { ServerPremiumPlans.getPlanFromValue(it) }
+
         val today = LocalDate.now(Constants.LORITTA_TIMEZONE)
 
         val todayColumn = DAYS_CONFIG_CHECK[today.dayOfWeek]
@@ -278,7 +296,10 @@ object SonhosUtils {
             config[todayColumn]
         } else false
 
-        if (isTodayTaxFreeEnabled && today.dayOfWeek in DAYS_OF_THE_WEEK_WITHOUT_TAXES) {
+        val planHasTaxFreeForThisDayField = DAYS_PLAN_CHECK[today.dayOfWeek]
+        val planHasTaxFreeForThisDay = planHasTaxFreeForThisDayField?.get(plan) ?: false
+
+        if (isTodayTaxFreeEnabled && today.dayOfWeek in DAYS_OF_THE_WEEK_WITHOUT_TAXES && planHasTaxFreeForThisDay) {
             // No tax during special days poggies!!
             return SpecialTotalCoinFlipReward.PremiumCommunityOverride(1.0, today.dayOfWeek)
         }
