@@ -36,7 +36,7 @@ class PutDropsGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
 
     override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans, member: Member) {
         val request = Json.decodeFromString<SaveDropsRequest>(call.receiveText())
-        if (!request.showGuildInformationOnTransactions && !guildPremiumPlan.showDropGuildInfoOnTransactions) {
+        if (request.showGuildInformationOnTransactions && !guildPremiumPlan.showDropGuildInfoOnTransactions) {
             call.respondHtmlFragment(status = HttpStatusCode.BadRequest) {
                 blissShowToast(
                     createEmbeddedToast(
