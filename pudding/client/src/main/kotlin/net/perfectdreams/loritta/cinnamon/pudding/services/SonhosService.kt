@@ -127,9 +127,11 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
                 }
                 .toList()
 
+            val dropsGuildIds = (storedTransactions.filterIsInstance<StoredDropChatTransaction>().map { it.guildId } + storedTransactions.filterIsInstance<StoredDropCallTransaction>().map { it.guildId }).toSet()
+
             val dropsConfigs = DropsConfigs.selectAll()
                 .where {
-                    DropsConfigs.id inList storedTransactions.filterIsInstance<StoredDropChatTransaction>().map { it.guildId }
+                    DropsConfigs.id inList dropsGuildIds
                 }
                 .toList()
 
