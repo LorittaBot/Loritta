@@ -99,15 +99,6 @@ class DropChat(
                 SonhosPayExecutor.Companion.AccountGotDailyAtLeastOnceResult.Success -> {}
                 SonhosPayExecutor.Companion.AccountGotDailyAtLeastOnceResult.HaventGotDailyOnce -> {
                     return@withLock DropJoinResult.SelfAccountNeedsToGetDailyToJoinADrop
-                    context.reply(true) {
-                        styled(
-                            context.i18nContext.get(
-                                I18nKeysData.Commands.Command.Drop.SelfAccountNeedsToGetDailyToJoinADrop(loritta.commandMentions.daily)
-                            ),
-                            Emotes.LoriSob
-                        )
-                    }
-                    return@button
                 }
             }
 
