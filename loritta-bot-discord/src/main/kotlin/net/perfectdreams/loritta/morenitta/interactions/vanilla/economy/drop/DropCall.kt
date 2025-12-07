@@ -260,9 +260,9 @@ class DropCall(
                                     }
                                     appendLine()
                                     if (chargeCreatorSonhos) {
-                                        appendLine(i18nContext.get(I18nKeysData.Commands.Command.Drop.TotalSonhosDistributed(totalSonhosDistributed, totalSonhosDistributed, creator.asMention)))
+                                        appendLine(i18nContext.get(I18nKeysData.Commands.Command.Drop.TotalSonhosDistributed(SonhosUtils.getSonhosEmojiOfQuantity(totalSonhosDistributed), totalSonhosDistributed, creator.asMention)))
                                     } else {
-                                        appendLine(i18nContext.get(I18nKeysData.Commands.Command.Drop.TotalSonhosDistributedAdmin(totalSonhosDistributed, totalSonhosDistributed)))
+                                        appendLine(i18nContext.get(I18nKeysData.Commands.Command.Drop.TotalSonhosDistributedAdmin(SonhosUtils.getSonhosEmojiOfQuantity(totalSonhosDistributed), totalSonhosDistributed)))
                                     }
                                     appendLine()
                                     appendLine("${DropCommand.Licks.random()} **${i18nContext.get(I18nKeysData.Commands.Command.Drop.ThanksTheCreatorForTheDrop(creator.asMention))}**")
