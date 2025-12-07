@@ -15,6 +15,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.D
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.dashboard.EmbeddedToast
+import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
@@ -26,6 +27,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFra
 import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import org.jetbrains.exposed.sql.upsert
+import java.time.OffsetDateTime
 
 class PutDropsGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/drops") {
     @Serializable
@@ -93,6 +95,7 @@ class PutDropsGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                 it[DropsConfigs.id] = guild.idLong
                 it[DropsConfigs.showGuildInformationOnTransactions] = request.showGuildInformationOnTransactions
                 it[DropsConfigs.guildInviteCode] = inviteCode
+                it[DropsConfigs.updatedAt] = OffsetDateTime.now(Constants.LORITTA_TIMEZONE)
             }
         }
 
