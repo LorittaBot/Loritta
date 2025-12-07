@@ -26,7 +26,7 @@ chat:
 
   creatorOfTheDrop: "Drop de {userMention}"
   sonhosDrop: "Drop de Sonhos no Chat!"
-  sonhosQuantity: "**Quantidade de Sonhos:** {sonhosEmoji} {sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
+  sonhosQuantity: "**Quantidade de Sonhos:** {sonhosEmoji} {sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para cada vencedor"
   winnersQuantity: "**Quantidade de Vencedores:** {winners,plural, =0 {# vencedores} one {# vencedor} other {# vencedores}}"
   sonhosDropHasEnded: "Drop de Sonhos no Chat acabou!"
   noOneParticipatedOnTheDrop: "Ninguém participou deste drop..."
