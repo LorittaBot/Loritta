@@ -76,8 +76,6 @@ class DropChat(
             emoji = Emotes.LoriSunglasses.toJDA()
         }
     ) { context ->
-        val hook = context.deferEditAsync()
-
         val result = mutex.withLock {
             if (this.finished)
                 return@withLock DropJoinResult.ThisDropHasEnded
@@ -115,14 +113,13 @@ class DropChat(
                 // This is a "debounce", where it will be executed after 5 seconds UNLESS if another user enters the drop
                 delay(5.seconds)
 
-                hook
-                    .await()
-                    .editOriginal(
+                originalDropMessage
+                    ?.editMessage(
                         MessageEdit {
                             createDropMessage()
                         }
                     )
-                    .await()
+                    ?.await()
             }
 
             if (this@DropChat.participatingUsers.size == this@DropChat.maxParticipants) {
