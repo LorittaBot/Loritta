@@ -68,6 +68,8 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.bluesk
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.bluesky.PostBlueskyProfileGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.bluesky.PutBlueskyProfileGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.bomdiaecia.BomDiaECiaGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.bomdiaecia.PostAddChannelBomDiaECiaGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.bomdiaecia.PostRemoveChannelBomDiaECiaGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.bomdiaecia.PutBomDiaECiaGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.commandchannels.PostAddChannelToListCommandChannelsConfigurationGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.commandchannels.CommandChannelsConfigurationGuildDashboardRoute
@@ -478,6 +480,8 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
         DropsGuildDashboardRoute(this),
         PutDropsGuildDashboardRoute(this),
         PostDropsInviteGuildDashboardRoute(this),
+        PostAddChannelBomDiaECiaGuildDashboardRoute(this),
+        PostRemoveChannelBomDiaECiaGuildDashboardRoute(this),
 
         // Special
         DiscordLoginUserDashboardRoute(this),

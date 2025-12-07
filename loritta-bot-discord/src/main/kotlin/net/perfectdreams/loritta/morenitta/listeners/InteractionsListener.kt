@@ -34,6 +34,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.DiscordLorittaApplicati
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ReceivedUpdatedGuidelinesNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildCommandConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.BomDiaECiaConfigs
 import net.perfectdreams.loritta.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.common.utils.GACampaigns
 import net.perfectdreams.loritta.common.utils.LorittaPermission
@@ -214,9 +215,11 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
 
                 // Check if the command is disabled
                 val guildId = context.guildId
-                val miscellaneousConfig = context.config.getCachedOrRetreiveFromDatabaseAsync<MiscellaneousConfig?>(loritta, ServerConfig::miscellaneousConfig)
-
-                val enableBomDiaECia = miscellaneousConfig?.enableBomDiaECia ?: false
+                val enableBomDiaECia = loritta.transaction {
+                    BomDiaECiaConfigs.selectAll()
+                        .where { BomDiaECiaConfigs.id eq guildId and (BomDiaECiaConfigs.enabled eq true) }
+                        .firstOrNull()
+                }?.get(BomDiaECiaConfigs.enabled) ?: false
                 val isBomDiaECia = enableBomDiaECia && executor is LigarCommand.LigarExecutor
 
                 if (!isBomDiaECia && checkIfCommandIsDisabledOnGuild(event, slashDeclaration, context, i18nContext, guildId, serverConfig, lorittaUser))

@@ -5,6 +5,7 @@ import kotlinx.html.*
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.BomDiaECiaConfigs
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.dashboard.EmbeddedToast
@@ -18,10 +19,18 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysDat
 import net.perfectdreams.loritta.morenitta.websitedashboard.GuildDashboardSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.configurableChannelListInput
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.dashboardBase
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldInformationBlock
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldTitle
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrapper
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrappers
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.genericSaveBar
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.guildDashLeftSidebarEntries
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.heroText
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.heroWrapper
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.rightSidebarContentAndSaveBarWrapper
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.toggle
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.toggleableSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissEvent
@@ -29,11 +38,16 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.serializable.ColorTheme
+import org.jetbrains.exposed.sql.selectAll
 
 class BomDiaECiaGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/bom-dia-e-cia") {
     override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans, member: Member) {
-        val miscellaneousConfig = website.loritta.transaction {
-            website.loritta.getOrCreateServerConfig(guild.idLong).miscellaneousConfig
+        val bomDiaECiaConfig = website.loritta.transaction {
+            BomDiaECiaConfigs.selectAll()
+                .where {
+                    BomDiaECiaConfigs.id eq guild.idLong
+                }
+                .firstOrNull()
         }
 
         call.respondHtml {
@@ -57,8 +71,8 @@ class BomDiaECiaGuildDashboardRoute(website: LorittaDashboardWebServer) : Requir
                                 blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Configuração redefinida!"))
                             }
 
-                            div(classes = "hero-wrapper") {
-                                div(classes = "hero-text") {
+                            heroWrapper {
+                                heroText {
                                     h1 {
                                         text(i18nContext.get(I18nKeysData.Website.Dashboard.BomDiaECia.Title))
                                     }
@@ -94,11 +108,41 @@ class BomDiaECiaGuildDashboardRoute(website: LorittaDashboardWebServer) : Requir
                                     {
                                         text("Ativa o Bom Dia & Cia no seu Servidor, quando o canal de texto do seu servidor estiver ativo, eu terei a chance de anunciar um 4002-8922 no seu servidor! Mas corra, já que eu anuncio em todos os servidores e apenas o primeiro a responder irá ganhar!")
                                     },
-                                    miscellaneousConfig?.enableBomDiaECia ?: false,
+                                    bomDiaECiaConfig?.get(BomDiaECiaConfigs.enabled) ?: false,
                                     "enableBomDiaECia",
-                                    true,
-                                    null
-                                )
+                                    true
+                                ) {
+                                    fieldWrappers {
+                                        fieldWrapper {
+                                            fieldInformationBlock {
+                                                fieldTitle {
+                                                    text("Canais que o Bom Dia & Cia estará desativado")
+                                                }
+                                            }
+
+                                            configurableChannelListInput(
+                                                i18nContext,
+                                                guild,
+                                                "blockedChannels",
+                                                "blocked-channels",
+                                                "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/bom-dia-e-cia/channels/add",
+                                                "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/bom-dia-e-cia/channels/remove",
+                                                bomDiaECiaConfig?.get(BomDiaECiaConfigs.blockedChannels)?.toSet() ?: setOf(),
+                                            )
+                                        }
+
+                                        fieldWrapper {
+                                            toggle(
+                                                bomDiaECiaConfig?.get(BomDiaECiaConfigs.useBlockedChannelsAsAllowedChannels) ?: false,
+                                                "useBlockedChannelsAsAllowedChannels",
+                                                true,
+                                                { text("Usar lista de canais bloqueados como lista de canais permitidos") },
+                                            ) {
+                                                text("Se ativado, a lista de canais bloqueados acima será usada como uma lista de canais permitidos")
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     ) {

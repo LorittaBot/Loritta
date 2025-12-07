@@ -29,6 +29,8 @@ open class GenericAddChannelToListGuildDashboardRoute(
 ) : RequiresGuildAuthDashboardLocalizedRoute(website, originalGuildPath) {
     @Serializable
     data class AddChannelRequest(
+        val channelsName: String,
+        val swapToElementId: String,
         val channelId: Long,
         val channels: Set<Long> = setOf()
     )
@@ -62,6 +64,8 @@ open class GenericAddChannelToListGuildDashboardRoute(
             configurableChannelList(
                 i18nContext,
                 guild,
+                request.swapToElementId,
+                request.channelsName,
                 "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}$removeEndpoint",
                 newList
             )

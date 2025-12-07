@@ -43,6 +43,7 @@ class TwitchCallbackListenerComponent(val m: LorittaDashboardFrontend) : BlissCo
                         "userId" to JsonPrimitive(userId as String)
                     ),
                     mapOf(),
+                    mapOf(),
                     listOf(
                         Bliss.SwapRequest(
                             setOf(HttpStatusCode.OK),

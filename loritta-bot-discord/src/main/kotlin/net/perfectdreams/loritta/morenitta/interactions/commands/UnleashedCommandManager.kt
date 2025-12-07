@@ -28,6 +28,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.I18nContextUtils
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildCommandConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.BomDiaECiaConfigs
 import net.perfectdreams.loritta.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.commands.InteractionContextType
@@ -471,9 +472,11 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
             val guild = context.guildOrNull
 
             if (serverConfig.blacklistedChannels.contains(event.channel.idLong) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
-                val miscellaneousConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<MiscellaneousConfig?>(loritta, ServerConfig::miscellaneousConfig)
-
-                val enableBomDiaECia = miscellaneousConfig?.enableBomDiaECia ?: false
+                val enableBomDiaECia = loritta.transaction {
+                    BomDiaECiaConfigs.selectAll()
+                        .where { BomDiaECiaConfigs.id eq serverConfig.guildId and (BomDiaECiaConfigs.enabled eq true) }
+                        .firstOrNull()
+                }?.get(BomDiaECiaConfigs.enabled) ?: false
                 val isBomDiaECia = enableBomDiaECia && executor is LigarCommand.LigarExecutor
 
                 // Exception: The "/ligar" command can bypass the blocked commands list

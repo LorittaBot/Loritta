@@ -128,6 +128,7 @@ object Bliss {
                 val includeJson = element.getAttribute("bliss-include-json")
                 val valsQuery = element.getAttribute("bliss-vals-query")
                 val valsJson = element.getAttribute("bliss-vals-json")
+                val remapJsonKeys = element.getAttribute("bliss-remap-json-keys")
                 val headers = element.getAttribute("bliss-headers")
                 val indicator = element.getAttribute("bliss-indicator")?.split(",")?.map { it.trim() }
 
@@ -185,6 +186,7 @@ object Bliss {
                         includeJson,
                         valsQuery?.let { Json.decodeFromString<Map<String, JsonPrimitive>>(it) } ?: emptyMap(),
                         valsJson?.let { Json.decodeFromString<Map<String, JsonPrimitive>>(it) } ?: emptyMap(),
+                        remapJsonKeys?.let { Json.decodeFromString<Map<String, String>>(it) } ?: emptyMap(),
                         swaps,
                         pushUrls
                     )
@@ -741,15 +743,20 @@ object Bliss {
      */
     suspend fun createMapOfElementValues(
         keyAttributeName: String,
-        includeElements: List<Element>
+        includeElements: List<Element>,
+        remapKeys: Map<String, String>
     ): MutableMap<String, JsonElement> {
+        fun remap(key: String): String {
+            return remapKeys[key] ?: key
+        }
+
         val json = mutableMapOf<String, JsonElement>()
 
         for (includeElement in includeElements) {
             fun setOrCreateList(key: String, newValue: JsonElement) {
                 val isArray = key.endsWith("[]")
                 if (isArray) {
-                    val nameWithoutBrackets = key.removeSuffix("[]")
+                    val nameWithoutBrackets = remap(key.removeSuffix("[]"))
 
                     if (json.containsKey(nameWithoutBrackets)) {
                         val currentList = json[nameWithoutBrackets] as? JsonArray ?: error("Element $key is already present on the JSON, but it isn't an JsonArray! Bug?")
@@ -766,7 +773,7 @@ object Bliss {
                         }
                     }
                 } else {
-                    json[key] = newValue
+                    json[remap(key)] = newValue
                 }
             }
 
@@ -878,6 +885,7 @@ object Bliss {
         includeJson: String?,
         valsQuery: Map<String, JsonElement>,
         valsJson: Map<String, JsonElement>,
+        remapJsonKeys: Map<String, String>,
         swaps: List<SwapRequest>,
         pushUrls: List<PushUrlRequest>,
     ) {
@@ -935,7 +943,7 @@ object Bliss {
             for (selector in querySelectors) {
                 val includeElements = document.querySelectorAll(selector).asList()
 
-                json += createMapOfElementValues("name", includeElements)
+                json += createMapOfElementValues("name", includeElements, remapJsonKeys)
             }
         }
 

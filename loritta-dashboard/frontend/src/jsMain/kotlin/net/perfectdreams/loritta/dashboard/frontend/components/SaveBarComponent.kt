@@ -59,14 +59,14 @@ class SaveBarComponent : BlissComponent<HTMLDivElement>() {
             // Does it look weird like this? Yeah, but we want the style to be recalculated on swap before we calculate the width
             updateSaveBarWidth()
 
-            this@SaveBarComponent.originalState = Json.encodeToJsonElement(Bliss.createMapOfElementValues("loritta-config", listOf(trackedSection)))
+            this@SaveBarComponent.originalState = Json.encodeToJsonElement(Bliss.createMapOfElementValues("loritta-config", listOf(trackedSection), mapOf()))
 
             registeredEvents += trackedSection.addEventHandler(InputEvent.INPUT) {
                 if (!alwaysDirty) {
                     println("Element ${it.target} changed!")
 
                     GlobalScope.launch {
-                        val state = Bliss.createMapOfElementValues("loritta-config", listOf(trackedSection))
+                        val state = Bliss.createMapOfElementValues("loritta-config", listOf(trackedSection), mapOf())
                         val stateAsJson = Json.encodeToJsonElement(state)
                         println("ORIGINAL STATE: $originalState")
                         println("STATE AS JSON: $stateAsJson")
@@ -90,7 +90,7 @@ class SaveBarComponent : BlissComponent<HTMLDivElement>() {
             registeredEvents += mountedElement.addEventHandler(EventType<Event>("resyncState")) { _ ->
                 // When the configuration is saved, we will resync the state based on the current configuration!
                 GlobalScope.launch {
-                    originalState = Json.encodeToJsonElement(Bliss.createMapOfElementValues("loritta-config", listOf(trackedSection)))
+                    originalState = Json.encodeToJsonElement(Bliss.createMapOfElementValues("loritta-config", listOf(trackedSection), mapOf()))
 
                     mountedElement.classList.add(ClassName("no-changes"))
                     mountedElement.classList.remove(ClassName("has-changes"))
@@ -110,7 +110,7 @@ class SaveBarComponent : BlissComponent<HTMLDivElement>() {
 
         if (!alwaysDirty) {
             GlobalScope.launch {
-                val state = Bliss.createMapOfElementValues("loritta-config", listOf(trackedSection))
+                val state = Bliss.createMapOfElementValues("loritta-config", listOf(trackedSection), mapOf())
                 val stateAsJson = Json.encodeToJsonElement(state)
                 println("ORIGINAL STATE: $originalState")
                 println("STATE AS JSON: $stateAsJson")

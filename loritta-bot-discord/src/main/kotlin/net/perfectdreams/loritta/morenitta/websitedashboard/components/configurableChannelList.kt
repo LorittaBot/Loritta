@@ -15,6 +15,8 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.utils.SVGIconUtils
 fun FlowContent.configurableChannelList(
     i18nContext: I18nContext,
     guild: Guild,
+    swapToElementId: String,
+    channelsName: String,
     removeEndpoint: String,
     channelIds: Set<Long>
 ) {
@@ -22,8 +24,8 @@ fun FlowContent.configurableChannelList(
         if (channelIds.isNotEmpty()) {
             for (channelId in channelIds) {
                 hiddenInput {
-                    name = "channels[]"
-                    attributes["loritta-config"] = "channels[]"
+                    name = "$channelsName[]"
+                    attributes["loritta-config"] = "$channelsName[]"
                     value = channelId.toString()
                 }
 
@@ -44,11 +46,16 @@ fun FlowContent.configurableChannelList(
                         style = "margin-left: auto;"
 
                         attributes["bliss-post"] = removeEndpoint
-                        attributes["bliss-include-json"] = "[name='channels[]']"
+                        attributes["bliss-include-json"] = "[name='$channelsName[]']"
+                        attributes["bliss-remap-json-keys"] = buildJsonObject {
+                            put(channelsName, "channels")
+                        }.toString()
                         attributes["bliss-vals-json"] = buildJsonObject {
                             put("channelId", channelId.toString())
+                            put("swapToElementId", swapToElementId)
+                            put("channelsName", channelsName)
                         }.toString()
-                        attributes["bliss-swap:200"] = "body (innerHTML) -> #channels (innerHTML)"
+                        attributes["bliss-swap:200"] = "body (innerHTML) -> #$swapToElementId (innerHTML)"
                         attributes["bliss-sync"] = "#add-channel-button"
 
                         text("Remover")

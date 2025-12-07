@@ -288,8 +288,6 @@ class CommandManager(val loritta: LorittaBot) {
 
 				val miscellaneousConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<MiscellaneousConfig?>(loritta, ServerConfig::miscellaneousConfig)
 
-				val enableBomDiaECia = miscellaneousConfig?.enableBomDiaECia ?: false
-
 				if (serverConfig.blacklistedChannels.contains(ev.channel.idLong) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
                     if (serverConfig.warnIfBlacklisted) {
                         if (serverConfig.blacklistedWarning?.isNotEmpty() == true && ev.guild != null && ev.member != null && ev.textChannel != null) {

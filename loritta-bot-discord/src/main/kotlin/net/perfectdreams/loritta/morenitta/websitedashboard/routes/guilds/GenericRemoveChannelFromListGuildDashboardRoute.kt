@@ -28,6 +28,8 @@ open class GenericRemoveChannelFromListGuildDashboardRoute(
 ) : RequiresGuildAuthDashboardLocalizedRoute(website, originalGuildPath) {
     @Serializable
     data class RemoveChannelRequest(
+        val channelsName: String,
+        val swapToElementId: String,
         val channelId: Long,
         val channels: Set<Long> = setOf()
     )
@@ -50,6 +52,8 @@ open class GenericRemoveChannelFromListGuildDashboardRoute(
             configurableChannelList(
                 i18nContext,
                 guild,
+                request.swapToElementId,
+                request.channelsName,
                 "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}$removeEndpoint",
                 newList
             )

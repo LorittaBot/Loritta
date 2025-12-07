@@ -18,6 +18,7 @@ import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.BomDiaECiaConfigs
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.LorittaBot.Companion.RANDOM
@@ -29,6 +30,8 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.queueAfterWithMessagePerSecondTarget
 import net.perfectdreams.loritta.morenitta.utils.extensions.stripLinks
 import net.perfectdreams.loritta.morenitta.utils.locale.getPronoun
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.selectAll
 import java.awt.Color
 import java.util.concurrent.ConcurrentHashMap
 
@@ -326,10 +329,13 @@ class BomDiaECia(val loritta: LorittaBot) {
 
 			if (textChannel != null && textChannel.canTalk() && textChannel.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
 				if (it.value.users.size >= 5 && it.value.lastMessageSent > (System.currentTimeMillis() - 180000)) {
-					val serverConfig = runBlocking { loritta.getOrCreateServerConfig(textChannel.guild.idLong) }
-					val miscellaneousConfig = runBlocking { serverConfig.getCachedOrRetreiveFromDatabase<MiscellaneousConfig?>(loritta, ServerConfig::miscellaneousConfig) }
-
-					val enableBomDiaECia = miscellaneousConfig?.enableBomDiaECia ?: false
+                    val enableBomDiaECia = runBlocking {
+                        loritta.transaction {
+                            BomDiaECiaConfigs.selectAll()
+                                .where { BomDiaECiaConfigs.id eq textChannel.guild.idLong and (BomDiaECiaConfigs.enabled eq true) }
+                                .firstOrNull()
+                        }?.get(BomDiaECiaConfigs.enabled) ?: false
+                    }
 
 					if (enableBomDiaECia)
 						validTextChannels.add(textChannel)
