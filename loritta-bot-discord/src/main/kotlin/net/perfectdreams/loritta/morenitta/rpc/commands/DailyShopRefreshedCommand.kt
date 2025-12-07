@@ -65,7 +65,7 @@ import org.jetbrains.exposed.sql.selectAll
 import java.time.Instant
 import kotlin.collections.chunked
 
-class DailyShopRefreshedCommand(val loritta: LorittaBot) : LorittaRPCCommand(LorittaRPC.TwitchStreamOnlineEvent) {
+class DailyShopRefreshedCommand(val loritta: LorittaBot) : LorittaRPCCommand(LorittaRPC.DailyShopRefreshed) {
     companion object {
         private val logger by HarmonyLoggerFactory.logger {}
     }

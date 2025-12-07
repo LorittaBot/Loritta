@@ -35,6 +35,7 @@ import net.perfectdreams.loritta.morenitta.analytics.LorittaMetrics
 import net.perfectdreams.loritta.morenitta.loricoolcards.StickerAlbumTemplate
 import net.perfectdreams.loritta.morenitta.loricoolcards.StickerMetadata
 import net.perfectdreams.loritta.morenitta.rpc.commands.BlueskyPostRelayCommand
+import net.perfectdreams.loritta.morenitta.rpc.commands.DailyShopRefreshedCommand
 import net.perfectdreams.loritta.morenitta.rpc.commands.NotifyBanAppealCommand
 import net.perfectdreams.loritta.morenitta.rpc.commands.TwitchStreamOnlineEventCommand
 import net.perfectdreams.loritta.morenitta.rpc.commands.UpdateTwitchSubscriptionsCommand
@@ -92,7 +93,8 @@ class InternalWebServer(val m: LorittaBot) {
         NotifyBanAppealCommand(m),
         UpdateTwitchSubscriptionsCommand(m),
         TwitchStreamOnlineEventCommand(m),
-        BlueskyPostRelayCommand(m)
+        BlueskyPostRelayCommand(m),
+        DailyShopRefreshedCommand(m)
     )
     private val internalAPIRoutes = listOf<BaseRoute>()
 
