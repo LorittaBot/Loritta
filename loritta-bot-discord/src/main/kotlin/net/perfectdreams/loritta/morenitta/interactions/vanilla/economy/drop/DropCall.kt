@@ -52,6 +52,7 @@ class DropCall(
     companion object {
         // We have a max value to avoid overflow issues
         const val MAX_SONHOS_PER_PARTICIPANT = 1_000_000_000_000L
+        const val MAX_WINNERS = 30 // We also have a max winners to avoid overflowing the message
     }
 
     // Should be initialized AFTER the message has been sent if the duration is not null

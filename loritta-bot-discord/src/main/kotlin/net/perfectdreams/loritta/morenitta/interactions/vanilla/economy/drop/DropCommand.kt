@@ -231,10 +231,10 @@ class DropCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 return
             }
 
-            if (winners !in 1..100) {
+            if (winners !in 1..DropChat.MAX_WINNERS) {
                 context.reply(true) {
                     styled(
-                        context.i18nContext.get(I18N_PREFIX.Chat.InvalidWinnersCount(1, 100)),
+                        context.i18nContext.get(I18N_PREFIX.Chat.InvalidWinnersCount(1, DropChat.MAX_WINNERS)),
                         Constants.ERROR
                     )
                 }
@@ -483,10 +483,10 @@ class DropCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 return
             }
 
-            if (winners !in 1..100) {
+            if (winners !in 1..DropCall.MAX_WINNERS) {
                 context.reply(true) {
                     styled(
-                        context.i18nContext.get(I18N_PREFIX.Chat.InvalidWinnersCount(1, 100)),
+                        context.i18nContext.get(I18N_PREFIX.Chat.InvalidWinnersCount(1, DropCall.MAX_WINNERS)),
                         Constants.ERROR
                     )
                 }
