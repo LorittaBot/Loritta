@@ -224,15 +224,6 @@ class DropChat(
                         appendLine(i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.SonhosQuantity(SonhosUtils.getSonhosEmojiOfQuantity(sonhos), sonhos)))
                         appendLine(i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.WinnersQuantity(maxWinners)))
                         appendLine()
-                        appendLine("**${i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.Participants(participatingUsers.size))}:**")
-                        if (participatingUsers.isNotEmpty()) {
-                            for (user in participatingUsers.take(100)) { // Avoid overflow
-                                appendLine(user.asMention)
-                            }
-                        } else {
-                            appendLine("*${i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.NoOneOnTheDropYet)}*")
-                        }
-                        appendLine()
                         if (maxParticipants != null) {
                             appendLine("-# ${i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.TheDropWillEndWithMaxParticipants(TimeFormat.RELATIVE.format(startedAt.plus(duration)), maxParticipants))}")
                         } else {
