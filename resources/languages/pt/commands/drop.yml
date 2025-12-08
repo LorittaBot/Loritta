@@ -17,10 +17,11 @@ totalSonhosDistributed: "No total, {sonhosEmoji} **{sonhos,plural, =0 {# sonhos}
 totalSonhosDistributedAdmin: "No total, {sonhosEmoji} **{sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** foram distribuídos!"
 thanksTheCreatorForTheDrop: "Agradeçam {userMention} pelo drop!"
 theCreatorDoesNotHaveEnoughSonhos: "O criador do drop ({userMention}) não tem sonhos suficientes ({sonhosEmoji} **{sonhos,plural, =0 {# Sonhos} one {# Sonho} other {# Sonhos}}**) para financiar os ganhadores..."
+invalidMultiDropCount: "A quantidade de drops deve ser entre {minDropCount,plural, =0 {# drops} one {# drop} other {# drops}} e {maxDropCount,plural, =0 {# drops} one {# drop} other {# drops}}!"
 
 chat:
   label: "chat"
-  description: "Inicia um drop de sonhos no chat"
+  description: "Inicia um drop de sonhos no ctha"
 
   participate: "Participar ({participantsCount})"
 
@@ -38,6 +39,7 @@ chat:
   userWonSonhos: "{userMention} ganhou {sonhosEmoji} **{sonhos,plural, =0 {# Sonhos} one {# Sonho} other {# Sonhos}}**!"
   dropId: "Drop Chat #{dropId}"
   dropCreated: "Drop iniciado! {messageUrl}"
+  dropCreatedCount: "Drop #{dropId} iniciado! {messageUrl}"
   dropTooShort: "A duração do drop é curta demais! Um drop deve durar, no mínimo, um segundo."
   tryingToDropZeroSonhos: "Uau, incrível! Você vai fazer um drop com *zero* sonhos, maravilha! Menos trabalho para mim, porque isso significa que não preciso criar um drop para você."
   tryingToDropLessThanZeroSonhos: "Uau, excelente! Você vai fazer um drop com sonhos *negativos*, extraordinário! Será que sonhos negativos seriam... *pesadelos*? Eu sei, eu sei... Sou um gênio."
@@ -62,6 +64,8 @@ chat:
       text: "O canal onde a mensagem do drop será enviada"
     duration:
       text: "A duração do drop"
+    drops:
+      text: "Quantos drops serão spawnados ao mesmo tempo"
     lorittaAdmin:
       text: "Se ativado, os sonhos não serão cobrados do usuário que criou o drop"
 

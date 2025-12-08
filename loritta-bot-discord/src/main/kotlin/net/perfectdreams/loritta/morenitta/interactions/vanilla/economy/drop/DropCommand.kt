@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.drop
 import dev.minn.jda.ktx.messages.MessageCreate
 import kotlinx.datetime.toJavaInstant
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
@@ -122,6 +123,7 @@ class DropCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             val maxWinners = long("max_winners", I18N_PREFIX.Chat.Options.MaxWinners.Text)
             val channel = channel("channel", I18N_PREFIX.Chat.Options.Channel.Text)
             val duration = string("duration", I18N_PREFIX.Chat.Options.Duration.Text)
+            val drops = optionalLong("drops", I18N_PREFIX.Chat.Options.Drops.Text)
             val maxParticipants = optionalLong("max_participants", I18N_PREFIX.Chat.Options.MaxParticipants.Text)
             val lorittaAdmin = optionalBoolean("loritta_admin", I18N_PREFIX.Chat.Options.LorittaAdmin.Text)
         }
@@ -136,6 +138,7 @@ class DropCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             val channel = args[options.channel]
             val sonhosInput = args[options.sonhos]
             val lorittaAsMember = context.guild.selfMember
+            val drops = args[options.drops]?.toInt() ?: 1
 
             val sonhos = validateSonhos(
                 context,
@@ -251,7 +254,17 @@ class DropCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 return
             }
 
-            if (chargeCreatorSonhos && (winners * sonhos) > selfUserProfile.money) {
+            if (drops !in 1..5) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.InvalidMultiDropCount(1, 5)),
+                        Constants.ERROR
+                    )
+                }
+                return
+            }
+
+            if (chargeCreatorSonhos && (winners * sonhos * drops) > selfUserProfile.money) {
                 context.reply(true) {
                     styled(
                         context.i18nContext.get(SonhosUtils.insufficientSonhos(selfUserProfile.money, winners * sonhos)),
@@ -299,35 +312,53 @@ class DropCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
             context.deferChannelMessage(true)
 
-            val drop = DropChat(
-                loritta,
-                context.guild,
-                context.user,
-                channel,
-                sonhos,
-                participants,
-                winners,
-                duration,
-                context.i18nContext,
-                chargeCreatorSonhos
-            )
+            val dropMessages = mutableListOf<Message>()
+            repeat(drops) {
+                val drop = DropChat(
+                    loritta,
+                    context.guild,
+                    context.user,
+                    channel,
+                    sonhos,
+                    participants,
+                    winners,
+                    duration,
+                    context.i18nContext,
+                    chargeCreatorSonhos
+                )
 
-            val message = channel.sendMessage(
-                MessageCreate {
-                    with(drop) {
-                        createDropMessage()
+                val message = channel.sendMessage(
+                    MessageCreate {
+                        with(drop) {
+                            createDropMessage()
+                        }
+                    }
+                ).await()
+
+                drop.originalDropMessage = message
+                drop.startDropAutoFinishTask()
+
+                dropMessages.add(message)
+            }
+
+            if (dropMessages.size == 1) {
+                val message = dropMessages[0]
+
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.Chat.DropCreated(message.jumpUrl)),
+                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHappyJumping
+                    )
+                }
+            } else {
+                context.reply(true) {
+                    for ((index, message) in dropMessages.withIndex()) {
+                        styled(
+                            context.i18nContext.get(I18N_PREFIX.Chat.DropCreatedCount(index + 1, message.jumpUrl)),
+                            net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHappyJumping
+                        )
                     }
                 }
-            ).await()
-
-            drop.originalDropMessage = message
-            drop.startDropAutoFinishTask()
-
-            context.reply(false) {
-                styled(
-                    context.i18nContext.get(I18N_PREFIX.Chat.DropCreated(message.jumpUrl)),
-                    net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHappyJumping
-                )
             }
         }
 
@@ -370,6 +401,7 @@ class DropCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             val channel = channel("channel", I18N_PREFIX.Call.Options.Channel.Text)
             val voiceChannel = channel("voice_channel", I18N_PREFIX.Call.Options.VoiceChannel.Text)
             val duration = optionalString("duration", I18N_PREFIX.Call.Options.Duration.Text)
+            val drops = optionalLong("drops", I18N_PREFIX.Chat.Options.Drops.Text)
             val lorittaAdmin = optionalBoolean("loritta_admin", I18N_PREFIX.Call.Options.LorittaAdmin.Text)
         }
 
@@ -384,6 +416,7 @@ class DropCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             val voiceChannel = args[options.voiceChannel]
             val sonhosInput = args[options.sonhos]
             val lorittaAsMember = context.guild.selfMember
+            val drops = args[options.drops]?.toInt() ?: 1
 
             val sonhos = validateSonhos(
                 context,
@@ -493,7 +526,17 @@ class DropCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 return
             }
 
-            if (chargeCreatorSonhos && (winners * sonhos) > selfUserProfile.money) {
+            if (drops !in 1..5) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.InvalidMultiDropCount(1, 5)),
+                        Constants.ERROR
+                    )
+                }
+                return
+            }
+
+            if (chargeCreatorSonhos && (winners * sonhos * drops) > selfUserProfile.money) {
                 context.reply(true) {
                     styled(
                         context.i18nContext.get(SonhosUtils.insufficientSonhos(selfUserProfile.money, winners * sonhos)),
@@ -541,46 +584,60 @@ class DropCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
             context.deferChannelMessage(true)
 
-            val drop = DropCall(
-                loritta,
-                context.guild,
-                context.user,
-                channel,
-                voiceChannel,
-                sonhos,
-                winners,
-                duration,
-                context.i18nContext,
-                chargeCreatorSonhos
-            )
+            val dropMessages = mutableListOf<Message>()
 
-            // This is a bit tricky, if the duration is null, then we don't need to create any of the drop messages!
-            if (duration == null) {
-                val message = drop.finishDrop()
+            repeat(drops) {
+                val drop = DropCall(
+                    loritta,
+                    context.guild,
+                    context.user,
+                    channel,
+                    voiceChannel,
+                    sonhos,
+                    winners,
+                    duration,
+                    context.i18nContext,
+                    chargeCreatorSonhos
+                )
 
-                context.reply(false) {
+                // This is a bit tricky, if the duration is null, then we don't need to create any of the drop messages!
+                if (duration == null) {
+                    val message = drop.finishDrop()
+
+                    dropMessages.add(message)
+                } else {
+                    val message = channel.sendMessage(
+                        MessageCreate {
+                            with(drop) {
+                                createDropMessage()
+                            }
+                        }
+                    ).await()
+
+                    drop.originalDropMessage = message
+                    drop.startDropAutoFinishTask()
+
+                    dropMessages.add(message)
+                }
+            }
+
+            if (dropMessages.size == 1) {
+                val message = dropMessages[0]
+
+                context.reply(true) {
                     styled(
                         context.i18nContext.get(I18N_PREFIX.Chat.DropCreated(message.jumpUrl)),
                         net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHappyJumping
                     )
                 }
             } else {
-                val message = channel.sendMessage(
-                    MessageCreate {
-                        with(drop) {
-                            createDropMessage()
-                        }
+                context.reply(true) {
+                    for ((index, message) in dropMessages.withIndex()) {
+                        styled(
+                            context.i18nContext.get(I18N_PREFIX.Chat.DropCreatedCount(index + 1, message.jumpUrl)),
+                            net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHappyJumping
+                        )
                     }
-                ).await()
-
-                drop.originalDropMessage = message
-                drop.startDropAutoFinishTask()
-
-                context.reply(false) {
-                    styled(
-                        context.i18nContext.get(I18N_PREFIX.Chat.DropCreated(message.jumpUrl)),
-                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHappyJumping
-                    )
                 }
             }
         }
