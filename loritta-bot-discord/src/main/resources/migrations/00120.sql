@@ -1,0 +1,1 @@
+ALTER TABLE dropchats ALTER COLUMN max_participants DROP NOT NULL;

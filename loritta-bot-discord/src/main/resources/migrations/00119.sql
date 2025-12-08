@@ -1,1 +1,1 @@
-ALTER TABLE dropchats ALTER COLUMN max_participants DROP NOT NULL;
+-- No schema changes to existing tables
