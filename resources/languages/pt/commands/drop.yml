@@ -18,6 +18,7 @@ totalSonhosDistributedAdmin: "No total, {sonhosEmoji} **{sonhos,plural, =0 {# so
 thanksTheCreatorForTheDrop: "Agradeçam {userMention} pelo drop!"
 theCreatorDoesNotHaveEnoughSonhos: "O criador do drop ({userMention}) não tem sonhos suficientes ({sonhosEmoji} **{sonhos,plural, =0 {# Sonhos} one {# Sonho} other {# Sonhos}}**) para financiar os ganhadores..."
 invalidMultiDropCount: "A quantidade de drops deve ser entre {minDropCount,plural, =0 {# drops} one {# drop} other {# drops}} e {maxDropCount,plural, =0 {# drops} one {# drop} other {# drops}}!"
+dontForgetToGetDaily: "Psiu, não se esqueça de pegar o {dailyCommand} para não ter os seus sonhos taxados pelo governo!"
 
 chat:
   label: "chat"

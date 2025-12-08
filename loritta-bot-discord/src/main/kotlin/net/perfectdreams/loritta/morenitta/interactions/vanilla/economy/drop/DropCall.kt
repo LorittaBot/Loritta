@@ -265,6 +265,8 @@ class DropCall(
                                         appendLine(i18nContext.get(I18nKeysData.Commands.Command.Drop.TotalSonhosDistributedAdmin(SonhosUtils.getSonhosEmojiOfQuantity(totalSonhosDistributed), totalSonhosDistributed)))
                                     }
                                     appendLine()
+                                    appendLine("-# ${i18nContext.get(I18nKeysData.Commands.Command.Drop.DontForgetToGetDaily(loritta.commandMentions.daily))}")
+                                    appendLine()
                                     appendLine("${DropCommand.Licks.random()} **${i18nContext.get(I18nKeysData.Commands.Command.Drop.ThanksTheCreatorForTheDrop(creator.asMention))}**")
                                     appendLine()
                                     appendLine("-# ${i18nContext.get(I18nKeysData.Commands.Command.Drop.Call.VoiceDropRequirements)}")
