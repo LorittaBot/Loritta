@@ -12,7 +12,7 @@ object DropChats : LongIdTable() {
     val startedAt = timestampWithTimeZone("started_at").index()
     val endedAt = timestampWithTimeZone("ended_at").index()
     val participantPayout = long("participant_payout")
-    val maxParticipants = integer("max_participants")
+    val maxParticipants = integer("max_participants").nullable()
     val maxWinners = integer("max_winners")
     val participants = integer("participants")
     val winners = integer("winners")

@@ -119,10 +119,10 @@ class DropCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     class StartDropChatExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         class Options : ApplicationCommandOptions() {
             val sonhos = string("sonhos", I18N_PREFIX.Chat.Options.Sonhos.Text)
-            val maxParticipants = long("max_participants", I18N_PREFIX.Chat.Options.MaxParticipants.Text)
             val maxWinners = long("max_winners", I18N_PREFIX.Chat.Options.MaxWinners.Text)
             val channel = channel("channel", I18N_PREFIX.Chat.Options.Channel.Text)
             val duration = string("duration", I18N_PREFIX.Chat.Options.Duration.Text)
+            val maxParticipants = optionalLong("max_participants", I18N_PREFIX.Chat.Options.MaxParticipants.Text)
             val lorittaAdmin = optionalBoolean("loritta_admin", I18N_PREFIX.Chat.Options.LorittaAdmin.Text)
         }
 
@@ -168,7 +168,7 @@ class DropCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 return
             }
 
-            val participants = args[options.maxParticipants].toInt()
+            val participants = args[options.maxParticipants]?.toInt()
             val winners = args[options.maxWinners].toInt()
 
             if (channel !is GuildMessageChannel) {
@@ -221,10 +221,10 @@ class DropCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 return
             }
 
-            if (participants !in 1..100) {
+            if (participants != null && participants !in 1..100_000) {
                 context.reply(true) {
                     styled(
-                        context.i18nContext.get(I18N_PREFIX.Chat.InvalidParticipantsCount(1, 100)),
+                        context.i18nContext.get(I18N_PREFIX.Chat.InvalidParticipantsCount(1, 100_000)),
                         Constants.ERROR
                     )
                 }
@@ -241,7 +241,7 @@ class DropCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 return
             }
 
-            if (winners > participants) {
+            if (participants != null && winners > participants) {
                 context.reply(true) {
                     styled(
                         context.i18nContext.get(I18N_PREFIX.Chat.YouMustHaveMoreParticipantsThanWinners),

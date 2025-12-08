@@ -50,7 +50,7 @@ class DropChat(
     val creator: User,
     val channel: MessageChannel,
     val sonhos: Long,
-    val maxParticipants: Int,
+    val maxParticipants: Int?,
     val maxWinners: Int,
     val duration: Duration,
     val i18nContext: I18nContext,
@@ -226,14 +226,18 @@ class DropChat(
                         appendLine()
                         appendLine("**${i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.Participants(participatingUsers.size))}:**")
                         if (participatingUsers.isNotEmpty()) {
-                            for (user in participatingUsers) {
+                            for (user in participatingUsers.take(100)) { // Avoid overflow
                                 appendLine(user.asMention)
                             }
                         } else {
                             appendLine("*${i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.NoOneOnTheDropYet)}*")
                         }
                         appendLine()
-                        appendLine("-# ${i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.TheDropWillEnd(TimeFormat.RELATIVE.format(startedAt.plus(duration)), maxParticipants))}")
+                        if (maxParticipants != null) {
+                            appendLine("-# ${i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.TheDropWillEndWithMaxParticipants(TimeFormat.RELATIVE.format(startedAt.plus(duration)), maxParticipants))}")
+                        } else {
+                            appendLine("-# ${i18nContext.get(I18nKeysData.Commands.Command.Drop.Chat.TheDropWillEnd(TimeFormat.RELATIVE.format(startedAt.plus(duration))))}")
+                        }
                     }
                 )
             }
