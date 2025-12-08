@@ -56,6 +56,9 @@ object UserAvatarExecutor {
                 // Easter Egg: Foxy
                 NotableUserIds.FOXY.toLong() -> UserCommand.I18N_PREFIX.Avatar.FoxyEasterEgg
 
+                // Easter Egg: Mirastone
+                NotableUserIds.MIRASTONE.toLong() -> UserCommand.I18N_PREFIX.Avatar.MirastoneEasterEgg
+
                 // Nothing else, just use null
                 else -> null
             }
