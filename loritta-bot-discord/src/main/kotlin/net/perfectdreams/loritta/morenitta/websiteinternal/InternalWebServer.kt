@@ -34,6 +34,7 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.analytics.LorittaMetrics
 import net.perfectdreams.loritta.morenitta.loricoolcards.StickerAlbumTemplate
 import net.perfectdreams.loritta.morenitta.loricoolcards.StickerMetadata
+import net.perfectdreams.loritta.morenitta.rpc.LorittaRPC
 import net.perfectdreams.loritta.morenitta.rpc.commands.BlueskyPostRelayCommand
 import net.perfectdreams.loritta.morenitta.rpc.commands.DailyShopRefreshedCommand
 import net.perfectdreams.loritta.morenitta.rpc.commands.NotifyBanAppealCommand
@@ -100,6 +101,14 @@ class InternalWebServer(val m: LorittaBot) {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     fun start() {
+        // Validate RPC commands
+        for (command in LorittaRPC.commands) {
+            val registeredCommandHandlers = rpcCommands.filter { it.rpcCommand == command }
+
+            if (registeredCommandHandlers.size != 1)
+                error("Invalid RPC command count for ${command.name}! There must be only one command, but there were ${registeredCommandHandlers.size} ($registeredCommandHandlers)")
+        }
+
         // 3003 = 30/03, Loritta's birthday!
         // The port is 13003 because Windows seems to reserve port 3003 for other purposes
         // Reserved ports can be checked with "netsh interface ipv4 show excludedportrange protocol=tcp"

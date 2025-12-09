@@ -16,11 +16,19 @@ import net.perfectdreams.loritta.morenitta.rpc.payloads.UpdateTwitchSubscription
 import net.perfectdreams.loritta.morenitta.utils.config.LorittaConfig
 
 object LorittaRPC {
-    val NotifyBanAppeal = LorittaRPCCommandName<NotifyBanAppealRequest, NotifyBanAppealResponse>("notifyBanAppeal")
-    val UpdateTwitchSubscriptions = LorittaRPCCommandName<Unit, UpdateTwitchSubscriptionsResponse>("updateTwitchSubscriptions")
-    val TwitchStreamOnlineEvent = LorittaRPCCommandName<TwitchStreamOnlineEventRequest, TwitchStreamOnlineEventResponse>("twitchStreamOnlineEvent")
-    val BlueskyPostRelay = LorittaRPCCommandName<BlueskyPostRelayRequest, BlueskyPostRelayResponse>("blueskyPostRelay")
-    val DailyShopRefreshed = LorittaRPCCommandName<DailyShopRefreshedRequest, DailyShopRefreshedResponse>("dailyShopRefreshed")
+    val commands = mutableListOf<LorittaRPCCommandName<*, *>>()
+
+    private fun <RequestType, ResponseType> registerCommand(name: String): LorittaRPCCommandName<RequestType, ResponseType> {
+        val command = LorittaRPCCommandName<RequestType, ResponseType>(name)
+        commands.add(command)
+        return command
+    }
+
+    val NotifyBanAppeal = registerCommand<NotifyBanAppealRequest, NotifyBanAppealResponse>("notifyBanAppeal")
+    val UpdateTwitchSubscriptions = registerCommand<Unit, UpdateTwitchSubscriptionsResponse>("updateTwitchSubscriptions")
+    val TwitchStreamOnlineEvent = registerCommand<TwitchStreamOnlineEventRequest, TwitchStreamOnlineEventResponse>("twitchStreamOnlineEvent")
+    val BlueskyPostRelay = registerCommand<BlueskyPostRelayRequest, BlueskyPostRelayResponse>("blueskyPostRelay")
+    val DailyShopRefreshed = registerCommand<DailyShopRefreshedRequest, DailyShopRefreshedResponse>("dailyShopRefreshed")
 
     class LorittaRPCCommandName<RequestType, ResponseType>(val name: String)
 }
