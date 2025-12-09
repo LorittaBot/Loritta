@@ -17,7 +17,7 @@ object BlackjackUtils {
     const val DEALER_ACTION_DELAY = 1_000L
     val AUTO_STAND_DELAY = 5.minutes
     const val MINIMUM_BET = 100L
-    const val MAXIMUM_BET = 10_000_000L
+    const val MAXIMUM_BET = 20_000_000L
 
     /**
      * Converts the current [card] state into emojis
