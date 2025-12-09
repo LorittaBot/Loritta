@@ -97,6 +97,7 @@ import net.perfectdreams.loritta.morenitta.listeners.*
 import net.perfectdreams.loritta.morenitta.loricoolcards.LoriCoolCardsManager
 import net.perfectdreams.loritta.morenitta.marriages.MarriageAffinityDecayTask
 import net.perfectdreams.loritta.morenitta.marriages.MarriageAffinityWarnerTask
+import net.perfectdreams.loritta.morenitta.mines.MinesManager
 import net.perfectdreams.loritta.morenitta.modules.StarboardModule
 import net.perfectdreams.loritta.morenitta.modules.WelcomeModule
 import net.perfectdreams.loritta.morenitta.platform.discord.DiscordEmoteManager
@@ -360,6 +361,7 @@ class LorittaBot(
 
 	val taskManager = TaskManager(this)
     val blackjackManager = BlackjackManager(this)
+    val minesManager = MinesManager(this)
 
 	init {
 		FOLDER = config.loritta.folders.root
@@ -557,7 +559,10 @@ class LorittaBot(
         logger.info { "Starting Blackjack Refund task..." }
         blackjackManager.startRefundBlackjacksTask()
 
-		// Vamos criar todas as instâncias necessárias do JDA para nossas shards
+        logger.info { "Starting Mines Refund task..." }
+        minesManager.startRefundMinesTask()
+
+        // Vamos criar todas as instâncias necessárias do JDA para nossas shards
 		logger.info { "Starting Loritta (Discord Bot)..." }
 
 		val shardManager = builder.build()

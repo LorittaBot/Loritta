@@ -548,3 +548,34 @@ data class DropGuildInfo(
     val guildName: String,
     val guildInviteId: String?
 )
+
+// ===[ MINES ]===
+@Serializable
+data class MinesPayoutTransaction(
+    override val id: Long,
+    override val transactionType: TransactionType,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val sonhos: Long,
+    val matchId: Long
+) : SonhosTransaction()
+
+@Serializable
+data class MinesJoinedTransaction(
+    override val id: Long,
+    override val transactionType: TransactionType,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val sonhos: Long,
+    val matchId: Long
+) : SonhosTransaction()
+
+@Serializable
+data class MinesRefundTransaction(
+    override val id: Long,
+    override val transactionType: TransactionType,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val sonhos: Long,
+    val matchId: Long
+) : SonhosTransaction()

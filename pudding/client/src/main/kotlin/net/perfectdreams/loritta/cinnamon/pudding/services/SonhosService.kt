@@ -379,6 +379,12 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
 
                         is StoredBlackjackRefundTransaction -> createUsingReflection(BlackjackRefundTransaction::class, stored.matchId)
 
+                        is StoredMinesJoinedTransaction -> createUsingReflection(MinesJoinedTransaction::class, stored.matchId)
+
+                        is StoredMinesPayoutTransaction -> createUsingReflection(MinesPayoutTransaction::class, stored.matchId)
+
+                        is StoredMinesRefundTransaction -> createUsingReflection(MinesRefundTransaction::class, stored.matchId)
+
                         is StoredDropChatTransaction -> {
                             val dropsConfig = dropsConfigs.firstOrNull { it[DropsConfigs.id].value == stored.guildId }
 

@@ -1,0 +1,52 @@
+label: "mines"
+description: "Comandos relacionados ao sistema de Mines da Loritta!"
+
+play:
+  label: "jogar"
+  description: "Jogue uma partida de Mines"
+
+  invalidBet: "Você precisa apostar entre {minBetEmoji} **{minimumBet,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** e {maxBetEmoji} **{maximumBet,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** para poder jogar Minas! Quer jogar apenas por diversão? Então aposte nada!"
+  invalidMines: "Você precisa colocar entre **{minimumMines,plural, =0 {# minas} one {# mina} other {# minas}}** e **{maximumMines,plural, =0 {# minas} one {# mina} other {# minas}}** para poder iniciar uma partida!"
+
+  currentBet: "**Aposta:** {sonhosEmoji} {currentBet,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
+  currentBetJustForFun: "**Aposta:** *Nada! Apenas por Diversão :3*"
+  currentMines: "**Minas:** {totalMines,number,integer} ({pickedCount,number,integer}/{totalSafeTiles,number,integer})"
+  currentMultiplier: "**Multiplicador:** {currentMultiplier, number,#.##}x"
+  nextMultiplier: "**Próximo Multiplicador:** {nextMultiplier, number,#.##}x ({sonhosEmoji} {sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}})"
+  nextMultiplierNoBet: "**Próximo Multiplicador:** {nextMultiplier, number,#.##}x"
+  nextMultiplierCleared: "**Próximo Multiplicador:** Nenhum"
+
+  startNewMatch: "Começar nova partida!"
+  matchEndedAutomaticallyDueToInactivity: "A partida #{matchId} foi automaticamente finalizada devido à inatividade."
+  matchId: "Partida #{matchId}"
+
+  withdrawSonhos: "Sacar ({sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}})"
+  end: "Encerrar"
+
+  congratulations: "Parabéns!"
+  youWon: "Você saiu vivo da caverna e, após vender **{gemsCount,plural, =0 {nenhuma pedra preciosa} one {uma pedra preciosa} other {# pedras preciosas}}**, você ganhou {sonhosEmoji} **{sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** ({sonhosProfitEmoji} +{sonhosProfits,plural, =0 {# sonhos} one {# sonho} other {# sonhos}})!"
+  youWonNoBet: "Você saiu vivo da caverna e entregou **{gemsCount,plural, =0 {nenhuma pedra preciosa} one {a pedra preciosa} other {as # pedras preciosas}}** para o museu."
+  youLost: "Você saiu de **mãos abanando** pois você explodiu..."
+  random: "Aleatório"
+
+  errors:
+    cannotDoThisNow: "Você não pode fazer isto agora!"
+    youNeedToPickAtLeastOneTileBeforePayingOut: "Você precisa limpar pelo ou menos um quadrado para poder pedir payout!"
+    youAlreadyPickedThisTile: "Você já limpou este quadrado!"
+
+  options:
+    mines:
+      text: "Quantas minas estarão presentes no jogo"
+    sonhos:
+      text: "A quantidade de sonhos que você deseja apostar"
+
+stats:
+  label: "stats"
+  description: "Mostra suas estatísticas do Mines"
+  yourStats: "**Suas Estatísticas**"
+  totalMatches: "**Partidas jogadas:** {count,plural, =0 {# partidas} one {# partida} other {# partidas}}"
+  sonhosPayout: "**Total de sonhos que você ganhou:** {sonhosEmoji} {sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
+
+  options:
+    user:
+      text: "O usuário que você deseja ver as estatísticas dele"

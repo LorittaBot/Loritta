@@ -94,6 +94,12 @@ types:
     callReceivedWithGuildInformationAdmin: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} no drop de sonhos na call do servidor {guildName} (`{guildId}`)"
     callSent: "Enviou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para {receivedUserPreview} no drop de sonhos na call do servidor `{guildId}`"
     callSentWithGuildInformation: "Enviou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para {receivedUserPreview} no drop de sonhos na call do servidor {guildName} (`{guildId}`)"
+  mines:
+    title: "Apostas no Mines"
+    description: "Transações relacionadas a apostas no Mines"
+    payout: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} por ter ganhado na partida #{matchId} de Mines"
+    joined: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para entrar na partida #{matchId} de Mines"
+    refunded: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} como reembolso na partida #{matchId} de Mines pois a Loritta reiniciou durante a partida"
   shipEffect:
     title: "Subornos de Ship"
     description: "Transações relacionadas com subornos ao oráculo do amor"

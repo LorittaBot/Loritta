@@ -24,7 +24,7 @@ play:
     houseRules: "Regras da Casa"
 
   errors:
-    cannotDoThisNow: "Você não pode fazer isto no momento!"
+    cannotDoThisNow: "Você não pode fazer isto agora!"
     alreadyStanding: "Você não pode pedir mais cartas pois você já pediu para parar"
     alreadyDoubledDown: "Você não pode dobrar mais que uma vez!"
     cannotDoubleDown: "Você não pode dobrar com essa mão!"

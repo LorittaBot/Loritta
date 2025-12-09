@@ -12,6 +12,9 @@ import net.perfectdreams.loritta.morenitta.utils.UserIdAsStringSerializer
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.*
 import net.perfectdreams.loritta.publichttpapi.LoriPublicHttpApiEndpoints
+import net.perfectdreams.loritta.serializable.MinesJoinedTransaction
+import net.perfectdreams.loritta.serializable.MinesPayoutTransaction
+import net.perfectdreams.loritta.serializable.MinesRefundTransaction
 import net.perfectdreams.loritta.serializable.ReputationDeletedTransaction
 import net.perfectdreams.loritta.serializable.UserId
 import java.time.Instant
@@ -556,6 +559,10 @@ class GetUserTransactionsRoute(m: LorittaBot) : LoriPublicAPIRoute(
                     transaction.receivedById,
                     transaction.guildId
                 )
+
+                is MinesJoinedTransaction -> TODO()
+                is MinesPayoutTransaction -> TODO()
+                is MinesRefundTransaction -> TODO()
             }
         }
     }

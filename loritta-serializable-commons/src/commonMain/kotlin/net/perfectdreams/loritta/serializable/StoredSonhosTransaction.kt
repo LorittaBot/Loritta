@@ -230,3 +230,12 @@ data class StoredDropCallTransaction(
     val receivedById: Long,
     val guildId: Long
 ) : StoredSonhosTransaction()
+
+@Serializable
+data class StoredMinesJoinedTransaction(val matchId: Long) : StoredSonhosTransaction()
+
+@Serializable
+data class StoredMinesPayoutTransaction(val matchId: Long) : StoredSonhosTransaction()
+
+@Serializable
+data class StoredMinesRefundTransaction(val matchId: Long) : StoredSonhosTransaction()

@@ -22,4 +22,8 @@ object LorittaColors {
     val SonhosDrop = LorittaAqua
     val SonhosDropSuccess = Color(41, 133, 70)
     val SonhosDropEmpty = Color(218, 55, 60)
+
+    val MinesPlayerTurn = DiscordBlurple
+    val MinesWon = Color(41, 133, 70)
+    val MinesLost = Color(218, 55, 60)
 }

@@ -261,4 +261,28 @@ object SimpleSonhosTransactionTransformers {
             }
         }
     }
+
+    val MinesJoinedTransactionTransformer = SimpleSonhosTransactionTransformer<MinesJoinedTransaction>(false) { _, _, i18nContext, cachedUserInfo, cachedUserInfos, transaction ->
+        append(
+            i18nContext.get(
+                SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.Mines.Joined(quantity = transaction.sonhos, matchId = transaction.matchId)
+            )
+        )
+    }
+
+    val MinesPayoutTransactionTransformer = SimpleSonhosTransactionTransformer<MinesPayoutTransaction>(true) { _, _, i18nContext, cachedUserInfo, cachedUserInfos, transaction ->
+        append(
+            i18nContext.get(
+                SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.Mines.Payout(quantity = transaction.sonhos, matchId = transaction.matchId)
+            )
+        )
+    }
+
+    val MinesRefundTransactionTransformer = SimpleSonhosTransactionTransformer<MinesRefundTransaction>(true) { _, _, i18nContext, cachedUserInfo, cachedUserInfos, transaction ->
+        append(
+            i18nContext.get(
+                SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.Mines.Refunded(quantity = transaction.sonhos, matchId = transaction.matchId)
+            )
+        )
+    }
 }

@@ -42,6 +42,11 @@ enum class TransactionType(
         I18nKeysData.Commands.Command.Transactions.Types.Blackjack.Description,
         LorittaEmojis.CardSpades
     ),
+    MINES(
+        I18nKeysData.Commands.Command.Transactions.Types.Mines.Title,
+        I18nKeysData.Commands.Command.Transactions.Types.Mines.Description,
+        Emotes.Bomb.toLorittaEmojiReference(),
+    ),
     DROP(
         I18nKeysData.Commands.Command.Transactions.Types.Drop.Title,
         I18nKeysData.Commands.Command.Transactions.Types.Drop.Description,
