@@ -559,10 +559,30 @@ class GetUserTransactionsRoute(m: LorittaBot) : LoriPublicAPIRoute(
                     transaction.receivedById,
                     transaction.guildId
                 )
-
-                is MinesJoinedTransaction -> TODO()
-                is MinesPayoutTransaction -> TODO()
-                is MinesRefundTransaction -> TODO()
+                is net.perfectdreams.loritta.serializable.MinesJoinedTransaction -> MinesJoinedTransaction(
+                    transaction.id,
+                    transaction.transactionType,
+                    transaction.timestamp,
+                    transaction.user,
+                    transaction.sonhos,
+                    transaction.matchId
+                )
+                is net.perfectdreams.loritta.serializable.MinesPayoutTransaction -> MinesPayoutTransaction(
+                    transaction.id,
+                    transaction.transactionType,
+                    transaction.timestamp,
+                    transaction.user,
+                    transaction.sonhos,
+                    transaction.matchId
+                )
+                is net.perfectdreams.loritta.serializable.MinesRefundTransaction -> MinesRefundTransaction(
+                    transaction.id,
+                    transaction.transactionType,
+                    transaction.timestamp,
+                    transaction.user,
+                    transaction.sonhos,
+                    transaction.matchId
+                )
             }
         }
     }
@@ -1152,6 +1172,39 @@ class GetUserTransactionsRoute(m: LorittaBot) : LoriPublicAPIRoute(
         val givenById: Long?,
         val receivedById: Long,
         val guildId: Long
+    ) : SonhosTransaction()
+
+    @Serializable
+    data class MinesPayoutTransaction(
+        override val id: Long,
+        override val transactionType: TransactionType,
+        override val timestamp: kotlinx.datetime.Instant,
+        @Serializable(UserIdAsStringSerializer::class)
+        override val user: UserId,
+        val sonhos: Long,
+        val matchId: Long
+    ) : SonhosTransaction()
+
+    @Serializable
+    data class MinesJoinedTransaction(
+        override val id: Long,
+        override val transactionType: TransactionType,
+        override val timestamp: kotlinx.datetime.Instant,
+        @Serializable(UserIdAsStringSerializer::class)
+        override val user: UserId,
+        val sonhos: Long,
+        val matchId: Long
+    ) : SonhosTransaction()
+
+    @Serializable
+    data class MinesRefundTransaction(
+        override val id: Long,
+        override val transactionType: TransactionType,
+        override val timestamp: kotlinx.datetime.Instant,
+        @Serializable(UserIdAsStringSerializer::class)
+        override val user: UserId,
+        val sonhos: Long,
+        val matchId: Long
     ) : SonhosTransaction()
 
     @Serializable
