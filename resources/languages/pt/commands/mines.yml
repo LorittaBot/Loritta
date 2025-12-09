@@ -5,6 +5,8 @@ play:
   label: "jogar"
   description: "Jogue uma partida de Mines"
 
+  onlyAvailableOnGuildsForNow: "Para incentivar servidores, por enquanto o mines está disponível apenas em servidores que possuem mais de **{requiredMembers,plural, =0 {# membros} one {# membro} other {# membros}}** até {time}. Vá em servidores que usam a Loritta e use o mines lá!"
+
   invalidBet: "Você precisa apostar entre {minBetEmoji} **{minimumBet,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** e {maxBetEmoji} **{maximumBet,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** para poder jogar Minas! Quer jogar apenas por diversão? Então aposte nada!"
   invalidMines: "Você precisa colocar entre **{minimumMines,plural, =0 {# minas} one {# mina} other {# minas}}** e **{maximumMines,plural, =0 {# minas} one {# mina} other {# minas}}** para poder iniciar uma partida!"
 

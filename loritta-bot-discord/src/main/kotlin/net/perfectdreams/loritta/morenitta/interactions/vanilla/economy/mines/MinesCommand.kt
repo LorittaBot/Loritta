@@ -16,7 +16,6 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.IntegrationType
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
-import net.perfectdreams.loritta.cinnamon.pudding.tables.BlackjackSinglePlayerMatches
 import net.perfectdreams.loritta.cinnamon.pudding.tables.MinesSinglePlayerMatches
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
@@ -25,17 +24,14 @@ import net.perfectdreams.loritta.common.emojis.LorittaEmojis
 import net.perfectdreams.loritta.common.utils.*
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.blackjack.Blackjack
-import net.perfectdreams.loritta.morenitta.interactions.InteractionContext
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.interactions.components.ComponentContext
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.blackjack.BlackjackCommand
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.blackjack.BlackjackUtils
 import net.perfectdreams.loritta.morenitta.mines.MinesPlayfield
 import net.perfectdreams.loritta.morenitta.utils.Constants
+import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.NumberUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import net.perfectdreams.loritta.serializable.StoredMinesJoinedTransaction
@@ -48,6 +44,7 @@ import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.sum
 import org.jetbrains.exposed.sql.update
 import java.time.Instant
+import java.time.ZonedDateTime
 import java.util.*
 
 class MinesCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
@@ -81,6 +78,25 @@ class MinesCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
         override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             val mines = args[options.mines].toInt()
+
+            val now = ZonedDateTime.now(Constants.LORITTA_TIMEZONE)
+            val incentivizeGuildsEndDate = ZonedDateTime.of(2025, 12, 15, 0, 0, 0, 0, Constants.LORITTA_TIMEZONE)
+            val memberCount = context.guildOrNull?.memberCount
+
+            if ((memberCount == null || 250 > memberCount) && incentivizeGuildsEndDate > now && context.guildOrNull?.idLong != 268353819409252352 && context.channelOrNull?.idLong != 1169984595131904010 && context.channelOrNull?.idLong != 1326327003535773757L && context.channelOrNull?.idLong != 1082340413156892682L && context.channelOrNull?.idLong != 691041345275691021L) {
+                context.reply(false) {
+                    styled(
+                        context.i18nContext.get(
+                            I18N_PREFIX.Play.OnlyAvailableOnGuildsForNow(
+                                250,
+                                DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(incentivizeGuildsEndDate.toInstant())
+                            )
+                        ),
+                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHeart
+                    )
+                }
+                return
+            }
 
             if (mines !in MinesUtils.ALLOWED_MINES_RANGE) {
                 context.reply(false) {
