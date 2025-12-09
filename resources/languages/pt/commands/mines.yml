@@ -24,7 +24,7 @@ play:
   end: "Encerrar"
 
   congratulations: "Parabéns!"
-  youWon: "Você saiu vivo da caverna e, após vender **{gemsCount,plural, =0 {nenhuma pedra preciosa} one {uma pedra preciosa} other {# pedras preciosas}}**, você ganhou {sonhosEmoji} **{sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** ({sonhosProfitEmoji} +{sonhosProfits,plural, =0 {# sonhos} one {# sonho} other {# sonhos}})!"
+  youWon: "Você saiu vivo da caverna e, após vender **{gemsCount,plural, =0 {nenhuma pedra preciosa} one {uma pedra preciosa} other {# pedras preciosas}}**, ganhou {sonhosEmoji} **{sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** ({sonhosProfitEmoji} +{sonhosProfits,plural, =0 {# sonhos} one {# sonho} other {# sonhos}})!"
   youWonNoBet: "Você saiu vivo da caverna e entregou **{gemsCount,plural, =0 {nenhuma pedra preciosa} one {a pedra preciosa} other {as # pedras preciosas}}** para o museu."
   youLost: "Você saiu de **mãos abanando** pois você explodiu..."
   random: "Aleatório"
