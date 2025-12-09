@@ -679,7 +679,12 @@ class MinesCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                         .withDisabled(minesPlayfield.gameState !is MinesPlayfield.GameState.Playing)
                 )
 
-                this.text("-# ${context.i18nContext.get(I18N_PREFIX.Play.MatchId(matchId.matchId))}")
+                this.text(
+                    buildString {
+                        appendLine("-# ${context.i18nContext.get(I18N_PREFIX.Play.HowToPlay)}")
+                        appendLine("-# ${context.i18nContext.get(I18N_PREFIX.Play.MatchId(matchId.matchId))}")
+                    }
+                )
             }
 
             when (val gameState = minesPlayfield.gameState) {
