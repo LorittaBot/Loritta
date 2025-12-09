@@ -606,6 +606,7 @@ class MinesCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     val rowButtons = mutableListOf<Button>()
 
                     for (playfieldX in 0 until MinesPlayfield.PLAYFIELD_WIDTH) {
+                        val index = playfieldX + (playfieldY * MinesPlayfield.PLAYFIELD_WIDTH)
                         val picked = minesPlayfield.pickedTiles[playfieldX][playfieldY]
 
                         val emoji = when (val gameState = minesPlayfield.gameState) {
@@ -613,7 +614,7 @@ class MinesCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                                 if (picked) {
                                     Emoji.fromUnicode("\uD83D\uDC8E")
                                 } else {
-                                    loritta.emojiManager.get(LorittaEmojis.Nothing).toJDA()
+                                    null
                                 }
                             }
                             is MinesPlayfield.GameState.GameOver -> {
@@ -659,9 +660,14 @@ class MinesCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
                         rowButtons.add(
                             buttons.playfieldButtons[playfieldX + playfieldY * MinesPlayfield.PLAYFIELD_WIDTH]
-                                .withEmoji(emoji)
                                 .withDisabled(disabledButton)
                                 .withStyle(buttonStyle)
+                                .let {
+                                    if (emoji != null)
+                                        it.withEmoji(emoji).withLabel("")
+                                    else
+                                        it.withEmoji(null).withLabel((index + 1).toString())
+                                }
                         )
                     }
 

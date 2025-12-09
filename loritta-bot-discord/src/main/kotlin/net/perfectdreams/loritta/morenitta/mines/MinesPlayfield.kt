@@ -13,7 +13,7 @@ class MinesPlayfield(val random: SecureRandom, val totalMines: Int, val houseEdg
         const val PLAYFIELD_HEIGHT = 4
         const val TOTAL_TILES = PLAYFIELD_WIDTH * PLAYFIELD_HEIGHT
 
-        private fun calculateMinesPayoutMultiplier(
+        fun calculateMinesPayoutMultiplier(
             totalTiles: Int,
             mineCount: Int,
             picksMade: Int,
