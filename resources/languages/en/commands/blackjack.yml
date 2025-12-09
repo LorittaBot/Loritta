@@ -1,0 +1,4 @@
+play:
+  options:
+    sonhos:
+      text: "The sonhos quantity you want to bet"
