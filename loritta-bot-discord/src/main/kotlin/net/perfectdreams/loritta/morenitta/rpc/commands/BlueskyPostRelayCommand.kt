@@ -23,7 +23,7 @@ import net.perfectdreams.loritta.morenitta.websiteinternal.InternalWebServer
 import net.perfectdreams.loritta.serializable.internal.responses.LorittaInternalRPCResponse
 import org.jetbrains.exposed.sql.selectAll
 
-class BlueskyPostRelayCommand(val loritta: LorittaBot) : LorittaRPCCommand(LorittaRPC.TwitchStreamOnlineEvent) {
+class BlueskyPostRelayCommand(val loritta: LorittaBot) : LorittaRPCCommand(LorittaRPC.BlueskyPostRelay) {
     companion object {
         private val logger by HarmonyLoggerFactory.logger {}
     }
