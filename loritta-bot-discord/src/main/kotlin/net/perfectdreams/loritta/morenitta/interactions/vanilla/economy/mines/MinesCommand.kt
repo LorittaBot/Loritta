@@ -559,9 +559,11 @@ class MinesCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             // Useful to know that this is FOR YOU!!
             text(context.user.asMention)
 
+            val picks = minesPlayfield.getPickedCount()
+
             val color = when (gameState) {
                 is MinesPlayfield.GameState.GameOver -> {
-                    if (gameState.askedForPayout) {
+                    if (gameState.askedForPayout && picks != 0) {
                         LorittaColors.MinesWon.rgb
                     } else {
                         LorittaColors.MinesLost.rgb
@@ -718,13 +720,11 @@ class MinesCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     }
                 }
                 is MinesPlayfield.GameState.GameOver -> {
-                    val picks = minesPlayfield.getPickedCount()
-
                     this.container {
                         this.accentColorRaw = color
 
                         this.section(Thumbnail(
-                            if (gameState.askedForPayout) {
+                            if (gameState.askedForPayout && picks != 0) {
                                 "https://stuff.loritta.website/mines/loritta-mines-success.png"
                             } else {
                                 "https://stuff.loritta.website/mines/loritta-mines-fail.png"
@@ -733,14 +733,18 @@ class MinesCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                             this.text(
                                 buildString {
                                     if (gameState.askedForPayout) {
-                                        if (sonhosBet != null) {
-                                            val paidOut = (sonhosBet * gameState.payoutMultiplier).toLong()
-                                            val profit = paidOut - sonhosBet
+                                        if (picks != 0) {
+                                            if (sonhosBet != null) {
+                                                val paidOut = (sonhosBet * gameState.payoutMultiplier).toLong()
+                                                val profit = paidOut - sonhosBet
 
-                                            appendLine("### \uD83D\uDC8E ${context.i18nContext.get(I18N_PREFIX.Play.Congratulations)}")
-                                            appendLine(context.i18nContext.get(I18N_PREFIX.Play.YouWon(picks, SonhosUtils.getSonhosEmojiOfQuantity(paidOut), paidOut, SonhosUtils.getSonhosEmojiOfQuantity(profit), profit)))
+                                                appendLine("### \uD83D\uDC8E ${context.i18nContext.get(I18N_PREFIX.Play.Congratulations)}")
+                                                appendLine(context.i18nContext.get(I18N_PREFIX.Play.YouWon(picks, SonhosUtils.getSonhosEmojiOfQuantity(paidOut), paidOut, SonhosUtils.getSonhosEmojiOfQuantity(profit), profit)))
+                                            } else {
+                                                appendLine(context.i18nContext.get(I18N_PREFIX.Play.YouWonNoBet(picks)))
+                                            }
                                         } else {
-                                            appendLine(context.i18nContext.get(I18N_PREFIX.Play.YouWonNoBet(picks)))
+                                            appendLine(context.i18nContext.get(I18N_PREFIX.Play.YouLostWithoutPicks))
                                         }
                                     } else {
                                         appendLine(context.i18nContext.get(I18N_PREFIX.Play.YouLost))

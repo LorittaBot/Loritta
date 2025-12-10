@@ -29,6 +29,7 @@ play:
   youWon: "Você saiu vivo da caverna e, após vender **{gemsCount,plural, =0 {nenhuma pedra preciosa} one {uma pedra preciosa} other {# pedras preciosas}}**, ganhou {sonhosEmoji} **{sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** ({sonhosProfitEmoji} +{sonhosProfits,plural, =0 {# sonhos} one {# sonho} other {# sonhos}})!"
   youWonNoBet: "Você saiu vivo da caverna e entregou **{gemsCount,plural, =0 {nenhuma pedra preciosa} one {a pedra preciosa} other {as # pedras preciosas}}** para o museu."
   youLost: "Você saiu de **mãos abanando** pois você explodiu..."
+  youLostWithoutPicks: "Você saiu de **mãos abanando** pois você ficou inativo sem ter limpado pelo ou menos um quadrado..."
   random: "Aleatório"
   howToPlay: "Quanto mais pedras preciosas você encontrar, mais sonhos você ganhará! Mas não seja ganancioso, se uma mina for encontrada, você sairá sem nada!"
 
