@@ -21,6 +21,7 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.morenitta.banappeals.BanAppealsUtils
 import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
@@ -179,7 +180,7 @@ fun FlowContent.banAppealForm(
             textArea {
                 name = "accountIdsRaw"
                 minLength = "0"
-                maxLength = "1000"
+                maxLength = BanAppealsUtils.FIELD_CHARACTER_LIMIT.toString()
 
                 attributes["bliss-post"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/form/account-ids"
                 attributes["bliss-swap:200"] = "body (innerHTML) -> #account-ids-output (innerHTML)"
@@ -216,7 +217,7 @@ fun FlowContent.banAppealForm(
                 attributes["loritta-ban-appeal-attribute"] = "true"
                 name = "whatDidYouDo"
                 minLength = "0"
-                maxLength = "1000"
+                maxLength = BanAppealsUtils.FIELD_CHARACTER_LIMIT.toString()
             }
 
             characterCounter("[name='whatDidYouDo']")
@@ -242,7 +243,7 @@ fun FlowContent.banAppealForm(
                 attributes["loritta-ban-appeal-attribute"] = "true"
                 name = "whyDidYouBreakThem"
                 minLength = "0"
-                maxLength = "1000"
+                maxLength = BanAppealsUtils.FIELD_CHARACTER_LIMIT.toString()
             }
 
             characterCounter("[name='whyDidYouBreakThem']")
@@ -268,7 +269,7 @@ fun FlowContent.banAppealForm(
                 attributes["loritta-ban-appeal-attribute"] = "true"
                 name = "whyShouldYouBeUnbanned"
                 minLength = "0"
-                maxLength = "1000"
+                maxLength = BanAppealsUtils.FIELD_CHARACTER_LIMIT.toString()
             }
 
             characterCounter("[name='whyShouldYouBeUnbanned']")
@@ -289,7 +290,7 @@ fun FlowContent.banAppealForm(
                 attributes["loritta-ban-appeal-attribute"] = "true"
                 name = "additionalComments"
                 minLength = "0"
-                maxLength = "1000"
+                maxLength = BanAppealsUtils.FIELD_CHARACTER_LIMIT.toString()
             }
 
             characterCounter("[name='additionalComments']")

@@ -23,6 +23,7 @@ import kotlin.time.Duration.Companion.days
 
 object BanAppealsUtils {
     val BAN_APPEAL_COOLDOWN = 30.days
+    val FIELD_CHARACTER_LIMIT = 500
 
     suspend fun getCachedUserInfoForAppeal(m: LorittaBot, appeal: BanAppeal): AppealCachedUserInfo {
         if (appeal.submittedBy == appeal.userId) {

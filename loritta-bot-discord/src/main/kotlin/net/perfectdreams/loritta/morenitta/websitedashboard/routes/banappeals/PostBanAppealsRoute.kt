@@ -85,7 +85,7 @@ class PostBanAppealsRoute(website: LorittaDashboardWebServer) : RequiresUserAuth
     override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
         try {
             val request = Json.decodeFromString<BanAppealRequest>(call.receiveText())
-            if (request.whatDidYouDo.length !in 1..1000 || request.whyDidYouBreakThem.length !in 1..1000 || request.whyShouldYouBeUnbanned.length !in 1..1000 || request.additionalComments.length !in 0..1000) {
+            if (request.whatDidYouDo.length !in 1..BanAppealsUtils.FIELD_CHARACTER_LIMIT || request.whyDidYouBreakThem.length !in 1..BanAppealsUtils.FIELD_CHARACTER_LIMIT || request.whyShouldYouBeUnbanned.length !in 1..BanAppealsUtils.FIELD_CHARACTER_LIMIT || request.additionalComments.length !in 0..BanAppealsUtils.FIELD_CHARACTER_LIMIT) {
                 call.respondHtmlFragment(status = HttpStatusCode.BadRequest) {
                     blissShowToast(
                         createEmbeddedToast(
