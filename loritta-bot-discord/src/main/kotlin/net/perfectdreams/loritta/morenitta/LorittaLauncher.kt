@@ -38,193 +38,193 @@ import javax.imageio.ImageIO
  * @author MrPowerGamerBR
  */
 object LorittaLauncher {
-	private val logger by HarmonyLoggerFactory.logger {}
+    private val logger by HarmonyLoggerFactory.logger {}
 
-	@JvmStatic
-	fun main(args: Array<String>) {
-		HarmonyLoggerFactory.setLoggerCreator(HarmonyLoggerCreatorSLF4J())
+    @JvmStatic
+    fun main(args: Array<String>) {
+        HarmonyLoggerFactory.setLoggerCreator(HarmonyLoggerCreatorSLF4J())
 
-		// https://github.com/JetBrains/Exposed/issues/1356
-		TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
-		installCoroutinesDebugProbes()
+        // https://github.com/JetBrains/Exposed/issues/1356
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
+        installCoroutinesDebugProbes()
 
-		// Speeds up image loading/writing/etc
-		// https://stackoverflow.com/a/44170254/7271796
-		ImageIO.setUseCache(false)
+        // Speeds up image loading/writing/etc
+        // https://stackoverflow.com/a/44170254/7271796
+        ImageIO.setUseCache(false)
 
-		val configurationFile = File(System.getProperty("conf") ?: "./loritta.conf")
+        val configurationFile = File(System.getProperty("conf") ?: "./loritta.conf")
 
-		if (!configurationFile.exists()) {
-			println("Welcome to Loritta Morenitta! :3")
-			println("")
-			println("I want to make the world a better place... helping people, making them laugh... I hope I succeed!")
-			println("")
-			println("Before we start, you need to configure me!")
-			println("I created a file named \"loritta.conf\", there you can configure a lot of things and stuff related to me, open it on your favorite text editor and change it!")
-			println("")
-			println("After configuring the file, run me again!")
+        if (!configurationFile.exists()) {
+            println("Welcome to Loritta Morenitta! :3")
+            println("")
+            println("I want to make the world a better place... helping people, making them laugh... I hope I succeed!")
+            println("")
+            println("Before we start, you need to configure me!")
+            println("I created a file named \"loritta.conf\", there you can configure a lot of things and stuff related to me, open it on your favorite text editor and change it!")
+            println("")
+            println("After configuring the file, run me again!")
 
-			copyFromJar("/loritta.conf", "./loritta.conf")
-			copyFromJar("/emotes.conf", "./emotes.conf")
+            copyFromJar("/loritta.conf", "./loritta.conf")
+            copyFromJar("/emotes.conf", "./emotes.conf")
 
-			System.exit(1)
-			return
-		}
+            System.exit(1)
+            return
+        }
 
-		val config = readConfigurationFromFile<BaseConfig>(configurationFile)
-		logger.info { "Loaded Loritta's configuration file" }
+        val config = readConfigurationFromFile<BaseConfig>(configurationFile)
+        logger.info { "Loaded Loritta's configuration file" }
 
-		val clusterId = if (config.loritta.clusters.getClusterIdFromHostname) {
-			val hostname = HostnameUtils.getHostname()
-			hostname.substringAfterLast("-").toIntOrNull() ?: error("Clusters are enabled, but I couldn't get the Cluster ID from the hostname!")
-		} else {
-			config.loritta.clusters.clusterIdOverride ?: 1
-		}
+        val clusterId = if (config.loritta.clusters.getClusterIdFromHostname) {
+            val hostname = HostnameUtils.getHostname()
+            hostname.substringAfterLast("-").toIntOrNull() ?: error("Clusters are enabled, but I couldn't get the Cluster ID from the hostname!")
+        } else {
+            config.loritta.clusters.clusterIdOverride ?: 1
+        }
 
-		val lorittaCluster = config.loritta.clusters.instances.first { it.id == clusterId }
-		logger.info { "Loritta's Cluster ID: $clusterId (${lorittaCluster.name})" }
+        val lorittaCluster = config.loritta.clusters.instances.first { it.id == clusterId }
+        logger.info { "Loritta's Cluster ID: $clusterId (${lorittaCluster.name})" }
 
-		// Set heap dump path with Loritta's Cluster ID and the current time
-		val heapPath = System.getProperty("loritta.heapDumpPath")
+        // Set heap dump path with Loritta's Cluster ID and the current time
+        val heapPath = System.getProperty("loritta.heapDumpPath")
 
-		if (heapPath != null) {
-			val date: String = SimpleDateFormat("yyyyMMddHHmmss").format(Date())
-			val fileName = "${heapPath.removeSuffix("/")}/java_cluster${lorittaCluster.id}_" + date + ".hprof"
+        if (heapPath != null) {
+            val date: String = SimpleDateFormat("yyyyMMddHHmmss").format(Date())
+            val fileName = "${heapPath.removeSuffix("/")}/java_cluster${lorittaCluster.id}_" + date + ".hprof"
 
-			val bean = ManagementFactory.newPlatformMXBeanProxy(
-				ManagementFactory.getPlatformMBeanServer(),
-				"com.sun.management:type=HotSpotDiagnostic",
-				HotSpotDiagnosticMXBean::class.java
-			)
+            val bean = ManagementFactory.newPlatformMXBeanProxy(
+                ManagementFactory.getPlatformMBeanServer(),
+                "com.sun.management:type=HotSpotDiagnostic",
+                HotSpotDiagnosticMXBean::class.java
+            )
 
-			bean.setVMOption("HeapDumpPath", fileName)
+            bean.setVMOption("HeapDumpPath", fileName)
 
-			logger.info { "Custom heap dump path set! The heap dump path is ${fileName}..." }
-		}
+            logger.info { "Custom heap dump path set! The heap dump path is ${fileName}..." }
+        }
 
-		logger.info { "Loading languages..." }
-		val languageManager = LorittaLanguageManager(LorittaBot::class)
-		val localeManager = LocaleManager(LorittaBot::class).also { it.loadLocales() }
+        logger.info { "Loading languages..." }
+        val languageManager = LorittaLanguageManager(LorittaBot::class)
+        val localeManager = LocaleManager(LorittaBot::class).also { it.loadLocales() }
 
-		val services = Pudding.createPostgreSQLPudding(
+        val services = Pudding.createPostgreSQLPudding(
             LorittaBot.SCHEMA_VERSION,
-			config.loritta.pudding.address,
-			config.loritta.pudding.database,
-			config.loritta.pudding.username,
-			config.loritta.pudding.password
-		) {
-			metricRegistry = LorittaMetrics.appMicrometerRegistry
-		}
-		services.setupShutdownHook()
+            config.loritta.pudding.address,
+            config.loritta.pudding.database,
+            config.loritta.pudding.username,
+            config.loritta.pudding.password
+        ) {
+            metricRegistry = LorittaMetrics.appMicrometerRegistry
+        }
+        services.setupShutdownHook()
 
-		logger.info { "Started Pudding client!" }
+        logger.info { "Started Pudding client!" }
 
-		// Used for Logback
-		System.setProperty("cluster.name", config.loritta.clusters.instances.first { it.id == clusterId }.getUserAgent(config.loritta.environment))
+        // Used for Logback
+        System.setProperty("cluster.name", config.loritta.clusters.instances.first { it.id == clusterId }.getUserAgent(config.loritta.environment))
 
-		val cacheFolder = File("cache")
-		cacheFolder.mkdirs()
+        val cacheFolder = File("cache")
+        cacheFolder.mkdirs()
 
-		val initialSessions = mutableMapOf<Int, GatewaySessionData>()
-		val gatewayExtras = mutableMapOf<Int, GatewayExtrasData>()
-		val cacheDatabases = mutableMapOf<Int, Database>()
+        val initialSessions = mutableMapOf<Int, GatewaySessionData>()
+        val gatewayExtras = mutableMapOf<Int, GatewayExtrasData>()
+        val cacheDatabases = mutableMapOf<Int, Database>()
 
-		runBlocking {
-			val deferredShardsData = (lorittaCluster.minShard..lorittaCluster.maxShard).map { shardId ->
-				shardId to async(Dispatchers.IO) {
-					val shardCacheFolder = File(cacheFolder, shardId.toString())
-					shardCacheFolder.mkdirs()
-					val shardCacheDatabaseFile = File(shardCacheFolder, "cache.db")
-					// We want to always create a database, no matter if it exists or not
-					val shardCacheDatabase = Database.connect(
-						"jdbc:sqlite:${shardCacheDatabaseFile.absoluteFile}",
-						driver = "org.sqlite.JDBC"
-					)
+        runBlocking {
+            val deferredShardsData = (lorittaCluster.minShard..lorittaCluster.maxShard).map { shardId ->
+                shardId to async(Dispatchers.IO) {
+                    val shardCacheFolder = File(cacheFolder, shardId.toString())
+                    shardCacheFolder.mkdirs()
+                    val shardCacheDatabaseFile = File(shardCacheFolder, "cache.db")
+                    // We want to always create a database, no matter if it exists or not
+                    val shardCacheDatabase = Database.connect(
+                        "jdbc:sqlite:${shardCacheDatabaseFile.absoluteFile}",
+                        driver = "org.sqlite.JDBC"
+                    )
 
-					if (shardCacheDatabaseFile.exists()) {
-						// From here on out we query the data and store it
-						val (session, extras) = org.jetbrains.exposed.sql.transactions.transaction(shardCacheDatabase) {
-							val metadata = SessionCacheMetadata.selectAll()
-								.toList()
+                    if (shardCacheDatabaseFile.exists()) {
+                        // From here on out we query the data and store it
+                        val (session, extras) = org.jetbrains.exposed.sql.transactions.transaction(shardCacheDatabase) {
+                            val metadata = SessionCacheMetadata.selectAll()
+                                .toList()
 
-							val initialSessionRaw = metadata.firstOrNull { it[SessionCacheMetadata.id].value == DeviousConverter.INITIAL_SESSION_ID }?.get(SessionCacheMetadata.content)
-							val gatewayExtrasRaw = metadata.firstOrNull { it[SessionCacheMetadata.id].value == DeviousConverter.GATEWAY_EXTRAS_ID }?.get(SessionCacheMetadata.content)
+                            val initialSessionRaw = metadata.firstOrNull { it[SessionCacheMetadata.id].value == DeviousConverter.INITIAL_SESSION_ID }?.get(SessionCacheMetadata.content)
+                            val gatewayExtrasRaw = metadata.firstOrNull { it[SessionCacheMetadata.id].value == DeviousConverter.GATEWAY_EXTRAS_ID }?.get(SessionCacheMetadata.content)
 
-							if (initialSessionRaw != null && gatewayExtrasRaw != null) {
-								logger.info { "Found initial session and gateway extras for shard $shardId!" }
-								return@transaction Pair(
-									Json.decodeFromString<GatewaySessionData>(initialSessionRaw),
-									Json.decodeFromString<GatewayExtrasData>(gatewayExtrasRaw)
-								)
-							} else {
-								logger.warn { "Couldn't find initial session and gateway extras for $shardId! Skipping..." }
-								return@transaction Pair(null, null)
-							}
-						}
+                            if (initialSessionRaw != null && gatewayExtrasRaw != null) {
+                                logger.info { "Found initial session and gateway extras for shard $shardId!" }
+                                return@transaction Pair(
+                                    Json.decodeFromString<GatewaySessionData>(initialSessionRaw),
+                                    Json.decodeFromString<GatewayExtrasData>(gatewayExtrasRaw)
+                                )
+                            } else {
+                                logger.warn { "Couldn't find initial session and gateway extras for $shardId! Skipping..." }
+                                return@transaction Pair(null, null)
+                            }
+                        }
 
-						return@async Triple(shardCacheDatabase, session, extras)
-					} else {
-						org.jetbrains.exposed.sql.transactions.transaction(shardCacheDatabase) {
-							// If the file does NOT exist, we'll create tables and columns on it
-							// We could create it directly when shutting down, but this call is a bit "hefty" (taking ~30ms even if the tables are already created)
-							SchemaUtils.createMissingTablesAndColumns(
-								CachedGuilds,
-								SessionCacheMetadata
-							)
-						}
+                        return@async Triple(shardCacheDatabase, session, extras)
+                    } else {
+                        org.jetbrains.exposed.sql.transactions.transaction(shardCacheDatabase) {
+                            // If the file does NOT exist, we'll create tables and columns on it
+                            // We could create it directly when shutting down, but this call is a bit "hefty" (taking ~30ms even if the tables are already created)
+                            SchemaUtils.createMissingTablesAndColumns(
+                                CachedGuilds,
+                                SessionCacheMetadata
+                            )
+                        }
 
-						return@async Triple(shardCacheDatabase, null, null)
-					}
-				}
-			}
+                        return@async Triple(shardCacheDatabase, null, null)
+                    }
+                }
+            }
 
-			for ((shardId, deferredShardData) in deferredShardsData) {
-				val (database, session, extras) = deferredShardData.await()
-				cacheDatabases[shardId] = database
-				if (session != null)
-					initialSessions[shardId] = session
-				if (extras != null)
-					gatewayExtras[shardId] = extras
-			}
-		}
+            for ((shardId, deferredShardData) in deferredShardsData) {
+                val (database, session, extras) = deferredShardData.await()
+                cacheDatabases[shardId] = database
+                if (session != null)
+                    initialSessions[shardId] = session
+                if (extras != null)
+                    gatewayExtras[shardId] = extras
+            }
+        }
 
-		// Iniciar instância da Loritta
-		val loritta = LorittaBot(clusterId, config, languageManager, localeManager, services, cacheFolder, initialSessions, gatewayExtras, cacheDatabases)
-		loritta.start()
-	}
+        // Iniciar instância da Loritta
+        val loritta = LorittaBot(clusterId, config, languageManager, localeManager, services, cacheFolder, initialSessions, gatewayExtras, cacheDatabases)
+        loritta.start()
+    }
 
-	private fun copyFromJar(inputPath: String, outputPath: String) {
-		val inputStream = LorittaLauncher::class.java.getResourceAsStream(inputPath)
-		File(outputPath).writeBytes(inputStream.readAllBytes())
-	}
+    private fun copyFromJar(inputPath: String, outputPath: String) {
+        val inputStream = LorittaLauncher::class.java.getResourceAsStream(inputPath)
+        File(outputPath).writeBytes(inputStream.readAllBytes())
+    }
 
-	@OptIn(ExperimentalCoroutinesApi::class)
-	private fun installCoroutinesDebugProbes() {
-		// Enable coroutine names, they are visible when dumping the coroutines
-		System.setProperty("kotlinx.coroutines.debug", "on")
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun installCoroutinesDebugProbes() {
+        // Enable coroutine names, they are visible when dumping the coroutines
+        System.setProperty("kotlinx.coroutines.debug", "on")
 
-		// Enable coroutines stacktrace recovery
-		System.setProperty("kotlinx.coroutines.stacktrace.recovery", "true")
+        // Enable coroutines stacktrace recovery
+        System.setProperty("kotlinx.coroutines.stacktrace.recovery", "true")
 
-		// It is recommended to set this to false to avoid performance hits with the DebugProbes option!
-		DebugProbes.enableCreationStackTraces = false
-		DebugProbes.install()
-	}
+        // It is recommended to set this to false to avoid performance hits with the DebugProbes option!
+        DebugProbes.enableCreationStackTraces = false
+        DebugProbes.install()
+    }
 
-	/**
-	 * Parses the JSON [file] to a [T], if the file doesn't exist or if there was an issue while deserializing, the result will be null
-	 */
-	private inline fun <reified T> parseFileIfExistsNullIfException(file: File): T? {
-		return if (file.exists())
-			try {
-				Json.decodeFromString<T>(file.readText())
-			} catch (e: SerializationException) {
-				logger.warn(e) { "Failed to deserialize $file to ${T::class}! Returning null..." }
-				null
-			}
-		else {
-			logger.warn { "$file doesn't exist! Returning null..." }
-			null
-		}
-	}
+    /**
+     * Parses the JSON [file] to a [T], if the file doesn't exist or if there was an issue while deserializing, the result will be null
+     */
+    private inline fun <reified T> parseFileIfExistsNullIfException(file: File): T? {
+        return if (file.exists())
+            try {
+                Json.decodeFromString<T>(file.readText())
+            } catch (e: SerializationException) {
+                logger.warn(e) { "Failed to deserialize $file to ${T::class}! Returning null..." }
+                null
+            }
+        else {
+            logger.warn { "$file doesn't exist! Returning null..." }
+            null
+        }
+    }
 }
