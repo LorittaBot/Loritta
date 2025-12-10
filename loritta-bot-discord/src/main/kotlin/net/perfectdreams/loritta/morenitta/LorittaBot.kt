@@ -198,6 +198,8 @@ class LorittaBot(
 
 		// We multiply by 8 because... uuuh, sometimes threads get stuck due to dumb stuff that we need to fix.
 		val MESSAGE_EXECUTOR_THREADS = Runtime.getRuntime().availableProcessors() * 8
+
+        const val SCHEMA_VERSION = 122 // Bump this every time any table is added/updated!
 	}
 
 	// This needs to be created BEFORE the commands is registered because this is used in the Musical Chairs init

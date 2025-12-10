@@ -107,6 +107,7 @@ object LorittaLauncher {
 		val localeManager = LocaleManager(LorittaBot::class).also { it.loadLocales() }
 
 		val services = Pudding.createPostgreSQLPudding(
+            LorittaBot.SCHEMA_VERSION,
 			config.loritta.pudding.address,
 			config.loritta.pudding.database,
 			config.loritta.pudding.username,

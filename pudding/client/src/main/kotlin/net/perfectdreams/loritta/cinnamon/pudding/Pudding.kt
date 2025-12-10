@@ -58,6 +58,7 @@ import kotlin.concurrent.thread
 
 
 class Pudding(
+    val currentSchemaVersion: Int,
     val hikariDataSource: HikariDataSource,
     val database: Database,
     private val cachedThreadPool: ExecutorService,
@@ -67,15 +68,14 @@ class Pudding(
     companion object {
         private val logger = KotlinLogging.logger {}
         private val DRIVER_CLASS_NAME = "org.postgresql.Driver"
-        private val ISOLATION_LEVEL =
-            IsolationLevel.TRANSACTION_REPEATABLE_READ // We use repeatable read to avoid dirty and non-repeatable reads! Very useful and safe!!
-        private const val SCHEMA_VERSION = 122 // Bump this every time any table is added/updated!
+        private val ISOLATION_LEVEL = IsolationLevel.TRANSACTION_REPEATABLE_READ // We use repeatable read to avoid dirty and non-repeatable reads! Very useful and safe!!
         private val SCHEMA_ID = UUID.fromString("600556aa-2920-41c7-b26c-7717eff2d392") // This is a random unique ID, it is used for upserting the schema version
         private val lockId = "loritta-cinnamon-pudding-schema-updater".hashCode()
 
         /**
          * Creates a Pudding instance backed by a PostgreSQL database
          *
+         * @param schemaVersion the version of the schema, used for migrations
          * @param address      the PostgreSQL address
          * @param databaseName the database name in PostgreSQL
          * @param username     the PostgreSQL username
@@ -83,6 +83,7 @@ class Pudding(
          * @return a [Pudding] instance backed by a PostgreSQL database
          */
         fun createPostgreSQLPudding(
+            currentSchemaVersion: Int,
             address: String,
             databaseName: String,
             username: String,
@@ -101,6 +102,7 @@ class Pudding(
             val cachedThreadPool = Executors.newCachedThreadPool()
 
             return Pudding(
+                currentSchemaVersion,
                 hikariDataSource,
                 connectToDatabase(hikariDataSource),
                 cachedThreadPool,
@@ -450,15 +452,15 @@ class Pudding(
                                     .firstOrNull()
                                     ?.get(SchemaVersion.version)
 
-                            if (schemaVersion == SCHEMA_VERSION) {
-                                logger.info { "Database schema version matches (database: ${schemaVersion}; schema: $SCHEMA_VERSION), so we won't update any tables, yay!" }
+                            if (schemaVersion == currentSchemaVersion) {
+                                logger.info { "Database schema version matches (database: ${schemaVersion}; schema: $currentSchemaVersion), so we won't update any tables, yay!" }
                                 return@transaction true
                             } else {
-                                if (schemaVersion != null && schemaVersion > SCHEMA_VERSION) {
-                                    logger.warn { "Database schema version is newer (database: ${schemaVersion}; schema: $SCHEMA_VERSION), so we will not update the tables to avoid issues..." }
+                                if (schemaVersion != null && schemaVersion > currentSchemaVersion) {
+                                    logger.warn { "Database schema version is newer (database: ${schemaVersion}; schema: $currentSchemaVersion), so we will not update the tables to avoid issues..." }
                                     return@transaction true
                                 } else {
-                                    logger.info { "Database schema version is older (database: ${schemaVersion}; schema: $SCHEMA_VERSION), so we will update the tables, yay!" }
+                                    logger.info { "Database schema version is older (database: ${schemaVersion}; schema: $currentSchemaVersion), so we will update the tables, yay!" }
                                     databaseSchemaVersion = schemaVersion
                                 }
                             }
@@ -500,7 +502,7 @@ class Pudding(
 
                     if (databaseSchemaVersion != null) {
                         logger.info { "Running migration scripts in order..." }
-                        for (upgradeVersion in databaseSchemaVersion + 1..SCHEMA_VERSION) {
+                        for (upgradeVersion in databaseSchemaVersion + 1..currentSchemaVersion) {
                             logger.info { "Updating database schema version to $upgradeVersion..." }
 
                             val migrationScript = Pudding::class.java.getResourceAsStream(
@@ -528,7 +530,7 @@ class Pudding(
                         // But we still need to upsert the current schema version!
                         SchemaVersion.upsert(SchemaVersion.id) {
                             it[id] = SCHEMA_ID
-                            it[version] = SCHEMA_VERSION
+                            it[version] = currentSchemaVersion
                         }
                     }
 
