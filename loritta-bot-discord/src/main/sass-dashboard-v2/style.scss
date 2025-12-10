@@ -544,12 +544,14 @@ nav#left-sidebar {
                     -webkit-line-clamp: 1;
                     -webkit-box-orient: vertical;
                     display: -webkit-box;
+                    word-wrap: anywhere; // Fixes ellipsis not showing up
                 }
 
                 .section-icon {
                     width: 20px;
                     height: 20px;
                     opacity: 0.9;
+                    flex-shrink: 0; // Never attempt to shrink the icon, even if the text is overflowing
 
                     svg {
                         width: 100%;
