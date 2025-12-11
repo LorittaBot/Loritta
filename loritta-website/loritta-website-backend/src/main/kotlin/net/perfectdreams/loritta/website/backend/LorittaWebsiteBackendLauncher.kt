@@ -25,6 +25,7 @@ object LorittaWebsiteBackendLauncher {
         val languageManager = LorittaLanguageManager(LorittaWebsiteBackendLauncher::class)
 
         val services = Pudding.createPostgreSQLPudding(
+            122,
             rootConfig.pudding.address,
             rootConfig.pudding.database,
             rootConfig.pudding.username,
