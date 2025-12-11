@@ -22,7 +22,7 @@ dontForgetToGetDaily: "Psiu, não se esqueça de pegar o {dailyCommand} para nã
 
 chat:
   label: "chat"
-  description: "Inicia um drop de sonhos no ctha"
+  description: "Inicia um drop de sonhos no chat"
 
   participate: "Participar ({participantsCount})"
 
