@@ -10,6 +10,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactions
 import net.perfectdreams.loritta.common.utils.DivineInterventionTransactionEntryAction
 import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.loricoolcards.generator.utils.config.LoriCoolCardsGeneratorProductionStickersConfig
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.PaymentUtils
 import net.perfectdreams.loritta.morenitta.utils.readConfigurationFromFile
 import net.perfectdreams.loritta.serializable.StoredDivineInterventionSonhosTransaction
@@ -38,6 +39,7 @@ suspend fun main() {
     val config = readConfigurationFromFile<LoriCoolCardsGeneratorProductionStickersConfig>(configurationFile)
 
     val pudding = Pudding.createPostgreSQLPudding(
+        LorittaBot.SCHEMA_VERSION,
         config.pudding.address,
         config.pudding.database,
         config.pudding.username,

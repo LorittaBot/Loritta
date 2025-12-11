@@ -47,7 +47,6 @@ include(":loritta-dashboard:frontend")
 // ===[ MISC ]===
 include(":loritta-helper")
 include(":switch-twitch")
-include(":broker-tickers-updater")
 include(":loricoolcards-generator")
 include(":discord-chat-markdown-parser")
 include(":discord-chat-markdown-parser-samples")

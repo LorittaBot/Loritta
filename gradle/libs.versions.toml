@@ -23,8 +23,8 @@ kotlinx-coroutines-debug = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-
 
 kotlin-logging = { module = "io.github.microutils:kotlin-logging", version = "2.1.23" }
 
-kotlinWrappers-browser = { module = "org.jetbrains.kotlin-wrappers:kotlin-browser", version = "kotlinWrappers" }
-kotlinWrappers-js = { module = "org.jetbrains.kotlin-wrappers:kotlin-js", version = "kotlinWrappers" }
+kotlinWrappers-browser = { module = "org.jetbrains.kotlin-wrappers:kotlin-browser", version.ref = "kotlinWrappers" }
+kotlinWrappers-js = { module = "org.jetbrains.kotlin-wrappers:kotlin-js", version.ref = "kotlinWrappers" }
 
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }

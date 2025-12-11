@@ -819,7 +819,7 @@ fun DiscordMessageEditor(
                                         renderableSelfUser,
                                         parsedMessage,
                                         null,
-                                        verifiedIconRawHtml.rawHtml,
+                                        verifiedIconRawHtml.rawHtml.toString(),
                                         targetGuild.channels,
                                         targetGuild.roles,
                                         placeholderGroups
@@ -834,7 +834,7 @@ fun DiscordMessageEditor(
                                             content = rawMessage
                                         ),
                                         null,
-                                        verifiedIconRawHtml.rawHtml,
+                                        verifiedIconRawHtml.rawHtml.toString(),
                                         targetGuild.channels,
                                         targetGuild.roles,
                                         placeholderGroups

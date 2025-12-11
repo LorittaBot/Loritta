@@ -104,6 +104,7 @@ suspend fun generateCards(config: LoriCoolCardsGeneratorProductionStickersConfig
     val cardGensData = mutableListOf<LoriCoolCardsManager.CardGenData>()
 
     val pudding = Pudding.createPostgreSQLPudding(
+        LorittaBot.SCHEMA_VERSION,
         config.pudding.address,
         config.pudding.database,
         config.pudding.username,

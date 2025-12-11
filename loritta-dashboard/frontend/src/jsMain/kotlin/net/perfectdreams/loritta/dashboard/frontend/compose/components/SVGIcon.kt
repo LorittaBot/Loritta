@@ -8,5 +8,5 @@ import web.svg.SVGElement
 fun SVGIcon(icon: SVGIconManager.SVGIcon, attrs: SVGElement.() -> (Unit) = {}) {
     val svg = icon.html.querySelector("svg")!!.cloneNode(true) as SVGElement
     attrs.invoke(svg)
-    RawHtml(svg.outerHTML)
+    RawHtml(svg.outerHTML.toString())
 }

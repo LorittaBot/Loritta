@@ -5,6 +5,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.reactionevents.Collecte
 import net.perfectdreams.loritta.cinnamon.pudding.tables.reactionevents.ReactionEventDrops
 import net.perfectdreams.loritta.cinnamon.pudding.tables.reactionevents.ReactionEventPlayers
 import net.perfectdreams.loritta.loricoolcards.generator.utils.config.LoriCoolCardsGeneratorProductionStickersConfig
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.readConfigurationFromFile
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SortOrder
@@ -28,6 +29,7 @@ suspend fun main() {
     val config = readConfigurationFromFile<LoriCoolCardsGeneratorProductionStickersConfig>(configurationFile)
 
     val pudding = Pudding.createPostgreSQLPudding(
+        LorittaBot.SCHEMA_VERSION,
         config.pudding.address,
         config.pudding.database,
         config.pudding.username,
