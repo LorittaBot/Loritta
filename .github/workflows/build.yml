@@ -62,7 +62,7 @@ jobs:
           GRADLE_OPTS: -Xmx4096m -Xms4096m
           ORG_GRADLE_PROJECT_PerfectDreamsUsername: ${{ secrets.PERFECTDREAMS_REPO_USERNAME }}
           ORG_GRADLE_PROJECT_PerfectDreamsPassword: ${{ secrets.PERFECTDREAMS_REPO_PASSWORD }}
-        run: ./gradlew build publish -Dcommit.hash=${{ github.sha }} -Dbuild.id=${{ github.run_number }} :loritta-bot-discord:jibDockerBuild :discord-chat-message-renderer-server:jibDockerBuild :lori-api-proxy:jibDockerBuild :loritta-website:loritta-website-backend:jibDockerBuild :broker-tickers-updater:jibDockerBuild :loritta-helper:jibDockerBuild :loritta-dashboard-proxy:jibDockerBuild --scan --no-daemon
+        run: ./gradlew build publish -Dcommit.hash=${{ github.sha }} -Dbuild.id=${{ github.run_number }} :loritta-bot-discord:jibDockerBuild :discord-chat-message-renderer-server:jibDockerBuild :lori-api-proxy:jibDockerBuild :loritta-website:loritta-website-backend:jibDockerBuild :loritta-helper:jibDockerBuild :loritta-dashboard-proxy:jibDockerBuild --scan --no-daemon
 
       - name: Login and publish Docker images
         run: |
@@ -72,7 +72,6 @@ jobs:
           docker push ghcr.io/lorittabot/lori-api-proxy:latest &
           docker push ghcr.io/lorittabot/spicy-morenitta:latest &
           docker push ghcr.io/lorittabot/loritta-website-backend:latest &
-          docker push ghcr.io/lorittabot/broker-tickers-updater:latest &
           docker push ghcr.io/lorittabot/loritta-helper:latest &
           docker push ghcr.io/lorittabot/loritta-dashboard-backend-proxy:latest &
           
