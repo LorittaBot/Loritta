@@ -10,6 +10,9 @@ val generateI18nKeys = tasks.register<net.perfectdreams.i18nhelper.plugin.Genera
     languageSourceFolder.set(file("../resources/languages/pt/"))
     languageTargetFolder.set(file("$buildDir/generated/languages"))
     translationLoadTransform.set { file, map ->
+        // Remove all entries that start with "__" (they are used for additional commentaries related to the keys)
+        map.entries.removeIf { it.key.startsWith("__") }
+
         // Before, all commands locales were split up into different files, based on the category, example:
         // commands-discord.yml
         // commands:
@@ -57,7 +60,7 @@ val generateI18nKeys = tasks.register<net.perfectdreams.i18nhelper.plugin.Genera
         // So, first, we will check if the commands folder exist and, if it is, we are going to load all the files within the folder and apply a
         // auto prefix to it.
         if (file.parentFile.name == "commands") {
-            mapOf(
+            mutableMapOf(
                 "commands" to mapOf<String, Any>(
                     "command" to mapOf<String, Any>(
                         file.nameWithoutExtension to map
