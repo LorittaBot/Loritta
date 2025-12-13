@@ -9,7 +9,6 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
-import dev.freya02.discord.zstd.api.ZstdDecompressor
 import io.ktor.client.*
 import io.ktor.client.engine.java.Java
 import io.ktor.client.plugins.*
@@ -450,18 +449,6 @@ class LorittaBot(
                 if (baseUrl != null) {
                     logger.info { "Using Discord's base URL $baseUrl" }
                     setRestConfig(RestConfig().setBaseUrl("${baseUrl.removeSuffix("/")}/api/v" + JDAInfo.DISCORD_REST_VERSION + "/"))
-                }
-            }
-            .setCompressionProvider { shardId ->
-                when (shardId % 3) {
-                    0, 1 -> Compression.ZSTD
-                    else -> Compression.ZLIB
-                }
-            }
-            .setDecompressorBufferSizeHintProvider { shardId ->
-                when (shardId % 3) {
-                    1 -> ZstdDecompressor.ZSTD_RECOMMENDED_BUFFER_SIZE
-                    else -> -1 // Default
                 }
             }
             .addEventListeners(
