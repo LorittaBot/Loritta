@@ -54,6 +54,7 @@ permissions:
   messageSendPolls: "Criar Enquetes"
   useExternalApplications: "Usar Aplicativos Externos"
   pinMessages: "Fixar mensagens"
+  bypassSlowmode: "Ignorar Modo Lento"
   unknownPermission: "Permissão desconhecida"
 guildFeatures:
   inviteSplash: "Fundo de convite"
