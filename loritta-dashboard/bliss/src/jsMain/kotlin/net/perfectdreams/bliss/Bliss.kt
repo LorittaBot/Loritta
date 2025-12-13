@@ -263,7 +263,6 @@ object Bliss {
                 for (triggerName in triggers) {
                     when (triggerName) {
                         "click" -> {
-                            println("Setting up click event...")
                             element.addEventHandler(PointerEvent.CLICK) {
                                 it.preventDefault()
 
