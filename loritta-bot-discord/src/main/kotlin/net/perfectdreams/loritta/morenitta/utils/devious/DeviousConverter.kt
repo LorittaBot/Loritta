@@ -57,7 +57,11 @@ object DeviousConverter {
                 Role(
                     id = role.idLong,
                     name = role.name,
-                    color = role.colorRaw,
+                    colors = Role.RoleColors(
+                        role.colors.primaryRaw,
+                        if (role.colors.secondaryRaw != net.dv8tion.jda.api.entities.Role.DEFAULT_COLOR_RAW) role.colors.secondaryRaw else null,
+                        if (role.colors.tertiaryRaw != net.dv8tion.jda.api.entities.Role.DEFAULT_COLOR_RAW) role.colors.tertiaryRaw else null,
+                    ),
                     hoist = role.isHoisted,
                     icon = role.icon?.iconId,
                     unicode_emoji = role.icon?.emoji,
@@ -339,7 +343,7 @@ object DeviousConverter {
     data class Role(
         val id: Long,
         val name: String,
-        val color: Int,
+        val colors: RoleColors,
         val hoist: Boolean,
         val icon: String?,
         val unicode_emoji: String?,
@@ -348,7 +352,14 @@ object DeviousConverter {
         val managed: Boolean,
         val mentionable: Boolean,
         val tags: RoleTags
-    )
+    ) {
+        @Serializable
+        data class RoleColors(
+            val primary_color: Int,
+            val secondary_color: Int?,
+            val tertiary_color: Int?
+        )
+    }
 
     @Serializable
     data class RoleTags(
