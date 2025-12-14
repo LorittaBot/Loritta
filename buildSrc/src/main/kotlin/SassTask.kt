@@ -29,6 +29,10 @@ import kotlin.concurrent.thread
  */
 @CacheableTask
 abstract class SassTask : DefaultTask() {
+    companion object {
+        private val GLOBAL_MUTEX = Any()
+    }
+
     @get:PathSensitive(PathSensitivity.RELATIVE)
     @get:InputFile
     abstract val inputSass: RegularFileProperty
@@ -78,36 +82,42 @@ abstract class SassTask : DefaultTask() {
 
         val dartSassOsTempFolder = File(dartSassTempFolder, folderName)
 
-        FileChannel.open(lockFile.toPath(),
-            java.nio.file.StandardOpenOption.CREATE,
-            java.nio.file.StandardOpenOption.WRITE
-        ).use { channel ->
-            channel.lock().use {
-                if (!dartSassOsTempFolder.exists()) {
-                    dartSassOsTempFolder.mkdirs()
-                    logger.lifecycle("Downloading SASS from $url to $dartSassOsTempFolder... Hang tight!")
-                    val sass = URL(url).readBytes()
+        // We use double mutex because we may be running Gradle on a single JVM and, when this happens
+        // the lock call throws a OverlappingFileLockException
+        // So we have a global mutex that is used for the single JVM cases :)
+        synchronized(GLOBAL_MUTEX) {
+            FileChannel.open(
+                lockFile.toPath(),
+                java.nio.file.StandardOpenOption.CREATE,
+                java.nio.file.StandardOpenOption.WRITE
+            ).use { channel ->
+                channel.lock().use {
+                    if (!dartSassOsTempFolder.exists()) {
+                        dartSassOsTempFolder.mkdirs()
+                        logger.lifecycle("Downloading SASS from $url to $dartSassOsTempFolder... Hang tight!")
+                        val sass = URL(url).readBytes()
 
-                    val extension = if (url.endsWith(".zip"))
-                        "zip"
-                    else
-                        "tar.gz"
+                        val extension = if (url.endsWith(".zip"))
+                            "zip"
+                        else
+                            "tar.gz"
 
-                    // Write the file...
-                    val sassZipFile = File(dartSassTempFolder, "sass.$extension")
-                    sassZipFile.writeBytes(sass)
+                        // Write the file...
+                        val sassZipFile = File(dartSassTempFolder, "sass.$extension")
+                        sassZipFile.writeBytes(sass)
 
-                    // And then extract it!
-                    project.copy {
-                        if (extension == "zip") {
-                            this.from(project.zipTree(sassZipFile))
-                        } else {
-                            this.from(project.tarTree(project.resources.gzip(sassZipFile)))
+                        // And then extract it!
+                        project.copy {
+                            if (extension == "zip") {
+                                this.from(project.zipTree(sassZipFile))
+                            } else {
+                                this.from(project.tarTree(project.resources.gzip(sassZipFile)))
+                            }
+                            this.into(dartSassOsTempFolder)
                         }
-                        this.into(dartSassOsTempFolder)
+                    } else {
+                        logger.lifecycle("SASS version $sassVersion already exists :)")
                     }
-                } else {
-                    logger.lifecycle("SASS version $sassVersion already exists :)")
                 }
             }
         }
