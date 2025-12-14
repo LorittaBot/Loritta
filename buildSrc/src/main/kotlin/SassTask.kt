@@ -6,6 +6,7 @@ import org.gradle.api.tasks.*
 import org.gradle.work.InputChanges
 import java.io.File
 import java.net.URL
+import java.nio.channels.FileChannel
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 
@@ -72,35 +73,43 @@ abstract class SassTask : DefaultTask() {
 
         // The "caches" folder is used by Paperweight, so that's why I used the same name
         val dartSassTempFolder = File(project.rootDir, ".gradle/caches/dart-sass-$sassVersion")
+        val lockFile = File(dartSassTempFolder, "$folderName.install.lock")
         dartSassTempFolder.mkdirs()
 
         val dartSassOsTempFolder = File(dartSassTempFolder, folderName)
 
-        if (!dartSassOsTempFolder.exists()) {
-            dartSassOsTempFolder.mkdirs()
-            logger.lifecycle("Downloading SASS from $url to $dartSassOsTempFolder... Hang tight!")
-            val sass = URL(url).readBytes()
+        FileChannel.open(lockFile.toPath(),
+            java.nio.file.StandardOpenOption.CREATE,
+            java.nio.file.StandardOpenOption.WRITE
+        ).use { channel ->
+            channel.lock().use {
+                if (!dartSassOsTempFolder.exists()) {
+                    dartSassOsTempFolder.mkdirs()
+                    logger.lifecycle("Downloading SASS from $url to $dartSassOsTempFolder... Hang tight!")
+                    val sass = URL(url).readBytes()
 
-            val extension = if (url.endsWith(".zip"))
-                "zip"
-            else
-                "tar.gz"
+                    val extension = if (url.endsWith(".zip"))
+                        "zip"
+                    else
+                        "tar.gz"
 
-            // Write the file...
-            val sassZipFile = File(dartSassTempFolder, "sass.$extension")
-            sassZipFile.writeBytes(sass)
+                    // Write the file...
+                    val sassZipFile = File(dartSassTempFolder, "sass.$extension")
+                    sassZipFile.writeBytes(sass)
 
-            // And then extract it!
-            project.copy {
-                if (extension == "zip") {
-                    this.from(project.zipTree(sassZipFile))
+                    // And then extract it!
+                    project.copy {
+                        if (extension == "zip") {
+                            this.from(project.zipTree(sassZipFile))
+                        } else {
+                            this.from(project.tarTree(project.resources.gzip(sassZipFile)))
+                        }
+                        this.into(dartSassOsTempFolder)
+                    }
                 } else {
-                    this.from(project.tarTree(project.resources.gzip(sassZipFile)))
+                    logger.lifecycle("SASS version $sassVersion already exists :)")
                 }
-                this.into(dartSassOsTempFolder)
             }
-        } else {
-            logger.lifecycle("SASS version $sassVersion already exists :)")
         }
 
         // Execute SASS
