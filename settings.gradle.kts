@@ -7,10 +7,6 @@ pluginManagement {
     }
 }
 
-plugins {
-    id("org.gradle.toolchains.foojay-resolver-convention") version "0.7.0"
-}
-
 rootProject.name = "loritta-parent"
 
 // ===[ PUDDING ]===
@@ -55,3 +51,4 @@ include(":discord-chat-message-renderer-server")
 include(":lori-api-proxy")
 include(":lori-public-http-api-common")
 include(":yokye")
+include(":freya-debug-compression")
