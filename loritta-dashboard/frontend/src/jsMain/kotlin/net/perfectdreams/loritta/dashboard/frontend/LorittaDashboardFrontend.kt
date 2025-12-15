@@ -9,6 +9,7 @@ import net.perfectdreams.bliss.Bliss
 import net.perfectdreams.bliss.BlissBeforeBlissRequestPrepare
 import net.perfectdreams.bliss.BlissProcessRequestJsonBody
 import net.perfectdreams.bliss.getBlissComponent
+import net.perfectdreams.loritta.dashboard.frontend.toasts.ToastManager
 import net.perfectdreams.loritta.dashboard.BlissHex
 import net.perfectdreams.loritta.dashboard.EmbeddedModal
 import net.perfectdreams.loritta.dashboard.EmbeddedToast
@@ -16,7 +17,6 @@ import net.perfectdreams.loritta.dashboard.frontend.components.*
 import net.perfectdreams.loritta.dashboard.frontend.modals.ModalManager
 import net.perfectdreams.loritta.dashboard.frontend.shimeji.entities.LorittaPlayer
 import net.perfectdreams.loritta.dashboard.frontend.soundeffects.SoundEffects
-import net.perfectdreams.loritta.dashboard.frontend.toasts.ToastManager
 import net.perfectdreams.loritta.dashboard.frontend.utils.isUserUsingAdBlock
 import net.perfectdreams.loritta.dashboard.frontend.utils.isUserUsingAdGuardSpanishPortuguese
 import net.perfectdreams.loritta.dashboard.frontend.utils.isUserUsingBraveShields
@@ -32,13 +32,33 @@ import web.events.addEventHandler
 import web.html.HTMLElement
 import web.pointer.CLICK
 import web.pointer.PointerEvent
+import kotlin.random.Random
 
 class LorittaDashboardFrontend {
     companion object {
         lateinit var INSTANCE: LorittaDashboardFrontend
     }
 
-    val toastManager = ToastManager(this)
+    val toastManager = ToastManager(
+        { toastListElement ->
+            document.addEventHandler(EventType<CustomEvent<SaveBarState>>("loritta:saveBarState")) {
+                if (it.detail.active) {
+                    toastListElement.classList.add(ClassName("save-bar-active"))
+                } else {
+                    toastListElement.classList.remove(ClassName("save-bar-active"))
+                }
+            }
+        }
+    ) {
+        soundEffects.toastNotificationWhoosh.play(
+            0.1,
+            // Change the speed/pitch to avoid the sound effect sounding repetitive
+            Random.nextDouble(
+                0.975,
+                1.025
+            )
+        )
+    }
     val modalManager = ModalManager(this)
     val soundEffects = SoundEffects(this)
 

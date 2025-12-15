@@ -1,37 +1,34 @@
 package net.perfectdreams.loritta.dashboard.frontend.toasts
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.html.HTMLTag
 import kotlinx.html.div
 import kotlinx.html.dom.append
 import kotlinx.html.unsafe
-import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.dashboard.EmbeddedToast
-import net.perfectdreams.loritta.dashboard.frontend.LorittaDashboardFrontend
-import net.perfectdreams.loritta.dashboard.frontend.components.SaveBarState
 import web.animations.ANIMATION_END
 import web.animations.AnimationEvent
 import web.cssom.ClassName
 import web.dom.ElementId
 import web.dom.document
-import web.events.CustomEvent
-import web.events.EventType
 import web.events.addEventHandler
 import web.html.HTMLElement
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.seconds
 
-class ToastManager(private val m: LorittaDashboardFrontend) {
+class ToastManager(
+    val onToastListRendered: (HTMLElement) -> (Unit) = {},
+    val onToastAdded: (ToastWithAnimationState) -> (Unit) = {}
+) {
     lateinit var toastListElement: HTMLElement
 
     fun showToast(embeddedToast: EmbeddedToast) {
         val descriptionHtml = embeddedToast.descriptionHtml
 
-        LorittaDashboardFrontend.INSTANCE.toastManager.showToast(
+        showToast(
             when (embeddedToast.type) {
                 EmbeddedToast.Type.INFO -> Toast.Type.INFO
                 EmbeddedToast.Type.SUCCESS -> Toast.Type.SUCCESS
@@ -55,15 +52,8 @@ class ToastManager(private val m: LorittaDashboardFrontend) {
             body
         )
 
-        val toastWithAnimationState = ToastWithAnimationState(toast, Random.nextLong(0, Long.MAX_VALUE), mutableStateOf(ToastWithAnimationState.State.ADDED))
-        m.soundEffects.toastNotificationWhoosh.play(
-            0.1,
-            // Change the speed/pitch to avoid the sound effect sounding repetitive
-            Random.nextDouble(
-                0.975,
-                1.025
-            )
-        )
+        val toastWithAnimationState = ToastWithAnimationState(toast, Random.nextLong(0, Long.MAX_VALUE), MutableStateFlow(ToastWithAnimationState.State.ADDED))
+        onToastAdded(toastWithAnimationState)
 
         val toastElement = document.createElement("div").apply {
             id = ElementId("toast-${toastWithAnimationState.toastId}")
@@ -126,19 +116,13 @@ class ToastManager(private val m: LorittaDashboardFrontend) {
         this.toastListElement = toastListElement
         element.append(toastListElement)
 
-        document.addEventHandler(EventType<CustomEvent<SaveBarState>>("loritta:saveBarState")) {
-            if (it.detail.active) {
-                toastListElement.classList.add(ClassName("save-bar-active"))
-            } else {
-                toastListElement.classList.remove(ClassName("save-bar-active"))
-            }
-        }
+        onToastListRendered(toastListElement)
     }
 
     class ToastWithAnimationState(
         val toast: Toast,
         val toastId: Long,
-        val state: MutableState<State>,
+        val state: MutableStateFlow<State>,
     ) {
         enum class State {
             ADDED,
