@@ -36,7 +36,7 @@ kotlin {
                 implementation(project(":loritta-dashboard:message-renderer"))
                 implementation(project(":loritta-dashboard:loritta-shimeji-common"))
 
-                implementation("net.perfectdreams.compose.htmldreams:html-core:1.9.0-beta01")
+                implementation("net.perfectdreams.compose.htmldreams:html-core:1.9.0-beta1-v2")
                 implementation(compose.runtime)
 
                 implementation(libs.kotlinWrappers.browser)

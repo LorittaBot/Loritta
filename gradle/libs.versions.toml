@@ -9,7 +9,7 @@ logback = "1.5.18"
 kotlinx-coroutines = "1.10.2"
 jib = "3.4.5"
 compose = "1.10.0-beta01"
-kotlinWrappers = "2025.11.3"
+kotlinWrappers = "2025.12.6"
 jdaKtx = "e7b0e50683"
 
 [libraries]

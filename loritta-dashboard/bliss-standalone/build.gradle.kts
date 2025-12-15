@@ -27,8 +27,8 @@ kotlin {
         jsMain {
             dependencies {
                 implementation(project(":loritta-dashboard:bliss"))
-                implementation("org.jetbrains.kotlin-wrappers:kotlin-browser:2025.9.4")
-                implementation("org.jetbrains.kotlin-wrappers:kotlin-js:2025.9.4")
+                implementation(libs.kotlinWrappers.browser)
+                implementation(libs.kotlinWrappers.js)
             }
         }
     }
