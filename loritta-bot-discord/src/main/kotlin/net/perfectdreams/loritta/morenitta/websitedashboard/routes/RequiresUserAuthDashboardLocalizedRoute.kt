@@ -1,13 +1,10 @@
 package net.perfectdreams.loritta.morenitta.websitedashboard.routes
 
-import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.*
 import io.ktor.server.plugins.origin
-import io.ktor.server.request.host
 import io.ktor.server.request.uri
 import io.ktor.server.request.userAgent
 import io.ktor.server.response.respondRedirect
-import io.ktor.server.response.respondText
 import kotlinx.html.body
 import kotlinx.html.head
 import kotlinx.html.meta
@@ -25,7 +22,7 @@ import net.perfectdreams.loritta.morenitta.website.utils.extensions.hostFromHead
 import net.perfectdreams.loritta.morenitta.websitedashboard.AuthenticationState
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
-import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.AuthenticationStateUtils
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.serializable.ColorTheme
@@ -70,7 +67,7 @@ abstract class RequiresUserAuthDashboardLocalizedRoute(website: LorittaDashboard
     abstract suspend fun onAuthenticatedRequest(
         call: ApplicationCall,
         i18nContext: I18nContext,
-        session: UserSession,
+        session: LorittaUserSession,
         userPremiumPlan: UserPremiumPlans,
         theme: ColorTheme,
         shimejiSettings: LorittaShimejiSettings

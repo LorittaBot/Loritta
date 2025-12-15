@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.morenitta.websitedashboard.routes.profiles
 
 import io.ktor.server.application.*
 import kotlinx.html.*
-import kotlinx.html.stream.createHTML
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesigns
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesignsPayments
@@ -11,11 +10,10 @@ import net.perfectdreams.loritta.common.utils.Rarity
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
+import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserDashboardSection
-import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.dashboardBase
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.profileDesignItemInfo
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.trinketInfo
@@ -27,7 +25,7 @@ import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jetbrains.exposed.sql.selectAll
 
 class ProfilesUserDashboardRoute(website: LorittaDashboardWebServer) : RequiresUserAuthDashboardLocalizedRoute(website, "/profiles") {
-    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
+    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: LorittaUserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
         // Hacky!
         val locale = website.loritta.localeManager.getLocaleById(LocaleManager.DEFAULT_LOCALE_ID)
 

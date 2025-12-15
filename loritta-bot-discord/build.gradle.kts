@@ -19,6 +19,7 @@ dependencies {
     implementation(project(":yokye"))
     implementation(project(":loritta-dashboard:message-renderer"))
     implementation(project(":loritta-dashboard:loritta-shimeji-common"))
+    implementation(project(":discord-oauth2"))
 
     // Logging
     implementation("net.perfectdreams.harmony.logging:harmonylogging-slf4j:1.0.2")

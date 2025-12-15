@@ -4,7 +4,6 @@ import io.ktor.server.application.*
 import io.ktor.server.request.receiveText
 import kotlinx.datetime.Instant
 import kotlinx.html.*
-import kotlinx.html.stream.createHTML
 import kotlinx.serialization.json.Json
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ShipEffects
@@ -12,9 +11,8 @@ import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.dashboard.EmbeddedModal
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
-import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.ButtonStyle
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.discordButton
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresUserAuthDashboardLocalizedRoute
@@ -32,7 +30,7 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.selectAll
 
 class PostPreBuyShipEffectsUserDashboardRoute(website: LorittaDashboardWebServer) : RequiresUserAuthDashboardLocalizedRoute(website, "/ship-effects/pre-buy") {
-    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
+    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: LorittaUserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
         val body = call.receiveText()
         val request = Json.decodeFromString<BuyShipEffectsRequest>(body)
 

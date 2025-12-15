@@ -23,7 +23,7 @@ import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.tw
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.GuildDashboardSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
-import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.*
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.PathBuilder
@@ -42,7 +42,7 @@ import org.jetbrains.exposed.sql.selectAll
 import kotlin.math.ceil
 
 class AddTwitchChannelGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/twitch/add") {
-    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans, member: Member) {
+    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: LorittaUserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans, member: Member) {
         data class AddNewGuildTwitchChannelTransactionResult(
             val valueOfTheDonationKeysEnabledOnThisGuild: Double,
             val premiumTracksCount: Long,

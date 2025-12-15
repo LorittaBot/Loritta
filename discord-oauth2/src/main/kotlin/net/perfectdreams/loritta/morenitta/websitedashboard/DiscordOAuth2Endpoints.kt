@@ -1,11 +1,9 @@
 package net.perfectdreams.loritta.morenitta.websitedashboard
 
-import net.perfectdreams.loritta.morenitta.LorittaBot
-
-class DiscordOAuth2Endpoints(val loritta: LorittaBot) {
+class DiscordOAuth2Endpoints(val discordBaseUrl: String?) {
     private fun discordBaseUrl(forceDiscord: Boolean): String {
-        val baseUrl = if (!forceDiscord && loritta.config.loritta.discord.baseUrl != null) {
-            loritta.config.loritta.discord.baseUrl
+        val baseUrl = if (!forceDiscord && discordBaseUrl != null) {
+            discordBaseUrl
         } else "https://discord.com/"
         return baseUrl.removeSuffix("/")
     }

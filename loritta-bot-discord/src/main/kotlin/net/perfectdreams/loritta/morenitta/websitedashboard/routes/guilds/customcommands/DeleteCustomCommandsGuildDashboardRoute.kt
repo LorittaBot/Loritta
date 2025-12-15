@@ -12,7 +12,7 @@ import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.dashboard.EmbeddedToast
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
-import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.customGuildCommands
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseAllModals
@@ -27,7 +27,7 @@ import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.selectAll
 
 class DeleteCustomCommandsGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/custom-commands/{entryId}") {
-    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans, member: Member) {
+    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: LorittaUserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans, member: Member) {
         val entryId = call.parameters.getOrFail("entryId").toLong()
 
         val result = website.loritta.transaction {

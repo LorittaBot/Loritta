@@ -13,8 +13,8 @@ import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControl
 import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls.handleI18nString
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
+import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserDashboardSection
-import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.dashboardBase
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.userDashLeftSidebarEntries
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
@@ -22,7 +22,7 @@ import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 
 class PocketLorittaUserDashboardRoute(website: LorittaDashboardWebServer) : RequiresUserAuthDashboardLocalizedRoute(website, "/user-app") {
-    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
+    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: LorittaUserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
         call.respondHtml {
             dashboardBase(
                 i18nContext,

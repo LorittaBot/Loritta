@@ -8,7 +8,6 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.toJavaInstant
 import kotlinx.html.*
-import kotlinx.html.stream.createHTML
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
@@ -24,14 +23,12 @@ import net.perfectdreams.loritta.dashboard.EmbeddedToast
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
-import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.shipEffectsBribes
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresUserAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseAllModals
-import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissSoundEffect
@@ -58,7 +55,7 @@ class PostBuyShipEffectsUserDashboardRoute(website: LorittaDashboardWebServer) :
         val shipPercentage: Int,
     )
 
-    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
+    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: LorittaUserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
         val request = Json.decodeFromString<BuyShipEffectsRequest>(call.receiveText())
 
         if (request.shipPercentage !in 0..100) {

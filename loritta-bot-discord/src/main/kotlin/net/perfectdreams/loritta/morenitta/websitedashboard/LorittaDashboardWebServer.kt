@@ -29,6 +29,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.ChooseYourSer
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.DashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.DiscordAddBotUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.DiscordLoginUserDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.PostFavoriteGuildUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.PocketLorittaUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.banappeals.PostBanAppealsOverrideRoute
@@ -508,7 +509,7 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
         PostBanAppealsAccountIdsRoute(this)
     )
 
-    val oauth2Endpoints = DiscordOAuth2Endpoints(this.loritta)
+    val oauth2Manager = DiscordOAuth2Manager(this.loritta.http, this.loritta.config.loritta.discord.baseUrl)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     fun start() {
@@ -619,7 +620,7 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
     /**
      * Gets the user's website session
      */
-    suspend fun getSession(call: ApplicationCall): UserSession? {
+    suspend fun getSession(call: ApplicationCall): LorittaUserSession? {
         val accessTime = OffsetDateTime.now(ZoneOffset.UTC)
 
         val sessionToken = call.request.cookies[WEBSITE_SESSION_COOKIE] ?: return null
@@ -685,9 +686,12 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
             )
         }
 
-        return UserSession(
+        return LorittaUserSession(
             loritta,
             this,
+            oauth2Manager,
+            loritta.config.loritta.discord.applicationId,
+            loritta.config.loritta.discord.clientSecret,
             sessionData[UserWebsiteSessions.token],
             sessionData[UserWebsiteSessions.userId],
             DiscordUserCredentials(

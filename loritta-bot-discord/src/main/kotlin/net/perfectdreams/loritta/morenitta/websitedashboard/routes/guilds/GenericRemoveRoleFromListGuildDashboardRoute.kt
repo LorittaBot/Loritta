@@ -13,7 +13,7 @@ import net.perfectdreams.loritta.dashboard.EmbeddedToast
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
-import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.configurableRoleList
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
@@ -32,7 +32,7 @@ open class GenericRemoveRoleFromListGuildDashboardRoute(
         val roles: Set<Long> = setOf()
     )
 
-    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans, member: Member) {
+    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: LorittaUserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans, member: Member) {
         val request = Json.decodeFromString<RemoveRoleRequest>(call.receiveText())
 
         // We COULD validate that the role is not on the list, but it really doesn't matter, right?

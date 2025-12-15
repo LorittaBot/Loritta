@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.morenitta.websitedashboard.routes.apikeys
 
 import io.ktor.server.application.ApplicationCall
-import kotlinx.html.body
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserLorittaAPITokens
 import net.perfectdreams.loritta.common.utils.TokenType
@@ -10,9 +9,8 @@ import net.perfectdreams.loritta.dashboard.EmbeddedToast
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.utils.Base58
-import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
-import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.tokenInputWrapper
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresUserAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
@@ -24,7 +22,7 @@ import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 
 class PostGenerateAPIKeyUserDashboardRoute(website: LorittaDashboardWebServer) : RequiresUserAuthDashboardLocalizedRoute(website, "/api-keys/generate") {
-    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
+    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: LorittaUserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
         val requesterId = session.userId
 
         val apiToken = website.loritta.transaction {

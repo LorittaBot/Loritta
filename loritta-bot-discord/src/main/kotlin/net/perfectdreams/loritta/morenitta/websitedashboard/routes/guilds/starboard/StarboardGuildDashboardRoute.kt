@@ -21,7 +21,7 @@ import net.perfectdreams.loritta.morenitta.website.components.EtherealGambiUtils
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.GuildDashboardSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
-import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.channelSelectMenu
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.dashboardBase
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldInformationBlock
@@ -41,7 +41,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.serializable.ColorTheme
 
 class StarboardGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/starboard") {
-    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans, member: Member) {
+    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: LorittaUserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans, member: Member) {
         val starboardConfig = website.loritta.transaction {
             val serverConfig = website.loritta.getOrCreateServerConfig(guild.idLong)
             serverConfig.starboardConfig

@@ -21,7 +21,7 @@ import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.bluesky.BlueskyProfile
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
-import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.sectionConfig
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.trackedBlueskyProfileEditor
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.trackedProfileEditorSaveBar
@@ -43,7 +43,7 @@ class PostBlueskyProfileGuildDashboardRoute(website: LorittaDashboardWebServer) 
         val message: String
     )
 
-    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans, member: Member) {
+    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: LorittaUserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans, member: Member) {
         val request = Json.decodeFromString<CreateBlueskyProfileTrackRequest>(call.receiveText())
 
         // Revalidate again just to be sure that the user isn't adding an invalid did

@@ -14,7 +14,7 @@ import net.perfectdreams.loritta.i18n.I18nKeys
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.GuildDashboardSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
-import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.ButtonStyle
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.configurableRoleRewards
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.dashboardBase
@@ -44,7 +44,7 @@ import net.perfectdreams.loritta.serializable.levels.RoleGiveType
 import org.jetbrains.exposed.sql.selectAll
 
 class XPRewardsGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/xp-rewards") {
-    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans, member: Member) {
+    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: LorittaUserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans, member: Member) {
         val (levelConfig, rolesByExperience) = website.loritta.transaction {
             val serverConfig = website.loritta.getOrCreateServerConfig(guild.idLong)
 

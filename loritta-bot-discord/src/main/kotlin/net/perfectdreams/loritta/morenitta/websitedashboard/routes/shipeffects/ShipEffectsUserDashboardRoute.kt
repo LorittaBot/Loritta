@@ -23,8 +23,8 @@ import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControl
 import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls.handleI18nString
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
+import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserDashboardSection
-import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.dashboardBase
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldInformationBlock
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldTitle
@@ -42,7 +42,7 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.selectAll
 
 class ShipEffectsUserDashboardRoute(website: LorittaDashboardWebServer) : RequiresUserAuthDashboardLocalizedRoute(website, "/ship-effects") {
-    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
+    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: LorittaUserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
         val activeShipEffects = website.loritta.transaction {
             ShipEffects.selectAll()
                 .where {

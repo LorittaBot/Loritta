@@ -16,6 +16,7 @@ include(":pudding:client")
 include(":common")
 include(":loritta-serializable-commons")
 include(":loritta-placeholders")
+include(":discord-oauth2")
 
 // ===[ LORITTA ]===
 include(":loritta-bot-discord")

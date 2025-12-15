@@ -20,6 +20,7 @@ import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.websitedashboard.AuthenticationState
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
+import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.ButtonStyle
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.discordButtonLink
@@ -33,7 +34,7 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.selectAll
 
 abstract class RequiresGuildAuthDashboardLocalizedRoute(website: LorittaDashboardWebServer, originalGuildPath: String) : RequiresUserAuthDashboardLocalizedRoute(website, "/guilds/{guildId}$originalGuildPath") {
-    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
+    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: LorittaUserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
         val guildId = call.parameters.getOrFail("guildId").toLong()
 
         val guild = website.loritta.lorittaShards.getGuildById(guildId)
@@ -115,7 +116,7 @@ abstract class RequiresGuildAuthDashboardLocalizedRoute(website: LorittaDashboar
     abstract suspend fun onAuthenticatedGuildRequest(
         call: ApplicationCall,
         i18nContext: I18nContext,
-        session: UserSession,
+        session: LorittaUserSession,
         userPremiumPlan: UserPremiumPlans,
         theme: ColorTheme,
         shimejiSettings: LorittaShimejiSettings,

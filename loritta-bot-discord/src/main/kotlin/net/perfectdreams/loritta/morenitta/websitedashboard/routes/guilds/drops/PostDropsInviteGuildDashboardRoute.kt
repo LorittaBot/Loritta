@@ -18,7 +18,7 @@ import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
-import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.ColorTheme
@@ -30,7 +30,7 @@ class PostDropsInviteGuildDashboardRoute(website: LorittaDashboardWebServer) : R
         val inviteId: String?
     )
 
-    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans, member: Member) {
+    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: LorittaUserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans, member: Member) {
         val request = Json.decodeFromString<ValidateDropInviteRequest>(call.receiveText())
         if (request.inviteId == null) {
             call.respondHtmlFragment {

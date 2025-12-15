@@ -19,7 +19,7 @@ import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControl
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.GuildDashboardSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
-import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.dashboardBase
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.genericSaveBar
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.guildDashLeftSidebarEntries
@@ -35,7 +35,7 @@ import org.jetbrains.exposed.sql.selectAll
 import java.time.Instant
 
 class ReactionEventsGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/reaction-events") {
-    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans, member: Member) {
+    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: LorittaUserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans, member: Member) {
         val reactionEventsConfig = website.loritta.transaction {
             ReactionEventsConfigs.selectAll()
                 .where {

@@ -17,7 +17,7 @@ import net.perfectdreams.loritta.morenitta.profile.profiles.RawProfileCreator
 import net.perfectdreams.loritta.morenitta.profile.profiles.StaticProfileCreator
 import net.perfectdreams.loritta.morenitta.utils.ImageFormat
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
-import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
 import net.perfectdreams.loritta.serializable.Background
 import net.perfectdreams.loritta.serializable.BackgroundStorageType
 import net.perfectdreams.loritta.serializable.ColorTheme
@@ -27,7 +27,7 @@ import java.util.EnumSet
 import javax.imageio.ImageIO
 
 class UserProfilePreviewDashboardRoute(website: LorittaDashboardWebServer) : RequiresUserAuthDashboardLocalizedRoute(website, "/profile-preview") {
-    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
+    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: LorittaUserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
         val profile = website.loritta.getOrCreateLorittaProfile(session.userId)
         val settings = website.loritta.newSuspendedTransaction {
             profile.settings

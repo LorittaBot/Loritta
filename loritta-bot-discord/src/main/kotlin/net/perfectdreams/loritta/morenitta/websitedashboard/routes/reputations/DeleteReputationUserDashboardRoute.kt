@@ -6,24 +6,14 @@ import io.ktor.server.util.getOrFail
 import kotlinx.html.hr
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
-import net.perfectdreams.loritta.cinnamon.pudding.tables.MarriageLoveLetters
-import net.perfectdreams.loritta.cinnamon.pudding.tables.MarriageParticipants
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Reputations
-import net.perfectdreams.loritta.cinnamon.pudding.tables.UserMarriages
-import net.perfectdreams.loritta.cinnamon.pudding.tables.UserNotificationSettings
-import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
-import net.perfectdreams.loritta.common.utils.NotificationType
 import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.dashboard.EmbeddedToast
 import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.MarriageCommand.Companion.LOVE_LETTER_AFFINITY
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.MarriageCommand.Companion.LOVE_LETTER_PRICE
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.MarriageCommand.MarriageLetterExecutor.MarriageLetterResult
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
-import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.goBackToPreviousSectionButton
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.reputations
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresUserAuthDashboardLocalizedRoute
@@ -33,23 +23,17 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissSoundEffe
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.ColorTheme
-import net.perfectdreams.loritta.serializable.StoredLoriCoolCardsFinishedAlbumSonhosTransaction
-import net.perfectdreams.loritta.serializable.StoredMarriageLoveLetterTransaction
 import net.perfectdreams.loritta.serializable.StoredReputationDeletedTransaction
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SortOrder
-import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.update
-import java.time.Instant
 
 class DeleteReputationUserDashboardRoute(website: LorittaDashboardWebServer) : RequiresUserAuthDashboardLocalizedRoute(website, "/reputations/{reputationId}") {
-    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
+    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: LorittaUserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
         val reputationId = call.parameters.getOrFail("reputationId").toLong()
         val page = (call.request.queryParameters["page"]?.toIntOrNull() ?: 1).coerceAtLeast(1)
 

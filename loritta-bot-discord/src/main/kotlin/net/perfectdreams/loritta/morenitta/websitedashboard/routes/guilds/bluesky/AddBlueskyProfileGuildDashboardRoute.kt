@@ -21,7 +21,7 @@ import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.bl
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.GuildDashboardSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
-import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.dashboardBase
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.goBackToPreviousSectionButton
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.guildDashLeftSidebarEntries
@@ -36,7 +36,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.serializable.ColorTheme
 
 class AddBlueskyProfileGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/bluesky/add") {
-    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans, member: Member) {
+    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: LorittaUserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans, member: Member) {
         // "Handles are not case-sensitive, which means they can be safely normalized from user input to lower-case (ASCII) form."
         // https://atproto.com/specs/handle
         val handle = call.parameters

@@ -11,15 +11,13 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.B
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
-import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.MiscellaneousConfig
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
-import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondConfigSaved
 import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jetbrains.exposed.sql.upsert
-import java.time.Instant
 import java.time.OffsetDateTime
 
 class PutBomDiaECiaGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/bom-dia-e-cia") {
@@ -30,7 +28,7 @@ class PutBomDiaECiaGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
         val useBlockedChannelsAsAllowedChannels: Boolean
     )
 
-    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans, member: Member) {
+    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: LorittaUserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans, member: Member) {
         val request = Json.decodeFromString<SaveBomDiaECiaRequest>(call.receiveText())
 
         website.loritta.transaction {

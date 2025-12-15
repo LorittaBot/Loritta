@@ -1,33 +1,27 @@
 package net.perfectdreams.loritta.morenitta.websitedashboard
 
-import io.ktor.client.request.get
-import io.ktor.client.request.header
-import io.ktor.client.request.post
-import io.ktor.client.request.setBody
-import io.ktor.client.request.url
-import io.ktor.client.statement.bodyAsText
+import io.ktor.client.HttpClient
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Parameters
-import io.ktor.http.content.TextContent
+import io.ktor.http.content.*
 import io.ktor.http.formUrlEncode
 import io.ktor.http.userAgent
-import io.ktor.server.application.ApplicationCall
 import kotlinx.serialization.json.Json
 import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
-import net.perfectdreams.loritta.cinnamon.pudding.tables.UserWebsiteSessions
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.websitedashboard.discord.DiscordOAuth2Authorization
 import net.perfectdreams.loritta.morenitta.websitedashboard.discord.DiscordOAuth2Guild
 import net.perfectdreams.loritta.morenitta.websitedashboard.discord.DiscordOAuth2UserIdentification
-import org.jetbrains.exposed.sql.update
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
-import java.util.Base64
+import kotlin.text.startsWith
 
-class UserSession(
-    val loritta: LorittaBot,
-    val dashboardWebServer: LorittaDashboardWebServer,
+abstract class UserSession(
+    val oauth2Manager: DiscordOAuth2Manager,
+    val applicationId: Long,
+    val clientSecret: String,
     val websiteToken: String,
     val userId: Long,
     val discordUserCredentials: DiscordUserCredentials,
@@ -61,8 +55,8 @@ class UserSession(
     suspend fun retrieveUserIdentification(): DiscordOAuth2UserIdentification {
         refreshTokenIfExpired()
 
-        val userIdentificationHttpResponse = loritta.http.get {
-            url(dashboardWebServer.oauth2Endpoints.UserIdentificationEndpoint)
+        val userIdentificationHttpResponse = oauth2Manager.http.get {
+            url(oauth2Manager.oauth2Endpoints.UserIdentificationEndpoint)
             userAgent(USER_AGENT)
 
             header("Authorization", "Bearer ${this@UserSession.discordUserCredentials.accessToken}")
@@ -76,10 +70,8 @@ class UserSession(
         try {
             val userIdentification = Json.decodeFromString<DiscordOAuth2UserIdentification>(userIdentificationAsText)
 
-            dashboardWebServer.loritta.transaction {
-                dashboardWebServer.updateCachedDiscordUserIdentification(userIdentification)
-            }
-            
+            updateCachedUserInfoExternally(userIdentification)
+
             this.cachedUserIdentification = UserIdentification(
                 userIdentification.id,
                 userIdentification.username,
@@ -104,20 +96,11 @@ class UserSession(
         }
     }
 
-    suspend fun retrieveUserIdentificationOrNullIfUnauthorizedRevokeToken(call: ApplicationCall): DiscordOAuth2UserIdentification? {
-        try {
-            return retrieveUserIdentification()
-        } catch (_: UnauthorizedTokenException) {
-            dashboardWebServer.revokeLorittaSessionCookie(call)
-            return null
-        }
-    }
-
     suspend fun retrieveUserGuilds(): List<DiscordOAuth2Guild> {
         refreshTokenIfExpired()
 
-        val userGuildsHttpResponse = loritta.http.get {
-            url(dashboardWebServer.oauth2Endpoints.UserGuildsEndpoint)
+        val userGuildsHttpResponse = oauth2Manager.http.get {
+            url(oauth2Manager.oauth2Endpoints.UserGuildsEndpoint)
             userAgent(USER_AGENT)
             header("Authorization", "Bearer ${this@UserSession.discordUserCredentials.accessToken}")
         }
@@ -145,13 +128,13 @@ class UserSession(
         val parameters = Parameters.build {
             append("grant_type", "refresh_token")
             append("refresh_token", this@UserSession.discordUserCredentials.refreshToken)
-            append("client_id", loritta.config.loritta.discord.applicationId.toString())
-            append("client_secret", loritta.config.loritta.discord.clientSecret)
+            append("client_id", applicationId.toString())
+            append("client_secret", clientSecret)
         }
 
         val generatedAt = OffsetDateTime.now(ZoneOffset.UTC)
-        val authorizationHttpResponse = loritta.http.post {
-            url(dashboardWebServer.oauth2Endpoints.OAuth2TokenEndpoint)
+        val authorizationHttpResponse = oauth2Manager.http.post {
+            url(oauth2Manager.oauth2Endpoints.OAuth2TokenEndpoint)
 
             setBody(TextContent(parameters.formUrlEncode(), ContentType.Application.FormUrlEncoded))
         }
@@ -165,17 +148,7 @@ class UserSession(
         try {
             val authorization = Json.decodeFromString<DiscordOAuth2Authorization>(authorizationAsText)
 
-            loritta.transaction {
-                UserWebsiteSessions.update({ UserWebsiteSessions.token eq this@UserSession.websiteToken }) {
-                    it[UserWebsiteSessions.refreshedAt] = generatedAt
-                    it[UserWebsiteSessions.lastUsedAt] = generatedAt
-                    it[UserWebsiteSessions.tokenType] = authorization.tokenType
-                    it[UserWebsiteSessions.accessToken] = authorization.accessToken
-                    it[UserWebsiteSessions.expiresIn] = authorization.expiresIn
-                    it[UserWebsiteSessions.refreshToken] = authorization.refreshToken
-                    it[UserWebsiteSessions.scope] = authorization.scope.split(" ")
-                }
-            }
+            updateWebsiteSessionExternally(generatedAt, authorization)
 
             this.discordUserCredentials.accessToken = authorization.accessToken
             this.discordUserCredentials.refreshToken = authorization.refreshToken
@@ -186,6 +159,9 @@ class UserSession(
             throw e
         }
     }
+
+    abstract suspend fun updateCachedUserInfoExternally(userIdentification: DiscordOAuth2UserIdentification)
+    abstract suspend fun updateWebsiteSessionExternally(generatedAt: OffsetDateTime, authorization: DiscordOAuth2Authorization)
 
     data class UserIdentification(
         val id: Long,

@@ -10,22 +10,15 @@ import kotlinx.html.li
 import kotlinx.html.p
 import kotlinx.html.ul
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BlacklistedGuilds
 import net.perfectdreams.loritta.common.utils.Emotes
-import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
-import net.perfectdreams.loritta.morenitta.websitedashboard.GuildDashboardSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
-import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
-import net.perfectdreams.loritta.morenitta.websitedashboard.components.dashboardBase
-import net.perfectdreams.loritta.morenitta.websitedashboard.components.guildDashLeftSidebarEntries
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresUserAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.serializable.ColorTheme
@@ -40,7 +33,7 @@ class AddedLorittaGuildDashboardRoute(website: LorittaDashboardWebServer) : Requ
     override suspend fun onAuthenticatedRequest(
         call: ApplicationCall,
         i18nContext: I18nContext,
-        session: UserSession,
+        session: LorittaUserSession,
         userPremiumPlan: UserPremiumPlans,
         theme: ColorTheme,
         shimejiSettings: LorittaShimejiSettings

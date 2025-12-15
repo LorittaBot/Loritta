@@ -2,8 +2,6 @@ package net.perfectdreams.loritta.morenitta.websitedashboard.routes.sonhosshop
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.*
-import kotlinx.html.body
-import kotlinx.html.stream.createHTML
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Payments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosBundles
@@ -12,9 +10,8 @@ import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.dashboard.EmbeddedToast
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.morenitta.website.routes.user.dashboard.ClaimedWebsiteCoupon
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
-import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.sonhosBundlesWithCouponInput
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresUserAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
@@ -27,7 +24,7 @@ import org.jetbrains.exposed.sql.selectAll
 import java.time.Instant
 
 class PostSonhosShopApplyCouponUserDashboardRoute(website: LorittaDashboardWebServer) : RequiresUserAuthDashboardLocalizedRoute(website, "/sonhos-shop/coupon") {
-    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
+    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: LorittaUserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
         val now = Instant.now()
 
         val couponCode = call.parameters["couponCode"]

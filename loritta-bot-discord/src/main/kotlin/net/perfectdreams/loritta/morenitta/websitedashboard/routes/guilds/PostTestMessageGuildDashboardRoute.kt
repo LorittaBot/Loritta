@@ -24,7 +24,7 @@ import net.perfectdreams.loritta.morenitta.utils.MessageUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.asUserNameCodeBlockPreviewTag
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
-import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissSoundEffect
@@ -49,7 +49,7 @@ class PostTestMessageGuildDashboardRoute(website: LorittaDashboardWebServer) : R
         val placeholders: Map<String, String>
     )
 
-    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans, member: Member) {
+    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: LorittaUserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans, member: Member) {
         val request = Json.decodeFromString<TestMessageRequest>(call.receiveText())
         val channelId = request.channelId
         val userId = member.user.idLong

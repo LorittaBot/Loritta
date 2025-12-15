@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.morenitta.websitedashboard.routes.reputations
 
 import io.ktor.server.application.*
 import io.ktor.server.util.getOrFail
-import kotlinx.html.div
 import kotlinx.html.hr
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Reputations
@@ -11,18 +10,13 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
+import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserDashboardSection
-import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
-import net.perfectdreams.loritta.morenitta.websitedashboard.components.ButtonStyle
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.dashboardBase
-import net.perfectdreams.loritta.morenitta.websitedashboard.components.discordButton
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.goBackToPreviousSectionButton
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.reputationInfo
-import net.perfectdreams.loritta.morenitta.websitedashboard.components.simpleImageWithTextHeader
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.userDashLeftSidebarEntries
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresUserAuthDashboardLocalizedRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedConfirmDeletionModal
-import net.perfectdreams.loritta.morenitta.websitedashboard.utils.openModalOnClick
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jetbrains.exposed.sql.and
@@ -30,7 +24,7 @@ import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.selectAll
 
 class ViewGivenReputationUserDashboardRoute(website: LorittaDashboardWebServer) : RequiresUserAuthDashboardLocalizedRoute(website, "/reputations/given/{reputationId}") {
-    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
+    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: LorittaUserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
         val reputationId = call.parameters.getOrFail("reputationId").toLong()
         val page = call.request.queryParameters["page"]?.toInt() ?: 1
 

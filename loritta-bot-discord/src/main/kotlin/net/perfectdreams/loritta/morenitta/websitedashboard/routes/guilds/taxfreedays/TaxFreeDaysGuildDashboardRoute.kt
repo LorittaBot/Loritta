@@ -5,7 +5,6 @@ import kotlinx.html.*
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.DropsConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.TaxFreeDaysConfigs
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
@@ -19,10 +18,8 @@ import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControl
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.GuildDashboardSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
-import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.dashboardBase
-import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldInformationBlock
-import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldTitle
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrapper
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrappers
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.genericSaveBar
@@ -40,7 +37,7 @@ import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jetbrains.exposed.sql.selectAll
 
 class TaxFreeDaysGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/tax-free-days") {
-    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans, member: Member) {
+    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: LorittaUserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans, member: Member) {
         val taxFreeDays = website.loritta.transaction {
             TaxFreeDaysConfigs.selectAll()
                 .where {

@@ -3,8 +3,6 @@ package net.perfectdreams.loritta.morenitta.websitedashboard.routes.profileprese
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.request.receiveText
-import kotlinx.html.body
-import kotlinx.html.stream.createHTML
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import net.perfectdreams.i18nhelper.core.I18nContext
@@ -12,9 +10,8 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.UserCreatedProfilePrese
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.dashboard.EmbeddedToast
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
-import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.profilePresetsSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresUserAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
@@ -34,7 +31,7 @@ class PostCreateProfilePresetsUserDashboardRoute(website: LorittaDashboardWebSer
         val presetName: String
     )
 
-    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
+    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: LorittaUserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
         val request = Json.decodeFromString<CreateProfilePresetRequest>(call.receiveText())
         if (request.presetName.isBlank()) {
             call.respondHtmlFragment(status = HttpStatusCode.BadRequest) {

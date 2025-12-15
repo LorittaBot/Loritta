@@ -5,35 +5,27 @@ import kotlinx.html.classes
 import kotlinx.html.div
 import kotlinx.html.h1
 import kotlinx.html.hr
-import kotlinx.html.img
 import kotlinx.html.p
 import kotlinx.html.span
 import kotlinx.html.style
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Reputations
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
-import net.perfectdreams.loritta.i18n.I18nKeys
 import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
-import net.perfectdreams.loritta.morenitta.website.components.EtherealGambiUtils.etherealGambiImg
-import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls
-import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls.appendAsFormattedText
-import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls.handleI18nString
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
+import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserDashboardSection
-import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.*
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresUserAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.SVGIcons
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
-import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.selectAll
 
 class ReputationsUserDashboardRoute(website: LorittaDashboardWebServer) : RequiresUserAuthDashboardLocalizedRoute(website, "/reputations") {
-    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
+    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: LorittaUserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
         val (givenReputations, receivedReputations) = website.loritta.transaction {
             val givenReputations = Reputations.selectAll()
                 .where {

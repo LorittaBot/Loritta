@@ -11,14 +11,14 @@ import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.redirect
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.website.views.UserBannedView
-import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
 
 abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: String) : LocalizedRoute(loritta, path) {
 	companion object {
 		private val logger by HarmonyLoggerFactory.logger {}
 	}
 
-	abstract suspend fun onAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext, session: UserSession)
+	abstract suspend fun onAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext, session: LorittaUserSession)
 
 	override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext) {
         val session = loritta.dashboardWebServer.getSession(call)

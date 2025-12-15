@@ -12,6 +12,7 @@ import net.perfectdreams.loritta.morenitta.website.routes.RequiresDiscordLoginLo
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.trueIp
 import net.perfectdreams.loritta.morenitta.website.views.dashboard.user.UserReputationView
+import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.UnauthorizedTokenException
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import org.jetbrains.exposed.sql.SortOrder
@@ -27,11 +28,11 @@ class UserReputationRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRo
 		super.onUnauthenticatedRequest(call, locale, i18nContext)
 	}
 
-	override suspend fun onAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext, session: UserSession) {
+	override suspend fun onAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext, session: LorittaUserSession) {
 		createReputationPage(call, i18nContext, locale, session)
 	}
 
-	suspend fun createReputationPage(call: ApplicationCall, i18nContext: I18nContext, locale: BaseLocale, session: UserSession?) {
+	suspend fun createReputationPage(call: ApplicationCall, i18nContext: I18nContext, locale: BaseLocale, session: LorittaUserSession?) {
 		val userId = call.parameters["userId"] ?: return
 
 		val user = loritta.lorittaShards.retrieveUserById(userId)!!

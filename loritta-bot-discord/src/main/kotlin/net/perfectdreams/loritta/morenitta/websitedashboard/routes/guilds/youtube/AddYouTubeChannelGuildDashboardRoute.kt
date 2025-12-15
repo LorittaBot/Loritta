@@ -17,7 +17,7 @@ import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.yo
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.GuildDashboardSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
-import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.dashboardBase
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.goBackToPreviousSectionButton
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.guildDashLeftSidebarEntries
@@ -33,7 +33,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFra
 import net.perfectdreams.loritta.serializable.ColorTheme
 
 class AddYouTubeChannelGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/youtube/add") {
-    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans, member: Member) {
+    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: LorittaUserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans, member: Member) {
         val channelLink = call.parameters.getOrFail("channelLink")
         val result = YouTubeWebUtils.getYouTubeChannelInfoFromURL(website.loritta, channelLink)
 

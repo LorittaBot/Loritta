@@ -4,8 +4,6 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.*
 import io.ktor.server.request.receiveText
-import kotlinx.html.*
-import kotlinx.html.stream.createHTML
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import net.perfectdreams.dreamstorageservice.data.api.CreateImageLinkRequest
@@ -21,12 +19,10 @@ import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.morenitta.utils.SimpleImageInfo
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import net.perfectdreams.loritta.morenitta.utils.toBufferedImage
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
-import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresUserAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseAllModals
-import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
@@ -51,7 +47,7 @@ class PostUploadBackgroundUserDashboardRoute(website: LorittaDashboardWebServer)
         )
     }
 
-    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
+    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: LorittaUserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
         if (!userPremiumPlan.customBackground) {
             call.respondHtmlFragment(status = HttpStatusCode.BadRequest) {
                 blissShowToast(

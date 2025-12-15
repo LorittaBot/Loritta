@@ -1,13 +1,11 @@
 package net.perfectdreams.loritta.morenitta.websitedashboard.routes.banappeals
 
-import dev.minn.jda.ktx.interactions.components.Thumbnail
 import dev.minn.jda.ktx.messages.MessageCreate
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import kotlinx.html.a
 import kotlinx.html.b
-import kotlinx.html.div
 import kotlinx.html.h1
 import kotlinx.html.p
 import kotlinx.serialization.Serializable
@@ -17,13 +15,10 @@ import net.perfectdreams.etherealgambi.data.api.UploadFileResponse
 import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.banappeals.BanAppealResult
-import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BanAppeals
-import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.dashboard.EmbeddedToast
 import net.perfectdreams.loritta.morenitta.banappeals.BanAppealsUtils
-import net.perfectdreams.loritta.morenitta.banappeals.BanAppealsUtils.createAppealDeniedMessage
 import net.perfectdreams.loritta.morenitta.banappeals.BanAppealsUtils.createAppealReceivedMessage
 import net.perfectdreams.loritta.morenitta.rpc.LorittaRPC
 import net.perfectdreams.loritta.morenitta.rpc.payloads.NotifyBanAppealRequest
@@ -34,16 +29,13 @@ import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
-import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
+import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.heroText
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.heroWrapper
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.simpleHeroImage
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresUserAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissSoundEffect
-import net.perfectdreams.loritta.morenitta.websitedashboard.utils.configSaved
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
-import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.serializable.UserBannedState
@@ -82,7 +74,7 @@ class PostBanAppealsRoute(website: LorittaDashboardWebServer) : RequiresUserAuth
         )
     }
 
-    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: UserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
+    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: LorittaUserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
         try {
             val request = Json.decodeFromString<BanAppealRequest>(call.receiveText())
             if (request.whatDidYouDo.length !in 1..BanAppealsUtils.FIELD_CHARACTER_LIMIT || request.whyDidYouBreakThem.length !in 1..BanAppealsUtils.FIELD_CHARACTER_LIMIT || request.whyShouldYouBeUnbanned.length !in 1..BanAppealsUtils.FIELD_CHARACTER_LIMIT || request.additionalComments.length !in 0..BanAppealsUtils.FIELD_CHARACTER_LIMIT) {
