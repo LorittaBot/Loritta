@@ -19,6 +19,7 @@ include(":loritta-placeholders")
 include(":discord-oauth2")
 include(":loritta-dashboard:toast-common")
 include(":loritta-dashboard:toast-manager")
+include(":ssr-svg-icon-manager")
 
 // ===[ LORITTA ]===
 include(":loritta-bot-discord")

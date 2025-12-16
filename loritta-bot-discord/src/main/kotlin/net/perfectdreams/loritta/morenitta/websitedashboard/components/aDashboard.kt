@@ -8,6 +8,7 @@ import kotlinx.html.div
 import kotlinx.html.span
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.morenitta.websitedashboard.svgicons.SVGIcon
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.SVGIcons
 
 val SWAP_EVERYTHING_DASHBOARD = "#right-sidebar-contents (innerHTML) -> #right-sidebar-contents (innerHTML), .entries (innerHTML) -> .entries (innerHTML), #mobile-left-sidebar-title (innerHTML) -> #mobile-left-sidebar-title (innerHTML), #that-wasnt-very-cash-money-of-you-fixed-sidebar (innerHTML) -> #that-wasnt-very-cash-money-of-you-fixed-sidebar (innerHTML)"
@@ -21,7 +22,7 @@ fun FlowContent.sectionEntry(href: String? = null, selected: Boolean, block: A.(
     }
 }
 
-fun FlowContent.sectionEntryContent(text: String, icon: SVGIcons.SVGIcon, new: Boolean) {
+fun FlowContent.sectionEntryContent(text: String, icon: SVGIcon, new: Boolean) {
     div(classes = "section-icon") {
         svgIcon(icon)
     }
@@ -44,7 +45,7 @@ fun FlowContent.aDashboardSidebarEntry(
     i18nContext: I18nContext,
     href: String,
     text: String,
-    icon: SVGIcons.SVGIcon,
+    icon: SVGIcon,
     selected: Boolean,
     new: Boolean
 ) {

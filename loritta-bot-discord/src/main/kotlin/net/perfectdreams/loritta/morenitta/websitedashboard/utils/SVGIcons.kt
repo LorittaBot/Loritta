@@ -1,12 +1,8 @@
 package net.perfectdreams.loritta.morenitta.websitedashboard.utils
 
-import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
-import org.jsoup.nodes.Element
-import org.jsoup.parser.ParseSettings
-import org.jsoup.parser.Parser
-import kotlin.io.path.readText
+import net.perfectdreams.loritta.morenitta.websitedashboard.svgicons.SVGIconManager
 
-object SVGIcons {
+object SVGIcons : SVGIconManager(SVGIcons::class) {
     val Star = register("star", "/svg_icons/phosphor/fill/star.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
     val StarOutline = register("star_outline", "/svg_icons/phosphor/regular/star.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
     val Sparkles = register("sparkles", "/svg_icons/phosphor/fill/sparkles.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
@@ -78,45 +74,4 @@ object SVGIcons {
     val PlayStation = register("playstation", "/svg_icons/brands/playstation.svg", SVGOptions.REMOVE_FILLS, SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
 
     val FolderColored = register("folder-colored", "/svg_icons/twemoji/1f4c1.svg")
-
-    fun register(name: String, path: String, vararg options: SVGOptions): SVGIcon {
-        val svgFile = SVGIcons::class.getPathFromResources(path) ?: error("Could not find SVG file $path")
-        val svgText = svgFile.readText(Charsets.UTF_8)
-
-        val parser = Parser.htmlParser()
-        parser.settings(ParseSettings(true, true)) // tag, attribute preserve case, if not stuff like viewBox breaks!
-
-        val document = parser.parseInput(svgText, "/")
-
-        val svgTag = document.getElementsByTag("svg")
-            .first()!!
-
-        if (SVGOptions.REPLACE_FILLS_WITH_CURRENT_COLOR in options) {
-            // Replace "fill" tags into "currentColor"
-            val fill = svgTag.getElementsByAttribute("fill")
-
-            if (fill.attr("fill") != "none")
-                fill.attr("fill", "currentColor")
-        }
-
-        if (SVGOptions.REMOVE_FILLS in options) {
-            // Remove all "fill" tags
-            svgTag.getElementsByAttribute("fill")
-                .removeAttr("fill")
-        }
-
-        if (SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT in options) {
-            svgTag.attr("fill", "currentColor")
-        }
-
-        return SVGIcon(svgTag)
-    }
-
-    class SVGIcon(val html: Element)
-
-    enum class SVGOptions {
-        REPLACE_FILLS_WITH_CURRENT_COLOR,
-        SET_CURRENT_COLOR_FILL_ON_ROOT,
-        REMOVE_FILLS
-    }
 }

@@ -6,6 +6,7 @@ import kotlinx.html.classes
 import kotlinx.html.div
 import kotlinx.html.h1
 import kotlinx.html.img
+import net.perfectdreams.loritta.morenitta.websitedashboard.svgicons.SVGIcon
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.SVGIcons
 import org.jsoup.nodes.Element
 
@@ -31,7 +32,7 @@ fun FlowContent.simpleImageWithTextHeader(
 
 fun FlowContent.simpleImageWithTextHeader(
     text: String,
-    svgIcon: SVGIcons.SVGIcon,
+    svgIcon: SVGIcon,
     block: Element.() -> (Unit) = {}
 ) {
     div(classes = "simple-image-with-text-header") {
