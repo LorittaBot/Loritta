@@ -10,6 +10,7 @@ import kotlinx.coroutines.future.await
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.entities.emoji.Emoji
@@ -20,7 +21,6 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.MinesSinglePlayerMatche
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
 import net.perfectdreams.loritta.common.commands.CommandCategory
-import net.perfectdreams.loritta.common.emojis.LorittaEmojis
 import net.perfectdreams.loritta.common.utils.*
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -317,9 +317,9 @@ class MinesCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                                                 StoredMinesPayoutTransaction(matchId.matchId)
                                             )
 
-                                            finishMines(matchId, payoutValue, minesPlayfield.getPickedCount(), false)
+                                            finishMines(matchId, payoutValue, minesPlayfield.getPickedCount(), false, MinesResult.PAYOUT, minesPlayfield.tiles, minesPlayfield.pickedTiles, null, null)
                                         } else {
-                                            finishMines(matchId, null, minesPlayfield.getPickedCount(), false)
+                                            finishMines(matchId, null, minesPlayfield.getPickedCount(), false, MinesResult.PAYOUT, minesPlayfield.tiles, minesPlayfield.pickedTiles, null, null)
                                         }
                                     }
 
@@ -356,7 +356,7 @@ class MinesCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                             }
                             MinesPlayfield.PickResult.Mine -> {
                                 loritta.transaction {
-                                    finishMines(matchId, null, minesPlayfield.getPickedCount(), false)
+                                    finishMines(matchId, null, minesPlayfield.getPickedCount(), false, MinesResult.CLICKED_ON_A_MINE, minesPlayfield.tiles, minesPlayfield.pickedTiles, playfieldX, playfieldY)
                                 }
 
                                 hook.await()
@@ -383,9 +383,9 @@ class MinesCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                                                 StoredMinesPayoutTransaction(matchId.matchId)
                                             )
 
-                                            finishMines(matchId, payoutValue, minesPlayfield.getPickedCount(), false)
+                                            finishMines(matchId, payoutValue, minesPlayfield.getPickedCount(), false, MinesResult.PAYOUT, minesPlayfield.tiles, minesPlayfield.pickedTiles, playfieldX, playfieldY)
                                         } else {
-                                            finishMines(matchId, null, minesPlayfield.getPickedCount(), false)
+                                            finishMines(matchId, null, minesPlayfield.getPickedCount(), false, MinesResult.PAYOUT, minesPlayfield.tiles, minesPlayfield.pickedTiles, playfieldX, playfieldY)
                                         }
                                     }
                                 }
@@ -487,13 +487,13 @@ class MinesCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                                                     StoredMinesPayoutTransaction(matchId.matchId)
                                                 )
 
-                                                finishMines(matchId, payoutValue, pickedCount, true)
+                                                finishMines(matchId, payoutValue, pickedCount, true, MinesResult.PAYOUT, minesPlayfield.tiles, minesPlayfield.pickedTiles, null, null)
                                             } else {
-                                                finishMines(matchId, null, pickedCount, true)
+                                                finishMines(matchId, null, pickedCount, true, MinesResult.PAYOUT, minesPlayfield.tiles, minesPlayfield.pickedTiles, null, null)
                                             }
                                         }
                                         MinesPlayfield.PayoutResult.NoTilesPicked -> {
-                                            finishMines(matchId, null, pickedCount, true)
+                                            finishMines(matchId, null, pickedCount, true, MinesResult.TIME_EXPIRED_NO_TILES_CLICKED, minesPlayfield.tiles, minesPlayfield.pickedTiles, null, null)
                                         }
                                     }
                                 }
@@ -774,7 +774,12 @@ class MinesCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             matchId: MinesMatchId,
             payout: Long?,
             pickedTiles: Int,
-            autoStand: Boolean
+            autoStand: Boolean,
+            result: MinesResult,
+            playfield: Array<Array<Boolean>>,
+            pickedPlayfield: Array<Array<Boolean>>,
+            lastBombX: Int?,
+            lastBombY: Int?
         ) {
             // Mark this match as finished!
             MinesSinglePlayerMatches.update({ MinesSinglePlayerMatches.id eq matchId.matchId }) {
@@ -785,7 +790,11 @@ class MinesCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 it[MinesSinglePlayerMatches.payout] = payout
                 it[MinesSinglePlayerMatches.pickedTiles] = pickedTiles
                 it[MinesSinglePlayerMatches.autoStand] = autoStand
-                it[MinesSinglePlayerMatches.autoStand] = autoStand
+                it[MinesSinglePlayerMatches.result] = result
+                it[MinesSinglePlayerMatches.playfield] = Json.encodeToString(playfield)
+                it[MinesSinglePlayerMatches.pickedPlayfield] = Json.encodeToString(pickedPlayfield)
+                it[MinesSinglePlayerMatches.lastBombX] = lastBombX
+                it[MinesSinglePlayerMatches.lastBombY] = lastBombY
             }
         }
 

@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.cinnamon.pudding.tables
 
 import net.perfectdreams.exposedpowerutils.sql.javatime.timestampWithTimeZone
 import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.jsonb
+import net.perfectdreams.loritta.common.utils.MinesResult
 import org.jetbrains.exposed.dao.id.LongIdTable
 
 object MinesSinglePlayerMatches : LongIdTable() {
@@ -18,4 +19,9 @@ object MinesSinglePlayerMatches : LongIdTable() {
     val autoStand = bool("auto_stand")
     val startedAt = timestampWithTimeZone("started_at").index()
     val finishedAt = timestampWithTimeZone("finished_at").nullable().index()
+    val result = enumerationByName<MinesResult>("result", 64).nullable()
+    val playfield = jsonb("playfield").nullable()
+    val pickedPlayfield = jsonb("picked_playfield").nullable()
+    val lastBombX = integer("last_tile_x").nullable()
+    val lastBombY = integer("last_tile_y").nullable()
 }
