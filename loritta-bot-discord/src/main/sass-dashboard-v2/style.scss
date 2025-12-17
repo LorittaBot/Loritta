@@ -1115,6 +1115,11 @@ aside#that-wasnt-very-cash-money-of-you-fixed-sidebar-reserved-space {
     }
 }
 
+.discord-server-name {
+    // Fixes a bug where gigantic names causes cards to overflow
+    word-wrap: anywhere;
+}
+
 .discord-server-icon {
     // We set some text related things here because this is also used for guilds that do not have an icon
     display: flex;
