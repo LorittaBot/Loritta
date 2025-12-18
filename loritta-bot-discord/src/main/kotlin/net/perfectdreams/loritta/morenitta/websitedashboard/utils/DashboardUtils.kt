@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.morenitta.websitedashboard.utils
 import io.ktor.server.application.ApplicationCall
 import kotlinx.html.FlowContent
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.dashboard.EmbeddedToast
+import net.perfectdreams.luna.toasts.EmbeddedToast
 import net.perfectdreams.loritta.i18n.I18nKeysData
 
 /**

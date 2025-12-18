@@ -4,11 +4,10 @@ import kotlinx.html.FlowContent
 import kotlinx.html.div
 import kotlinx.html.fileInput
 import kotlinx.html.h1
-import kotlinx.html.img
 import kotlinx.html.style
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.dashboard.EmbeddedModal
+import net.perfectdreams.luna.modals.EmbeddedModal
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.defaultModalCloseButton

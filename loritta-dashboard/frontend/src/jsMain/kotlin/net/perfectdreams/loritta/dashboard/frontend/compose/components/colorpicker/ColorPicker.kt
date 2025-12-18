@@ -3,12 +3,11 @@ package net.perfectdreams.loritta.dashboard.frontend.compose.components.colorpic
 import androidx.compose.runtime.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import net.perfectdreams.luna.modals.Modal
 import net.perfectdreams.loritta.dashboard.frontend.LorittaDashboardFrontend
 import net.perfectdreams.loritta.dashboard.frontend.compose.components.DiscordButton
 import net.perfectdreams.loritta.dashboard.frontend.compose.components.DiscordButtonType
-import net.perfectdreams.loritta.dashboard.frontend.compose.components.RawHtml
 import net.perfectdreams.loritta.dashboard.frontend.compose.components.SVGIcon
-import net.perfectdreams.loritta.dashboard.frontend.modals.Modal
 import net.perfectdreams.loritta.dashboard.frontend.utils.SVGIconManager
 import org.jetbrains.compose.web.attributes.ButtonType
 import org.jetbrains.compose.web.attributes.type

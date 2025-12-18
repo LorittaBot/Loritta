@@ -5,7 +5,7 @@ import kotlinx.html.id
 import kotlinx.html.textInput
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.dashboard.EmbeddedModal
+import net.perfectdreams.luna.modals.EmbeddedModal
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedModal

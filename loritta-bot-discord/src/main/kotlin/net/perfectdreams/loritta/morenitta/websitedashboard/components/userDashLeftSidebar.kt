@@ -10,7 +10,7 @@ import kotlinx.html.select
 import kotlinx.html.style
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
-import net.perfectdreams.loritta.dashboard.EmbeddedModal
+import net.perfectdreams.luna.modals.EmbeddedModal
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData

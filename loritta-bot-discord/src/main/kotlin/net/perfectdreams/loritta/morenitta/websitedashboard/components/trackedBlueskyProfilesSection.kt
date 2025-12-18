@@ -1,25 +1,16 @@
 package net.perfectdreams.loritta.morenitta.websitedashboard.components
 
 import kotlinx.html.FlowContent
-import kotlinx.html.div
 import kotlinx.html.id
-import kotlinx.html.img
-import kotlinx.html.span
-import kotlinx.html.style
 import kotlinx.html.textInput
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.TrackedBlueskyAccounts
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.TrackedYouTubeAccounts
-import net.perfectdreams.loritta.dashboard.EmbeddedModal
+import net.perfectdreams.luna.modals.EmbeddedModal
 import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.bluesky.BlueskyProfile
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
-import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedConfirmDeletionModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.defaultModalCloseButton
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.openModalOnClick
-import org.jetbrains.exposed.sql.ResultRow
 
 fun FlowContent.trackedBlueskyProfilesSection(
     i18nContext: I18nContext,

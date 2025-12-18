@@ -6,9 +6,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import js.array.asList
 import kotlinx.serialization.json.Json
-import net.perfectdreams.bliss.BlissComponent
+import net.perfectdreams.luna.bliss.BlissComponent
+import net.perfectdreams.luna.modals.EmbeddedModal
 import net.perfectdreams.loritta.dashboard.BlissHex
-import net.perfectdreams.loritta.dashboard.EmbeddedModal
 import net.perfectdreams.loritta.dashboard.frontend.LorittaDashboardFrontend
 import net.perfectdreams.loritta.dashboard.frontend.compose.components.FancySelectMenu
 import net.perfectdreams.loritta.dashboard.frontend.compose.components.FancySelectMenuEntry

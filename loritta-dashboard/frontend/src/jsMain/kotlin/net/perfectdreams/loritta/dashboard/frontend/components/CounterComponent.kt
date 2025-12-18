@@ -3,13 +3,12 @@ package net.perfectdreams.loritta.dashboard.frontend.components
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import net.perfectdreams.bliss.BlissComponent
+import net.perfectdreams.luna.bliss.BlissComponent
 import org.jetbrains.compose.web.attributes.name
 import org.jetbrains.compose.web.dom.Button
 import org.jetbrains.compose.web.dom.HiddenInput
 import org.jetbrains.compose.web.dom.Text
 import org.jetbrains.compose.web.renderComposable
-import web.dom.Element
 import web.html.HTMLDivElement
 
 /**

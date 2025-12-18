@@ -1,9 +1,9 @@
 package net.perfectdreams.loritta.dashboard.frontend.components
 
 import kotlinx.serialization.json.Json
-import net.perfectdreams.bliss.BlissComponent
+import net.perfectdreams.luna.bliss.BlissComponent
+import net.perfectdreams.luna.modals.EmbeddedModal
 import net.perfectdreams.loritta.dashboard.BlissHex
-import net.perfectdreams.loritta.dashboard.EmbeddedModal
 import net.perfectdreams.loritta.dashboard.frontend.LorittaDashboardFrontend
 import net.perfectdreams.loritta.dashboard.frontend.utils.isUserUsingAdBlock
 import org.jetbrains.compose.web.dom.clear

@@ -5,16 +5,16 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonPrimitive
-import net.perfectdreams.bliss.Bliss
-import net.perfectdreams.bliss.BlissBeforeBlissRequestPrepare
-import net.perfectdreams.bliss.BlissProcessRequestJsonBody
-import net.perfectdreams.bliss.getBlissComponent
-import net.perfectdreams.loritta.dashboard.frontend.toasts.ToastManager
+import net.perfectdreams.luna.bliss.Bliss
+import net.perfectdreams.luna.bliss.BlissBeforeBlissRequestPrepare
+import net.perfectdreams.luna.bliss.BlissProcessRequestJsonBody
+import net.perfectdreams.luna.bliss.getBlissComponent
+import net.perfectdreams.luna.modals.EmbeddedModal
+import net.perfectdreams.luna.modals.ModalManager
+import net.perfectdreams.luna.toasts.EmbeddedToast
+import net.perfectdreams.luna.toasts.ToastManager
 import net.perfectdreams.loritta.dashboard.BlissHex
-import net.perfectdreams.loritta.dashboard.EmbeddedModal
-import net.perfectdreams.loritta.dashboard.EmbeddedToast
 import net.perfectdreams.loritta.dashboard.frontend.components.*
-import net.perfectdreams.loritta.dashboard.frontend.modals.ModalManager
 import net.perfectdreams.loritta.dashboard.frontend.shimeji.entities.LorittaPlayer
 import net.perfectdreams.loritta.dashboard.frontend.soundeffects.SoundEffects
 import net.perfectdreams.loritta.dashboard.frontend.utils.isUserUsingAdBlock
@@ -59,7 +59,10 @@ class LorittaDashboardFrontend {
             )
         )
     }
-    val modalManager = ModalManager(this)
+    val modalManager = ModalManager {
+        Bliss.processAttributes(it)
+        onDispose {}
+    }
     val soundEffects = SoundEffects(this)
 
     fun start() {

@@ -17,9 +17,15 @@ include(":common")
 include(":loritta-serializable-commons")
 include(":loritta-placeholders")
 include(":discord-oauth2")
-include(":loritta-dashboard:toast-common")
-include(":loritta-dashboard:toast-manager")
 include(":ssr-svg-icon-manager")
+
+// ===[ LUNA ]===
+include(":luna:bliss")
+include(":luna:bliss-standalone")
+include(":luna:toast-common")
+include(":luna:toast-manager-frontend")
+include(":luna:modal-common")
+include(":luna:modal-manager-frontend")
 
 // ===[ LORITTA ]===
 include(":loritta-bot-discord")
@@ -31,11 +37,6 @@ include(":web:spicy-morenitta")
 include(":loritta-website:web-common")
 include(":loritta-website:loritta-website-backend")
 include(":loritta-website:loritta-website-frontend")
-
-// ===[ BLISS ]===
-include(":loritta-dashboard:bliss-common")
-include(":loritta-dashboard:bliss")
-include(":loritta-dashboard:bliss-standalone")
 
 // ===[ DASHBOARD ]===
 include(":loritta-dashboard-proxy")

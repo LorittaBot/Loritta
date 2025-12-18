@@ -8,8 +8,8 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.encodeToJsonElement
-import net.perfectdreams.bliss.Bliss
-import net.perfectdreams.bliss.BlissComponent
+import net.perfectdreams.luna.bliss.Bliss
+import net.perfectdreams.luna.bliss.BlissComponent
 import web.cssom.ClassName
 import web.dom.Element
 import web.dom.document

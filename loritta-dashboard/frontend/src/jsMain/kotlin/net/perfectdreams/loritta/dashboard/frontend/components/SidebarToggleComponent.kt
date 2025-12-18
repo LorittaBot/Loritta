@@ -1,8 +1,7 @@
 package net.perfectdreams.loritta.dashboard.frontend.components
 
-import net.perfectdreams.bliss.BlissComponent
+import net.perfectdreams.luna.bliss.BlissComponent
 import net.perfectdreams.loritta.dashboard.frontend.LorittaDashboardFrontend
-import web.cssom.ClassName
 import web.cssom.MediaQuery
 import web.cssom.matchMedia
 import web.dom.Element

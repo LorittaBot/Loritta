@@ -3,11 +3,11 @@ package net.perfectdreams.loritta.dashboard.frontend.components
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonPrimitive
-import net.perfectdreams.bliss.Bliss
-import net.perfectdreams.bliss.Bliss.executeAjax
-import net.perfectdreams.bliss.BlissComponent
-import net.perfectdreams.bliss.HttpMethod
-import net.perfectdreams.bliss.HttpStatusCode
+import net.perfectdreams.luna.bliss.Bliss
+import net.perfectdreams.luna.bliss.Bliss.executeAjax
+import net.perfectdreams.luna.bliss.BlissComponent
+import net.perfectdreams.luna.bliss.HttpMethod
+import net.perfectdreams.luna.bliss.HttpStatusCode
 import net.perfectdreams.loritta.dashboard.frontend.LorittaDashboardFrontend
 import web.dom.document
 import web.events.addEventHandler

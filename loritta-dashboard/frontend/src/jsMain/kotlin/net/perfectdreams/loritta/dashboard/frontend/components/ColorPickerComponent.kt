@@ -4,7 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import net.perfectdreams.bliss.BlissComponent
+import net.perfectdreams.luna.bliss.BlissComponent
 import net.perfectdreams.loritta.dashboard.frontend.LorittaDashboardFrontend
 import net.perfectdreams.loritta.dashboard.frontend.compose.components.colorpicker.Color
 import net.perfectdreams.loritta.dashboard.frontend.compose.components.colorpicker.ColorPicker

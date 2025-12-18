@@ -1,0 +1,180 @@
+package net.perfectdreams.luna.modals
+
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffectResult
+import androidx.compose.runtime.DisposableEffectScope
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateListOf
+import org.jetbrains.compose.web.dom.Div
+import org.jetbrains.compose.web.dom.Text
+import org.jetbrains.compose.web.renderComposable
+import web.cssom.ClassName
+import web.dom.document
+import web.html.HTMLDivElement
+import web.html.HTMLElement
+
+class ModalManager(val onModalCreationRef: DisposableEffectScope.(HTMLDivElement) -> (DisposableEffectResult)) {
+    // A stack, the last modal in the stack is the one that is shown
+    var modals = mutableStateListOf<Modal>()
+
+    fun closeModal(modal: Modal) = this.modals.remove(modal)
+
+    fun closeModal() {
+        this.modals.removeLastOrNull()
+    }
+
+    fun closeAllModals() {
+        this.modals.clear()
+    }
+
+    fun openModal(modal: EmbeddedModal) {
+        val buttons = modal.buttonsHtml.map {
+            @Composable { modal: Modal ->
+                RawHtml(it)
+            }
+        }.toTypedArray()
+
+        openModal(
+            modal.title,
+            when (modal.size) {
+                EmbeddedModal.Size.SMALL -> Modal.Size.SMALL
+                EmbeddedModal.Size.MEDIUM -> Modal.Size.MEDIUM
+                EmbeddedModal.Size.LARGE -> Modal.Size.LARGE
+            },
+            modal.canBeClosedByClickingOutsideTheWindow,
+            {
+                RawHtml(modal.bodyHtml)
+            },
+            *buttons
+        )
+    }
+
+    fun openModalWithOnlyCloseButton(
+        title: String,
+        size: Modal.Size,
+        body: @Composable (Modal) -> (Unit)
+    ) {
+        openModalWithCloseButton(
+            title,
+            size,
+            body
+        )
+    }
+
+    fun openModalWithCloseButton(
+        title: String,
+        size: Modal.Size,
+        body: @Composable (Modal) -> (Unit),
+        vararg buttons: @Composable (Modal) -> (Unit)
+    ) {
+        openModal(
+            title,
+            size,
+            true,
+            body,
+            { modal ->
+                DiscordButton(DiscordButtonType.NO_BACKGROUND_THEME_DEPENDENT_DARK_TEXT, attrs = {
+                    onClick {
+                        modal.close()
+                    }
+                }) {
+                    Text("Fechar")
+                }
+            },
+            *buttons
+        )
+    }
+
+    fun openModal(
+        title: String,
+        size: Modal.Size,
+        canBeClosedByClickingOutsideTheWindow: Boolean,
+        body: @Composable (Modal) -> (Unit),
+        vararg buttons: @Composable (Modal) -> (Unit)
+    ) {
+        modals.add(
+            Modal(
+                this@ModalManager,
+                title,
+                size,
+                canBeClosedByClickingOutsideTheWindow,
+                body,
+                buttons.toMutableList()
+            )
+        )
+    }
+
+    fun render(element: HTMLElement) {
+        renderComposable(element) {
+            // Wrapped in a div to only trigger a recomposition within this div when a modal is updated
+            Div {
+                val activeModal = this@ModalManager.modals.lastOrNull()
+
+                if (activeModal != null) {
+                    LaunchedEffect(Unit) {
+                        document.body.classList.add(ClassName("modal-open"))
+                    }
+
+                    // Open modal if there is one present
+                    Div(attrs = {
+                        classes("modal-wrapper")
+
+                        if (activeModal.canBeClosedByClickingOutsideTheWindow) {
+                            onClick {
+                                // Close modal when clicking outside of the screen
+                                if (it.target == it.currentTarget)
+                                    activeModal.close()
+                            }
+                        }
+                    }) {
+                        key(activeModal) {
+                            Div(attrs = {
+                                classes(
+                                    "modal",
+                                    when (activeModal.size) {
+                                        Modal.Size.SMALL -> "small-modal"
+                                        Modal.Size.MEDIUM -> "medium-modal"
+                                        Modal.Size.LARGE -> "large-modal"
+                                    }
+                                )
+                            }) {
+                                Div(attrs = {
+                                    classes("content")
+
+                                    ref {
+                                        onModalCreationRef.invoke(this, it)
+                                    }
+                                }) {
+                                    Div(attrs = { classes("title") }) {
+                                        Text(activeModal.title)
+                                    }
+
+                                    activeModal.body.invoke(activeModal)
+                                }
+
+                                if (activeModal.buttons.isNotEmpty()) {
+                                    Div(attrs = {
+                                        classes("buttons-wrapper")
+
+                                        ref {
+                                            onModalCreationRef.invoke(this, it)
+                                        }
+                                    }) {
+                                        activeModal.buttons.forEach {
+                                            it.invoke(activeModal)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    LaunchedEffect(Unit) {
+                        document.body.classList.remove(ClassName("modal-open"))
+                    }
+                }
+            }
+        }
+    }
+}

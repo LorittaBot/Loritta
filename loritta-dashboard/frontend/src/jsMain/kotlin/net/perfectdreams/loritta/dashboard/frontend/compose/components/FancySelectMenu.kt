@@ -7,10 +7,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import kotlinx.browser.document
-import net.perfectdreams.loritta.dashboard.EmbeddedModal
-import net.perfectdreams.loritta.dashboard.frontend.modals.ModalManager
+import net.perfectdreams.luna.modals.EmbeddedModal
+import net.perfectdreams.luna.modals.ModalManager
 import org.jetbrains.compose.web.dom.Div
-import org.jetbrains.compose.web.dom.I
 import org.jetbrains.compose.web.dom.Text
 import org.w3c.dom.events.Event
 

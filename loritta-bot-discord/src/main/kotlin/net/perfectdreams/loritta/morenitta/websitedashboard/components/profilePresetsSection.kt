@@ -10,8 +10,7 @@ import kotlinx.html.p
 import kotlinx.html.style
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserCreatedProfilePresets
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.CustomGuildCommands
-import net.perfectdreams.loritta.dashboard.EmbeddedModal
+import net.perfectdreams.luna.modals.EmbeddedModal
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.profilepresets.ProfilePresetsUtils

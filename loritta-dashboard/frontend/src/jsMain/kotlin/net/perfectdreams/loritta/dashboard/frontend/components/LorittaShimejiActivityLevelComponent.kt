@@ -1,10 +1,9 @@
 package net.perfectdreams.loritta.dashboard.frontend.components
 
-import net.perfectdreams.bliss.BlissComponent
-import net.perfectdreams.bliss.getBlissComponent
+import net.perfectdreams.luna.bliss.BlissComponent
+import net.perfectdreams.luna.bliss.getBlissComponent
 import net.perfectdreams.loritta.shimeji.ActivityLevel
 import net.perfectdreams.loritta.dashboard.frontend.LorittaDashboardFrontend
-import net.perfectdreams.loritta.dashboard.frontend.shimeji.GameState
 import web.dom.document
 import web.events.addEventHandler
 import web.html.HTMLButtonElement

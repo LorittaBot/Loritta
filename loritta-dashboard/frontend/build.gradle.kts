@@ -30,12 +30,15 @@ kotlin {
     sourceSets {
         jsMain {
             dependencies {
-                implementation(project(":loritta-dashboard:bliss"))
                 implementation(project(":loritta-dashboard:dashboard-common"))
                 implementation(project(":loritta-placeholders"))
                 implementation(project(":loritta-dashboard:message-renderer"))
                 implementation(project(":loritta-dashboard:loritta-shimeji-common"))
-                implementation(project(":loritta-dashboard:toast-manager"))
+                implementation(project(":luna:bliss"))
+                implementation(project(":luna:toast-common"))
+                implementation(project(":luna:modal-common"))
+                implementation(project(":luna:toast-manager-frontend"))
+                implementation(project(":luna:modal-manager-frontend"))
 
                 implementation("net.perfectdreams.compose.htmldreams:html-core:1.9.0-beta1-v2")
                 implementation(compose.runtime)

@@ -1,13 +1,7 @@
 package net.perfectdreams.loritta.dashboard.frontend.components
 
-import net.perfectdreams.bliss.BlissComponent
-import web.cssom.ClassName
-import web.dom.Element
-import web.events.CHANGE
-import web.events.Event
-import web.events.addEventHandler
+import net.perfectdreams.luna.bliss.BlissComponent
 import web.html.HTMLImageElement
-import web.html.HTMLInputElement
 import web.intersection.IntersectionObserver
 import web.intersection.IntersectionObserverInit
 

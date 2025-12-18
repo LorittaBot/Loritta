@@ -17,7 +17,7 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.banappeals.BanAppealResult
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BanAppeals
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
-import net.perfectdreams.loritta.dashboard.EmbeddedToast
+import net.perfectdreams.luna.toasts.EmbeddedToast
 import net.perfectdreams.loritta.morenitta.banappeals.BanAppealsUtils
 import net.perfectdreams.loritta.morenitta.banappeals.BanAppealsUtils.createAppealReceivedMessage
 import net.perfectdreams.loritta.morenitta.rpc.LorittaRPC

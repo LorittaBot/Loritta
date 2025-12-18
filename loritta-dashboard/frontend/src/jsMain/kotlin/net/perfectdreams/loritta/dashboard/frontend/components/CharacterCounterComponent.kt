@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.dashboard.frontend.components
 
-import net.perfectdreams.bliss.BlissComponent
+import net.perfectdreams.luna.bliss.BlissComponent
 import web.dom.document
 import web.events.addEventHandler
 import web.html.HTMLDivElement

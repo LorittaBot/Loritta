@@ -9,7 +9,7 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(project(":common"))
     implementation(project(":loritta-placeholders"))
-    implementation(project(":loritta-dashboard:bliss-common"))
+    implementation(project(":luna:bliss"))
     implementation(project(":loritta-dashboard:dashboard-common"))
     implementation(project(":loritta-serializable-commons"))
     implementation(project(":pudding:client"))
@@ -20,7 +20,8 @@ dependencies {
     implementation(project(":loritta-dashboard:message-renderer"))
     implementation(project(":loritta-dashboard:loritta-shimeji-common"))
     implementation(project(":discord-oauth2"))
-    implementation(project(":loritta-dashboard:toast-common"))
+    implementation(project(":luna:toast-common"))
+    implementation(project(":luna:modal-common"))
     implementation(project(":ssr-svg-icon-manager"))
 
     // Logging

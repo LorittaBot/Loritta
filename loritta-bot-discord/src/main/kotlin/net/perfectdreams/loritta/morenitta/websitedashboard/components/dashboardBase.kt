@@ -9,9 +9,7 @@ import kotlinx.html.body
 import kotlinx.html.button
 import kotlinx.html.canvas
 import kotlinx.html.div
-import kotlinx.html.h1
 import kotlinx.html.head
-import kotlinx.html.hr
 import kotlinx.html.id
 import kotlinx.html.ins
 import kotlinx.html.lang
@@ -21,13 +19,12 @@ import kotlinx.html.nav
 import kotlinx.html.script
 import kotlinx.html.style
 import kotlinx.html.title
-import kotlinx.html.unsafe
 import kotlinx.serialization.json.Json
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.dashboard.BlissHex
-import net.perfectdreams.loritta.dashboard.EmbeddedToast
+import net.perfectdreams.luna.toasts.EmbeddedToast
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
@@ -35,10 +32,8 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.SVGIcons
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.banAppealTitle
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedDisableAdBlockModal
-import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedModal
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.dashboardTitle
-import net.perfectdreams.loritta.morenitta.websitedashboard.utils.defaultModalCloseButton
 import net.perfectdreams.loritta.serializable.ColorTheme
 
 fun HTML.websiteBase(

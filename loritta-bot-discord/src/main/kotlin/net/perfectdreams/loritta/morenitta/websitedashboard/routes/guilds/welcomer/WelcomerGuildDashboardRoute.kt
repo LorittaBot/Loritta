@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.entities.Member
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
-import net.perfectdreams.loritta.dashboard.EmbeddedToast
+import net.perfectdreams.luna.toasts.EmbeddedToast
 import net.perfectdreams.loritta.dashboard.discordmessages.DiscordComponent
 import net.perfectdreams.loritta.dashboard.discordmessages.DiscordEmbed
 import net.perfectdreams.loritta.dashboard.discordmessages.DiscordMessage

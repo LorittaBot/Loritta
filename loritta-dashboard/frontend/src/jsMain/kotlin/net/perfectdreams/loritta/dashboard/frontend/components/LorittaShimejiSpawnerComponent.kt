@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.dashboard.frontend.components
 
-import net.perfectdreams.bliss.BlissComponent
-import net.perfectdreams.bliss.getBlissComponent
+import net.perfectdreams.luna.bliss.BlissComponent
+import net.perfectdreams.luna.bliss.getBlissComponent
 import net.perfectdreams.loritta.dashboard.frontend.LorittaDashboardFrontend
 import net.perfectdreams.loritta.dashboard.frontend.shimeji.entities.LorittaPlayer
 import web.dom.document
