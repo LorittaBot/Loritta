@@ -60,3 +60,10 @@ fun FlowContent.openModalOnClick(modal: EmbeddedModal) {
     attributes["bliss-modal"] = BlissHex.encodeToHexString(Json.encodeToString(modal))
     attributes["bliss-open-modal-on-click"] = "true"
 }
+
+/**
+ * Closes a modal on click
+ */
+fun FlowContent.closeModalOnClick() {
+    attributes["bliss-close-modal-on-click"] = "true"
+}

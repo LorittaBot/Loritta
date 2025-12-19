@@ -45,6 +45,10 @@ include(":loritta-dashboard:loritta-shimeji-common")
 include(":loritta-dashboard:dashboard-common")
 include(":loritta-dashboard:frontend")
 
+// ===[ DORA ]===
+include(":dora:backend")
+include(":dora:frontend")
+
 // ===[ MISC ]===
 include(":loritta-helper")
 include(":switch-twitch")
