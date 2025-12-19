@@ -75,6 +75,9 @@ jib {
     }
 
     from {
-        image = "eclipse-temurin:25-jdk-noble"
+        // This image comes from the "docker-dora" folder Dockerfile!
+        // Don't forget to build the image before compiling!
+        // https://github.com/GoogleContainerTools/jib/issues/1468
+        image = "tar://${File(rootDir, "docker-dora/image.tar").absoluteFile}"
     }
 }

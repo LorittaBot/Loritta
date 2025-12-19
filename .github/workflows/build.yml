@@ -53,6 +53,19 @@ jobs:
           cd docker
           bash build.sh
 
+      - name: Cache Docker Dora image
+        id: cache-docker-dora-image
+        uses: actions/cache@v4
+        with:
+          path: docker-dora
+          key: docker-dora-image-${{ runner.os }}-${{ hashFiles('docker/Dockerfile') }}
+
+      - name: Build base Docker Dora image
+        if: steps.cache-docker-dora-image.outputs.cache-hit != 'true'
+        run: |
+          cd docker-dora
+          bash build.sh
+
       # We will do everything on the same Gradle task to avoid Gradle executing tasks that it was already executed in a previous step
       # (Example: Compiling everything again when publishing the Docker container)
       # We don't use the "jib" task due to https://github.com/GoogleContainerTools/jib/issues/4301
