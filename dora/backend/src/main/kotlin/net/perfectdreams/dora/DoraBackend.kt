@@ -166,6 +166,10 @@ class DoraBackend(val config: DoraConfig, val pudding: Pudding) {
 
         val server = embeddedServer(Netty, port = 13100) {
             routing {
+                get("/hewwo") {
+                    call.respondText("""Dora Translation Management System - Bringing Loritta's cuteness to around the world!! :3""")
+                }
+
                 for (route in routes) {
                     route.register(this)
                 }
