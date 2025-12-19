@@ -90,13 +90,6 @@ class TableRoute(val dora: DoraBackend) : RequiresProjectAuthDashboardRoute(dora
                         }
                     }
 
-                    // Hidden source container for sidebar progress multi-swap updates
-                    div {
-                        id = "language-progress-source"
-                        style = "display: none;"
-                        languageProgressBar(translatedCount, totalCount)
-                    }
-
                     div {
                         style = "background-color: var(--card-border-color);\n" +
                                 "  display: flex;\n" +
