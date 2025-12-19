@@ -11,6 +11,7 @@ import net.perfectdreams.dora.components.*
 import net.perfectdreams.dora.routes.RequiresProjectAuthDashboardRoute
 import net.perfectdreams.dora.tables.*
 import net.perfectdreams.dora.utils.respondHtml
+import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.leftJoin
 import org.jetbrains.exposed.sql.selectAll
@@ -44,7 +45,7 @@ class TableRoute(val dora: DoraBackend) : RequiresProjectAuthDashboardRoute(dora
                 }
                 .selectAll()
                 .where { SourceStrings.project eq project.id }
-                .orderBy(SourceStrings.id)
+                .orderBy(SourceStrings.key, SortOrder.ASC)
                 .toList()
 
             Pair(language, sourceStrings)
