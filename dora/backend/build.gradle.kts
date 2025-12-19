@@ -75,6 +75,6 @@ jib {
     }
 
     from {
-        image = "25-jdk-noble"
+        image = "eclipse-temurin:25-jdk-noble"
     }
 }
