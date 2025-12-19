@@ -457,6 +457,7 @@ class DoraBackend(val config: DoraConfig, val pudding: Pudding) {
                                     .where {
                                         SourceStrings.project eq project[Projects.id] and (TranslationsStrings.id.isNull() and MachineTranslatedStrings.id.isNull())
                                     }
+                                    .orderBy(SourceStrings.key, SortOrder.ASC)
                                     .firstOrNull()
                             }
 
