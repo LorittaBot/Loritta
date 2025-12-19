@@ -1,13 +1,21 @@
 ---
+__labelContext: "Chaves in this context is the name of the series \"El Chavo del Ocho\""
 label: "chaves"
+
+__descriptionContext: "Chaves in this context is the name of the series \"El Chavo del Ocho\", this text references the opening of the series. This can be changed to reference Chavo's intro music track or any of Chavo's catchphrases"
 description: "\"Lá vem o Chaves, Chaves, Chaves. Com uma historinha bem gostosa de se ver!\". Comandos relacionados a série tão amada do Chespirito!" #This can be changed to reference Chavo's intro music track or any of Chavo's catchphrases
+
 opening:
   label: "abertura"
+
+  __descriptionContext: "Chaves in this context is the name of the series \"El Chavo del Ocho\", this text references the opening of the series. This can be changed to reference Chavo's intro music track or any of Chavo's catchphrases"
   description: "\"Lá vem o Chaves, Chaves, Chaves. Com uma historinha bem gostosa de se ver!\". Faça uma edição com a abertura do SBT do Chaves!" #This can be changed to reference Chavo's intro music track or any of Chavo's catchphrases
+
   invalidShowName: "Desculpe, mas não consegui renderizar o nome da sua série que colocou... se o nome tiver emojis, remova-os! Renderizar os emojis é complicado..."
   options:
     showName:
       text: "O nome da série que será mostrada no final da abertura"
 cocielo:
   label: "cocielo"
-  description: "\"Lá vem o Chaves, Chaves, Chaves. Se não tá atento a sua bombeta vai perder, héééé\". Faça uma edição com os seus amigos da quebrada!" #References the CanalCanalha's original video https://youtu.be/ihGgl62B0Xo
+  __descriptionContext: "Chaves in this context is the name of the series \"El Chavo del Ocho\", the text references the CanalCanalha's video https://youtu.be/ihGgl62B0Xo which is a parody of the original opening"
+  description: "\"Lá vem o Chaves, Chaves, Chaves. Se não tá atento a sua bombeta vai perder, héééé\". Faça uma edição com os seus amigos da quebrada!"

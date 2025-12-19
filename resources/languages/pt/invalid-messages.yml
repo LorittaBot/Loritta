@@ -1,5 +1,6 @@
 invalidMessages:
   invalidMessage: "Mensagem Inválida"
+  __isItTooLateNowToSaySorryContext: "Easter Egg: A reference do Justin Bieber's \"Sorry\""
   isItTooLateNowToSaySorry: "Será que é tarde demais para pedir desculpas?"
   base: "Infelizmente, a mensagem configurada para {type} está com algum problema de validação... Por isso este aviso carinhoso está aqui! Se você tiver um tempinho, dê um pulo no meu painel e arrume ela!"
   commandDenylist: "quando um canal está com comandos desativados na seção de Configurações Gerais"

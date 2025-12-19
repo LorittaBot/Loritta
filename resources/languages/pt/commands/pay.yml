@@ -9,8 +9,11 @@ thirdPartyIsGoingToTransferNoTax: "{sender} está prestes a transferir **{sonhos
 
 confirmTheTransaction: "Para confirmar a transação, você e {receiver} devem aceitar a transação até {time} ({timeRelative})!"
 thirdPersonConfirmTheTransaction: "Para confirmar a transação, {sender} e {receiver} devem aceitar a transação até {time} ({timeRelative})!"
+__transferAcceptedContext: "Button Label"
 transferAccepted: "Transferência Aceita"
+__transferFailedContext: "Button Label"
 transferFailed: "Transferência Falhou - {failReason}"
+__transferCancelledContext: "Button Label"
 transferCancelled: "Transferência Cancelada"
 successfullyTransferred: "Transferência realizada com sucesso! {receiver} recebeu **{sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}**!"
 thirdPartySuccessfullyTransferred: "Transferência realizada com sucesso! {receiver} recebeu **{sonhosAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (e {tax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} foram para o governo)**!"

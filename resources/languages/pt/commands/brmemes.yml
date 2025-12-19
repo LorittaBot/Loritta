@@ -38,25 +38,64 @@ cortesflow:
   label: "cortesflow"
   description: "Salve salve família, faça suas próprias thumbnails do Cortes do Flow com seu próprio texto!"
   thumbnails:
+    __arthurBenozzatiSmileContext: "\"Arthur Benozzati\" is a person's name"
     arthurBenozzatiSmile: "Arthur Benozzati Sorrindo"
+
+    __douglasLaughingContext: "\"Douglas Mesquita\" is a person's name"
     douglasLaughing: "Douglas Mesquita Rindo"
+
+    __douglasPointingContext: "\"Douglas Mesquita\" is a person's name"
     douglasPointing: "Douglas Mesquita Apontando"
+
+    __douglasPrayContext: "\"Douglas Mesquita\" is a person's name"
     douglasPray: "Douglas Mesquita Rezando"
+
+    __gaulesSadContext: "\"Gaulês\" is a person's name"
     gaulesSad: "Gaulês Triste"
+
+    __igorAngryContext: "\"Igor3k\" is a person's name"
     igorAngry: "Igor3k Irritado"
+
+    __igorNakedContext: "\"Igor3k\" is a person's name"
     igorNaked: "Igor3k Pelado 😳"
+
+    __igorPointingContext: "\"Igor3k\" is a person's name"
     igorPointing: "Igor3k Apontando"
+
+    __julioCocieloEyesContext: "\"Júlio Cocielo\" is a person's name"
     julioCocieloEyes: "Júlio Cocielo com Olhos Arregalados"
+
+    __lucasInutilismoExaltedContext: "\"Lucas Inutilismo\" is a person's name"
     lucasInutilismoExalted: "Lucas Inutilismo Exaltado"
+
+    __metaforandoBadgeContext: "\"Vitor Metaforando\" is a person's name"
     metaforandoBadge: "Vitor Metaforando mostrando seu distintivo"
+
+    __metaforandoSurprisedContext: "\"Vitor Metaforando\" is a person's name"
     metaforandoSurprised: "Vitor Metaforando Surpreso"
+
+    __miticoSuccContext: "\"Mitico\" is a person's name, \"Succ\" is a meme"
     miticoSucc: "Mitico Succ 🥵"
+
+    __monarkDiscussionContext: "\"Monark\" is a person's name"
     monarkDiscussion: "Monark Discutindo"
+
+    __monarkSmokingContext: "\"Monark\" is a person's name"
     monarkSmoking: "Monark Fumando"
+
+    __monarkStopContext: "\"Monark\" is a person's name"
     monarkStop: "Monark dizendo para você parar"
+
+    __peterJordanActionFigureContext: "\"Peter Jordan\" is a person's name"
     peterJordanActionFigure: "Peter Jordan com uma Action Figure"
+
+    __poladofulDiscussionContext: "\"Poladoful\" is a person's name"
     poladofulDiscussion: "Poladoful Discutindo"
+
+    __ratoBorrachudoDisappointedContext: "\"Rato Borrachudo\" is a person's name"
     ratoBorrachudoDisappointed: "Rato Borrachudo Desapontado"
+
+    __ratoBorrachudoNoGlassesContext: "\"Rato Borrachudo\" is a person's name"
     ratoBorrachudoNoGlasses: "Rato Borrachudo Sem Óculos"
   options:
     thumbnail: "A thumbnail que será utilizada"
@@ -70,7 +109,7 @@ sam:
     choice:
       sam1: "Logo Clássico"
       sam2: "Logo Cópia Barata"
-      sam3: "Logo sarrada no ar"
+      sam3: "Logo Sarrada no Ar"
 canelladvd:
   label: "canelladvd"
   description: "Faça Matheus Canella ter um dos melhores DVDs do mundo, por apenas R$ 1,95! (erre cifrão um vírgula noventa e cinco reais!!!)" #References this video: https://youtu.be/c3f7uSpnrhk

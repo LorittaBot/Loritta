@@ -146,6 +146,7 @@ website:
         - "Se você quer apoiar a Loritta e poder usar o painel sem propagandas e sem ter peso na consciência, então compre Loritta Premium!"
     authorizationFailedFullScreenError:
       title: "Falha na Autorização!"
+      __isItTooLateNowToSaySorryContext: "Easter Egg: A reference do Justin Bieber's \"Sorry\""
       isItTooLateNowToSaySorry: "Será que é tarde demais para pedir desculpas?"
       errors:
         resourceOwnerOrAuthorizationServerDeniedTheRequest: "Você cancelou o processo de autorização do Discord"

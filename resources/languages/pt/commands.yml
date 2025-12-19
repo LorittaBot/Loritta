@@ -61,6 +61,7 @@ commands:
     bannedBy: "**Banido por:** {staffMention}"
     staffNote: "**Nota da Staff:** {staffNote}"
     appealLink: "**Apelo de Bans:** {appealLink}"
+    __tooLateToSaySorryContext: "Easter Egg: A reference do Justin Bieber's \"Sorry\""
     tooLateToSaySorry: "*Será que é tarde demais para ele pedir desculpas?*"
     sendABanAppeal: "Enviar um Apelo de Ban"
   usersFill:
