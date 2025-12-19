@@ -732,7 +732,7 @@ class DoraBackend(val config: DoraConfig, val pudding: Pudding) {
             val generatedBundle = generateLanguageBundle(translatorIds, translatableStrings)
             targetLanguageFile.writeText( json.encodeToString(generatedBundle))
 
-            git("add", "${project[Projects.languagesFolder]}/${languageTarget[LanguageTargets.languageId]}/text.yml")
+            git("add", "${project[Projects.languagesFolder].removeSuffix("/")}/${languageTarget[LanguageTargets.languageId]}/text.yml")
             git("commit", "-m", "[dora-i18n] Update ${languageTarget[LanguageTargets.languageName]} translations")
 
             val repositoryUrl = Url(project[Projects.repositoryUrl])
