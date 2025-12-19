@@ -43,7 +43,7 @@ tasks {
         dependsOn(sass)
 
         from(sass) {
-            into("static/assets/css/")
+            into("dashboard/css/")
         }
 
         if (!skipFrontendBundle) {
