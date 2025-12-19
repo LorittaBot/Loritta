@@ -617,18 +617,8 @@ object Bliss {
 
                 if (targetToBeReplaced != null) {
                     if (this.supportsMoveBeforeAPI) {
-                        // TODO: This can be replaced with the proper bindings after we update the dependencies!
-                        //  (So, that would mean after we update to Kotlin 2.2.21)
-
                         // Yes, the moveBefore should be called by the PARENT of the element!
-                        targetToBeReplaced
-                            .parentElement!!
-                            .asDynamic()
-                            .moveBefore(
-                                elementToBePreserved,
-                                null
-                            )
-
+                        targetToBeReplaced.parentElement?.moveBefore(elementToBePreserved, targetToBeReplaced)
                         targetToBeReplaced.remove() // bye!
                     }
                 }
