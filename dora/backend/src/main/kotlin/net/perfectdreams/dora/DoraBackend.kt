@@ -710,7 +710,7 @@ class DoraBackend(val config: DoraConfig, val pudding: Pudding) {
             git("checkout", "-B", "dora-i18n/${languageTarget[LanguageTargets.languageId]}")
             git("reset", "--hard", project[Projects.sourceBranch])
 
-            val targetLanguageFolder = File(repositoryFolder, "${project[Projects.languagesFolder]}/${languageTarget[LanguageTargets.languageId]}\\")
+            val targetLanguageFolder = File(repositoryFolder, "${project[Projects.languagesFolder].removeSuffix("/")}/${languageTarget[LanguageTargets.languageId]}/")
             targetLanguageFolder.mkdirs()
             val targetLanguageFile = File(targetLanguageFolder, "text.yml")
 
