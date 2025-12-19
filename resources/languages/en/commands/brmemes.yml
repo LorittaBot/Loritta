@@ -53,7 +53,6 @@ sam:
     choice:
       sam1: "Classic Logo"
       sam2: "Shoddy Copy Logo"
-      sam3: "Logo sarrada in the air"
 canelladvd:
   description: "Make Matheus Canella hold one of the best DVDs of the world, for only R$ 1.95! (arr dollar sign one dot ninety and five brazilian reais!!!)" #References this video: https://youtu.be/c3f7uSpnrhk
 cepo:
