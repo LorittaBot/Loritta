@@ -743,7 +743,7 @@ class DoraBackend(val config: DoraConfig, val pudding: Pudding) {
                 git("push", "-f", "https://${config.github.username}:${config.github.personalAccessToken}@github.com/$owner/$repo.git")
             }
 
-            // repositoryFolder.deleteRecursively()
+            repositoryFolder.deleteRecursively()
         }
     }
 
