@@ -18,10 +18,10 @@ object DoraBackendLauncher {
         val pudding = Pudding.createPostgreSQL(
             1,
             "Dora",
-            "127.0.0.1",
-            "dora",
-            "postgres",
-            "postgres",
+            config.database.address,
+            config.database.database,
+            config.database.username,
+            config.database.password,
         )
 
         val m = DoraBackend(config, pudding)

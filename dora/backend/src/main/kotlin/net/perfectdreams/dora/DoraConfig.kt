@@ -13,6 +13,7 @@ data class DoraConfig(
     val git: GitConfig,
     val github: GitHubConfig,
     val discord: DiscordConfig,
+    val database: DatabaseConfig
 ) {
     @Serializable
     data class DiscordConfig(
@@ -30,5 +31,13 @@ data class DoraConfig(
     data class GitHubConfig(
         val username: String,
         val personalAccessToken: String
+    )
+
+    @Serializable
+    data class DatabaseConfig(
+        val database: String,
+        val address: String,
+        val username: String,
+        val password: String
     )
 }
