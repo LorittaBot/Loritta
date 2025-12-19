@@ -2,6 +2,9 @@ package net.perfectdreams.dora.utils
 
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.Parameters
+import io.ktor.http.ParametersBuilder
+import io.ktor.http.formUrlEncode
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.response.respondText
 import kotlinx.html.BODY
@@ -54,4 +57,18 @@ suspend fun ApplicationCall.respondHtmlFragment(status: HttpStatusCode? = null, 
         ContentType.Text.Html,
         status = status
     )
+}
+
+fun PathBuilder(path: String, queryParameters: ParametersBuilder.() -> (Unit)): String {
+    val query = Parameters.build {
+        queryParameters()
+    }.formUrlEncode() // safely URL-encodes keys/values
+
+    return buildString {
+        append(path)
+        if (query.isNotEmpty()) {
+            append('?')
+            append(query)
+        }
+    }
 }
