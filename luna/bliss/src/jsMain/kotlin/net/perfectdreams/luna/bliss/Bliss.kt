@@ -287,6 +287,7 @@ object Bliss {
                 val es = EventSource(sse)
 
                 element.whenRemovedFromDOM {
+                    println("SSE element has been removed from the DOM, closing connection...")
                     es.close()
                 }
 
