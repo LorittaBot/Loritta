@@ -59,6 +59,8 @@ fun FlowContent.languageLeftSidebarEntries(
         attributes["bliss-get"] = "[href]"
         attributes["bliss-swap:200"] = SWAP_EVERYTHING_DASHBOARD
         attributes["bliss-push-url:200"] = "true"
+        attributes["bliss-sync"] = "#left-sidebar"
+        attributes["bliss-indicator"] = "this, #right-sidebar-wrapper, #left-sidebar .entry.selected"
 
         text("Visão Geral")
     }
@@ -70,6 +72,8 @@ fun FlowContent.languageLeftSidebarEntries(
         attributes["bliss-get"] = "[href]"
         attributes["bliss-swap:200"] = SWAP_EVERYTHING_DASHBOARD
         attributes["bliss-push-url:200"] = "true"
+        attributes["bliss-sync"] = "#left-sidebar"
+        attributes["bliss-indicator"] = "this, #right-sidebar-wrapper, #left-sidebar .entry.selected"
 
         text("Strings")
     }
@@ -81,6 +85,8 @@ fun FlowContent.languageLeftSidebarEntries(
         attributes["bliss-get"] = "[href]"
         attributes["bliss-swap:200"] = SWAP_EVERYTHING_DASHBOARD
         attributes["bliss-push-url:200"] = "true"
+        attributes["bliss-sync"] = "#left-sidebar"
+        attributes["bliss-indicator"] = "this, #right-sidebar-wrapper, #left-sidebar .entry.selected"
 
         text("Strings (Não Traduzidas)")
     }

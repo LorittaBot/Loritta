@@ -12,6 +12,12 @@ import net.perfectdreams.luna.components.sectionEntry
 
 fun FlowContent.homeLeftSidebarEntries() {
     sectionEntry("/projects", true) {
+        attributes["bliss-get"] = "[href]"
+        attributes["bliss-swap:200"] = SWAP_EVERYTHING_DASHBOARD
+        attributes["bliss-push-url:200"] = "true"
+        attributes["bliss-sync"] = "#left-sidebar"
+        attributes["bliss-indicator"] = "this, #right-sidebar-wrapper, #left-sidebar .entry.selected"
+
         text("Projetos")
     }
 }

@@ -16,8 +16,7 @@ fun FlowContent.goBackToPreviousSectionButton(
         attributes["bliss-swap:200"] = SWAP_EVERYTHING_DASHBOARD
         attributes["bliss-push-url:200"] = "true"
         attributes["bliss-sync"] = "#left-sidebar"
-        attributes["bliss-indicator"] = "#right-sidebar-wrapper"
-        attributes["bliss-component"] = "close-left-sidebar-on-click"
+        attributes["bliss-indicator"] = "this, #right-sidebar-wrapper, #left-sidebar .entry.selected"
     },
     block: FlowContent.() -> (Unit),
 ) {

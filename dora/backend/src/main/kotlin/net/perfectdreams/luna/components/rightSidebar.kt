@@ -26,6 +26,10 @@ fun FlowContent.rightSidebar(block: FlowContent.() -> (Unit)) {
 
                 block()
             }
+
+            div(classes = "fill-loading-screen") {
+                text("Carregando...")
+            }
         }
 
         aside {
