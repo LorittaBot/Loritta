@@ -50,6 +50,7 @@ class TwitchCallbackListenerComponent(val m: LorittaDashboardFrontend) : BlissCo
                             "#right-sidebar-contents (innerHTML) -> #right-sidebar-contents (innerHTML)"
                         )
                     ),
+                    listOf(),
                     listOf()
                 )
             }

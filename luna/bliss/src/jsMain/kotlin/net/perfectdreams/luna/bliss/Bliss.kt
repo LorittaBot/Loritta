@@ -161,15 +161,34 @@ object Bliss {
 
                     // We do this way because we can select the responses based on the status response, sweet!
                     // The default will be "nothing", to avoid weird errors (like client or server errors) being pushed
-                    val matchedAttributes = element.attributes.asList().filter { it.name.startsWith("bliss-push-url:") }
+                    val pushUrlAttributes = element.attributes.asList().filter { it.name.startsWith("bliss-push-url:") }
 
-                    for (attribute in matchedAttributes) {
+                    for (attribute in pushUrlAttributes) {
                         // This seems weird, but that's because there are some hefty restrictions for attribute names
-                        // So the format is "bliss-swap:200_201_202_203", where _ is like a ,
+                        // So the format is "bliss-push-url:200_201_202_203", where _ is like a ,
                         val validCodes = attribute.name.substringAfterLast(":").split("_").map { it.toInt() }.toSet()
 
                         pushUrls.add(
                             PushUrlRequest(
+                                validCodes.map { HttpStatusCode.fromValue(it) }.toSet(),
+                                attribute.value
+                            )
+                        )
+                    }
+
+                    val scrolls = mutableListOf<ScrollRequest>()
+
+                    // We do this way because we can select the responses based on the status response, sweet!
+                    // The default will be "nothing", to avoid weird errors (like client or server errors) being pushed
+                    val scrollAttributes = element.attributes.asList().filter { it.name.startsWith("bliss-scroll:") }
+
+                    for (attribute in scrollAttributes) {
+                        // This seems weird, but that's because there are some hefty restrictions for attribute names
+                        // So the format is "bliss-scroll:200_201_202_203", where _ is like a ,
+                        val validCodes = attribute.name.substringAfterLast(":").split("_").map { it.toInt() }.toSet()
+
+                        scrolls.add(
+                            ScrollRequest(
                                 validCodes.map { HttpStatusCode.fromValue(it) }.toSet(),
                                 attribute.value
                             )
@@ -187,7 +206,8 @@ object Bliss {
                         valsJson?.let { Json.decodeFromString<Map<String, JsonPrimitive>>(it) } ?: emptyMap(),
                         remapJsonKeys?.let { Json.decodeFromString<Map<String, String>>(it) } ?: emptyMap(),
                         swaps,
-                        pushUrls
+                        pushUrls,
+                        scrolls
                     )
                 }
 
@@ -877,6 +897,7 @@ object Bliss {
         remapJsonKeys: Map<String, String>,
         swaps: List<SwapRequest>,
         pushUrls: List<PushUrlRequest>,
+        scrolls: List<ScrollRequest>
     ) {
         val requestUrl = URL(baseUrl, window.location.origin).apply {
             if (includeQuery != null) {
@@ -1102,6 +1123,40 @@ object Bliss {
             history.pushState(state, "", realPushUrl)
         }
 
+        // Scroll all elements that we requested
+        var scrollValue: String? = null
+
+        // We do this way because we can select the responses based on the status response, sweet!
+        // The default will be "nothing", to avoid weird errors (like client or server errors) being pushed
+        val scrollRequest = scrolls.firstOrNull { statusCode in it.statusCodes }
+        if (scrollRequest != null) {
+            scrollValue = scrollRequest.scrollValue
+        }
+
+        if (scrollValue != null) {
+            val scrollsParts = scrollValue.split(",").map { it.trim() }
+
+            for (scrollPart in scrollsParts) {
+                val (target, type) = scrollPart.split(":")
+
+                if (target == "window") {
+                    when (type) {
+                        "top" -> window.scrollTo(0.0, 0.0)
+                        "bottom" -> window.scrollTo(0.0, document.body.scrollHeight.toDouble())
+                        else -> error("Unsupported scroll type $type for $target")
+                    }
+                } else {
+                    // Target is a CSS selector
+                    val targetElement = document.querySelector(target) ?: error("Could not find element $target!")
+
+                    when (type) {
+                        "into-view" -> targetElement.scrollIntoView()
+                        else -> error("Unsupported scroll type $type for $target")
+                    }
+                }
+            }
+        }
+
         if (pageTitle != null) {
             // Replace title!
             document.querySelector("title")?.replaceWith(pageTitle.cloneNode(true))
@@ -1116,6 +1171,11 @@ object Bliss {
     data class PushUrlRequest(
         val statusCodes: Set<HttpStatusCode>,
         val pushUrl: String
+    )
+
+    data class ScrollRequest(
+        val statusCodes: Set<HttpStatusCode>,
+        val scrollValue: String
     )
 
     class BlissRequestManager() {

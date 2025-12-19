@@ -172,6 +172,7 @@ class TableRoute(val dora: DoraBackend) : RequiresProjectAuthDashboardRoute(dora
                                 attributes["bliss-get"] = "[href]"
                                 attributes["bliss-swap:200"] = "#right-sidebar-contents (innerHTML) -> #right-sidebar-contents (innerHTML)"
                                 attributes["bliss-push-url:200"] = "true"
+                                attributes["bliss-scroll:200"] = "window:top"
                             }
 
                             svgIcon(SVGIcons.CaretLeft)
@@ -188,6 +189,7 @@ class TableRoute(val dora: DoraBackend) : RequiresProjectAuthDashboardRoute(dora
                                 attributes["bliss-get"] = "[href]"
                                 attributes["bliss-swap:200"] = "#right-sidebar-contents (innerHTML) -> #right-sidebar-contents (innerHTML)"
                                 attributes["bliss-push-url:200"] = "true"
+                                attributes["bliss-scroll:200"] = "window:top"
                             }
 
                             svgIcon(SVGIcons.CaretRight)
