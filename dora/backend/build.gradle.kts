@@ -12,6 +12,7 @@ dependencies {
     implementation(project(":discord-chat-markdown-parser"))
     implementation(project(":ssr-svg-icon-manager"))
     implementation(libs.ktor.server.netty)
+    implementation(libs.ktor.server.compression)
     implementation(libs.ktor.client.java)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.serialization.hocon)

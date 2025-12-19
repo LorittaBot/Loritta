@@ -7,8 +7,10 @@ import io.ktor.client.statement.*
 import io.ktor.http.ContentType
 import io.ktor.http.Url
 import io.ktor.server.application.*
+import io.ktor.server.application.install
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
+import io.ktor.server.plugins.compression.Compression
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.GlobalScope
@@ -166,6 +168,8 @@ class DoraBackend(val config: DoraConfig, val pudding: Pudding) {
 
         val server = embeddedServer(Netty, port = 13100) {
             routing {
+                install(Compression)
+
                 get("/hewwo") {
                     call.respondText("""Dora Translation Management System - Bringing Loritta's cuteness to around the world!! :3""")
                 }
