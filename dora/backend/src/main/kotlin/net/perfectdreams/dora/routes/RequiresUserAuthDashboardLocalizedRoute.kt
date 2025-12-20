@@ -48,7 +48,7 @@ abstract class RequiresUserAuthDashboardLocalizedRoute(val website: DoraBackend,
                 append("client_id", website.config.discord.applicationId.toString())
                 append("response_type", "code")
                 append("redirect_uri", website.config.websiteUrl.removeSuffix("/") + "/discord/login")
-                append("scope", "identify")
+                append("scope", "identify email")
             },
             false
         )
