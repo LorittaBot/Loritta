@@ -1,0 +1,3 @@
+ALTER TABLE sourcestrings ADD COLUMN IF NOT EXISTS added_at TIMESTAMP WITH TIME ZONE NULL;
+UPDATE sourcestrings SET added_at = NOW();
+ALTER TABLE sourcestrings ALTER COLUMN added_at SET NOT NULL;

@@ -678,6 +678,7 @@ class DoraBackend(val config: DoraConfig, val pudding: Pudding) {
                     this[SourceStrings.key] = it.key
                     this[SourceStrings.text] = it.value
                     this[SourceStrings.context] = translatableStrings[createContextInformationI18nKey(it.key)]
+                    this[SourceStrings.addedAt] = OffsetDateTime.now(ZoneOffset.UTC)
                 }
             }
 

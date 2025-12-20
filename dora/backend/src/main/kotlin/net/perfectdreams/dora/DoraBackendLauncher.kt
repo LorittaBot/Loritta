@@ -16,7 +16,7 @@ object DoraBackendLauncher {
         val config = Hocon.decodeFromConfig<DoraConfig>(ConfigFactory.parseFile(File("dora.conf")))
 
         val pudding = Pudding.createPostgreSQL(
-            1,
+            2,
             "Dora",
             config.database.address,
             config.database.database,
