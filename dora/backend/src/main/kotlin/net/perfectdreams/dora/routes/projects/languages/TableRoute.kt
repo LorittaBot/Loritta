@@ -37,6 +37,7 @@ class TableRoute(val dora: DoraBackend) : RequiresProjectAuthDashboardRoute(dora
         val untranslatedOnly = filtersParam.any { it.equals("UNTRANSLATED", ignoreCase = true) }
         val page = call.request.queryParameters["page"]?.toIntOrNull() ?: 1
         val pageZeroIndexed = page - 1
+        val maxEntries = call.request.queryParameters["maxEntries"]?.toIntOrNull() ?: 100
 
         val result = dora.pudding.transaction {
             val language = LanguageTargets.selectAll()
@@ -67,8 +68,8 @@ class TableRoute(val dora: DoraBackend) : RequiresProjectAuthDashboardRoute(dora
                     SourceStrings.project eq project.id and (if (untranslatedOnly) TranslationsStrings.text.isNull() else Op.TRUE)
                 }
                 .orderBy(SourceStrings.key, SortOrder.ASC)
-                .limit(100)
-                .offset((pageZeroIndexed * 100).toLong())
+                .limit(maxEntries)
+                .offset((pageZeroIndexed * maxEntries).toLong())
                 .toList()
 
             val totalCount = sourceStringQuery().where { SourceStrings.project eq project.id }.count()
@@ -90,12 +91,14 @@ class TableRoute(val dora: DoraBackend) : RequiresProjectAuthDashboardRoute(dora
                 if (untranslatedOnly) {
                     this.append("filters", "UNTRANSLATED")
                 }
+                if (maxEntries != 100)
+                    this.append("maxEntries", maxEntries.toString())
             }
         }
 
         val totalCount = result.totalCount.toInt()
         val translatedCount = result.translatedCount.toInt()
-        val totalPages = ceil(result.totalCountFiltered / 100.0).toInt()
+        val totalPages = ceil(result.totalCountFiltered / maxEntries.toDouble()).toInt()
 
         call.respondHtml {
             dashboardBase(
