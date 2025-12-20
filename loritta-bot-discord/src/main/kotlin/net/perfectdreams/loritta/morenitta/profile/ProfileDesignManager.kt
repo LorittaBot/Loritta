@@ -182,6 +182,8 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		registerBadge(TopLoveLetterBadge(loritta.pudding))
         registerBadge(ReactionEventBadge.Halloween2025ReactionEventBadge(loritta.pudding))
         registerBadge(ReactionEventBadge.Halloween2025ReactionEventSuperBadge(loritta.pudding))
+        registerBadge(ReactionEventBadge.Christmas2025ReactionEventBadge(loritta.pudding))
+        registerBadge(ReactionEventBadge.Christmas2025ReactionEventSuperBadge(loritta.pudding))
 	}
 
 	suspend fun createProfile(

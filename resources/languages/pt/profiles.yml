@@ -149,3 +149,11 @@ profiles:
       title: "Super Amendoado"
       titlePlural: "Super Amendoados"
       description: "Insígnia para pessoas que zeraram o Evento de Halloween da Loritta 2025"
+    christmas2025:
+      title: "Nevado"
+      titlePlural: "Nevados"
+      description: "Insígnia para pessoas que participaram o Evento de Natal da Loritta 2025"
+    superChristmas2025:
+      title: "Super Nevado"
+      titlePlural: "Super Nevados"
+      description: "Insígnia para pessoas que zeraram o Evento de Natal da Loritta 2025"

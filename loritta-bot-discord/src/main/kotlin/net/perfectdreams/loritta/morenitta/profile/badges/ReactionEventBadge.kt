@@ -13,6 +13,7 @@ import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
 import net.perfectdreams.loritta.morenitta.reactionevents.ReactionEvent
 import net.perfectdreams.loritta.morenitta.reactionevents.events.Anniversary2025ReactionEvent
 import net.perfectdreams.loritta.morenitta.reactionevents.events.Christmas2024ReactionEvent
+import net.perfectdreams.loritta.morenitta.reactionevents.events.Christmas2025ReactionEvent
 import net.perfectdreams.loritta.morenitta.reactionevents.events.Halloween2024ReactionEvent
 import net.perfectdreams.loritta.morenitta.reactionevents.events.Halloween2025ReactionEvent
 import org.jetbrains.exposed.sql.and
@@ -143,6 +144,31 @@ sealed class ReactionEventBadge(
         300
     )
 
+    class Christmas2025ReactionEventBadge(pudding: Pudding) : ReactionEventBadge(
+        pudding,
+        UUID.fromString("e22541d6-0175-4019-b291-7bca583777d5"),
+        ProfileDesignManager.I18N_BADGES_PREFIX.Christmas2025.Title,
+        ProfileDesignManager.I18N_BADGES_PREFIX.Christmas2025.TitlePlural,
+        ProfileDesignManager.I18N_BADGES_PREFIX.Christmas2025.Description,
+        "christmas2025.png",
+        LorittaEmojiReference.UnicodeEmoji("❄\uFE0F"),
+        100,
+        Christmas2025ReactionEvent,
+        10
+    )
+
+    class Christmas2025ReactionEventSuperBadge(pudding: Pudding) : ReactionEventBadge(
+        pudding,
+        UUID.fromString("2bbc405c-43de-4e9b-8401-6dfe48685a5a"),
+        ProfileDesignManager.I18N_BADGES_PREFIX.SuperChristmas2025.Title,
+        ProfileDesignManager.I18N_BADGES_PREFIX.SuperChristmas2025.TitlePlural,
+        ProfileDesignManager.I18N_BADGES_PREFIX.SuperChristmas2025.Description,
+        "christmas2025_super.png",
+        LorittaEmojis.Christmas2025ReactionEventSuper,
+        100,
+        Christmas2025ReactionEvent,
+        300
+    )
 
     private val eventInternalId = reactionEvent.internalId
 
