@@ -39,7 +39,6 @@ data class LorittaConfig(
     val messageVerification: MessageVerificationConfig,
     val messageRenderer: MessageRendererConfig,
     val sparklyPower: SparklyPowerConfig,
-    val crowdin: CrowdinConfig,
     val twitch: TwitchConfig,
     val bluesky: BlueskyConfig,
     val banAppeals: BanAppealsConfig,
@@ -249,9 +248,6 @@ data class LorittaConfig(
         val clientId: Long,
         val token: String
     )
-
-    @Serializable
-    data class CrowdinConfig(val url: String)
 
     @Serializable
     data class MessageEncryptionConfig(val encryptionKey: String)

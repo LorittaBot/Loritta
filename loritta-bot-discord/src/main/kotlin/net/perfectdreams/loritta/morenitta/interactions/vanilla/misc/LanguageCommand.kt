@@ -99,12 +99,6 @@ class LanguageCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
                             inline = true
                         }
                     }
-
-                    field {
-                        name = context.i18nContext.get(I18N_PREFIX.HelpUsTranslate)
-                        value = loritta.config.loritta.crowdin.url
-                        inline = false
-                    }
                 }
 
                 val buttons: List<Button> = buildList {

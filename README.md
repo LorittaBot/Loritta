@@ -9,7 +9,6 @@
 <!-- Badges, about the GitHub repository itself -->
 <p align="center">
 <a href="https://github.com/LorittaBot/Loritta/actions/workflows/build.yml"><img src="https://github.com/LorittaBot/Loritta/actions/workflows/build.yml/badge.svg"></a>
-<a href="https://i18n.perfectdreams.net/loritta-morenitta-cinnamon"><img src="https://badges.crowdin.net/e/557e25200b3a46d74dc052c4ec2cc8a4/localized.svg"></a>
 <a href="LICENSE"><img src="https://img.shields.io/badge/license-source%20available-blue.svg"></a>
 </p>
 
