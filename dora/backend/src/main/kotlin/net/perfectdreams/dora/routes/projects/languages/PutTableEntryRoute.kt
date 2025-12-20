@@ -1,5 +1,6 @@
 package net.perfectdreams.dora.routes.projects.languages
 
+import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.request.receiveText
 import io.ktor.server.util.getOrFail
@@ -28,6 +29,7 @@ import net.perfectdreams.dora.tables.TranslationsStrings
 import net.perfectdreams.dora.tables.Users
 import net.perfectdreams.dora.utils.TranslationProgress
 import net.perfectdreams.dora.utils.respondHtmlFragment
+import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
@@ -50,7 +52,7 @@ class PutTableEntryRoute(val dora: DoraBackend) : RequiresProjectAuthDashboardRo
         val languageSlug = call.parameters.getOrFail("languageSlug")
         val stringId = call.parameters.getOrFail("stringId")
 
-        val (sourceStringRow, translatedBy, counts) = dora.pudding.transaction {
+        val result = dora.pudding.transaction {
             val language = LanguageTargets.selectAll()
                 .where {
                     LanguageTargets.languageId eq languageSlug and (LanguageTargets.project eq project.id)
@@ -71,6 +73,9 @@ class PutTableEntryRoute(val dora: DoraBackend) : RequiresProjectAuthDashboardRo
                     SourceStrings.key eq stringId and (SourceStrings.project eq project.id)
                 }
                 .first()
+            
+            if (sourceStringRow.getOrNull(TranslationsStrings.text) != null && sourceStringRow[TranslationsStrings.text] == request.translatedText)
+                return@transaction Result.AlreadyApprovedSameText
 
             TranslationsStrings.deleteWhere {
                 TranslationsStrings.language eq language[LanguageTargets.id] and (TranslationsStrings.sourceString eq sourceStringRow[SourceStrings.id])
@@ -111,33 +116,56 @@ class PutTableEntryRoute(val dora: DoraBackend) : RequiresProjectAuthDashboardRo
                 .count()
                 .toInt()
 
-            return@transaction Triple(sourceStringRow, translatedBy, Pair(translatedCount, totalCount))
+            return@transaction Result.Success(sourceStringRow, translatedBy, Pair(translatedCount, totalCount))
         }
 
-        val flow = dora.languageFlows.getOrPut(project.slug + "-" + languageSlug) { MutableStateFlow(TranslationProgress(0, 0)) }
-        flow.emit(TranslationProgress(counts.first, counts.second))
+        when (result) {
+            is Result.Success -> {
+                val flow = dora.languageFlows.getOrPut(project.slug + "-" + languageSlug) { MutableStateFlow(TranslationProgress(0, 0)) }
+                flow.emit(TranslationProgress(result.counts.first, result.counts.second))
 
-        call.respondHtmlFragment {
-            batchEntry(
-                project,
-                uniqueId,
-                languageSlug,
-                stringId,
-                sourceStringRow[SourceStrings.context],
-                sourceStringRow[SourceStrings.text],
-                sourceStringRow.getOrNull(MachineTranslatedStrings.text),
-                request.translatedText,
-                true,
-                translatedBy,
-                false
-            )
+                call.respondHtmlFragment {
+                    batchEntry(
+                        project,
+                        uniqueId,
+                        languageSlug,
+                        stringId,
+                        result.sourceStringRow[SourceStrings.context],
+                        result.sourceStringRow[SourceStrings.text],
+                        result.sourceStringRow.getOrNull(MachineTranslatedStrings.text),
+                        request.translatedText,
+                        true,
+                        result.translatedBy,
+                        false
+                    )
 
-            blissShowToast(
-                createEmbeddedToast(
-                    EmbeddedToast.Type.INFO,
-                    "Salvo!"
-                )
-            )
+                    blissShowToast(
+                        createEmbeddedToast(
+                            EmbeddedToast.Type.INFO,
+                            "Salvo!"
+                        )
+                    )
+                }
+            }
+            Result.AlreadyApprovedSameText -> {
+                call.respondHtmlFragment(status = HttpStatusCode.Conflict) {
+                    blissShowToast(
+                        createEmbeddedToast(
+                            EmbeddedToast.Type.WARN,
+                            "String já foi aprovada com o mesmo conteúdo!"
+                        )
+                    )
+                }
+            }
         }
+    }
+    
+    sealed class Result {
+        data class Success(
+            val sourceStringRow: ResultRow,
+            val translatedBy: Translator,
+            val counts: Pair<Int, Int>
+        ) : Result()
+        data object AlreadyApprovedSameText : Result()
     }
 }
