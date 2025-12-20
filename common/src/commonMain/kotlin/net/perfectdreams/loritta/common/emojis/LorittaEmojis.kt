@@ -134,6 +134,7 @@ object LorittaEmojis {
     val Stonks = applicationEmoji("stonks", "/badges/")
     val TopLoveLetter = applicationEmoji("top_love_letter", "/badges/")
     val LoriCard = applicationEmoji("super_donator", "/badges/")
+    val Christmas2025ReactionEventSuper = applicationEmoji("christmas2025_super", "/badges/")
 
     private fun applicationEmoji(emojiName: String, imageFolder: String = "/application_emojis/"): LorittaEmojiReference.ApplicationEmoji {
         val ref = LorittaEmojiReference.ApplicationEmoji(emojiName, "$imageFolder$emojiName")
