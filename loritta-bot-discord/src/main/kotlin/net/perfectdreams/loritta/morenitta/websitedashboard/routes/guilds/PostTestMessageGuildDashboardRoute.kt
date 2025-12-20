@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.i18nhelper.core.I18nContext
@@ -92,6 +93,19 @@ class PostTestMessageGuildDashboardRoute(website: LorittaDashboardWebServer) : R
                 )
             }
             return
+        }
+
+        if (channel is IPermissionContainer && !channel.canTalk()) {
+            call.respondHtmlFragment(status = HttpStatusCode.BadRequest) {
+                blissShowToast(
+                    createEmbeddedToast(
+                        EmbeddedToast.Type.WARN,
+                        "Algo deu errado ao enviar a mensagem!"
+                    ) {
+                        text("A Loritta não tem permissão para enviar mensagens no canal selecionado.")
+                    }
+                )
+            }
         }
 
         val message = MessageUtils.generateMessage(
