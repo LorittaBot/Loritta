@@ -56,7 +56,7 @@ class BlackjackManager(val loritta: LorittaBot) {
                         it[BlackjackSinglePlayerMatches.refunded] = true
                     }
 
-                    Profiles.update({ Profiles.id eq match[BlackjackSinglePlayerMatches.id] }) {
+                    Profiles.update({ Profiles.id eq match[BlackjackSinglePlayerMatches.user] }) {
                         it[Profiles.money] = Profiles.money + payoutValue
                     }
 

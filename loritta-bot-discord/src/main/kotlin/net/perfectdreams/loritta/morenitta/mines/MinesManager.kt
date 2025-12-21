@@ -57,7 +57,7 @@ class MinesManager(val loritta: LorittaBot) {
                         it[MinesSinglePlayerMatches.refunded] = true
                     }
 
-                    Profiles.update({ Profiles.id eq match[MinesSinglePlayerMatches.id] }) {
+                    Profiles.update({ Profiles.id eq match[MinesSinglePlayerMatches.user] }) {
                         it[Profiles.money] = Profiles.money + payoutValue
                     }
 
