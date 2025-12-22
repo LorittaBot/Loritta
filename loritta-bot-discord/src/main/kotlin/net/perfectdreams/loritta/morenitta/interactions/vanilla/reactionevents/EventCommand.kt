@@ -478,7 +478,7 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                                         CraftedReactionEventItems.user eq playerData[ReactionEventPlayers.id] and (CraftedReactionEventItems.event eq activeEvent.internalId)
                                     }.count()
 
-                                val activeCraft = activeEvent.getCurrentActiveCraft(context.user, result.craftedThings)
+                                val activeCraft = activeEvent.getCurrentActiveCraft(context.user, basketCount)
 
                                 val points = CollectedReactionEventPoints.innerJoin(ReactionEventDrops)
                                     .select(CollectedReactionEventPoints.id, ReactionEventDrops.reactionSetId)
