@@ -4,17 +4,13 @@ import dev.minn.jda.ktx.messages.InlineMessage
 import dev.minn.jda.ktx.messages.MessageEdit
 import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
-import net.dv8tion.jda.api.utils.FileUpload
+import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.utils.TimeFormat
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.declarations.XpCommand
-import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageFormatType
-import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByteArray
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.services.UsersService
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
-import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsEvents
-import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsFinishedAlbumUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.reactionevents.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.ReactionEventsConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
@@ -30,7 +26,6 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArg
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.SonhosCommand
 import net.perfectdreams.loritta.morenitta.reactionevents.ReactionEvent
 import net.perfectdreams.loritta.morenitta.reactionevents.ReactionEventReward
 import net.perfectdreams.loritta.morenitta.reactionevents.ReactionEventsAttributes
@@ -43,6 +38,7 @@ import net.perfectdreams.loritta.serializable.StoredReactionEventSonhosTransacti
 import org.jetbrains.exposed.sql.*
 import java.time.Instant
 import java.util.*
+import kotlin.collections.iterator
 import kotlin.math.ceil
 
 class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
@@ -353,6 +349,99 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     }
 
     class InventoryEventExecutor(private val loritta: LorittaBot) : LorittaSlashCommandExecutor() {
+        private suspend fun craftItem(
+            activeEvent: ReactionEvent,
+            user: User,
+            playerData: ResultRow
+        ): CraftItemResult {
+            val basketCount = CraftedReactionEventItems.selectAll()
+                .where {
+                    CraftedReactionEventItems.user eq playerData[ReactionEventPlayers.id] and (CraftedReactionEventItems.event eq activeEvent.internalId)
+                }.count()
+
+            val activeCraft = activeEvent.getCurrentActiveCraft(user, basketCount)
+
+            val points = CollectedReactionEventPoints.innerJoin(ReactionEventDrops)
+                .select(CollectedReactionEventPoints.id, ReactionEventDrops.reactionSetId)
+                .where {
+                    CollectedReactionEventPoints.user eq playerData[ReactionEventPlayers.id] and (CollectedReactionEventPoints.associatedWithCraft.isNull()) and (ReactionEventDrops.event eq activeEvent.internalId)
+                }
+                .toList()
+
+            val itemsToBeUpdated = mutableListOf<ResultRow>()
+
+            for (requiredItem in activeCraft) {
+                val itemsOfThisType = points.filter { it[ReactionEventDrops.reactionSetId] == requiredItem.key }
+                val howMuchDoWeHave = itemsOfThisType.size
+
+                if (requiredItem.value > howMuchDoWeHave)
+                    return CraftItemResult.InsufficientItems
+                else
+                    itemsToBeUpdated.addAll(itemsOfThisType.take(requiredItem.value))
+            }
+
+            // Okay, we do have enough ITEMS! Let's create a :sparkles: basket :sparkles:
+            val basket = CraftedReactionEventItems.insertAndGetId {
+                it[CraftedReactionEventItems.user] = playerData[ReactionEventPlayers.id]
+                it[CraftedReactionEventItems.event] = activeEvent.internalId
+                it[CraftedReactionEventItems.createdAt] = Instant.now()
+            }
+
+            // And then attempt to update every item ID to reference the newly created basket
+            CollectedReactionEventPoints.update({
+                CollectedReactionEventPoints.id inList itemsToBeUpdated.map { it[CollectedReactionEventPoints.id] }
+            }) {
+                it[CollectedReactionEventPoints.associatedWithCraft] = basket
+            }
+
+            // How many baskets do they now have?
+            val newBasketCount = (basketCount + 1).toInt()
+
+            val receivedRewards = mutableListOf<ReactionEventReward>()
+            for (reward in activeEvent.rewards) {
+                if (reward.requiredPoints != newBasketCount)
+                    continue
+
+                when (reward) {
+                    is ReactionEventReward.SonhosReward -> {
+                        // Cinnamon transactions log
+                        SimpleSonhosTransactionsLogUtils.insert(
+                            user.idLong,
+                            Instant.now(),
+                            TransactionType.EVENTS,
+                            reward.sonhos,
+                            StoredReactionEventSonhosTransaction(
+                                activeEvent.internalId,
+                                reward.requiredPoints
+                            )
+                        )
+
+                        Profiles.update({ Profiles.id eq user.idLong }) {
+                            with(SqlExpressionBuilder) {
+                                it[money] = money + reward.sonhos
+                            }
+                        }
+                    }
+
+                    // No need to do anything for badges :3
+                    is ReactionEventReward.BadgeReward -> {}
+                }
+
+                receivedRewards.add(reward)
+            }
+
+            val maxPoints = activeEvent.rewards.maxOf { it.requiredPoints }
+            if (maxPoints == newBasketCount) {
+                ReactionEventFinishedEventUsers.insert {
+                    it[ReactionEventFinishedEventUsers.user] = playerData[ReactionEventPlayers.id]
+                    it[ReactionEventFinishedEventUsers.event] = activeEvent.internalId
+                    it[ReactionEventFinishedEventUsers.finishedAt] = Instant.now()
+                }
+            }
+
+            return CraftItemResult.Success(receivedRewards)
+        }
+
         private suspend fun response(context: UnleashedContext, combo: Int, target: suspend (InlineMessage<*>.() -> (Unit)) -> (Unit)) {
             val now = Instant.now()
             val activeEvent = ReactionEventsAttributes.getActiveEvent(now)
@@ -429,12 +518,19 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 }
                 is Result.Success -> {
                     val activeCraft = activeEvent.getCurrentActiveCraft(context.user, result.craftedThings)
-                    val button = activeEvent.createCraftItemButtonMessage(context.i18nContext)
+                    val buttonLabel = activeEvent.createCraftItemButtonMessage(context.i18nContext)
+                    val buttonLabelMulti = activeEvent.createCraftMultipleItemsButtonMessage(context.i18nContext)
 
                     val craftButton = UnleashedButton.of(
                         ButtonStyle.PRIMARY,
-                        button.text,
-                        loritta.emojiManager.get(button.emoji)
+                        buttonLabel.text,
+                        loritta.emojiManager.get(buttonLabel.emoji)
+                    )
+
+                    val craftMultipleButton = UnleashedButton.of(
+                        ButtonStyle.PRIMARY,
+                        buttonLabelMulti.text,
+                        loritta.emojiManager.get(buttonLabelMulti.emoji)
                     )
 
                     var canCraft = true
@@ -446,169 +542,6 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                         if (missing > 0) {
                             canCraft = false
                             break
-                        }
-                    }
-
-                    val btn = if (!canCraft) {
-                        craftButton.asDisabled()
-                    } else {
-                        loritta.interactivityManager.buttonForUser(
-                            context.user,
-                            context.alwaysEphemeral,
-                            ButtonStyle.PRIMARY,
-                            button.text,
-                            {
-                                loriEmoji = loritta.emojiManager.get(button.emoji)
-                            }
-                        ) { context ->
-                            context.deferChannelMessage(false)
-
-                            // Attempt to create a basket
-                            val basketCreationResult = loritta.newSuspendedTransaction {
-                                val playerData = ReactionEventPlayers.selectAll()
-                                    .where {
-                                        ReactionEventPlayers.userId eq context.user.idLong and (ReactionEventPlayers.event eq activeEvent.internalId)
-                                    }.firstOrNull()
-
-                                if (playerData == null)
-                                    error("playerData is null but should never be null!")
-
-                                val basketCount = CraftedReactionEventItems.selectAll()
-                                    .where {
-                                        CraftedReactionEventItems.user eq playerData[ReactionEventPlayers.id] and (CraftedReactionEventItems.event eq activeEvent.internalId)
-                                    }.count()
-
-                                val activeCraft = activeEvent.getCurrentActiveCraft(context.user, basketCount)
-
-                                val points = CollectedReactionEventPoints.innerJoin(ReactionEventDrops)
-                                    .select(CollectedReactionEventPoints.id, ReactionEventDrops.reactionSetId)
-                                    .where {
-                                        CollectedReactionEventPoints.user eq playerData[ReactionEventPlayers.id] and (CollectedReactionEventPoints.associatedWithCraft.isNull()) and (ReactionEventDrops.event eq activeEvent.internalId)
-                                    }
-                                    .toList()
-                                //         .groupBy(ReactionEventDrops.reactionSetId)
-                                //         .associate { Pair(it[ReactionEventDrops.reactionSetId], it[reactionSetIdCount]) }
-
-                                val itemsToBeUpdated = mutableListOf<ResultRow>()
-
-                                for (requiredItem in activeCraft) {
-                                    val itemsOfThisType = points.filter { it[ReactionEventDrops.reactionSetId] == requiredItem.key }
-                                    val howMuchDoWeHave = itemsOfThisType.size
-
-                                    if (requiredItem.value > howMuchDoWeHave)
-                                        return@newSuspendedTransaction CraftCreationResult.InsufficientItems
-                                    else
-                                        itemsToBeUpdated.addAll(itemsOfThisType.take(requiredItem.value))
-                                }
-
-                                // Okay, we do have enough ITEMS! Let's create a :sparkles: basket :sparkles:
-                                val basket = CraftedReactionEventItems.insertAndGetId {
-                                    it[CraftedReactionEventItems.user] = playerData[ReactionEventPlayers.id]
-                                    it[CraftedReactionEventItems.event] = activeEvent.internalId
-                                    it[CraftedReactionEventItems.createdAt] = Instant.now()
-                                }
-
-                                // And then attempt to update every item ID to reference the newly created basket
-                                CollectedReactionEventPoints.update({
-                                    CollectedReactionEventPoints.id inList itemsToBeUpdated.map { it[CollectedReactionEventPoints.id] }
-                                }) {
-                                    it[CollectedReactionEventPoints.associatedWithCraft] = basket
-                                }
-
-                                val receivedRewards = mutableListOf<ReactionEventReward>()
-
-                                // How many baskets do they now have?
-                                val newBasketCount = (basketCount + 1).toInt()
-                                for (reward in activeEvent.rewards) {
-                                    if (reward.requiredPoints != newBasketCount)
-                                        continue
-
-                                    when (reward) {
-                                        is ReactionEventReward.SonhosReward -> {
-                                            // Cinnamon transactions log
-                                            SimpleSonhosTransactionsLogUtils.insert(
-                                                context.user.idLong,
-                                                Instant.now(),
-                                                TransactionType.EVENTS,
-                                                reward.sonhos,
-                                                StoredReactionEventSonhosTransaction(
-                                                    activeEvent.internalId,
-                                                    reward.requiredPoints
-                                                )
-                                            )
-
-                                            Profiles.update({ Profiles.id eq context.user.idLong }) {
-                                                with(SqlExpressionBuilder) {
-                                                    it[money] = money + reward.sonhos
-                                                }
-                                            }
-                                        }
-
-                                        // No need to do anything for badges :3
-                                        is ReactionEventReward.BadgeReward -> {}
-                                    }
-
-                                    receivedRewards.add(reward)
-                                }
-
-                                val maxPoints = activeEvent.rewards.maxOf { it.requiredPoints }
-                                if (maxPoints == newBasketCount) {
-                                    ReactionEventFinishedEventUsers.insert {
-                                        it[ReactionEventFinishedEventUsers.user] = playerData[ReactionEventPlayers.id]
-                                        it[ReactionEventFinishedEventUsers.event] = activeEvent.internalId
-                                        it[ReactionEventFinishedEventUsers.finishedAt] = Instant.now()
-                                    }
-                                }
-
-                                return@newSuspendedTransaction CraftCreationResult.Success(receivedRewards)
-                            }
-
-                            when (basketCreationResult) {
-                                CraftCreationResult.InsufficientItems -> {
-                                    context.reply(false) {
-                                        styled(
-                                            activeEvent.createYouDontHaveEnoughItemsMessage(context.i18nContext),
-                                            Emotes.LoriSob
-                                        )
-                                    }
-                                }
-
-                                is CraftCreationResult.Success -> {
-                                    val message = activeEvent.createYouCraftedAItemMessage(context.i18nContext, combo)
-
-                                    context.reply(false) {
-                                        styled(
-                                            message.text,
-                                            loritta.emojiManager.get(message.emoji)
-                                        )
-
-                                        for (receivedReward in basketCreationResult.receivedRewards) {
-                                            when (receivedReward) {
-                                                is ReactionEventReward.BadgeReward -> {
-                                                    styled(
-                                                        context.i18nContext.get(I18N_PREFIX.Inventory.Rewards.WonBadge(loritta.commandMentions.profileView)),
-                                                        Emotes.LoriWow
-                                                    )
-                                                }
-                                                is ReactionEventReward.SonhosReward -> {
-                                                    styled(
-                                                        context.i18nContext.get(I18N_PREFIX.Inventory.Rewards.WonSonhos(receivedReward.sonhos, loritta.commandMentions.sonhosAtm)),
-                                                        Emotes.LoriWow
-                                                    )
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    response(context, combo + 1) {
-                                        context.event.message.editMessage(
-                                            MessageEdit {
-                                                it.invoke(this)
-                                            }
-                                        ).await()
-                                    }
-                                }
-                            }
                         }
                     }
 
@@ -646,7 +579,169 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                             }
                         }
 
-                        actionRow(btn)
+                        if (!canCraft) {
+                            actionRow(
+                                craftButton.asDisabled(),
+                                craftMultipleButton.asDisabled()
+                            )
+                        } else {
+                            actionRow(
+                                loritta.interactivityManager.buttonForUser(
+                                    context.user,
+                                    context.alwaysEphemeral,
+                                    craftButton
+                                ) { context ->
+                                    context.deferChannelMessage(false)
+
+                                    // Attempt to create a basket
+                                    val basketCreationResult = loritta.newSuspendedTransaction {
+                                        val playerData = ReactionEventPlayers.selectAll()
+                                            .where {
+                                                ReactionEventPlayers.userId eq context.user.idLong and (ReactionEventPlayers.event eq activeEvent.internalId)
+                                            }.firstOrNull()
+
+                                        if (playerData == null)
+                                            error("playerData is null but should never be null!")
+
+                                        when (val craftItemResult = craftItem(activeEvent, context.user, playerData)) {
+                                            is CraftItemResult.Success -> CraftCreationResult.Success(craftItemResult.receivedRewards)
+                                            CraftItemResult.InsufficientItems -> CraftCreationResult.InsufficientItems
+                                        }
+                                    }
+
+                                    when (basketCreationResult) {
+                                        CraftCreationResult.InsufficientItems -> {
+                                            context.reply(false) {
+                                                styled(
+                                                    activeEvent.createYouDontHaveEnoughItemsMessage(context.i18nContext),
+                                                    Emotes.LoriSob
+                                                )
+                                            }
+                                        }
+
+                                        is CraftCreationResult.Success -> {
+                                            val message = activeEvent.createYouCraftedItemsMessage(context.i18nContext, 1, combo)
+
+                                            context.reply(false) {
+                                                styled(
+                                                    message.text,
+                                                    loritta.emojiManager.get(message.emoji)
+                                                )
+
+                                                for (receivedReward in basketCreationResult.receivedRewards) {
+                                                    when (receivedReward) {
+                                                        is ReactionEventReward.BadgeReward -> {
+                                                            styled(
+                                                                context.i18nContext.get(I18N_PREFIX.Inventory.Rewards.WonBadge(loritta.commandMentions.profileView)),
+                                                                Emotes.LoriWow
+                                                            )
+                                                        }
+                                                        is ReactionEventReward.SonhosReward -> {
+                                                            styled(
+                                                                context.i18nContext.get(I18N_PREFIX.Inventory.Rewards.WonSonhos(receivedReward.sonhos, loritta.commandMentions.sonhosAtm)),
+                                                                Emotes.LoriWow
+                                                            )
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+                                            response(context, combo + 1) {
+                                                context.event.message.editMessage(
+                                                    MessageEdit {
+                                                        it.invoke(this)
+                                                    }
+                                                ).await()
+                                            }
+                                        }
+                                    }
+                                },
+                                loritta.interactivityManager.buttonForUser(
+                                    context.user,
+                                    context.alwaysEphemeral,
+                                    craftMultipleButton
+                                ) { context ->
+                                    context.deferChannelMessage(false)
+
+                                    // Attempt to create multiple baskets
+                                    val basketCreationResult = loritta.newSuspendedTransaction {
+                                        val playerData = ReactionEventPlayers.selectAll()
+                                            .where {
+                                                ReactionEventPlayers.userId eq context.user.idLong and (ReactionEventPlayers.event eq activeEvent.internalId)
+                                            }.firstOrNull()
+
+                                        if (playerData == null)
+                                            error("playerData is null but should never be null!")
+
+                                        val receivedRewards = mutableListOf<ReactionEventReward>()
+                                        var craftedItems = 0
+
+                                        while (true) {
+                                            when (val craftItemResult = craftItem(activeEvent, context.user, playerData)) {
+                                                is CraftItemResult.Success -> {
+                                                    receivedRewards.addAll(craftItemResult.receivedRewards)
+                                                    craftedItems++
+                                                }
+                                                CraftItemResult.InsufficientItems -> break
+                                            }
+                                        }
+
+                                        if (craftedItems == 0) {
+                                            return@newSuspendedTransaction MultiCraftCreationResult.InsufficientItems
+                                        } else {
+                                            return@newSuspendedTransaction MultiCraftCreationResult.Success(craftedItems, receivedRewards)
+                                        }
+                                    }
+
+                                    when (basketCreationResult) {
+                                        MultiCraftCreationResult.InsufficientItems -> {
+                                            context.reply(false) {
+                                                styled(
+                                                    activeEvent.createYouDontHaveEnoughItemsMessage(context.i18nContext),
+                                                    Emotes.LoriSob
+                                                )
+                                            }
+                                        }
+
+                                        is MultiCraftCreationResult.Success -> {
+                                            val message = activeEvent.createYouCraftedItemsMessage(context.i18nContext, result.craftedThings.toInt(), combo)
+
+                                            context.reply(false) {
+                                                styled(
+                                                    message.text,
+                                                    loritta.emojiManager.get(message.emoji)
+                                                )
+
+                                                for (receivedReward in basketCreationResult.receivedRewards) {
+                                                    when (receivedReward) {
+                                                        is ReactionEventReward.BadgeReward -> {
+                                                            styled(
+                                                                context.i18nContext.get(I18N_PREFIX.Inventory.Rewards.WonBadge(loritta.commandMentions.profileView)),
+                                                                Emotes.LoriWow
+                                                            )
+                                                        }
+                                                        is ReactionEventReward.SonhosReward -> {
+                                                            styled(
+                                                                context.i18nContext.get(I18N_PREFIX.Inventory.Rewards.WonSonhos(receivedReward.sonhos, loritta.commandMentions.sonhosAtm)),
+                                                                Emotes.LoriWow
+                                                            )
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+                                            response(context, combo + 1) {
+                                                context.event.message.editMessage(
+                                                    MessageEdit {
+                                                        it.invoke(this)
+                                                    }
+                                                ).await()
+                                            }
+                                        }
+                                    }
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -670,11 +765,19 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             data object HasNotJoinedEvent : Result()
         }
 
+        sealed class CraftItemResult {
+            data class Success(val receivedRewards: List<ReactionEventReward>) : CraftItemResult()
+            data object InsufficientItems : CraftItemResult()
+        }
+
         sealed class CraftCreationResult {
-            data class Success(
-                val receivedRewards: List<ReactionEventReward>
-            ) : CraftCreationResult()
+            data class Success(val receivedRewards: List<ReactionEventReward>) : CraftCreationResult()
             data object InsufficientItems : CraftCreationResult()
+        }
+
+        sealed class MultiCraftCreationResult {
+            data class Success(val quantity: Int, val receivedRewards: List<ReactionEventReward>) : MultiCraftCreationResult()
+            data object InsufficientItems : MultiCraftCreationResult()
         }
     }
 

@@ -234,6 +234,11 @@ object Christmas2024ReactionEvent : ReactionEvent() {
         gift
     )
 
+    override fun createCraftMultipleItemsButtonMessage(i18nContext: I18nContext) = TextAndEmoji(
+        i18nContext.get(I18nKeysData.ReactionEvents.Event.Christmas2024.CraftItemMultiple),
+        gift
+    )
+
     override fun createHowManyCraftedItemsYouHaveMessage(i18nContext: I18nContext, craftedCount: Long, commandMention: String) = i18nContext.get(I18nKeysData.ReactionEvents.Event.Christmas2024.CurrentlyYouHave(craftedCount, commandMention))
 
     override fun createItemsInYourInventoryMessage(i18nContext: I18nContext) = i18nContext.get(I18nKeysData.ReactionEvents.Event.Christmas2024.ItemsInYourInventory)
@@ -242,15 +247,15 @@ object Christmas2024ReactionEvent : ReactionEvent() {
 
     override fun createYouDontHaveEnoughItemsMessage(i18nContext: I18nContext) = i18nContext.get(I18nKeysData.ReactionEvents.Event.Christmas2024.YouDontHaveEnoughItems)
 
-    override fun createYouCraftedAItemMessage(i18nContext: I18nContext, combo: Int): TextAndEmoji {
+    override fun createYouCraftedItemsMessage(i18nContext: I18nContext, quantity: Int, combo: Int): TextAndEmoji {
         return if (combo >= 3) {
             TextAndEmoji(
-                i18nContext.get(I18nKeysData.ReactionEvents.Event.Christmas2024.YouCreatedAnItemCombo(combo)),
+                i18nContext.get(I18nKeysData.ReactionEvents.Event.Christmas2024.YouCraftedItemsCombo(quantity, combo)),
                 LorittaEmojiReference.UnicodeEmoji("\uD83D\uDD25"),
             )
         } else {
             TextAndEmoji(
-                i18nContext.get(I18nKeysData.ReactionEvents.Event.Christmas2024.YouCraftedAnItem),
+                i18nContext.get(I18nKeysData.ReactionEvents.Event.Christmas2024.YouCraftedItems(quantity)),
                 gift
             )
         }

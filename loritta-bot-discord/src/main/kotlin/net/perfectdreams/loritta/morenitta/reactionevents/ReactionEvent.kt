@@ -38,6 +38,11 @@ abstract class ReactionEvent {
     abstract fun createCraftItemButtonMessage(i18nContext: I18nContext): TextAndEmoji
 
     /**
+     * Creates the message used in the event inventory command to craft multiple items
+     */
+    abstract fun createCraftMultipleItemsButtonMessage(i18nContext: I18nContext): TextAndEmoji
+
+    /**
      * Creates the message used in the event inventory command to craft an item
      */
     abstract fun createHowManyCraftedItemsYouHaveMessage(i18nContext: I18nContext, craftedCount: Long, commandMention: String): String
@@ -53,7 +58,7 @@ abstract class ReactionEvent {
     abstract fun createYourNextCraftIngredientsAreMessage(i18nContext: I18nContext): String
 
     abstract fun createYouDontHaveEnoughItemsMessage(i18nContext: I18nContext): String
-    abstract fun createYouCraftedAItemMessage(i18nContext: I18nContext, combo: Int): TextAndEmoji
+    abstract fun createYouCraftedItemsMessage(i18nContext: I18nContext, quantity: Int, combo: Int): TextAndEmoji
     abstract fun createCraftedXItemsMessage(loritta: LorittaBot, i18nContext: I18nContext, quantity: Long, commandMention: String): String
     abstract fun createShortCraftedItemMessage(i18nContext: I18nContext, quantity: Int): String
 
