@@ -349,7 +349,7 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     }
 
     class InventoryEventExecutor(private val loritta: LorittaBot) : LorittaSlashCommandExecutor() {
-        private suspend fun craftItem(
+        private fun craftItem(
             activeEvent: ReactionEvent,
             user: User,
             playerData: ResultRow
@@ -704,7 +704,7 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                                         }
 
                                         is MultiCraftCreationResult.Success -> {
-                                            val message = activeEvent.createYouCraftedItemsMessage(context.i18nContext, result.craftedThings.toInt(), combo)
+                                            val message = activeEvent.createYouCraftedItemsMessage(context.i18nContext, basketCreationResult.quantity, combo)
 
                                             context.reply(false) {
                                                 styled(
@@ -730,7 +730,7 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                                                 }
                                             }
 
-                                            response(context, combo + 1) {
+                                            response(context, combo + basketCreationResult.quantity) {
                                                 context.event.message.editMessage(
                                                     MessageEdit {
                                                         it.invoke(this)
