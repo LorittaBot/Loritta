@@ -8,7 +8,7 @@ website:
         title: "Estilo de Recompensas por Cargo"
         stack:
           title: "Empilhar recompensas anteriores"
-          description: "Ao executar um comando, eu irei deletar a mensagem do usuário."
+          description: "Ao subir de nível, todas as recompensas que o usuário recebeu serão mantidas."
         remove:
           title: "Remover recompensas anteriores"
           description: "Ao subir de nível, todas as recompensas que o usuário recebeu são removidas"
