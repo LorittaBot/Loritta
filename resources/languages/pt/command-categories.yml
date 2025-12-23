@@ -120,7 +120,7 @@ commands:
         punisherRoleTooLow: "O usuário {mention} não poderá ser punido, pois o seu cargo é menor ou igual ao dele!"
         punisherRoleTooLowHowToFix: "Para que você possa punir, suba o seu cargo acima do cargo da pessoa que você deseja punir na lista de cargos, obrigada!"
         targetIsOwner: "O usuário {mention} não poderá ser punido, pois ele é o dono do servidor! Tá tentando fazer um motim, hein?"
-        __targetIsLoritta: "Keep the \"joke\" vibe, this is because the user tried to punish Loritta, and it doesn't make sense to punish herself. \"Vai ver se eu tô na esquina\" is a idiom that means \"go bother someone else\"."
+        __targetIsLorittaContext: "Keep the \"joke\" vibe, this is because the user tried to punish Loritta, and it doesn't make sense to punish herself. \"Vai ver se eu tô na esquina\" is a idiom that means \"go bother someone else\"."
         targetIsLoritta: "Seu safade, eu não vou me punir grr, vai ver se eu tô na esquina"
         targetIsSelf: "O usuário {mention} não poderá ser punido, pois ele é... você mesmo. Por o acaso você é masoquista para tentar se punir?"
       options:
