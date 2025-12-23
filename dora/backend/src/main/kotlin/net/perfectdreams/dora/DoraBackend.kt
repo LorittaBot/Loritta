@@ -134,6 +134,7 @@ class DoraBackend(val config: DoraConfig, val pudding: Pudding) {
         TableRoute(this),
         TableEntryEditorRoute(this),
         DownloadLanguageRoute(this),
+        DeleteTableEntryRoute(this),
         PutTableEntryRoute(this),
         CreateProjectLanguageRoute(this),
         PostCreateProjectLanguageRoute(this),

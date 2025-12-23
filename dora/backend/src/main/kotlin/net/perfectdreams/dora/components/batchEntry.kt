@@ -102,6 +102,14 @@ fun FlowContent.batchEntry(
                         text("Salvar")
                     }
 
+                    if (isTranslated) {
+                        discordButton(ButtonStyle.DANGER) {
+                            attributes["bliss-delete"] = "/projects/${project.slug}/languages/$languageId/table/$keyId/$uniqueId"
+                            attributes["bliss-swap:200"] = "#entry-area-$uniqueId (outerHTML) -> #entry-area-$uniqueId (outerHTML)"
+                            text("Excluir Tradução")
+                        }
+                    }
+
                     discordButton(ButtonStyle.NO_BACKGROUND_THEME_DEPENDENT_DARK_TEXT) {
                         attributes["bliss-get"] = "/projects/${project.slug}/languages/$languageId/table/$keyId/$uniqueId"
                         attributes["bliss-swap:200"] = "#entry-area-$uniqueId (outerHTML) -> #entry-area-$uniqueId (outerHTML)"
@@ -124,6 +132,13 @@ fun FlowContent.batchEntry(
                                 attributes["bliss-swap:200"] = "#entry-area-$uniqueId (outerHTML) -> #entry-area-$uniqueId (outerHTML)"
 
                                 text("Aprovar")
+                            }
+                        } else {
+                            // When we do have a translation, allow deleting it
+                            discordButton(ButtonStyle.DANGER) {
+                                attributes["bliss-delete"] = "/projects/${project.slug}/languages/$languageId/table/$keyId/$uniqueId"
+                                attributes["bliss-swap:200"] = "#entry-area-$uniqueId (outerHTML) -> #entry-area-$uniqueId (outerHTML)"
+                                text("Excluir Tradução")
                             }
                         }
 
