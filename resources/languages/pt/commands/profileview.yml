@@ -5,9 +5,13 @@ examples:
   - "|-| Mostra o seu próprio perfil"
   - "@Loritta |-| Veja o perfil da garota mais maravilhosa do Discord!"
   - "390927821997998081 |-| Mostra o perfil de um usuário pelo ID"
+__changeAboutMeTransformers: "titlecase"
 changeAboutMe: "Alterar Sobre Mim"
+__changeProfileLayoutTransformers: "titlecase"
 changeProfileLayout: "Alterar Layout"
+__changeBackgroundTransformers: "titlecase"
 changeBackground: "Alterar Background"
+__lorittaDailyItemShopTransformers: "titlecase"
 lorittaDailyItemShop: "Loja Diária de Bugigangas da Loritta"
 profileImageAltText: "Perfil do usuário {user}"
 options:

@@ -113,6 +113,7 @@ trade:
   setStickers: "Colocar Figurinhas"
   setStickersFill: "Colocar Figurinhas (Preencher)"
   setSonhos: "Colocar Sonhos"
+  __acceptTradeButtonTransformers: "titlecase"
   acceptTradeButton: "Aceitar Oferta ({totalAccepted,number}/{totalRequiredToAccept,number})"
   tradeHasAlreadyBeenProcessed: "Esta troca já foi processada e não pode ser mais alterada!"
   youCantChangeATradeThatYouHaveApproved: "Você não pode alterar uma troca que você já aprovou! Para alterar a troca, desaprove a troca e altere o que você deseja!"

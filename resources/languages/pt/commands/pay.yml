@@ -9,12 +9,19 @@ thirdPartyIsGoingToTransferNoTax: "{sender} está prestes a transferir **{sonhos
 
 confirmTheTransaction: "Para confirmar a transação, você e {receiver} devem aceitar a transação até {time} ({timeRelative})!"
 thirdPersonConfirmTheTransaction: "Para confirmar a transação, {sender} e {receiver} devem aceitar a transação até {time} ({timeRelative})!"
+
 __transferAcceptedContext: "Button Label"
+__transferAcceptedTransformers: "titlecase"
 transferAccepted: "Transferência Aceita"
+
 __transferFailedContext: "Button Label"
+__transferFailedTransformers: "titlecase"
 transferFailed: "Transferência Falhou - {failReason}"
+
 __transferCancelledContext: "Button Label"
+__transferCancelledTransformers: "titlecase"
 transferCancelled: "Transferência Cancelada"
+
 successfullyTransferred: "Transferência realizada com sucesso! {receiver} recebeu **{sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}**!"
 thirdPartySuccessfullyTransferred: "Transferência realizada com sucesso! {receiver} recebeu **{sonhosAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (e {tax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} foram para o governo)**!"
 thirdPartySuccessfullyTransferredNoTax: "Transferência realizada com sucesso! {receiver} recebeu **{sonhosAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (e o governo recebeu nadinha de taxa)**!"
@@ -33,10 +40,19 @@ apiInitiatedRequest: "ATENÇÃO! Este pedido de sonhos foi iniciado por {botAcco
 apiInitiatedTransfer: "ATENÇÃO! Esta transferência de sonhos foi iniciada por {botAccountMention} para {targetUserMention} usando a API da Loritta. Apenas aceite a transação se você confia no desenvolvedor da aplicação!"
 apiInitiatedTransferReason: "**Motivo da Transação:** {reason}"
 failReasons:
+  __expiredTransformers: "titlecase"
   expired: "Transferência Expirada"
+
+  __insufficientSonhosTransformers: "titlecase"
   insufficientSonhos: "Sonhos Insuficientes"
+
+  __unknownRequestTransformers: "titlecase"
   unknownRequest: "Transferência Desconhecida"
+
+  __senderOnVacationTransformers: "titlecase"
   senderOnVacation: "Remetente de Férias"
+
+  __receiverOnVacationTransformers: "titlecase"
   receiverOnVacation: "Destinatário de Férias"
 randomQuirkyRichMessages:
   - "Tá querendo ostentar transferindo tanto dinheiro assim?"

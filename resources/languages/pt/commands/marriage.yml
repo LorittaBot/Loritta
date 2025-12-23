@@ -4,6 +4,7 @@ description: "O amor está no ar! Comandos relacionados com o sistema de casamen
 marry:
   label: "casar"
   description: "Case com a sua crush ou com a sua webnamorada!"
+  __acceptMarryButtonTransformers: "titlecase"
   acceptMarryButton: "Aceitar Pedido"
 
   options:
@@ -13,6 +14,7 @@ marry:
 divorce:
   label: "divorciar"
   description: "O amor acabou? Então divorcie de um usuário"
+  __divorceButtonTransformers: "titlecase"
   divorceButton: "Divorciar"
 
 view:
@@ -33,6 +35,7 @@ restore:
   youHaveAMarriageThatCanBeRestored: "Você tem um casamento que pode ser restaurado!"
   restoreInformation: "O custo para restaurar é de {sonhosEmoji} **{sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}**, o seu casamento voltará com a data de casamento original ({marriageDate}) e com 20 pontos de afinidade."
   restoreLimit: "Você tem até {restoreExpiresAtDate} para decidir se você deseja restaurar o casamento ou não."
+  __restoreMarriageButtonTransformers: "titlecase"
   restoreMarriageButton: "Restaurar Casamento"
   noAvailableMarriageToBeRestored: "Você não tem nenhum casamento que pode ser restaurado! Apenas casamentos que foram perdidos pór falta de afinidade desde {dateRestore} podem ser recuperados."
 

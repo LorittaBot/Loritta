@@ -1,7 +1,9 @@
 ---
 label: "roleplay"
 description: "Beijos, tapas, abraços e carinhos! Faça ações em outra pessoa para demonstrar o que você realmente sente!"
+__doRoleplayActionTransformers: "titlecase"
 doRoleplayAction: "Fazer Ação de Roleplay" #Shown when right-clicking a user
+__retributeTransformers: "titlecase"
 retribute: "Retribuir" #Retribute this Action Button
 pictureSource: "Fonte da Imagem" #Source of the Action's Picture
 whatActionDoYouWantForTheUser: "Qual ação você deseja fazer em {userMention}?"
@@ -11,6 +13,7 @@ youReceivedAffinityPointsForRoleplayingFirst: "Você recebeu {affinityCount,plur
 youReceivedAffinityPointsForRoleplayingMultiple: "Você recebeu {affinityCount,plural, =0 {# pontos de afinidade} one {# ponto de afinidade} other {# pontos de afinidade}} no seu casamento por ter feito uma ação com o seu parceiro! Continuem a fazer ações amorosas todos os dias para continuar a ganhar pontos de afinidade. Você ganha pontos de afinidade no seu casamento ao realizar uma ação todos os dias. Para mais informações, veja informações sobre o seu casamento no {marriageViewCommand}."
 hug:
   label: "abraçar"
+  __buttonLabelTransformers: "titlecase"
   buttonLabel: "Abraçar"
   description: "Abrace um usuário"
   response: "{giver} abraçou {receiver}!"
@@ -21,6 +24,7 @@ hug:
       text: "O usuário que você deseja abraçar"
 headpat:
   label: "cafuné"
+  __buttonLabelTransformers: "titlecase"
   buttonLabel: "Fazer Cafuné"
   description: "Faça cafuné em um usuário"
   response: "{giver} fez cafuné em {receiver}!"
@@ -33,6 +37,7 @@ highfive:
   __labelContext: "Command Label, used to high-five someone"
   label: "tocaaqui"
   __buttonLabelContext: "Button Label, when clicked the target user is high-fived"
+  __buttonLabelTransformers: "titlecase"
   buttonLabel: "Mandar um Toca Aqui"
   __descriptionContext: "Command Description, sends a high-five to someone"
   description: "Mande um toca aqui para um usuário"
@@ -48,6 +53,7 @@ highfive:
       text: "O usuário que você deseja mandar um toca aqui"
 slap:
   label: "bofetada"
+  __buttonLabelTransformers: "titlecase"
   buttonLabel: "Dar um Tapa"
   description: "Dar um tapa em um usuário"
   response: "{giver} deu um tapa em {receiver}!"
@@ -58,6 +64,7 @@ slap:
       text: "O usuário que você deseja dar uns tapas"
 attack:
   label: "atacar"
+  __buttonLabelTransformers: "titlecase"
   buttonLabel: "Atacar"
   description: "Ataque um usuário"
   response: "{giver} atacou {receiver}!"
@@ -68,6 +75,7 @@ attack:
       text: "O usuário que você deseja atacar"
 dance:
   label: "dancar"
+  __buttonLabelTransformers: "titlecase"
   buttonLabel: "Dançar"
   description: "Dance com um usuário"
   response: "{giver} dançou com {receiver}!"
@@ -77,6 +85,7 @@ dance:
       text: "O usuário com o qual você quer dançar"
 kiss:
   label: "beijar"
+  __buttonLabelTransformers: "titlecase"
   buttonLabel: "Beijar"
   description: "Beije um usuário"
   response: "{giver} beijou {receiver}!"
