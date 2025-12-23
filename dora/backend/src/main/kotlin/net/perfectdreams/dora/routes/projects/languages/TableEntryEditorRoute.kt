@@ -57,6 +57,7 @@ class TableEntryEditorRoute(val dora: DoraBackend) : RequiresProjectAuthDashboar
                     languageSlug,
                     stringRow[SourceStrings.key],
                     stringRow[SourceStrings.context],
+                    stringRow[SourceStrings.transformers],
                     stringRow[SourceStrings.text],
                     stringRow.getOrNull(TranslationsStrings.text),
                     stringRow.getOrNull(TranslationsStrings.text) != null,

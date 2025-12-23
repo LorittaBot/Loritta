@@ -55,6 +55,7 @@ class TableEntryRoute(val dora: DoraBackend) : RequiresProjectAuthDashboardRoute
                 languageSlug,
                 stringId,
                 sourceStrings[SourceStrings.context],
+                sourceStrings[SourceStrings.transformers],
                 sourceStrings[SourceStrings.text],
                 sourceStrings.getOrNull(TranslationsStrings.text),
                 sourceStrings.getOrNull(TranslationsStrings.text) != null,

@@ -44,6 +44,7 @@ import net.perfectdreams.dora.routes.projects.PostCreateProjectTranslatorRoute
 import net.perfectdreams.dora.routes.projects.PostPushProjectRoute
 import net.perfectdreams.dora.routes.projects.languages.*
 import net.perfectdreams.dora.tables.*
+import net.perfectdreams.dora.utils.ICU4JUtils
 import net.perfectdreams.dora.utils.TranslationProgress
 import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.morenitta.websitedashboard.DiscordOAuth2Manager
@@ -546,9 +547,9 @@ class DoraBackend(val config: DoraConfig, val pudding: Pudding) {
                                 val transformers = stringRow[SourceStrings.transformers]
                                 if (transformers != null) {
                                     for (transformer in transformers) {
-                                        when (transformer) {
-                                            "uppercase" -> fancifiedMachineTranslatedText = machineTranslatedText.uppercase()
-                                            "lowercase" -> fancifiedMachineTranslatedText = machineTranslatedText.lowercase()
+                                        fancifiedMachineTranslatedText = when (transformer) {
+                                            "uppercase" -> ICU4JUtils.contextualTransform(fancifiedMachineTranslatedText) { it.uppercase() }
+                                            "lowercase" -> ICU4JUtils.contextualTransform(fancifiedMachineTranslatedText) { it.lowercase() }
                                             else -> error("Unknown transformer $transformer!")
                                         }
                                     }
@@ -765,6 +766,9 @@ class DoraBackend(val config: DoraConfig, val pudding: Pudding) {
                     this[SourceStrings.key] = it.key
                     this[SourceStrings.text] = it.value
                     this[SourceStrings.context] = translatableStrings[createContextInformationI18nKey(it.key)]
+                    this[SourceStrings.transformers] = translatableStrings[createTransformersInformationI18nKey(it.key)]
+                        ?.split(",")
+                        ?.map { it.trim() }
                     this[SourceStrings.addedAt] = OffsetDateTime.now(ZoneOffset.UTC)
                 }
             }

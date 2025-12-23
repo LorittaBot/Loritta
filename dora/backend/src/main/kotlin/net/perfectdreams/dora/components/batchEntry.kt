@@ -13,6 +13,7 @@ fun FlowContent.batchEntry(
     languageId: String,
     keyId: String,
     context: String?,
+    transformers: List<String>?,
     originalText: String,
     translatedText: String?,
     isTranslated: Boolean,
@@ -59,6 +60,16 @@ fun FlowContent.batchEntry(
 
                     div {
                         text(context)
+                    }
+                }
+
+                if (transformers != null) {
+                    div(classes = "section-icon") {
+                        svgIcon(SVGIcons.CursorText)
+                    }
+
+                    div {
+                        text(transformers.joinToString(", "))
                     }
                 }
             }

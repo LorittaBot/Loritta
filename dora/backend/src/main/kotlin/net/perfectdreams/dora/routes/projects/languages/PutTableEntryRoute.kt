@@ -126,6 +126,7 @@ class PutTableEntryRoute(val dora: DoraBackend) : RequiresProjectAuthDashboardRo
                         languageSlug,
                         stringId,
                         result.sourceStringRow[SourceStrings.context],
+                        result.sourceStringRow[SourceStrings.transformers],
                         result.sourceStringRow[SourceStrings.text],
                         request.translatedText,
                         true,

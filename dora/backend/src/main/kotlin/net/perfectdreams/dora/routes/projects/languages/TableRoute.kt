@@ -142,6 +142,7 @@ class TableRoute(val dora: DoraBackend) : RequiresProjectAuthDashboardRoute(dora
                                 languageSlug,
                                 string[SourceStrings.key],
                                 string[SourceStrings.context],
+                                string[SourceStrings.transformers],
                                 string[SourceStrings.text],
                                 string.getOrNull(TranslationsStrings.text),
                                 string.getOrNull(TranslationsStrings.text) != null,
