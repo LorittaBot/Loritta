@@ -26,6 +26,7 @@ import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.dashboard.BlissHex
 import net.perfectdreams.luna.toasts.EmbeddedToast
 import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserSession
@@ -129,9 +130,9 @@ fun HTML.dashboardBase(
                     Json.encodeToString(
                         createEmbeddedToast(
                             EmbeddedToast.Type.WARN,
-                            "Não perca as suas configurações!"
+                            i18nContext.get(DashboardI18nKeysData.DontLoseYourConfiguration.Title)
                         ) {
-                            text("Você precisa salvar ou redefinir as configurações antes de mudar para outra página!")
+                            text(i18nContext.get(DashboardI18nKeysData.DontLoseYourConfiguration.Description))
                         }
                     )
                 )

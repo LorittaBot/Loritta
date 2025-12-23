@@ -32,6 +32,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.toggle
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissEvent
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.configReset
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.serializable.ColorTheme
@@ -59,8 +60,7 @@ class PrefixedCommandsGuildDashboardRoute(website: LorittaDashboardWebServer) : 
                         website.shouldDisplayAds(call, userPremiumPlan, null),
                         {
                             if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
-                                blissEvent("resyncState", "[bliss-component='save-bar']")
-                                blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Configuração redefinida!"))
+                                configReset(i18nContext)
                             }
 
                             div(classes = "hero-wrapper") {
@@ -97,11 +97,11 @@ class PrefixedCommandsGuildDashboardRoute(website: LorittaDashboardWebServer) : 
                                     fieldWrapper {
                                         fieldInformationBlock {
                                             fieldTitle {
-                                                text("Prefixo da Loritta")
+                                                text(i18nContext.get(DashboardI18nKeysData.PrefixedCommands.LorittaPrefix.Title))
                                             }
 
                                             fieldDescription {
-                                                text("Prefixo é o texto que vem antes de um comando. Por padrão eu venho com o caractere +, mas você pode alterá-lo nesta opção.")
+                                                text(i18nContext.get(DashboardI18nKeysData.PrefixedCommands.LorittaPrefix.Description))
                                             }
                                         }
 

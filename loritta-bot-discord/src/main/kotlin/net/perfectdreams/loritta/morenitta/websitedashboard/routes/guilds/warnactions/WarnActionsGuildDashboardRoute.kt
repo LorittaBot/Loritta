@@ -22,6 +22,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.*
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissEvent
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.configReset
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.serializable.ColorTheme
@@ -70,8 +71,7 @@ class WarnActionsGuildDashboardRoute(website: LorittaDashboardWebServer) : Requi
                         website.shouldDisplayAds(call, userPremiumPlan, null),
                         {
                             if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
-                                blissEvent("resyncState", "[bliss-component='save-bar']")
-                                blissShowToast(createEmbeddedToast(EmbeddedToast.Type.SUCCESS, "Configuração redefinida!"))
+                                configReset(i18nContext)
                             }
 
                             heroWrapper {

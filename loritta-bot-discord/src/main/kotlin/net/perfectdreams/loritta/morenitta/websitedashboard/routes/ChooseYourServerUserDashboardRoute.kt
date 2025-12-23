@@ -83,7 +83,7 @@ class ChooseYourServerUserDashboardRoute(website: LorittaDashboardWebServer) : R
                             div(classes = "fill-loading-screen") {
                                 loadingSpinnerImage()
 
-                                text("Carregando Servidores...")
+                                text(i18nContext.get(DashboardI18nKeysData.LoadingServers))
                             }
                         }
                     }

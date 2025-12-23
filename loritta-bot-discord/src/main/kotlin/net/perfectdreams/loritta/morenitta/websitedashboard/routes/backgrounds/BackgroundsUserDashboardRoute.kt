@@ -98,7 +98,7 @@ class BackgroundsUserDashboardRoute(website: LorittaDashboardWebServer) : Requir
                             }
                         }
 
-                        trinketInfo {
+                        trinketInfo(i18nContext) {
                             backgroundItemInfo(i18nContext, locale, result.activeBackgroundId, result.activeProfileDesignId, result.activeBackgroundId)
                         }
                     }

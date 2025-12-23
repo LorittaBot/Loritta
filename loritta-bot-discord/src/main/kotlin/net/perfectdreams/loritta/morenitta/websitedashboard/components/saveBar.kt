@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.website.components.LoadingSectionComponents
+import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import kotlin.collections.plus
 
 fun FlowContent.saveBarReservedSpace() = div(classes = "save-bar-reserved-space")
@@ -39,11 +40,11 @@ fun FlowContent.saveBar(
         }
 
         div(classes = "save-bar-small-text") {
-            text("Deseja salvar?")
+            text(i18nContext.get(DashboardI18nKeysData.SaveBar.TextShort))
         }
 
         div(classes = "save-bar-large-text") {
-            text("Cuidado! Você tem alterações que não foram salvas")
+            text(i18nContext.get(DashboardI18nKeysData.SaveBar.TextLong))
         }
 
         div(classes = "save-bar-buttons") {
@@ -54,7 +55,7 @@ fun FlowContent.saveBar(
 
                 div(classes = "bliss-discord-like-loading-button") {
                     div {
-                        text("Redefinir")
+                        text(i18nContext.get(DashboardI18nKeysData.SaveBar.Reset))
                     }
 
                     div(classes = "loading-text-wrapper") {
@@ -71,7 +72,7 @@ fun FlowContent.saveBar(
                 id = "save-bar-save-button"
 
                 div {
-                    text("Salvar")
+                    text(i18nContext.get(DashboardI18nKeysData.SaveBar.Save))
                 }
 
                 div(classes = "loading-text-wrapper") {

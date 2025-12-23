@@ -3,8 +3,9 @@ package net.perfectdreams.loritta.morenitta.websitedashboard.components
 import kotlinx.html.FlowContent
 import kotlinx.html.div
 import kotlinx.html.id
+import net.perfectdreams.i18nhelper.core.I18nContext
 
-fun FlowContent.trinketInfo(content: FlowContent.() -> (Unit)) {
+fun FlowContent.trinketInfo(i18nContext: I18nContext, content: FlowContent.() -> (Unit)) {
     div {
         id = "trinket-info"
 
@@ -13,6 +14,6 @@ fun FlowContent.trinketInfo(content: FlowContent.() -> (Unit)) {
             content()
         }
 
-        fillLoadingScreen()
+        fillLoadingScreen(i18nContext)
     }
 }

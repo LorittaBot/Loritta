@@ -5,6 +5,9 @@ website:
       description:
       - "Comandos por prefixos, também conhecido como comandos por mensagem, são comandos que você pode executar escrevendo diretamente no chat ao invés de usar o comando usando o sistema de slash command do Discord."
       - "O Discord recomenda usar via slash command, mas é a vida a gente suporta ambos."
+      lorittaPrefix:
+        title: "Prefixo da Loritta"
+        description: "Prefixo é o texto que vem antes de um comando. Por padrão eu venho com o caractere +, mas você pode alterá-lo nesta opção."
       deleteMessageAfterCommand:
         title: "Deletar mensagem do usuário ao executar um comando"
         description: "Ao executar um comando, eu irei deletar a mensagem do usuário."

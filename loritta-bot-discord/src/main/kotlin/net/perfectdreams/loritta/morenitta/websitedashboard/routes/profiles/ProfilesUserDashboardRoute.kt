@@ -93,7 +93,7 @@ class ProfilesUserDashboardRoute(website: LorittaDashboardWebServer) : RequiresU
                             }
                         }
 
-                        trinketInfo {
+                        trinketInfo(i18nContext) {
                             profileDesignItemInfo(i18nContext, locale, result.activeProfileDesignId, result.activeProfileDesignId, result.activeBackgroundId)
                         }
                     }

@@ -29,7 +29,7 @@ fun FlowContent.rightSidebar(
                 block()
             }
 
-            fillLoadingScreen()
+            fillLoadingScreen(i18nContext)
         }
 
         aside {

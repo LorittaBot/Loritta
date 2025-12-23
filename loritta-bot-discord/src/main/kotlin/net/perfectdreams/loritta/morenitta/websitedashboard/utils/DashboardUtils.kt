@@ -5,6 +5,7 @@ import kotlinx.html.FlowContent
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.luna.toasts.EmbeddedToast
 import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 
 /**
  * Shows the generic toast for when the configuration was saved + other tidbits
@@ -13,13 +14,21 @@ fun FlowContent.configSaved(i18nContext: I18nContext) {
     blissShowToast(
         createEmbeddedToast(
             EmbeddedToast.Type.SUCCESS,
-            "Configuração salva!"
+            i18nContext.get(DashboardI18nKeysData.ConfigurationSaved)
         )
     )
 
     blissEvent("resyncState", "[bliss-component='save-bar']")
 
     blissSoundEffect("configSaved")
+}
+
+/**
+ * Shows the generic toast for when a configuration was reset + other tidbits
+ */
+fun FlowContent.configReset(i18nContext: I18nContext) {
+    blissEvent("resyncState", "[bliss-component='save-bar']")
+    blissShowToast(createEmbeddedToast(EmbeddedToast.Type.INFO, i18nContext.get(DashboardI18nKeysData.ConfigurationReset.Title)))
 }
 
 /**

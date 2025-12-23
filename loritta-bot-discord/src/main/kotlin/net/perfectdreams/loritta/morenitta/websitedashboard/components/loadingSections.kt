@@ -4,7 +4,9 @@ import kotlinx.html.FlowContent
 import kotlinx.html.IMG
 import kotlinx.html.div
 import kotlinx.html.img
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.morenitta.website.components.LoadingSectionComponents
+import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 
 fun FlowContent.loadingSpinnerImage(block: IMG.() -> (Unit) = {}) {
     img {
@@ -16,10 +18,10 @@ fun FlowContent.loadingSpinnerImage(block: IMG.() -> (Unit) = {}) {
     }
 }
 
-fun FlowContent.fillLoadingScreen() {
+fun FlowContent.fillLoadingScreen(i18nContext: I18nContext) {
     div(classes = "fill-loading-screen") {
         loadingSpinnerImage()
 
-        text("Carregando...")
+        text(i18nContext.get(DashboardI18nKeysData.Loading))
     }
 }

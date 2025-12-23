@@ -5,11 +5,28 @@ website:
     titleShort: "Painel da Loritta"
     localePathId: "pt" #The locale ID that is prefixed on every localized page path, example: "/pt/commands/"
     loading: "Carregando..."
+    loadingServers: "Carregando Servidores..."
     frequentlyAskedQuestions: "Perguntas Frequentes"
     lorittaMinecraftServer: "Servidor de Minecraft da Loritta"
+    configurationSaved: "Configuração salva!"
+    dontLoseYourConfiguration:
+      title: "Não perca as suas configurações!"
+      description: "Você precisa salvar ou redefinir as configurações antes de mudar para outra página!"
+    saveBar:
+      __textLongContext: "Used for the save bar on Loritta's dashboard"
+      textLong: "Cuidado! Você tem alterações que não foram salvas"
+      __textShortContext: "Used for the save bar on Loritta's dashboard, should be kept short"
+      textShort: "Deseja salvar?"
+      __resetTransformers: "titlecase"
+      reset: "Redefinir"
+      __saveTransformers: "titlecase"
+      save: "Salvar"
+    configurationReset:
+      title: "Configuração redefinida!"
 
     chooseAServer:
       title: "Escolha um Servidor"
+      yourServers: "Seus Servidores"
       noServerFound: "Nenhum servidor encontrado!"
       tryLoggingIn:
         - "Você não é dono ou você não tem permissão de administrador ou de gerenciar o servidor em algum servidor na sua conta!"
