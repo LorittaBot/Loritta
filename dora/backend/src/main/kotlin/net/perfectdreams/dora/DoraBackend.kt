@@ -538,6 +538,11 @@ class DoraBackend(val config: DoraConfig, val pudding: Pudding) {
                                     }
                                 }
 
+                                // Remove unnecessary punctuations that sometimes Gemma adds
+                                if (fancifiedMachineTranslatedText.endsWith(".") && !stringRow[SourceStrings.text].endsWith(".")) {
+                                    fancifiedMachineTranslatedText = fancifiedMachineTranslatedText.substring(0, fancifiedMachineTranslatedText.length - 1)
+                                }
+
                                 val transformers = stringRow[SourceStrings.transformers]
                                 if (transformers != null) {
                                     for (transformer in transformers) {
