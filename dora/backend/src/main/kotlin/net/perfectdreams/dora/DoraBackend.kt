@@ -445,6 +445,7 @@ class DoraBackend(val config: DoraConfig, val pudding: Pudding) {
         GlobalScope.launch {
             while (true) {
                 try {
+                    logger.info { "Checking for pending strings to be translated..." }
                     var waitUntilNextTranslation = true
 
                     val projects = pudding.transaction {
