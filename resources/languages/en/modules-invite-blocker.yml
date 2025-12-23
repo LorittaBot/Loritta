@@ -1,8 +1,0 @@
-modules:
-  inviteBlocker:
-    activateInviteBlockerBypass: "Psst, if you want, I can make the {roleMention} role be allowed to send server invites without being blocked!"
-    howToReEnableLater: "If you change your mind, you can change the permissions later in {dashboardUrl}!"
-    bypassEnabled: "Done! Now I won't block server invites sent by members who have the {roleMention} role!"
-    allowSendingInvites: "Allow sending invites"
-    roleAlreadyHasInviteBlockerBypass: "The {roleMention} role already has the permission to bypass the server invite block! Did someone else enable the permission before you clicked on the button?"
-    youDontHaveTheRoleAnymore: "You don't have the {roleMention} role to edit its permission!"

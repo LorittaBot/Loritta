@@ -1,5 +1,0 @@
-label: "achievements"
-description: "Shows your achievements that you worked so hard for"
-youDontHaveAnyAchievements: "You don't have any achievements... yet!" # Used in the embed if the user doesn't have any achievements in the All Achievements category
-youDontHaveAnyAchievementsInTheCategory: "You don't have any achievements in this category... yet!" # Used in the embed if the user doesn't have any achievements in the selected category
-achievedAt: "Achieved at" # Used in the embed, "Achieved at: TimestampHere"

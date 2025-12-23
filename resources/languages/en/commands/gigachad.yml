@@ -1,4 +1,0 @@
-description: "Average Fan vs Average Enjoyer"
-options:
-  averageFanText: "Text that will show up in the \"Average Fan\" section (left)"
-  averageEnjoyerText: "Text that will show up in the \"Average Enjoyer\" section (right)"

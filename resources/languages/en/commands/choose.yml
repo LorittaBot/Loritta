@@ -1,4 +1,0 @@
----
-label: "choose"
-description: "Are you stuck trying to choose something? Then let me make the choice for you!"
-result: "I chose `{result}`, I hope you are happy with the result! {emote}"

@@ -1,5 +1,0 @@
----
-modules:
-  starboard:
-    jumpToMessage: "Jump to Message"
-    files: "{filesCount,plural, =0 {Files} one {File} other {Files}}"

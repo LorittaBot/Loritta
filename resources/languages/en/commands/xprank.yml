@@ -1,4 +1,0 @@
-description: "View which users have the most chat experience on the server!"
-options:
-  page:
-    text: "The page that you want to jump to"

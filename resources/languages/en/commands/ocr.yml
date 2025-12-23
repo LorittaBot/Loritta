@@ -1,6 +1,0 @@
-description: "Read text from an image with OCR (Optical Character Recognition)"
-readTextFromImage: "Read text from image (OCR)"
-noTextWasFound: "No text was found in the image..."
-thereIsntAnyImageAttachmentOnTheMessage: "There isn't any image attachment on the message!"
-languageDetected: "Language Detected: {language}"
-translateToLanguage: "Translate to {language}"

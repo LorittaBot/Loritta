@@ -1,7 +1,0 @@
-description: "Check out how many sonhos you, or another user, have!"
-youHaveSonhos: "You have {sonhosEmoji} **{sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}**! {rankPositionText}"
-userHasSonhos: "{user} has {sonhosEmoji} **{sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}**! {rankPositionText}"
-yourCurrentRankPosition: "You are in **#{rankPosition,number,#} place** on the ranking, check out other rich people with {sonhosTopCommand}!"
-userCurrentRankPosition: "And did you know that {user} is in **#{rankPosition,number,#} place** on the ranking? Check out other rich people with {sonhosTopCommand}!"
-options:
-  user: "The user you want to unravel their sonhos"

@@ -1,6 +1,0 @@
-label: "view"
-description: "View your, or another user, social profile!"
-changeAboutMe: "Change About Me"
-options:
-  user:
-    text: "The user that you want to see their social profile"

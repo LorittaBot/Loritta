@@ -1,9 +1,0 @@
-label: "soundbox"
-description: "Spice up your voice channel conversations with cool sound effects!"
-falatron:
-  description: "Play TTS voice with Falatron on a Voice Channel"
-  options:
-    voice:
-      text: "The voice that will speak the provided text"
-    text:
-      text: "The text that will be spoken"

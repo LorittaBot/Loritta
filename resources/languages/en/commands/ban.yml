@@ -1,3 +1,0 @@
-description: "Ban users from your server"
-punishAction: "Banned"
-youGotPunished: "You have been banned from {guildName}!"

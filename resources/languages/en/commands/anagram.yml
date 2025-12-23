@@ -1,7 +1,0 @@
----
-label: "anagram"
-description: "Create an anagram from a text! Perfect if you want to be mysterious with your messages"
-result: "**Your anagram is...** `{anagramResult}`"
-stats: "The word `{originalWord}` has **{howMany} different anagrams**!"
-options:
-  text: "The text that will be transformed into an anagram"

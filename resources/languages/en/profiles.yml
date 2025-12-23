@@ -1,9 +1,0 @@
-profiles:
-  aboutMe: "About Me"
-  marriedWith: "Married With"
-  defaultAboutMe: "Loritta is my friend! Did you know that you can change this text using \"/profile aboutme\"? :3"
-  badges:
-    discordBravery:
-      title: "Couraged"
-    grassCutter:
-      title: "Grass Cutter"
