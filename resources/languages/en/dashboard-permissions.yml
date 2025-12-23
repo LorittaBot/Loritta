@@ -2,3 +2,5 @@ website:
   dashboard:
     permissions:
       title: "Permissions"
+      allowInvites:
+        toggleTitle: "Allow sending invites"
