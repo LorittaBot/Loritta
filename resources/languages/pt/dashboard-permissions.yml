@@ -4,3 +4,12 @@ website:
       title: "Permissões"
       guildRoles: "Cargos do servidor"
       roles: "{roleCount,plural, =0 {# cargos} one {# cargo} other {# cargos}}"
+      backToRolesList: "Voltar para a lista de cargos"
+      allowInvites:
+        toggleTitle: "Permitir enviar convites"
+      allowCommands:
+        toggleTitle: "Permitir usar comandos"
+        description: "Caso esteja ativado, eu irei processar comandos enviados por este usuário."
+      bypassCommandBlacklist:
+        toggleTitle: "Permitir usar comandos em qualquer canal"
+        description: "Caso esteja ativado, eu irei permitir usar comandos em canais que foram adicionados para eu ignorar."

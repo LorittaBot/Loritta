@@ -4,3 +4,26 @@ website:
       title: "Registro de Punições"
       description:
         - "Registre as ações de moderação estão acontecendo no seu servidor."
+      sendPunishmentViaDm:
+        toggleTitle: "Enviar punição via mensagem direta para quem foi punido"
+      sendPunishmentToPunishLog:
+        toggleTitle: "Enviar punições para um canal de punições"
+      punishLogChannel:
+        sectionTitle: "Canal de punições"
+      defaultMessage:
+        sectionLabel: "Mensagem que será mostrada quando alguém for punido"
+      perActionMessages:
+        sectionTitle: "Mensagens específicas para cada punição"
+        sectionDescription: "Você pode escolher mensagens diferentes para cada tipo de punição, assim colocando o seu charme em cada uma delas!"
+      perActionMessage:
+        sectionLabel: "Mensagem"
+      actionTitles:
+        ban: "Banimento"
+        kick: "Expulsão"
+        mute: "Silenciamento"
+        warn: "Aviso"
+        unban: "Desbanimento"
+        unmute: "Dessilenciamento"
+      placeholders:
+        examplePunishmentReason: "You're gonna have a bad time"
+        examplePunishmentType: "Banimento"

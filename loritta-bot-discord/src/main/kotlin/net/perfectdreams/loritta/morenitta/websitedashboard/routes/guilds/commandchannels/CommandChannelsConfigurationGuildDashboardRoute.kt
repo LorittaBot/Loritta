@@ -40,6 +40,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.rightSide
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.saveBar
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.toggleableSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.configReset
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.placeholders.sections.BlockedCommandChannelPlaceholders
 import net.perfectdreams.loritta.serializable.ColorTheme
@@ -97,8 +98,8 @@ class CommandChannelsConfigurationGuildDashboardRoute(website: LorittaDashboardW
         }
 
         val defaultDenyMessage = createMessageTemplate(
-            "Padrão",
-            "{@user} você não pode enviar comandos aqui!"
+            i18nContext.get(DashboardI18nKeysData.CommandChannels.DefaultTemplate.Title),
+            i18nContext.get(DashboardI18nKeysData.CommandChannels.DefaultTemplate.Content(userMention = "{@user}"))
         )
 
         call.respondHtml {
@@ -120,15 +121,19 @@ class CommandChannelsConfigurationGuildDashboardRoute(website: LorittaDashboardW
                             div {
                                 id = "section-config"
 
+                                if (call.request.headers["Loritta-Configuration-Reset"] == "true") {
+                                    configReset(i18nContext)
+                                }
+
                                 fieldWrappers {
                                     fieldWrapper {
                                         fieldInformationBlock {
                                             fieldTitle {
-                                                text("Canais que serão proibidos usar comandos")
+                                                text(i18nContext.get(DashboardI18nKeysData.CommandChannels.BlockedChannels.SectionTitle))
                                             }
 
                                             fieldDescription {
-                                                text("Nestes canais eu irei ignorar comandos de usuários, como se eu nem estivesse lá! (Mesmo que eu esteja observando as suas mensagens para dar XP, hihi~) Caso você queira configurar que cargos específicos possam burlar a restrição, configure na seção de permissões.")
+                                                text(i18nContext.get(DashboardI18nKeysData.CommandChannels.BlockedChannels.SectionDescription))
                                             }
                                         }
 
@@ -148,10 +153,10 @@ class CommandChannelsConfigurationGuildDashboardRoute(website: LorittaDashboardW
 
                                         toggleableSection(
                                             {
-                                                text("Enviar mensagem para o usuário quando ele executar comandos em canais proibidos")
+                                                text(i18nContext.get(DashboardI18nKeysData.CommandChannels.Warn.ToggleTitle))
                                             },
                                             {
-                                                text("Caso você tenha configurado canais que sejam proibidos de usar comandos, você pode ativar esta opção para que, quando um usuário tente executar um comando em canais proibidos, eu avise que não é possível executar comandos no canal.")
+                                                text(i18nContext.get(DashboardI18nKeysData.CommandChannels.Warn.ToggleDescription))
                                             },
                                             serverConfig.warnIfBlacklisted,
                                             "warnIfBlacklisted",
@@ -160,7 +165,7 @@ class CommandChannelsConfigurationGuildDashboardRoute(website: LorittaDashboardW
                                             discordMessageEditor(
                                                 i18nContext,
                                                 guild,
-                                                { text("Mensagem") },
+                                                { text(i18nContext.get(DashboardI18nKeysData.CommandChannels.Warn.MessageLabel)) },
                                                 null,
                                                 MessageEditorBootstrap.TestMessageTarget.Unavailable,
                                                 listOf(defaultDenyMessage),

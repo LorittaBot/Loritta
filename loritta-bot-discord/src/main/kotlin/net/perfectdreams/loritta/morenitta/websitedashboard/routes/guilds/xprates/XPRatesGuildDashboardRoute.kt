@@ -15,6 +15,9 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysDat
 import net.perfectdreams.loritta.morenitta.websitedashboard.GuildDashboardSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
+import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls
+import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls.appendAsFormattedText
+import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls.handleI18nString
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.ButtonStyle
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.configurableRoleRates
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.dashboardBase
@@ -79,8 +82,12 @@ class XPRatesGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresG
                                         text(i18nContext.get(DashboardI18nKeysData.XpRates.Title))
                                     }
 
-                                    p {
-                                        text("Você pode configurar que cargos específicos ganhem mais/menos experiência que outros membros. Ótimo para recompensar membros ativos do seu servidor com um bônus de experiência a cada mensagem que eles enviam!")
+                                    for (str in i18nContext.language
+                                        .textBundle
+                                        .lists
+                                        .getValue(I18nKeys.Website.Dashboard.XpRates.Description.key)
+                                    ) {
+                                        p { text(str) }
                                     }
                                 }
                             }
@@ -90,37 +97,46 @@ class XPRatesGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresG
                             sectionConfig {
                                 fieldWrappers {
                                     fieldWrapper {
-                                        fieldInformation({ text("Bônus de XP para Cargos") })
+                                        fieldInformation({ text(i18nContext.get(DashboardI18nKeysData.XpRates.RolesXpBonus.Title)) })
 
                                         controlsWithButton {
                                             inlinedControls {
-                                                span {
-                                                    text("Usuários com o cargo ")
-                                                }
-
-                                                growInputWrapper {
-                                                    roleSelectMenu(guild, null) {
-                                                        name = "roleId"
-                                                        attributes["xp-action-add-element"] = "true"
+                                                for (str in i18nContext.language
+                                                    .textBundle
+                                                    .lists
+                                                    .getValue(I18nKeys.Website.Dashboard.XpRates.Inline.RoleRate.key)
+                                                ) {
+                                                    handleI18nString(
+                                                        str,
+                                                        appendAsFormattedText(i18nContext, mapOf()),
+                                                    ) {
+                                                        when (it) {
+                                                            "roleSelect" -> {
+                                                                TextReplaceControls.ComposableFunctionResult {
+                                                                    growInputWrapper {
+                                                                        roleSelectMenu(guild, null) {
+                                                                            name = "roleId"
+                                                                            attributes["xp-action-add-element"] = "true"
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                            "rateInput" -> {
+                                                                TextReplaceControls.ComposableFunctionResult {
+                                                                    numberInput {
+                                                                        name = "rate"
+                                                                        placeholder = i18nContext.get(DashboardI18nKeysData.XpRates.Inline.RatePlaceholder)
+                                                                        style = "width: 100px;"
+                                                                        value = "1"
+                                                                        min = "0"
+                                                                        step = "0.05"
+                                                                        attributes["xp-action-add-element"] = "true"
+                                                                    }
+                                                                }
+                                                            }
+                                                            else -> TextReplaceControls.AppendControlAsIsResult
+                                                        }
                                                     }
-                                                }
-
-                                                span {
-                                                    text(" irão ganhar ")
-                                                }
-
-                                                numberInput {
-                                                    name = "rate"
-                                                    placeholder = "2.0"
-                                                    style = "width: 100px;"
-                                                    value = "1"
-                                                    min = "0"
-                                                    step = "0.05"
-                                                    attributes["xp-action-add-element"] = "true"
-                                                }
-
-                                                span {
-                                                    text("x mais XP")
                                                 }
                                             }
 
@@ -128,7 +144,7 @@ class XPRatesGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresG
                                                 attributes["bliss-post"] = "/${i18nContext.get(I18nKeys.Website.LocalePathId)}/guilds/${guild.idLong}/xp-rates/add"
                                                 attributes["bliss-include-json"] = "[xp-action-add-element]"
                                                 attributes["bliss-swap:200"] = "body (innerHTML) -> #role-rates (innerHTML)"
-                                                text("Adicionar")
+                                                text(i18nContext.get(DashboardI18nKeysData.XpRates.Button.Add))
                                             }
                                         }
 

@@ -63,13 +63,13 @@ class PunishmentLogGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
                 PunishmentMessagePlaceholders.PunishmentReasonPlaceholder -> createPlaceholderGroup(
                     it,
                     null,
-                    "You're gonna have a bad time",
+                    i18nContext.get(DashboardI18nKeysData.PunishmentLog.Placeholders.ExamplePunishmentReason),
                     RenderType.TEXT
                 )
                 PunishmentMessagePlaceholders.PunishmentTypePlaceholder -> createPlaceholderGroup(
                     it,
                     null,
-                    "Banido",
+                    i18nContext.get(DashboardI18nKeysData.PunishmentLog.Placeholders.ExamplePunishmentType),
                     RenderType.TEXT
                 )
                 PunishmentMessagePlaceholders.StaffAvatarUrlPlaceholder -> createPlaceholderGroup(
@@ -164,7 +164,7 @@ class PunishmentLogGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
                                     fieldWrapper {
                                         toggleableSection(
                                             {
-                                                text("Enviar punição via mensagem direta para quem foi punido")
+                                                text(i18nContext.get(DashboardI18nKeysData.PunishmentLog.SendPunishmentViaDm.ToggleTitle))
                                             },
                                             null,
                                             moderationLogConfig?.sendPunishmentViaDm ?: false,
@@ -177,7 +177,7 @@ class PunishmentLogGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
                                     fieldWrapper {
                                         toggleableSection(
                                             {
-                                                text("Enviar punições para um canal de punições")
+                                                text(i18nContext.get(DashboardI18nKeysData.PunishmentLog.SendPunishmentToPunishLog.ToggleTitle))
                                             },
                                             null,
                                             moderationLogConfig?.sendPunishmentToPunishLog ?: false,
@@ -188,7 +188,7 @@ class PunishmentLogGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
                                                 fieldWrapper {
                                                     fieldInformationBlock {
                                                         fieldTitle {
-                                                            text("Canal de punições")
+                                                            text(i18nContext.get(DashboardI18nKeysData.PunishmentLog.PunishLogChannel.SectionTitle))
                                                         }
                                                     }
 
@@ -204,7 +204,7 @@ class PunishmentLogGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
                                                 discordMessageEditor(
                                                     i18nContext,
                                                     guild,
-                                                    { text( "Mensagem que será mostrada quando alguém for punido") },
+                                                    { text(i18nContext.get(DashboardI18nKeysData.PunishmentLog.DefaultMessage.SectionLabel)) },
                                                     null,
                                                     MessageEditorBootstrap.TestMessageTarget.QuerySelector("[name='punishLogChannelId']"),
                                                     listOf(),
@@ -218,11 +218,11 @@ class PunishmentLogGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
                                                 fieldWrapper {
                                                     fieldInformationBlock {
                                                         fieldTitle {
-                                                            text("Mensagem específicas para cada punição")
+                                                            text(i18nContext.get(DashboardI18nKeysData.PunishmentLog.PerActionMessages.SectionTitle))
                                                         }
 
                                                         fieldDescription {
-                                                            text("Você pode escolher mensagens diferentes para cada tipo de punição, assim colocando o seu charme em cada uma delas!")
+                                                            text(i18nContext.get(DashboardI18nKeysData.PunishmentLog.PerActionMessages.SectionDescription))
                                                         }
                                                     }
 
@@ -240,7 +240,15 @@ class PunishmentLogGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
                                                             fieldWrapper {
                                                                 toggleableSection(
                                                                     {
-                                                                        text(punishmentAction.name)
+                                                                        val actionTitle = when (punishmentAction) {
+                                                                            PunishmentAction.BAN -> DashboardI18nKeysData.PunishmentLog.ActionTitles.Ban
+                                                                            PunishmentAction.KICK -> DashboardI18nKeysData.PunishmentLog.ActionTitles.Kick
+                                                                            PunishmentAction.MUTE -> DashboardI18nKeysData.PunishmentLog.ActionTitles.Mute
+                                                                            PunishmentAction.WARN -> DashboardI18nKeysData.PunishmentLog.ActionTitles.Warn
+                                                                            PunishmentAction.UNBAN -> DashboardI18nKeysData.PunishmentLog.ActionTitles.Unban
+                                                                            PunishmentAction.UNMUTE -> DashboardI18nKeysData.PunishmentLog.ActionTitles.Unmute
+                                                                        }
+                                                                        text(i18nContext.get(actionTitle))
                                                                     },
                                                                     null,
                                                                     punishmentMessage != null,
@@ -250,7 +258,7 @@ class PunishmentLogGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
                                                                     discordMessageEditor(
                                                                         i18nContext,
                                                                         guild,
-                                                                        { text( "Mensagem") },
+                                                                        { text(i18nContext.get(DashboardI18nKeysData.PunishmentLog.PerActionMessage.SectionLabel)) },
                                                                         null,
                                                                         MessageEditorBootstrap.TestMessageTarget.QuerySelector("[name='punishLogChannelId']"),
                                                                         listOf(),

@@ -2,3 +2,21 @@ website:
   dashboard:
     xpRewards:
       title: "Recompensas por XP"
+      description:
+        - "Recompense usuários ativos do seu servidor com cargos únicos e exclusivos."
+      roleGiveType:
+        title: "Estilo de Recompensas por Cargo"
+        stack:
+          title: "Empilhar recompensas anteriores"
+          description: "Ao executar um comando, eu irei deletar a mensagem do usuário."
+        remove:
+          title: "Remover recompensas anteriores"
+          description: "Ao subir de nível, todas as recompensas que o usuário recebeu são removidas"
+      levelUpRewards:
+        title: "Recompensas ao Subir de Nível"
+      inline:
+        addRoleAtXp:
+          - "Ao chegar em {xpInput} XP ({calculatedLevel}), dar o cargo {roleSelect}"
+        calculatedLevel: "Nível {level}"
+      button:
+        add: "Adicionar"

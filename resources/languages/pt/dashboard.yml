@@ -23,6 +23,27 @@ website:
       save: "Salvar"
     configurationReset:
       title: "Configuração redefinida!"
+    areYouSureDeletionModal:
+      title: "Você tem certeza?"
+      description: "Você quer deletar meeesmo?"
+      deleteButtonLabel: "Excluir"
+    __sectionNewBadgeContext: "Used when a section has a new feature"
+    sectionNewBadge: "Novo!"
+
+    userCategories:
+      sonhos: "Sonhos"
+      customization: "Personalização"
+      miscellaneous: "Miscelânea"
+
+    guildCategories:
+      commands: "Comandos"
+      community: "Comunidade"
+      moderation: "Moderação"
+      experience: "Experiência"
+      socialAlerts: "Alertas Sociais"
+      fun: "Diversão"
+      loritta: "Loritta"
+      premium: "Premium"
 
     chooseAServer:
       title: "Escolha um Servidor"

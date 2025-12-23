@@ -2,3 +2,13 @@ website:
   dashboard:
     xpRates:
       title: "Bônus de XP"
+      description:
+        - "Você pode configurar que cargos específicos ganhem mais/menos experiência que outros membros. Ótimo para recompensar membros ativos do seu servidor com um bônus de experiência a cada mensagem que eles enviam!"
+      rolesXpBonus:
+        title: "Bônus de XP para Cargos"
+      inline:
+        roleRate:
+          - "Usuários com o cargo {roleSelect} irão ganhar {rateInput}x mais XP"
+        ratePlaceholder: "2.0"
+      button:
+        add: "Adicionar"

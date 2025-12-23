@@ -2,3 +2,13 @@ website:
   dashboard:
     autorole:
       title: "Autorole"
+      description: "Autorole serve para você dar cargos para novos membros do seu servidor automaticamente quando eles entrarem no servidor. Chega de dar cargos para novatos manualmente!"
+      enable:
+        toggleTitle: "Ativar Autorole"
+      roles:
+        sectionTitle: "Cargos que serão dados ao usuário ao ele entrar"
+      giveAfterMessage:
+        toggleTitle: "Dar os cargos após o usuário enviar alguma mensagem no servidor"
+        toggleDescription: "Os cargos só serão entregues após o usuário enviar uma mensagem em qualquer canal de texto do seu servidor. Recomendamos que deixe ativado, assim o usuário terá que respeitar o nível de verificação do seu servidor, já que usuários com cargos burlam o nível de verificação do Discord."
+      giveRolesAfter:
+        sectionTitle: "Depois de quanto tempo o cargo será dado? (Segundos)"

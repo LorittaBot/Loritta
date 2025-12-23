@@ -2,3 +2,4 @@ website:
   dashboard:
     overview:
       title: "Visão geral"
+      description: "Acesse as seções na sidebar para configurar as minhas funcionalidades!"

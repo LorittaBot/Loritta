@@ -36,6 +36,7 @@ fun FlowContent.userDashLeftSidebarEntries(
 
     a(classes = "entry section-entry", href = "https://sparklypower.net/?utm_source=loritta&utm_medium=loritta-dashboard&utm_campaign=sparklylori&utm_content=user-profile-sidebar") {
         sectionEntryContent(
+            i18nContext,
             i18nContext.get(DashboardI18nKeysData.LorittaMinecraftServer),
             SVGIcons.Pickaxe,
             false
@@ -45,18 +46,18 @@ fun FlowContent.userDashLeftSidebarEntries(
     leftSidebarHr()
 
     div(classes = "category") {
-        text("Sonhos")
+        text(i18nContext.get(DashboardI18nKeysData.UserCategories.Sonhos))
     }
 
     aDashboardSidebarEntry(i18nContext, "/sonhos-shop", i18nContext.get(DashboardI18nKeysData.SonhosShop.Title), SVGIcons.ShoppingCart, selectedUserSection == UserDashboardSection.SONHOS_SHOP, false)
     sectionEntry(href = lorittaBot.config.loritta.website.url.removeSuffix("/") + "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/daily", selected = false) {
-        sectionEntryContent("Recompensa Diária", SVGIcons.Star, false)
+        sectionEntryContent(i18nContext, "Recompensa Diária", SVGIcons.Star, false)
     }
 
     leftSidebarHr()
 
     div(classes = "category") {
-        text("Personalização")
+        text(i18nContext.get(DashboardI18nKeysData.UserCategories.Customization))
     }
 
     aDashboardSidebarEntry(i18nContext, "/notifications", i18nContext.get(DashboardI18nKeysData.Notifications.Title), SVGIcons.Bell, selectedUserSection == UserDashboardSection.NOTIFICATIONS, true)
@@ -168,6 +169,7 @@ fun FlowContent.userDashLeftSidebarEntries(
         )
 
         sectionEntryContent(
+            i18nContext,
             i18nContext.get(DashboardI18nKeysData.LorittaSpawner.PocketLoritta),
             SVGIcons.Cat,
             false
@@ -177,14 +179,14 @@ fun FlowContent.userDashLeftSidebarEntries(
     leftSidebarHr()
 
     div(classes = "category") {
-        text("Miscelânea")
+        text(i18nContext.get(DashboardI18nKeysData.UserCategories.Miscellaneous))
     }
 
     aDashboardSidebarEntry(i18nContext, "/ship-effects", i18nContext.get(DashboardI18nKeysData.ShipEffects.Title), SVGIcons.Heart, selectedUserSection == UserDashboardSection.SHIP_EFFECTS, false)
     aDashboardSidebarEntry(i18nContext, "/reputations", i18nContext.get(DashboardI18nKeysData.Reputations.Title), SVGIcons.Certificate, selectedUserSection == UserDashboardSection.REPUTATIONS, true)
     aDashboardSidebarEntry(i18nContext, "/api-keys", i18nContext.get(DashboardI18nKeysData.ApiKeys.Title), SVGIcons.Code, selectedUserSection == UserDashboardSection.API_KEYS, false)
     sectionEntry(href = lorittaBot.config.loritta.website.url.removeSuffix("/") + "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guidelines", selected = false) {
-        sectionEntryContent("Diretrizes da Comunidade", SVGIcons.Asterisk, false)
+        sectionEntryContent(i18nContext, "Diretrizes da Comunidade", SVGIcons.Asterisk, false)
     }
 
     leftSidebarHr()

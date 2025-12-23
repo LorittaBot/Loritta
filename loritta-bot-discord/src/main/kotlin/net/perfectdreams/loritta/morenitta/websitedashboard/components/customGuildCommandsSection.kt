@@ -28,7 +28,7 @@ fun FlowContent.customGuildCommands(i18nContext: I18nContext, guild: Guild, cust
         cardHeader {
             cardHeaderInfo {
                 cardHeaderTitle {
-                    text("Comandos personalizados do servidor")
+                    text(i18nContext.get(DashboardI18nKeysData.CustomCommands.Title))
                 }
 
                 cardHeaderDescription {
@@ -42,7 +42,7 @@ fun FlowContent.customGuildCommands(i18nContext: I18nContext, guild: Guild, cust
 
                 swapRightSidebarContentsAttributes()
 
-                text("Criar Comando")
+                text(i18nContext.get(DashboardI18nKeysData.CustomCommands.Actions.Create))
             }
         }
 
@@ -69,13 +69,13 @@ fun FlowContent.customGuildCommands(i18nContext: I18nContext, guild: Guild, cust
                                     }
                                 )
 
-                                text("Excluir")
+                                text(i18nContext.get(DashboardI18nKeysData.CustomCommands.Actions.Delete))
                             }
 
                             discordButtonLink(ButtonStyle.PRIMARY, href = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/custom-commands/${customCommand[CustomGuildCommands.id]}") {
                                 swapRightSidebarContentsAttributes()
 
-                                text("Editar")
+                                text(i18nContext.get(DashboardI18nKeysData.CustomCommands.Actions.Edit))
                             }
                         }
                     }

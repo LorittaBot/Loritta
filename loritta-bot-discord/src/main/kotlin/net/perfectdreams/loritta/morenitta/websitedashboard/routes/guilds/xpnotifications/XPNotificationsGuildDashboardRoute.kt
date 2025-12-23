@@ -128,8 +128,14 @@ class XPNotificationsGuildDashboardRoute(website: LorittaDashboardWebServer) : R
         }
 
         val defaultLevelUpMessage = createMessageTemplate(
-            "Padrão",
-            "Parabéns {@user}, você passou para o nível **{level}** (*{xp} XP*)!"
+            i18nContext.get(DashboardI18nKeysData.XpNotifications.DefaultTemplate.Title),
+            i18nContext.get(
+                DashboardI18nKeysData.XpNotifications.DefaultTemplate.Content(
+                    userMention = "{@user}",
+                    level = "{level}",
+                    xp = "{xp}"
+                )
+            )
         )
 
         call.respondHtml {
@@ -159,7 +165,7 @@ class XPNotificationsGuildDashboardRoute(website: LorittaDashboardWebServer) : R
                                     }
 
                                     p {
-                                        text("Notificações ao subir de nível")
+                                        text(i18nContext.get(DashboardI18nKeysData.XpNotifications.Description))
                                     }
                                 }
                             }
@@ -171,7 +177,7 @@ class XPNotificationsGuildDashboardRoute(website: LorittaDashboardWebServer) : R
                                     fieldWrapper {
                                         toggleableSection(
                                             {
-                                                text("Ativar mensagem ao subir de nível")
+                                                text(i18nContext.get(DashboardI18nKeysData.XpNotifications.Enable.ToggleTitle))
                                             },
                                             null,
                                             announcement != null,
@@ -182,7 +188,7 @@ class XPNotificationsGuildDashboardRoute(website: LorittaDashboardWebServer) : R
                                                 fieldWrapper {
                                                     fieldInformationBlock {
                                                         fieldTitle {
-                                                            text("Onde a mensagem será enviada")
+                                                            text(i18nContext.get(DashboardI18nKeysData.XpNotifications.Destination.SectionTitle))
                                                         }
                                                     }
 
@@ -193,19 +199,19 @@ class XPNotificationsGuildDashboardRoute(website: LorittaDashboardWebServer) : R
                                                         option {
                                                             value = LevelUpAnnouncementType.SAME_CHANNEL.name
                                                             selected = announcement?.get(LevelAnnouncementConfigs.type) == LevelUpAnnouncementType.SAME_CHANNEL
-                                                            text("Canal Atual")
+                                                            text(i18nContext.get(DashboardI18nKeysData.XpNotifications.Destination.Options.SameChannel))
                                                         }
 
                                                         option {
                                                             value = LevelUpAnnouncementType.DIRECT_MESSAGE.name
                                                             selected = announcement?.get(LevelAnnouncementConfigs.type) == LevelUpAnnouncementType.DIRECT_MESSAGE
-                                                            text("Mensagem Direta")
+                                                            text(i18nContext.get(DashboardI18nKeysData.XpNotifications.Destination.Options.DirectMessage))
                                                         }
 
                                                         option {
                                                             value = LevelUpAnnouncementType.DIFFERENT_CHANNEL.name
                                                             selected = announcement?.get(LevelAnnouncementConfigs.type) == LevelUpAnnouncementType.DIFFERENT_CHANNEL
-                                                            text("Canal Personalizado")
+                                                            text(i18nContext.get(DashboardI18nKeysData.XpNotifications.Destination.Options.DifferentChannel))
                                                         }
                                                     }
                                                 }
@@ -213,7 +219,7 @@ class XPNotificationsGuildDashboardRoute(website: LorittaDashboardWebServer) : R
                                                 fieldWrapper {
                                                     fieldInformationBlock {
                                                         fieldTitle {
-                                                            text("Canal onde a mensagem será enviada")
+                                                            text(i18nContext.get(DashboardI18nKeysData.XpNotifications.Channel.SectionTitle))
                                                         }
                                                     }
 
@@ -234,10 +240,10 @@ class XPNotificationsGuildDashboardRoute(website: LorittaDashboardWebServer) : R
                                                         "onlyIfUserReceivedRoles",
                                                         true,
                                                         {
-                                                            text("Apenas notificar caso o usuário receba alguma recompensa")
+                                                            text(i18nContext.get(DashboardI18nKeysData.XpNotifications.OnlyIfReward.ToggleTitle))
                                                         },
                                                         {
-                                                            text("Caso você tenha configurado recompensas ao subir de nível, eu posso notificar apenas se o usuário recebeu alguma recompensa")
+                                                            text(i18nContext.get(DashboardI18nKeysData.XpNotifications.OnlyIfReward.ToggleDescription))
                                                         }
                                                     )
                                                 }
@@ -245,7 +251,7 @@ class XPNotificationsGuildDashboardRoute(website: LorittaDashboardWebServer) : R
                                                 discordMessageEditor(
                                                     i18nContext,
                                                     guild,
-                                                    { text("Mensagem ao subir de nível") },
+                                                    { text(i18nContext.get(DashboardI18nKeysData.XpNotifications.Message.SectionLabel)) },
                                                     null,
                                                     MessageEditorBootstrap.TestMessageTarget.Unavailable,
                                                     listOf(defaultLevelUpMessage),

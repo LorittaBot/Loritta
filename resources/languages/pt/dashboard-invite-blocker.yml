@@ -2,3 +2,18 @@ website:
   dashboard:
     inviteBlocker:
       title: "Bloqueador de Convites"
+      enable:
+        toggleTitle: "Ativar Bloqueador de Convites"
+      allowServerInvites:
+        toggleTitle: "Permitir compartilhar convites do servidor atual"
+      deleteMessageOnInvite:
+        toggleTitle: "Deletar a mensagem do usuário quando um invite for detectado"
+      allowedChannels:
+        sectionTitle: "Canais aonde são permitidos enviar convites"
+      sendMessageOnInvite:
+        toggleTitle: "Enviar uma mensagem ao usuário quando ele enviar um invite"
+      message:
+        sectionLabel: "Mensagem"
+      defaultTemplate:
+        title: "Padrão"
+        content: "{userMention} você não pode enviar convites aqui!"

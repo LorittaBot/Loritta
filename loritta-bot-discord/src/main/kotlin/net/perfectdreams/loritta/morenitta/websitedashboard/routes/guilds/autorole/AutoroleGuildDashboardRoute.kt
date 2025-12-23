@@ -63,11 +63,11 @@ class AutoroleGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                             div(classes = "hero-wrapper") {
                                 div(classes = "hero-text") {
                                     h1 {
-                                        text("Autorole")
+                                        text(i18nContext.get(DashboardI18nKeysData.Autorole.Title))
                                     }
 
                                     p {
-                                        text("Autorole serve para você dar cargos para novos membros do seu servidor automaticamente quando eles entrarem no servidor. Chega de dar cargos para novatos manualmente!")
+                                        text(i18nContext.get(DashboardI18nKeysData.Autorole.Description))
                                     }
                                 }
                             }
@@ -77,7 +77,7 @@ class AutoroleGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                             sectionConfig {
                                 toggleableSection(
                                     {
-                                        text("Ativar Autorole")
+                                        text(i18nContext.get(DashboardI18nKeysData.Autorole.Enable.ToggleTitle))
                                     },
                                     null,
                                     autoroleConfig?.enabled ?: false,
@@ -88,7 +88,7 @@ class AutoroleGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                                         fieldWrapper {
                                             fieldInformationBlock {
                                                 fieldTitle {
-                                                    text("Cargos que serão dados ao usuário ao ele entrar")
+                                                    text(i18nContext.get(DashboardI18nKeysData.Autorole.Roles.SectionTitle))
                                                 }
                                             }
 
@@ -109,10 +109,10 @@ class AutoroleGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                                                 "giveOnlyAfterMessageWasSent",
                                                 true,
                                                 {
-                                                    text("Dar os cargos após o usuário enviar alguma mensagem no servidor")
+                                                    text(i18nContext.get(DashboardI18nKeysData.Autorole.GiveAfterMessage.ToggleTitle))
                                                 },
                                                 {
-                                                    text("Os cargos só serão entregues após o usuário enviar uma mensagem em qualquer canal de texto do seu servidor. Recomendamos que deixe ativado, assim o usuário terá que respeitar o nível de verificação do seu servidor, já que usuários com cargos burlam o nível de verificação do Discord.")
+                                                    text(i18nContext.get(DashboardI18nKeysData.Autorole.GiveAfterMessage.ToggleDescription))
                                                 }
                                             )
                                         }
@@ -120,7 +120,7 @@ class AutoroleGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                                         fieldWrapper {
                                             fieldInformationBlock {
                                                 fieldTitle {
-                                                    text("Depois de quanto tempo o cargo será dado? (Segundos)")
+                                                    text(i18nContext.get(DashboardI18nKeysData.Autorole.GiveRolesAfter.SectionTitle))
                                                 }
                                             }
 

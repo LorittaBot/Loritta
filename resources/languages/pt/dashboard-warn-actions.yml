@@ -2,5 +2,7 @@ website:
   dashboard:
     warnActions:
       title: "Punições de Avisos"
-
+      description: "Configurações de punições automáticas quando o usuário chega a uma quantidade de avisos."
+      addRuleInline: "Ao chegar em {countInput} avisos, {actionSelect} o usuário por {timeInput}"
+      addButtonLabel: "Adicionar"
       timePlaceholder: "1 hora"

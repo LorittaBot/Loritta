@@ -9,6 +9,7 @@ import net.perfectdreams.loritta.dashboard.BlissHex
 import net.perfectdreams.luna.modals.EmbeddedModal
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.website.components.LoadingSectionComponents
+import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.ButtonStyle
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.discordButton
@@ -114,11 +115,11 @@ fun createEmbeddedConfirmDeletionModal(
     confirmDeletionButtonBehavior: BUTTON.() -> (Unit)
 ): EmbeddedModal {
     return createEmbeddedModal(
-        "Você tem certeza?",
+        i18nContext.get(DashboardI18nKeysData.AreYouSureDeletionModal.Title),
         EmbeddedModal.Size.SMALL,
         true,
         {
-            text("Você quer deletar meeesmo?")
+            text(i18nContext.get(DashboardI18nKeysData.AreYouSureDeletionModal.Description))
         },
         listOf(
             {
@@ -128,7 +129,7 @@ fun createEmbeddedConfirmDeletionModal(
                 discordButton(ButtonStyle.DANGER) {
                     confirmDeletionButtonBehavior.invoke(this)
 
-                    text("Excluir")
+                    text(i18nContext.get(DashboardI18nKeysData.AreYouSureDeletionModal.DeleteButtonLabel))
                 }
             }
         )

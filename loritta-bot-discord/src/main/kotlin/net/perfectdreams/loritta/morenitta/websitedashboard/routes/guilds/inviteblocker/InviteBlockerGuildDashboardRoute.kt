@@ -70,8 +70,8 @@ class InviteBlockerGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
         }
 
         val defaultDenyMessage = createMessageTemplate(
-            "Padrão",
-            "{@user} você não pode enviar convites aqui!"
+            i18nContext.get(DashboardI18nKeysData.InviteBlocker.DefaultTemplate.Title),
+            i18nContext.get(DashboardI18nKeysData.InviteBlocker.DefaultTemplate.Content(userMention = "{@user}"))
         )
 
         call.respondHtml {
@@ -97,11 +97,7 @@ class InviteBlockerGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
                             heroWrapper {
                                 heroText {
                                     h1 {
-                                        text("Bloqueador de Convites")
-                                    }
-
-                                    p {
-                                        text("Bloqueador de Convites")
+                                        text(i18nContext.get(DashboardI18nKeysData.InviteBlocker.Title))
                                     }
                                 }
                             }
@@ -113,7 +109,7 @@ class InviteBlockerGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
 
                                 toggleableSection(
                                     {
-                                        text("Ativar Bloqueador de Convites")
+                                        text(i18nContext.get(DashboardI18nKeysData.InviteBlocker.Enable.ToggleTitle))
                                     },
                                     null,
                                     inviteBlockerConfig?.enabled ?: false,
@@ -127,7 +123,7 @@ class InviteBlockerGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
                                                 "allowServerInvites",
                                                 true,
                                                 {
-                                                    text("Permitir compartilhar convites do servidor atual")
+                                                    text(i18nContext.get(DashboardI18nKeysData.InviteBlocker.AllowServerInvites.ToggleTitle))
                                                 }
                                             )
                                         }
@@ -138,7 +134,7 @@ class InviteBlockerGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
                                                 "deleteMessageOnInvite",
                                                 true,
                                                 {
-                                                    text("Deletar a mensagem do usuário quando um invite for detectado")
+                                                    text(i18nContext.get(DashboardI18nKeysData.InviteBlocker.DeleteMessageOnInvite.ToggleTitle))
                                                 }
                                             )
                                         }
@@ -146,7 +142,7 @@ class InviteBlockerGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
                                         fieldWrapper {
                                             fieldInformationBlock {
                                                 fieldTitle {
-                                                    text("Canais aonde são permitidos enviar convites")
+                                                    text(i18nContext.get(DashboardI18nKeysData.InviteBlocker.AllowedChannels.SectionTitle))
                                                 }
                                             }
 
@@ -163,7 +159,7 @@ class InviteBlockerGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
 
                                         toggleableSection(
                                             {
-                                                text("Enviar uma mensagem ao usuário quando ele enviar um invite")
+                                                text(i18nContext.get(DashboardI18nKeysData.InviteBlocker.SendMessageOnInvite.ToggleTitle))
                                             },
                                             null,
                                             inviteBlockerConfig?.tellUser ?: false,
@@ -173,7 +169,7 @@ class InviteBlockerGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
                                             discordMessageEditor(
                                                 i18nContext,
                                                 guild,
-                                                { text("Mensagem") },
+                                                { text(i18nContext.get(DashboardI18nKeysData.InviteBlocker.Message.SectionLabel)) },
                                                 null,
                                                 MessageEditorBootstrap.TestMessageTarget.Unavailable,
                                                 listOf(defaultDenyMessage),

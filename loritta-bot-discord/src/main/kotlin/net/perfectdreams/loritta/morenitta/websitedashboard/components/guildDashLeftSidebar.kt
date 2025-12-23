@@ -61,10 +61,10 @@ fun FlowContent.guildDashLeftSidebarEntries(
     leftSidebarHr()
 
     div(classes = "category") {
-        text("Comandos")
+        text(i18nContext.get(DashboardI18nKeysData.GuildCategories.Commands))
     }
 
-    aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/commands", "Comandos da Loritta", SVGIcons.SlashCommand, selectedGuildSection == GuildDashboardSection.COMMANDS, false)
+    aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/commands", i18nContext.get(DashboardI18nKeysData.Commands.Title), SVGIcons.SlashCommand, selectedGuildSection == GuildDashboardSection.COMMANDS, false)
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/prefixed-commands", i18nContext.get(DashboardI18nKeysData.PrefixedCommands.Title), SVGIcons.PrefixCommand, selectedGuildSection == GuildDashboardSection.PREFIXED_COMMANDS, false)
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/command-channels", "Canais de Comandos", SVGIcons.TextChannel, selectedGuildSection == GuildDashboardSection.COMMAND_CHANNELS, false)
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/custom-commands", i18nContext.get(DashboardI18nKeysData.CustomCommands.Title), SVGIcons.Code, selectedGuildSection == GuildDashboardSection.CUSTOM_COMMANDS, false)
@@ -72,7 +72,7 @@ fun FlowContent.guildDashLeftSidebarEntries(
     leftSidebarHr()
 
     div(classes = "category") {
-        text("Comunidade")
+        text(i18nContext.get(DashboardI18nKeysData.GuildCategories.Community))
     }
 
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/welcomer", i18nContext.get(DashboardI18nKeysData.Welcomer.Title), SVGIcons.HandWaving, selectedGuildSection == GuildDashboardSection.WELCOMER,  false)
@@ -83,7 +83,7 @@ fun FlowContent.guildDashLeftSidebarEntries(
     leftSidebarHr()
 
     div(classes = "category") {
-        text("Moderação")
+        text(i18nContext.get(DashboardI18nKeysData.GuildCategories.Moderation))
     }
 
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/invite-blocker", i18nContext.get(DashboardI18nKeysData.InviteBlocker.Title), SVGIcons.Ban, selectedGuildSection == GuildDashboardSection.INVITE_BLOCKER,  false)
@@ -95,7 +95,7 @@ fun FlowContent.guildDashLeftSidebarEntries(
     leftSidebarHr()
 
     div(classes = "category") {
-        text("Experiência")
+        text(i18nContext.get(DashboardI18nKeysData.GuildCategories.Experience))
     }
 
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/xp-rewards", i18nContext.get(DashboardI18nKeysData.XpRewards.Title), SVGIcons.Ranking, selectedGuildSection == GuildDashboardSection.XP_REWARDS,  false)
@@ -107,7 +107,7 @@ fun FlowContent.guildDashLeftSidebarEntries(
     leftSidebarHr()
 
     div(classes = "category") {
-        text("Alertas Sociais")
+        text(i18nContext.get(DashboardI18nKeysData.GuildCategories.SocialAlerts))
     }
 
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/youtube", i18nContext.get(DashboardI18nKeysData.Youtube.Title), SVGIcons.YouTube, selectedGuildSection == GuildDashboardSection.YOUTUBE, false)
@@ -117,7 +117,7 @@ fun FlowContent.guildDashLeftSidebarEntries(
     leftSidebarHr()
 
     div(classes = "category") {
-        text("Diversão")
+        text(i18nContext.get(DashboardI18nKeysData.GuildCategories.Fun))
     }
 
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/starboard", "Starboard", SVGIcons.Star, selectedGuildSection == GuildDashboardSection.STARBOARD,  false)
@@ -127,7 +127,7 @@ fun FlowContent.guildDashLeftSidebarEntries(
     leftSidebarHr()
 
     div(classes = "category") {
-        text("Loritta")
+        text(i18nContext.get(DashboardI18nKeysData.GuildCategories.Loritta))
     }
 
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/reaction-events", "Evento de Reações da Loritta", SVGIcons.Sparkles, selectedGuildSection == GuildDashboardSection.LORITTA_REACTION_EVENTS,  false)
@@ -136,7 +136,7 @@ fun FlowContent.guildDashLeftSidebarEntries(
     leftSidebarHr()
 
     div(classes = "category") {
-        text("Premium")
+        text(i18nContext.get(DashboardI18nKeysData.GuildCategories.Premium))
     }
 
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/premium-keys", i18nContext.get(DashboardI18nKeysData.PremiumKeys.Title), SVGIcons.Key, selectedGuildSection == GuildDashboardSection.PREMIUM_KEYS,  false)

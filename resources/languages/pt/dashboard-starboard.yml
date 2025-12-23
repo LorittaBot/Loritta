@@ -6,6 +6,8 @@ website:
         - "Não deixe as mensagens divertidas passarem despercebidas! O Starboard permite que membros destaquem as mensagens legais e engraçadas com estrelas, enviando elas para um canal dedicado para que outras pessoas possam ver."
       starboardChannel: "Canal do starboard onde as mensagens que receberam estrelas serão anunciadas"
       minimumReactCount: "Quantidade mínima de estrelas para que a mensagem vá para o starboard"
+      enable:
+        toggleTitle: "Ativar Starboard"
       storytime:
         meanwhileInAChannel: "Enquanto isso, em uma mensagem em um chat qualquer do seu servidor..."
         arthTheRat: "Arth, o ratinho"

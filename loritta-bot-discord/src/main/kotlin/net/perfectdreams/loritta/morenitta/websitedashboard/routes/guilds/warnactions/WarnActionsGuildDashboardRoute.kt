@@ -14,6 +14,9 @@ import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.luna.toasts.EmbeddedToast
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.i18n.I18nKeys
+import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls
+import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls.appendAsFormattedText
+import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls.handleI18nString
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.GuildDashboardSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
@@ -81,7 +84,7 @@ class WarnActionsGuildDashboardRoute(website: LorittaDashboardWebServer) : Requi
                                     }
 
                                     p {
-                                        text("Punições e etc")
+                                        text(i18nContext.get(DashboardI18nKeysData.WarnActions.Description))
                                     }
                                 }
                             }
@@ -93,42 +96,58 @@ class WarnActionsGuildDashboardRoute(website: LorittaDashboardWebServer) : Requi
                                     fieldWrapper {
                                         controlsWithButton {
                                             inlinedControls {
-                                                text("Ao chegar em ")
-                                                numberInput {
-                                                    attributes["warn-action-add-element"] = "true"
-                                                    name = "count"
-                                                    style = "width: 100px;"
-                                                    value = "1"
-                                                    min = "1"
-                                                }
-                                                text(" avisos, ")
-
-                                                fancySelectMenu {
-                                                    attributes["warn-action-add-element"] = "true"
-                                                    name = "action"
-                                                    option {
-                                                        label = "KICK"
-                                                        value = "KICK"
-                                                    }
-                                                    option {
-                                                        label = "BAN"
-                                                        value = "BAN"
-                                                    }
-                                                    option {
-                                                        label = "MUTE"
-                                                        value = "MUTE"
-                                                    }
-                                                }
-
-                                                text(" o usuário por ")
-
-                                                growInputWrapper {
-                                                    textInput {
-                                                        attributes["warn-action-add-element"] = "true"
-                                                        attributes["bliss-disable-when"] = "[name='action'] != \"MUTE\""
-                                                        attributes["bliss-coerce-to-null-if-blank"] = "true"
-                                                        name = "time"
-                                                        placeholder = i18nContext.get(DashboardI18nKeysData.WarnActions.TimePlaceholder)
+                                                handleI18nString(
+                                                    i18nContext,
+                                                    I18nKeys.Website.Dashboard.WarnActions.AddRuleInline,
+                                                    appendAsFormattedText(i18nContext, mapOf())
+                                                ) {
+                                                    when (it) {
+                                                        "countInput" -> {
+                                                            TextReplaceControls.ComposableFunctionResult {
+                                                                numberInput {
+                                                                    attributes["warn-action-add-element"] = "true"
+                                                                    name = "count"
+                                                                    style = "width: 100px;"
+                                                                    value = "1"
+                                                                    min = "1"
+                                                                }
+                                                            }
+                                                        }
+                                                        "actionSelect" -> {
+                                                            TextReplaceControls.ComposableFunctionResult {
+                                                                fancySelectMenu {
+                                                                    attributes["warn-action-add-element"] = "true"
+                                                                    name = "action"
+                                                                    option {
+                                                                        // Use i18n titles for display labels
+                                                                        label = i18nContext.get(DashboardI18nKeysData.PunishmentLog.ActionTitles.Kick)
+                                                                        value = "KICK"
+                                                                    }
+                                                                    option {
+                                                                        label = i18nContext.get(DashboardI18nKeysData.PunishmentLog.ActionTitles.Ban)
+                                                                        value = "BAN"
+                                                                    }
+                                                                    option {
+                                                                        label = i18nContext.get(DashboardI18nKeysData.PunishmentLog.ActionTitles.Mute)
+                                                                        value = "MUTE"
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                        "timeInput" -> {
+                                                            TextReplaceControls.ComposableFunctionResult {
+                                                                growInputWrapper {
+                                                                    textInput {
+                                                                        attributes["warn-action-add-element"] = "true"
+                                                                        attributes["bliss-disable-when"] = "[name='action'] != \"MUTE\""
+                                                                        attributes["bliss-coerce-to-null-if-blank"] = "true"
+                                                                        name = "time"
+                                                                        placeholder = i18nContext.get(DashboardI18nKeysData.WarnActions.TimePlaceholder)
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                        else -> TextReplaceControls.AppendControlAsIsResult
                                                     }
                                                 }
                                             }
@@ -137,7 +156,7 @@ class WarnActionsGuildDashboardRoute(website: LorittaDashboardWebServer) : Requi
                                                 attributes["bliss-post"] = "/${i18nContext.get(I18nKeys.Website.LocalePathId)}/guilds/${guild.idLong}/warn-actions/add"
                                                 attributes["bliss-include-json"] = "[warn-action-add-element]"
                                                 attributes["bliss-swap:200"] = "body (innerHTML) -> #warn-actions (innerHTML)"
-                                                text("Adicionar")
+                                                text(i18nContext.get(DashboardI18nKeysData.WarnActions.AddButtonLabel))
                                             }
                                         }
 

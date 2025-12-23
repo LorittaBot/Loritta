@@ -2,3 +2,6 @@ website:
   dashboard:
     resetXp:
       title: "Resetar XP"
+      description1: "Esta ação é irreversível! Todos os membros do seu servidor terão os seus níveis e experiência revertidos para 0!"
+      description2: "Após confirmar, você não poderá reverter a ação. A ação apenas reverte o nível e a experiência, você terá que reverter as recompensas ganhas ao subirem de nível manualmente."
+      resetButton: "Resetar XP"

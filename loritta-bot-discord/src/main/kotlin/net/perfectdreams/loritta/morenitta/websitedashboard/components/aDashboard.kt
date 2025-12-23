@@ -8,6 +8,7 @@ import kotlinx.html.div
 import kotlinx.html.span
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.svgicons.SVGIcon
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.SVGIcons
 
@@ -22,7 +23,7 @@ fun FlowContent.sectionEntry(href: String? = null, selected: Boolean, block: A.(
     }
 }
 
-fun FlowContent.sectionEntryContent(text: String, icon: SVGIcon, new: Boolean) {
+fun FlowContent.sectionEntryContent(i18nContext: I18nContext, text: String, icon: SVGIcon, new: Boolean) {
     div(classes = "section-icon") {
         svgIcon(icon)
     }
@@ -33,7 +34,7 @@ fun FlowContent.sectionEntryContent(text: String, icon: SVGIcon, new: Boolean) {
 
     if (new) {
         span(classes = "new-feature") {
-            text("Novo!")
+            text(i18nContext.get(DashboardI18nKeysData.SectionNewBadge))
         }
     }
 }
@@ -58,6 +59,6 @@ fun FlowContent.aDashboardSidebarEntry(
         attributes["bliss-component"] = "close-left-sidebar-on-click"
         attributes["loritta-cancel-if-save-bar-active"] = "true"
 
-        sectionEntryContent(text, icon, new)
+        sectionEntryContent(i18nContext, text, icon, new)
     }
 }

@@ -121,7 +121,7 @@ class DropsGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGui
                                         fieldWrapper {
                                             fieldInformationBlock {
                                                 fieldTitle {
-                                                    text("Convite do Servidor")
+                                                    text(i18nContext.get(DashboardI18nKeysData.Drops.ShowGuildInformationOnTransactions.ServerInvite))
                                                 }
                                             }
 

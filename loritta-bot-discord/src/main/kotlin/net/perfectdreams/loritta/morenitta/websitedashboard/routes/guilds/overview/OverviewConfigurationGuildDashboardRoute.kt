@@ -9,6 +9,7 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.GuildDashboardSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
@@ -41,11 +42,11 @@ class OverviewConfigurationGuildDashboardRoute(website: LorittaDashboardWebServe
                         simpleHeroImage("https://stuff.loritta.website/animations/loritta-dashboard/loritta-dashboard.png")
                         heroText {
                             h1 {
-                                text("Visão Geral")
+                                text(i18nContext.get(I18nKeysData.Website.Dashboard.Overview.Title))
                             }
 
                             p {
-                                text("Acesse as seções na sidebar para configurar as minhas funcionalidades!")
+                                text(i18nContext.get(I18nKeysData.Website.Dashboard.Overview.Description))
                             }
                         }
                     }

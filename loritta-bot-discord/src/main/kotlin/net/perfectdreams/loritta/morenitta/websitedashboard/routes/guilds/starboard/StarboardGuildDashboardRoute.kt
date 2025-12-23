@@ -101,7 +101,7 @@ class StarboardGuildDashboardRoute(website: LorittaDashboardWebServer) : Require
 
                                 toggleableSection(
                                     {
-                                        text("Ativar Starboard")
+                                        text(i18nContext.get(DashboardI18nKeysData.Starboard.Enable.ToggleTitle))
                                     },
                                     description = null,
                                     starboardConfig?.enabled ?: false,

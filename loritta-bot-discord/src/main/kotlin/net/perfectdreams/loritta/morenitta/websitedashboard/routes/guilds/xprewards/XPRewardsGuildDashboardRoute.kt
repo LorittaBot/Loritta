@@ -34,6 +34,9 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.inlinedCo
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.rightSidebarContentAndSaveBarWrapper
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.roleSelectMenu
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.sectionConfig
+import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls
+import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls.appendAsFormattedText
+import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls.handleI18nString
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissEvent
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
@@ -82,8 +85,12 @@ class XPRewardsGuildDashboardRoute(website: LorittaDashboardWebServer) : Require
                                         text(i18nContext.get(DashboardI18nKeysData.XpRewards.Title))
                                     }
 
-                                    p {
-                                        text("Recompense usuários ativos do seu servidor com cargos únicos e exclusivos.")
+                                    for (str in i18nContext.language
+                                        .textBundle
+                                        .lists
+                                        .getValue(I18nKeys.Website.Dashboard.XpRewards.Description.key)
+                                    ) {
+                                        p { text(str) }
                                     }
                                 }
                             }
@@ -95,7 +102,7 @@ class XPRewardsGuildDashboardRoute(website: LorittaDashboardWebServer) : Require
                                     fieldWrapper {
                                         fieldInformationBlock {
                                             fieldTitle {
-                                                text("Estilo de Recompensas por Cargo")
+                                                text(i18nContext.get(DashboardI18nKeysData.XpRewards.RoleGiveType.Title))
                                             }
                                         }
 
@@ -108,11 +115,11 @@ class XPRewardsGuildDashboardRoute(website: LorittaDashboardWebServer) : Require
                                         }) {
                                             div(classes = "radio-option-info") {
                                                 div(classes = "radio-option-title") {
-                                                    text("Empilhar recompensas anteriores")
+                                                    text(i18nContext.get(DashboardI18nKeysData.XpRewards.RoleGiveType.Stack.Title))
                                                 }
 
                                                 div(classes = "radio-option-description") {
-                                                    text("Ao executar um comando, eu irei deletar a mensagem do usuário.")
+                                                    text(i18nContext.get(DashboardI18nKeysData.XpRewards.RoleGiveType.Stack.Description))
                                                 }
                                             }
                                         }
@@ -125,11 +132,11 @@ class XPRewardsGuildDashboardRoute(website: LorittaDashboardWebServer) : Require
                                         }) {
                                             div(classes = "radio-option-info") {
                                                 div(classes = "radio-option-title") {
-                                                    text("Remover recompensas anteriores")
+                                                    text(i18nContext.get(DashboardI18nKeysData.XpRewards.RoleGiveType.Remove.Title))
                                                 }
 
                                                 div(classes = "radio-option-description") {
-                                                    text("Ao subir de nível, todas as recompensas que o usuário recebeu são removidas")
+                                                    text(i18nContext.get(DashboardI18nKeysData.XpRewards.RoleGiveType.Remove.Description))
                                                 }
                                             }
                                         }
@@ -139,47 +146,60 @@ class XPRewardsGuildDashboardRoute(website: LorittaDashboardWebServer) : Require
                                         div {
                                             fieldInformationBlock {
                                                 fieldTitle {
-                                                    text("Recompensas ao Subir de Nível")
+                                                    text(i18nContext.get(DashboardI18nKeysData.XpRewards.LevelUpRewards.Title))
                                                 }
                                             }
 
                                             controlsWithButton {
                                                 inlinedControls {
-                                                    span {
-                                                        text("Ao chegar em ")
-                                                    }
+                                                    for (str in i18nContext.language
+                                                        .textBundle
+                                                        .lists
+                                                        .getValue(I18nKeys.Website.Dashboard.XpRewards.Inline.AddRoleAtXp.key)
+                                                    ) {
+                                                        handleI18nString(
+                                                            str,
+                                                            appendAsFormattedText(i18nContext, emptyMap()),
+                                                        ) {
+                                                            when (it) {
+                                                                "xpInput" -> {
+                                                                    TextReplaceControls.ComposableFunctionResult {
+                                                                        numberInput {
+                                                                            name = "xp"
+                                                                            placeholder = "1000"
+                                                                            style = "width: 100px;"
+                                                                            value = "1000"
+                                                                            min = "0"
+                                                                            step = "1000"
 
-                                                    numberInput {
-                                                        name = "xp"
-                                                        placeholder = "1000"
-                                                        style = "width: 100px;"
-                                                        value = "1000"
-                                                        min = "0"
-                                                        step = "1000"
-
-                                                        attributes["bliss-post"] = "/${i18nContext.get(I18nKeys.Website.LocalePathId)}/guilds/${guild.idLong}/xp-rewards/xp2level"
-                                                        attributes["bliss-swap:200"] = "body (innerHTML) -> #calculated-level (innerHTML)"
-                                                        attributes["bliss-include-json"] = "[name='xp']"
-                                                        attributes["bliss-trigger"] = "input"
-                                                        attributes["xp-action-add-element"] = "true"
-                                                    }
-
-                                                    span {
-                                                        text(" XP ")
-
-                                                        text("(")
-                                                        span {
-                                                            id = "calculated-level"
-                                                            text("Nível 1")
-                                                        }
-                                                        text(")")
-                                                        text(", dar o cargo ")
-                                                    }
-
-                                                    growInputWrapper {
-                                                        roleSelectMenu(guild, null) {
-                                                            name = "roleId"
-                                                            attributes["xp-action-add-element"] = "true"
+                                                                            attributes["bliss-post"] = "/${i18nContext.get(I18nKeys.Website.LocalePathId)}/guilds/${guild.idLong}/xp-rewards/xp2level"
+                                                                            attributes["bliss-swap:200"] = "body (innerHTML) -> #calculated-level (innerHTML)"
+                                                                            attributes["bliss-include-json"] = "[name='xp']"
+                                                                            attributes["bliss-trigger"] = "input"
+                                                                            attributes["xp-action-add-element"] = "true"
+                                                                        }
+                                                                    }
+                                                                }
+                                                                "calculatedLevel" -> {
+                                                                    TextReplaceControls.ComposableFunctionResult {
+                                                                        span {
+                                                                            id = "calculated-level"
+                                                                            text(i18nContext.get(DashboardI18nKeysData.XpRewards.Inline.CalculatedLevel(level = 1)))
+                                                                        }
+                                                                    }
+                                                                }
+                                                                "roleSelect" -> {
+                                                                    TextReplaceControls.ComposableFunctionResult {
+                                                                        growInputWrapper {
+                                                                            roleSelectMenu(guild, null) {
+                                                                                name = "roleId"
+                                                                                attributes["xp-action-add-element"] = "true"
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                                else -> TextReplaceControls.AppendControlAsIsResult
+                                                            }
                                                         }
                                                     }
                                                 }
@@ -188,7 +208,7 @@ class XPRewardsGuildDashboardRoute(website: LorittaDashboardWebServer) : Require
                                                     attributes["bliss-post"] = "/${i18nContext.get(I18nKeys.Website.LocalePathId)}/guilds/${guild.idLong}/xp-rewards/add"
                                                     attributes["bliss-include-json"] = "[xp-action-add-element]"
                                                     attributes["bliss-swap:200"] = "body (innerHTML) -> #role-rewards (innerHTML)"
-                                                    text("Adicionar")
+                                                    text(i18nContext.get(DashboardI18nKeysData.XpRewards.Button.Add))
                                                 }
                                             }
                                         }

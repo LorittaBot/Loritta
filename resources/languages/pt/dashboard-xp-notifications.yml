@@ -2,3 +2,22 @@ website:
   dashboard:
     xpNotifications:
       title: "Mensagens ao Subir de Nível"
+      description: "Notificações ao subir de nível"
+      enable:
+        toggleTitle: "Ativar mensagem ao subir de nível"
+      destination:
+        sectionTitle: "Onde a mensagem será enviada"
+        options:
+          sameChannel: "Canal Atual"
+          directMessage: "Mensagem Direta"
+          differentChannel: "Canal Personalizado"
+      channel:
+        sectionTitle: "Canal onde a mensagem será enviada"
+      onlyIfReward:
+        toggleTitle: "Apenas notificar caso o usuário receba alguma recompensa"
+        toggleDescription: "Caso você tenha configurado recompensas ao subir de nível, eu posso notificar apenas se o usuário recebeu alguma recompensa"
+      message:
+        sectionLabel: "Mensagem ao subir de nível"
+      defaultTemplate:
+        title: "Padrão"
+        content: "Parabéns {userMention}, você passou para o nível **{level}** (*{xp} XP*)!"

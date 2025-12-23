@@ -2,3 +2,13 @@ website:
   dashboard:
     commandChannels:
       title: "Canais de Comandos"
+      blockedChannels:
+        sectionTitle: "Canais que serão proibidos usar comandos"
+        sectionDescription: "Nestes canais eu irei ignorar comandos de usuários, como se eu nem estivesse lá! (Mesmo que eu esteja observando as suas mensagens para dar XP, hihi~) Caso você queira configurar que cargos específicos possam burlar a restrição, configure na seção de permissões."
+      warn:
+        toggleTitle: "Enviar mensagem para o usuário quando ele executar comandos em canais proibidos"
+        toggleDescription: "Caso você tenha configurado canais que sejam proibidos de usar comandos, você pode ativar esta opção para que, quando um usuário tente executar um comando em canais proibidos, eu avise que não é possível executar comandos no canal."
+        messageLabel: "Mensagem"
+      defaultTemplate:
+        title: "Padrão"
+        content: "{userMention} você não pode enviar comandos aqui!"

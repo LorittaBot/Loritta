@@ -51,11 +51,11 @@ class ResetXPGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresG
                             }
 
                             p {
-                                text("Esta ação é irreversível! Todos os membros do seu servidor terão os seus níveis e experiência revertidos para 0!")
+                                text(i18nContext.get(I18nKeysData.Website.Dashboard.ResetXp.Description1))
                             }
 
                             p {
-                                text("Após confirmar, você não poderá reverter a ação. A ação apenas reverte o nível e a experiência, você terá que reverter as recompensas ganhas ao subirem de nível manualmente.")
+                                text(i18nContext.get(I18nKeysData.Website.Dashboard.ResetXp.Description2))
                             }
 
                             discordButton(ButtonStyle.DANGER) {
@@ -65,7 +65,7 @@ class ResetXPGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresG
                                     }
                                 )
 
-                                text("Resetar XP")
+                                text(i18nContext.get(I18nKeysData.Website.Dashboard.ResetXp.ResetButton))
                             }
                         }
                     }
