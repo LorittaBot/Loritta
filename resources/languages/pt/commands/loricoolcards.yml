@@ -28,6 +28,7 @@ view:
   label: "ver"
   description: "Ver as informações de uma figurinha do álbum"
   youHaveThisStickerInYourAlbum: "Você já tem esta figurinha no seu álbum!"
+  __youDontHaveThisStickerInYourAlbumContext: "\"NÃO TEM\" MUST be kept in uppercase"
   youDontHaveThisStickerInYourAlbum: "Você NÃO TEM tem esta figurinha no seu álbum!"
   stickersInYourInventory: "**No seu inventário:** {stickerCount,plural, =0 {# figurinhas} one {# figurinha} other {# figurinhas}} (podem ser trocadas)"
   stickersInCirculation: "**Em circulação:** {stickerCount,plural, =0 {# figurinhas} one {# figurinha} other {# figurinhas}}"
@@ -35,7 +36,11 @@ view:
   stickersTotal: "**Total:** {stickerCount,plural, =0 {# figurinhas} one {# figurinha} other {# figurinhas}}"
   stickerPage: "**Página:** Página {page,number}"
   chanceOfGettingTheSticker: "**Chance de receber a figurinha em um pacotinho:** {chance, number,#.#####%}"
+  __stickerFrontContext: "Button Label"
+  __stickerFrontTransformers: "titlecase"
   stickerFront: "Figurinha (Frente)"
+  __stickerAnimatedContext: "Button Label"
+  __stickerAnimatedTransformers: "titlecase"
   stickerAnimated: "Figurinha (Animada)"
   options:
     album:

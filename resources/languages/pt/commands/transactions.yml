@@ -121,6 +121,7 @@ types:
     lost: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} em imposto, pois ficou {daysWithoutGettingDaily,plural,=0{# dias} one {# dia} other {# dias}} sem pegar a recompensa diária enquanto tinha mais de {sonhosBracketQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
   divineIntervention:
     title: "Intervenção Divina"
+    __descriptionContext: "\"poder constituente\" is a idiom that means \"the powers that be\", jokingly used to to Loritta's admins"
     description: "Transações feitas pelos admins da Loritta, \"poder constituinte\""
     received: "Uma intervenção divina deu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
     lost: "Uma intervenção divina removeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"

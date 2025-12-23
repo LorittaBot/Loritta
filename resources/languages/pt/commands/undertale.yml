@@ -15,6 +15,7 @@ textbox:
   portraitWithName: "{portraitType} ({character})"
   confirm: "Confirmar" #Used in the "Confirm" button in the command, when clicking on it, all buttons/text are removed and only the generated dialog is kept
   customizeYourMessage: "Personalize a sua caixa de diálogo! Após estar satisfeito com as suas mudanças, clique no botão confirmar!"
+  __dataIsMissingContext: "The \"cachorrinho fofinho branco\" is a joke relating to Undertale/DELTARUNE's \"annoying dog\", which is a cute little white dog."
   dataIsMissing: "Opa, parece que um cachorrinho fofinho branco absorveu a sua caixa de texto! Por favor, use o comando novamente caso queira criar uma nova caixa de texto!" #Cute little white dog = Annoying Dog = Toby Fox
   colored: "Colorido"
   blackAndWhite: "Preto e Branco"

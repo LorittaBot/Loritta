@@ -15,12 +15,26 @@ play:
   currentBetJustForFun: "**Aposta:** *Nada! Apenas por Diversão :3*"
 
   buttons:
+    __hitContext: "Button Label, \"Manda mais uma chefia\" is a jokingly way of saying \"Hit Me\""
+    __hitTransformers: "titlecase"
     hit: "Manda mais uma chefia"
+    __standContext: "Button Label"
+    __standTransformers: "titlecase"
     stand: "Parar"
+    __doubleDownContext: "Button Label"
+    __doubleDownTransformers: "titlecase"
     doubleDown: "Dobrar"
+    __splitContext: "Button Label"
+    __splitTransformers: "titlecase"
     split: "Split"
+    __payInsuranceContext: "Button Label"
+    __payInsuranceTransformers: "titlecase"
     payInsurance: "Pagar Seguro"
+    __howToPlayContext: "Button Label"
+    __howToPlayTransformers: "titlecase"
     howToPlay: "Como jogar?"
+    __houseRulesContext: "Button Label"
+    __houseRulesTransformers: "titlecase"
     houseRules: "Regras da Casa"
 
   errors:
