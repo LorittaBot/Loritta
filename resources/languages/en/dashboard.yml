@@ -5,6 +5,13 @@ website:
     localePathId: "en" #The locale ID that is prefixed on every localized page path, example: "/pt/commands/"
     loading: "Loading..."
     frequentlyAskedQuestions: "Frequently Asked Questions"
+    userCategories:
+      miscellaneous: "Miscellaneous"
+    guildCategories:
+      commands: "Commands"
+      community: "Community"
+      moderation: "Moderation"
+      fun: "Fun"
     chooseAServer:
       entry:
         administrator: "Administrator"
