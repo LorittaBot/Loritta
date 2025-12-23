@@ -521,7 +521,11 @@ class DoraBackend(val config: DoraConfig, val pudding: Pudding) {
                                                 // This does mean that failed translations will never get a "correct" translation, but it is what it is
                                                 put("seed", 0L)
                                                 // Because we are translating strings, we don't want the model to go off rails inventing new things
-                                                put("temperature", 0.4)
+                                                //
+                                                // But honestly: It doesn't really matter because even if we set a fixed seed and no temperature, the model still is
+                                                // non-deterministic due to factors outside of our control (floating point errors) so it is just a "suggestion" to avoid
+                                                // non-deterministic behavior
+                                                put("temperature", 0.0)
                                                 put("stream", false)
                                             }.toString()
                                         )
