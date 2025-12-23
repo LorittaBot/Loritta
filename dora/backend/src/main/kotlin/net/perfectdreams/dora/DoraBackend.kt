@@ -517,15 +517,16 @@ class DoraBackend(val config: DoraConfig, val pudding: Pudding) {
                                                         )
                                                     }
                                                 }
-                                                // Use a consistent seed for all generations, for deterministic purposes
-                                                // This does mean that failed translations will never get a "correct" translation, but it is what it is
-                                                put("seed", 0L)
-                                                // Because we are translating strings, we don't want the model to go off rails inventing new things
+                                                // It doesn't really matter because even if we set a fixed seed and no temperature, the model still is
+                                                // non-deterministic due to factors outside of our control (floating point errors, GPU optimizations, etc)
+                                                // https://www.reddit.com/r/LocalLLaMA/comments/1plbe8i/how_to_make_llm_output_deterministic/
                                                 //
-                                                // But honestly: It doesn't really matter because even if we set a fixed seed and no temperature, the model still is
-                                                // non-deterministic due to factors outside of our control (floating point errors) so it is just a "suggestion" to avoid
-                                                // non-deterministic behavior
-                                                put("temperature", 0.0)
+                                                // So, because we can't get good optimization anyway, let's just make it non-deterministic on purpose! At least we can try to get something
+                                                // useful out of it (example: when a translation fails, changing the seed may help)
+                                                put("seed", System.currentTimeMillis())
+                                                // The temperature is only useful on "long" strings
+                                                // We don't want it to get *too* off the rails, so we keep it at 0.3
+                                                put("temperature", 0.3)
                                                 put("stream", false)
                                             }.toString()
                                         )
