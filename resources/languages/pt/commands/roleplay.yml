@@ -30,7 +30,7 @@ headpat:
     user:
       text: "O usuário que você quer fazer cafuné"
 highfive:
-  __highfiveContext: "Command Label, used to high-five someone"
+  __labelContext: "Command Label, used to high-five someone"
   label: "tocaaqui"
   __buttonLabelContext: "Button Label, when clicked the target user is high-fived"
   buttonLabel: "Mandar um Toca Aqui"

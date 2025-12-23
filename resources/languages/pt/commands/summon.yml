@@ -8,4 +8,5 @@ faustao:
   description: "Invoque o amado Faustão no seu servidor!"
 kenji:
   label: "kenji"
+  __descriptionContext: "\"Loop Infinito\" is a YouTube channel"
   description: "\"Hai minasan genki deska!\", diretamente do Loop Infinito para o seu servidor no Discord!"
