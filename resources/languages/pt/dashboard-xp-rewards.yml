@@ -12,11 +12,9 @@ website:
         remove:
           title: "Remover recompensas anteriores"
           description: "Ao subir de nível, todas as recompensas que o usuário recebeu são removidas"
+      addRoleAtXpInline: "Ao chegar em {xpInput} XP ({calculatedLevel}), dar o cargo {roleSelect}"
+      calculatedLevel: "Nível {level}"
       levelUpRewards:
         title: "Recompensas ao Subir de Nível"
-      inline:
-        addRoleAtXp:
-          - "Ao chegar em {xpInput} XP ({calculatedLevel}), dar o cargo {roleSelect}"
-        calculatedLevel: "Nível {level}"
       button:
         add: "Adicionar"

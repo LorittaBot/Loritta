@@ -152,54 +152,49 @@ class XPRewardsGuildDashboardRoute(website: LorittaDashboardWebServer) : Require
 
                                             controlsWithButton {
                                                 inlinedControls {
-                                                    for (str in i18nContext.language
-                                                        .textBundle
-                                                        .lists
-                                                        .getValue(I18nKeys.Website.Dashboard.XpRewards.Inline.AddRoleAtXp.key)
+                                                    handleI18nString(
+                                                        i18nContext,
+                                                        I18nKeys.Website.Dashboard.XpRewards.AddRoleAtXpInline,
+                                                        appendAsFormattedText(i18nContext, mapOf()),
                                                     ) {
-                                                        handleI18nString(
-                                                            str,
-                                                            appendAsFormattedText(i18nContext, emptyMap()),
-                                                        ) {
-                                                            when (it) {
-                                                                "xpInput" -> {
-                                                                    TextReplaceControls.ComposableFunctionResult {
-                                                                        numberInput {
-                                                                            name = "xp"
-                                                                            placeholder = "1000"
-                                                                            style = "width: 100px;"
-                                                                            value = "1000"
-                                                                            min = "0"
-                                                                            step = "1000"
+                                                        when (it) {
+                                                            "xpInput" -> {
+                                                                TextReplaceControls.ComposableFunctionResult {
+                                                                    numberInput {
+                                                                        name = "xp"
+                                                                        placeholder = "1000"
+                                                                        style = "width: 100px;"
+                                                                        value = "1000"
+                                                                        min = "0"
+                                                                        step = "1000"
 
-                                                                            attributes["bliss-post"] = "/${i18nContext.get(I18nKeys.Website.LocalePathId)}/guilds/${guild.idLong}/xp-rewards/xp2level"
-                                                                            attributes["bliss-swap:200"] = "body (innerHTML) -> #calculated-level (innerHTML)"
-                                                                            attributes["bliss-include-json"] = "[name='xp']"
-                                                                            attributes["bliss-trigger"] = "input"
+                                                                        attributes["bliss-post"] = "/${i18nContext.get(I18nKeys.Website.LocalePathId)}/guilds/${guild.idLong}/xp-rewards/xp2level"
+                                                                        attributes["bliss-swap:200"] = "body (innerHTML) -> #calculated-level (innerHTML)"
+                                                                        attributes["bliss-include-json"] = "[name='xp']"
+                                                                        attributes["bliss-trigger"] = "input"
+                                                                        attributes["xp-action-add-element"] = "true"
+                                                                    }
+                                                                }
+                                                            }
+                                                            "calculatedLevel" -> {
+                                                                TextReplaceControls.ComposableFunctionResult {
+                                                                    span {
+                                                                        id = "calculated-level"
+                                                                        text(i18nContext.get(DashboardI18nKeysData.XpRewards.CalculatedLevel(1)))
+                                                                    }
+                                                                }
+                                                            }
+                                                            "roleSelect" -> {
+                                                                TextReplaceControls.ComposableFunctionResult {
+                                                                    growInputWrapper {
+                                                                        roleSelectMenu(guild, null) {
+                                                                            name = "roleId"
                                                                             attributes["xp-action-add-element"] = "true"
                                                                         }
                                                                     }
                                                                 }
-                                                                "calculatedLevel" -> {
-                                                                    TextReplaceControls.ComposableFunctionResult {
-                                                                        span {
-                                                                            id = "calculated-level"
-                                                                            text(i18nContext.get(DashboardI18nKeysData.XpRewards.Inline.CalculatedLevel(level = 1)))
-                                                                        }
-                                                                    }
-                                                                }
-                                                                "roleSelect" -> {
-                                                                    TextReplaceControls.ComposableFunctionResult {
-                                                                        growInputWrapper {
-                                                                            roleSelectMenu(guild, null) {
-                                                                                name = "roleId"
-                                                                                attributes["xp-action-add-element"] = "true"
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                }
-                                                                else -> TextReplaceControls.AppendControlAsIsResult
                                                             }
+                                                            else -> TextReplaceControls.AppendControlAsIsResult
                                                         }
                                                     }
                                                 }

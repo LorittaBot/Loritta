@@ -101,41 +101,36 @@ class XPRatesGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresG
 
                                         controlsWithButton {
                                             inlinedControls {
-                                                for (str in i18nContext.language
-                                                    .textBundle
-                                                    .lists
-                                                    .getValue(I18nKeys.Website.Dashboard.XpRates.Inline.RoleRate.key)
+                                                handleI18nString(
+                                                    i18nContext,
+                                                    I18nKeys.Website.Dashboard.XpRates.RoleRateInline,
+                                                    appendAsFormattedText(i18nContext, mapOf()),
                                                 ) {
-                                                    handleI18nString(
-                                                        str,
-                                                        appendAsFormattedText(i18nContext, mapOf()),
-                                                    ) {
-                                                        when (it) {
-                                                            "roleSelect" -> {
-                                                                TextReplaceControls.ComposableFunctionResult {
-                                                                    growInputWrapper {
-                                                                        roleSelectMenu(guild, null) {
-                                                                            name = "roleId"
-                                                                            attributes["xp-action-add-element"] = "true"
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }
-                                                            "rateInput" -> {
-                                                                TextReplaceControls.ComposableFunctionResult {
-                                                                    numberInput {
-                                                                        name = "rate"
-                                                                        placeholder = i18nContext.get(DashboardI18nKeysData.XpRates.Inline.RatePlaceholder)
-                                                                        style = "width: 100px;"
-                                                                        value = "1"
-                                                                        min = "0"
-                                                                        step = "0.05"
+                                                    when (it) {
+                                                        "roleSelect" -> {
+                                                            TextReplaceControls.ComposableFunctionResult {
+                                                                growInputWrapper {
+                                                                    roleSelectMenu(guild, null) {
+                                                                        name = "roleId"
                                                                         attributes["xp-action-add-element"] = "true"
                                                                     }
                                                                 }
                                                             }
-                                                            else -> TextReplaceControls.AppendControlAsIsResult
                                                         }
+                                                        "rateInput" -> {
+                                                            TextReplaceControls.ComposableFunctionResult {
+                                                                numberInput {
+                                                                    name = "rate"
+                                                                    placeholder = "2.0"
+                                                                    style = "width: 100px;"
+                                                                    value = "1"
+                                                                    min = "0"
+                                                                    step = "0.05"
+                                                                    attributes["xp-action-add-element"] = "true"
+                                                                }
+                                                            }
+                                                        }
+                                                        else -> TextReplaceControls.AppendControlAsIsResult
                                                     }
                                                 }
                                             }
