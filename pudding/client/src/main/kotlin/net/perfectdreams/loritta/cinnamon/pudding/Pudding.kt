@@ -166,7 +166,6 @@ class Pudding(
     val executedInteractionsLog = ExecutedInteractionsLogService(this)
     val backgrounds = BackgroundsService(this)
     val profileDesigns = ProfileDesignsService(this)
-    val bovespaBroker = BovespaBrokerService(this)
     val bets = BetsService(this)
     val payments = PaymentsService(this)
     val stats = StatsService(this)
