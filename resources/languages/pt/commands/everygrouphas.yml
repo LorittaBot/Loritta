@@ -5,22 +5,34 @@ description: "Todo grupo tem estes tipos de pessoas... incluindo o seu!"
 notEnoughUsers: "Não existem membros suficientes para eu escolher os tipos de pessoas do seu grupo de amigos, desculpe..."
 slot:
   popular:
+    __maleTransformer: "uppercase"
     male: "O POPULAR"
+    __femaleTransformer: "uppercase"
     female: "A POPULAR"
   quiet:
+    __maleTransformer: "uppercase"
     male: "O QUIETO"
+    __femaleTransformer: "uppercase"
     female: "A QUIETA"
   clown:
+    __maleTransformer: "uppercase"
     male: "O ENGRAÇADINHO"
+    __femaleTransformer: "uppercase"
     female: "A ENGRAÇADINHA"
   nerd:
+    __maleTransformer: "uppercase"
     male: "O NERD"
+    __femaleTransformer: "uppercase"
     female: "A NERD"
   fanboy:
+    __maleTransformer: "uppercase"
     male: "O FANBOY"
+    __femaleTransformer: "uppercase"
     female: "A FANBOY"
   cranky:
+    __maleTransformer: "uppercase"
     male: "O IRRITADINHO"
+    __femaleTransformer: "uppercase"
     female: "A IRRITADINHA"
 options:
   user1:

@@ -89,9 +89,13 @@ commands:
 
       updateTimeoutAuditLogReason: "Atualizando o tempo do castigo, pois o usuário ainda está silenciado na Loritta"
       noneOfTheUsersCanBePunished: "Nenhum dos usuários podem ser punidos!"
+      __punishmentWillBeSentViaDirectMessageContext: "\"SERÁ ENVIADA\" MUST be kept in uppercase"
       punishmentWillBeSentViaDirectMessage: "A punição SERÁ ENVIADA via mensagem direta para o usuário"
+      __punishmentWillNotBeSentViaDirectMessagContext: "\"NÃO SERÁ ENVIADA\" MUST be kept in uppercase"
       punishmentWillNotBeSentViaDirectMessage: "A punição NÃO SERÁ ENVIADA via mensagem direta para o usuário"
+      __punishmentWillBeSentToPunishmentLogContext: "\"SERÁ ENVIADA\" MUST be kept in uppercase"
       punishmentWillBeSentToPunishmentLog: "A punição SERÁ ENVIADA para o registro de punições do servidor"
+      __punishmentWillNotBeSentToPunishmentLogContext: "\"NÃO SERÁ ENVIADA\" MUST be kept in uppercase"
       punishmentWillNotBeSentToPunishmentLog: "A punição NÃO SERÁ ENVIADA para o registro de punições do servidor"
       auditLogPunishmentLog: "Punido por {user} — Motivo: {reason}"
       reasonNotGiven: "Motivo não informado"

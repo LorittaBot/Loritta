@@ -4,39 +4,60 @@ description: "Cria uma triste realidade com os membros do seu servidor... É, ne
 notEnoughUsers: "Não existem membros suficientes para fazer uma triste realidade, sorry ;w;"
 slot:
   theGuyYouLike:
+    __maleTransformers: "uppercase"
     male: "O CARA QUE VOCÊ GOSTA"
+    __femaleTransformers: "uppercase"
     female: "A MINA QUE VOCÊ GOSTA"
+    __lorittaTransformers: "uppercase"
     loritta: "A MORENA QUE VOCÊ GOSTA"
   theFather:
     male:
+      __lovedGenderMaleTransformers: "uppercase"
       lovedGenderMale: "O PAI DELE"
+      __lovedGenderFemaleTransformers: "uppercase"
       lovedGenderFemale: "O PAI DELA"
     female:
+      __lovedGenderMaleTransformers: "uppercase"
       lovedGenderMale: "A MÃE DELE"
+      __lovedGenderFemaleTransformers: "uppercase"
       lovedGenderFemale: "A MÃE DELA"
   theBrother:
     male:
+      __lovedGenderMaleTransformers: "uppercase"
       lovedGenderMale: "IRMÃO DELE"
+      __lovedGenderFemaleTransformers: "uppercase"
       lovedGenderFemale: "IRMÃO DELA"
     female:
+      __lovedGenderMaleTransformers: "uppercase"
       lovedGenderMale: "IRMÃ DELE"
+      __lovedGenderFemaleTransformers: "uppercase"
       lovedGenderFemale: "IRMÃ DELA"
   theFirstLover:
     male:
+      __lovedGenderMaleTransformers: "uppercase"
       lovedGenderMale: "PRIMEIRO AMOR DELE"
+      __lovedGenderFemaleTransformers: "uppercase"
       lovedGenderFemale: "PRIMEIRO AMOR DELA"
     female:
+      __lovedGenderMaleTransformers: "uppercase"
       lovedGenderMale: "PRIMEIRO AMOR DELE"
+      __lovedGenderFemaleTransformers: "uppercase"
       lovedGenderFemale: "PRIMEIRO AMOR DELA"
   theBestFriend:
     male:
+      __lovedGenderMaleTransformers: "uppercase"
       lovedGenderMale: "MELHOR AMIGO DELE"
+      __lovedGenderFemaleTransformers: "uppercase"
       lovedGenderFemale: "MELHOR AMIGO DELA"
     female:
+      __lovedGenderMaleTransformers: "uppercase"
       lovedGenderMale: "MELHOR AMIGA DELE"
+      __lovedGenderFemaleTransformers: "uppercase"
       lovedGenderFemale: "MELHOR AMIGA DELA"
   you:
+    __maleTransformers: "uppercase"
     male: "VOCÊ"
+    __femaleTransformers: "uppercase"
     female: "VOCÊ"
 options:
   user1:
