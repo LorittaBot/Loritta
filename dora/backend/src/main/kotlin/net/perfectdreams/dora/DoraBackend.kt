@@ -551,6 +551,19 @@ class DoraBackend(val config: DoraConfig, val pudding: Pudding) {
                                 for (punctuation in PUNCTUATIONS) {
                                     if (fancifiedMachineTranslatedText.endsWith(punctuation) && !stringRow[SourceStrings.text].endsWith(punctuation)) {
                                         fancifiedMachineTranslatedText = fancifiedMachineTranslatedText.substring(0, fancifiedMachineTranslatedText.length - 1)
+
+                                        // Spanish requires a bit of trickery to handle the additional punctuation
+                                        if (languageTarget[LanguageTargets.languageId] == "es") {
+                                            if (punctuation == "!") {
+                                                // Spanish is a bit wonky to handle because of the ¡
+                                                fancifiedMachineTranslatedText = fancifiedMachineTranslatedText.replaceLast("¡", "")
+                                            }
+
+                                            if (punctuation == "?" && languageTarget[LanguageTargets.languageId] == "es") {
+                                                // Spanish is a bit wonky to handle because of the ¿
+                                                fancifiedMachineTranslatedText = fancifiedMachineTranslatedText.replaceLast("¿", "")
+                                            }
+                                        }
                                     }
                                 }
 
@@ -942,5 +955,10 @@ class DoraBackend(val config: DoraConfig, val pudding: Pudding) {
         }
 
         return sourceParameters
+    }
+
+    fun String.replaceLast(oldValue: String, newValue: String): String {
+        val lastIndex = lastIndexOf(oldValue)
+        return if (lastIndex == -1) this else replaceRange(lastIndex, lastIndex + oldValue.length, newValue)
     }
 }
