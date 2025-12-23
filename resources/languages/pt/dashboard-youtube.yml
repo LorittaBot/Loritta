@@ -3,3 +3,4 @@ website:
     youtube:
       title: "Notificações do YouTube"
       channels: "{channelCount,plural, =0 {# canais} one {# canal} other {# canais}}"
+      description: "Anuncie para seus membros quando você posta um novo vídeo no YouTube! Assim, seus fãs não irão perder seus novos vídeos."

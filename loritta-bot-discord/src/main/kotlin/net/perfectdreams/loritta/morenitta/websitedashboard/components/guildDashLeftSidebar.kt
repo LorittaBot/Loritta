@@ -51,7 +51,7 @@ fun FlowContent.guildDashLeftSidebarEntries(
 
         svgIcon(SVGIcons.CaretLeft)
 
-        text("Voltar ao Painel de Usuário")
+        text(i18nContext.get(DashboardI18nKeysData.GoBackToUserDashboardButtonLabel))
     }
 
     leftSidebarHr()
@@ -66,7 +66,7 @@ fun FlowContent.guildDashLeftSidebarEntries(
 
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/commands", i18nContext.get(DashboardI18nKeysData.Commands.Title), SVGIcons.SlashCommand, selectedGuildSection == GuildDashboardSection.COMMANDS, false)
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/prefixed-commands", i18nContext.get(DashboardI18nKeysData.PrefixedCommands.Title), SVGIcons.PrefixCommand, selectedGuildSection == GuildDashboardSection.PREFIXED_COMMANDS, false)
-    aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/command-channels", "Canais de Comandos", SVGIcons.TextChannel, selectedGuildSection == GuildDashboardSection.COMMAND_CHANNELS, false)
+    aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/command-channels", i18nContext.get(DashboardI18nKeysData.CommandChannels.Title), SVGIcons.TextChannel, selectedGuildSection == GuildDashboardSection.COMMAND_CHANNELS, false)
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/custom-commands", i18nContext.get(DashboardI18nKeysData.CustomCommands.Title), SVGIcons.Code, selectedGuildSection == GuildDashboardSection.CUSTOM_COMMANDS, false)
 
     leftSidebarHr()
@@ -130,7 +130,7 @@ fun FlowContent.guildDashLeftSidebarEntries(
         text(i18nContext.get(DashboardI18nKeysData.GuildCategories.Loritta))
     }
 
-    aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/reaction-events", "Evento de Reações da Loritta", SVGIcons.Sparkles, selectedGuildSection == GuildDashboardSection.LORITTA_REACTION_EVENTS,  false)
+    aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/reaction-events", i18nContext.get(DashboardI18nKeysData.ReactionEvents.Title), SVGIcons.Sparkles, selectedGuildSection == GuildDashboardSection.LORITTA_REACTION_EVENTS,  false)
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/daily-shop-trinkets", i18nContext.get(DashboardI18nKeysData.DailyShopTrinkets.Title), SVGIcons.ShoppingBag, selectedGuildSection == GuildDashboardSection.LORITTA_TRINKETS_SHOP, false)
 
     leftSidebarHr()

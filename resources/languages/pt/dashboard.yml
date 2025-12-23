@@ -29,6 +29,7 @@ website:
       deleteButtonLabel: "Excluir"
     __sectionNewBadgeContext: "Used when a section has a new feature"
     sectionNewBadge: "Novo!"
+    goBackToUserDashboardButtonLabel: "Voltar ao Painel de Usuário"
 
     userCategories:
       sonhos: "Sonhos"

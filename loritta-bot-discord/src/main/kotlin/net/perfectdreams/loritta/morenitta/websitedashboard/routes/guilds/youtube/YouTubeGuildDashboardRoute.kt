@@ -65,7 +65,7 @@ class YouTubeGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresG
                             }
 
                             p {
-                                text("Anuncie para seus membros quando você posta um novo vídeo no YouTube! Assim, seus fãs não irão perder seus novos vídeos.")
+                                text(i18nContext.get(DashboardI18nKeysData.Youtube.Description))
                             }
                         }
                     }

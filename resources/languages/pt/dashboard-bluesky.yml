@@ -3,3 +3,4 @@ website:
     bluesky:
       title: "Notificações do Bluesky"
       accounts: "{channelCount,plural, =0 {# contas} one {# conta} other {# contas}}"
+      description: "Anuncie para seus membros quando você posta algo no Bluesky! Assim, seus fãs não irão perder as suas opiniões filosóficas."

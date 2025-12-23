@@ -59,7 +59,7 @@ class BlueskyGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresG
         call.respondHtml {
             dashboardBase(
                 i18nContext,
-                i18nContext.get(DashboardI18nKeysData.Twitch.Title),
+                i18nContext.get(DashboardI18nKeysData.Bluesky.Title),
                 session,
                 theme,
                 shimejiSettings,
@@ -78,7 +78,7 @@ class BlueskyGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresG
                             }
 
                             p {
-                                text("Anuncie para seus membros quando você posta algo no Bluesky! Assim, seus fãs não irão perder as suas opiniões filosóficas.")
+                                text(i18nContext.get(DashboardI18nKeysData.Bluesky.Description))
                             }
                         }
                     }

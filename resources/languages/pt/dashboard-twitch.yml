@@ -3,3 +3,7 @@ website:
     twitch:
       title: "Notificações da Twitch"
       channels: "{channelCount,plural, =0 {# canais} one {# canal} other {# canais}}"
+      description: "Anuncie para seus membros quando você entra ao vivo na Twitch! Assim, seus fãs não irão perder as suas lives."
+      premium:
+        title: "Acompanhamentos Premium"
+        description: "Servidores premium podem seguir contas não autorizadas na Loritta. Aqui você encontra todas com o acompanhamento premium ativado!"

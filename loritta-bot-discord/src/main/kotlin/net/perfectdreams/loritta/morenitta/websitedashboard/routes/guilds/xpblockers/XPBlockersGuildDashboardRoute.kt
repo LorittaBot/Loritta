@@ -70,7 +70,7 @@ class XPBlockersGuildDashboardRoute(website: LorittaDashboardWebServer) : Requir
                                     }
 
                                     p {
-                                        text("Bloqueie cargos ou canais específicos para não ganharem XP!")
+                                        text(i18nContext.get(DashboardI18nKeysData.XpBlockers.Description))
                                     }
                                 }
                             }
@@ -82,11 +82,11 @@ class XPBlockersGuildDashboardRoute(website: LorittaDashboardWebServer) : Requir
                                     fieldWrapper {
                                         fieldInformationBlock {
                                             fieldTitle {
-                                                text("Cargos que não irão receber experiência")
+                                                text(i18nContext.get(DashboardI18nKeysData.XpBlockers.Roles.Title))
                                             }
 
                                             fieldDescription {
-                                                text("Cargos que estão na lista não irão ganhar experiência. Perfeito para usuários que acham engraçado \"spammar\" e \"floodar\" seu servidor com mensagens aleatórias toscas só para ganhar mais experiência.")
+                                                text(i18nContext.get(DashboardI18nKeysData.XpBlockers.Roles.Description))
                                             }
                                         }
 
@@ -104,11 +104,11 @@ class XPBlockersGuildDashboardRoute(website: LorittaDashboardWebServer) : Requir
                                     fieldWrapper {
                                         fieldInformationBlock {
                                             fieldTitle {
-                                                text("Canais que não irão dar experiência")
+                                                text(i18nContext.get(DashboardI18nKeysData.XpBlockers.Channels.Title))
                                             }
 
                                             fieldDescription {
-                                                text("Canais que estão nesta lista não irão dar experência para usuários que falarem neles. Útil para bloquear canais criados para \"spam\" ou \"flood\", assim evitando que usuários ganhem experiência no seu servidor apenas mandando mensagens aleatórias toscas sem realmente conversar.")
+                                                text(i18nContext.get(DashboardI18nKeysData.XpBlockers.Channels.Description))
                                             }
                                         }
 

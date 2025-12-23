@@ -109,7 +109,7 @@ class TwitchGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGu
                             }
 
                             p {
-                                text("Anuncie para seus membros quando você entra ao vivo na Twitch! Assim, seus fãs não irão perder as suas lives.")
+                                text(i18nContext.get(DashboardI18nKeysData.Twitch.Description))
                             }
                         }
                     }
@@ -142,11 +142,11 @@ class TwitchGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGu
                     heroWrapper {
                         heroText {
                             h2 {
-                                text("Acompanhamentos Premium")
+                                text(i18nContext.get(DashboardI18nKeysData.Twitch.Premium.Title))
                             }
 
                             p {
-                                text("Servidores premium podem seguir contas que não foram autorizadas na Loritta. Aqui, você encontrará todas as contas com o recurso de acompanhamento premium ativado!")
+                                text(i18nContext.get(DashboardI18nKeysData.Twitch.Premium.Description))
                             }
                         }
                     }

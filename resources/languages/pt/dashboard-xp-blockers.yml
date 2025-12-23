@@ -2,3 +2,10 @@ website:
   dashboard:
     xpBlockers:
       title: "Bloqueios de XP"
+      description: "Bloqueie cargos ou canais específicos para não ganharem XP!"
+      roles:
+        title: "Cargos que não irão receber experiência"
+        description: "Cargos que estão na lista não irão ganhar experiência. Perfeito para usuários que acham engraçado \"spammar\" e \"floodar\" seu servidor com mensagens aleatórias toscas só para ganhar mais experiência."
+      channels:
+        title: "Canais que não irão dar experiência"
+        description: "Canais que estão nesta lista não irão dar experência para usuários que falarem neles. Útil para bloquear canais criados para \"spam\" ou \"flood\", assim evitando que usuários ganhem experiência no seu servidor apenas mandando mensagens aleatórias toscas sem realmente conversar."

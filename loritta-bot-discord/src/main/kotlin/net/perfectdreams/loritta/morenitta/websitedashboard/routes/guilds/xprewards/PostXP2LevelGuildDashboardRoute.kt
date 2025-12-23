@@ -28,7 +28,7 @@ class PostXP2LevelGuildDashboardRoute(website: LorittaDashboardWebServer) : Requ
         val request = Json.decodeFromString<XP2LevelRequest>(call.receiveText())
 
         call.respondHtmlFragment {
-            text(i18nContext.get(DashboardI18nKeysData.XpRewards.CalculatedLevel(request.xp)))
+            text(i18nContext.get(DashboardI18nKeysData.XpRewards.CalculatedLevel(ExperienceUtils.getCurrentLevelForXp(request.xp))))
         }
     }
 }
