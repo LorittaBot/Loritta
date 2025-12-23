@@ -3,12 +3,12 @@ package net.perfectdreams.dora.utils
 import com.ibm.icu.text.MessagePatternUtil
 
 object ICU4JUtils {
-    fun contextualTransform(message: String, transform: (String) -> (Unit)): String {
+    fun contextualTransform(message: String, transform: (String) -> (String)): String {
         val messageNode = MessagePatternUtil.buildMessageNode(message)
         return processMessageNode(messageNode, transform)
     }
 
-    fun processMessageNode(messageNode: MessagePatternUtil.MessageNode, transform: (String) -> (Unit)): String {
+    fun processMessageNode(messageNode: MessagePatternUtil.MessageNode, transform: (String) -> (String)): String {
         return buildString {
             for (node in messageNode.contents) {
                 append(processNode(node, transform))
@@ -16,9 +16,9 @@ object ICU4JUtils {
         }
     }
 
-    fun processNode(node: MessagePatternUtil.Node, transform: (String) -> (Unit)): String {
+    fun processNode(node: MessagePatternUtil.Node, transform: (String) -> (String)): String {
         return when (node) {
-            is MessagePatternUtil.TextNode -> node.text.uppercase()
+            is MessagePatternUtil.TextNode -> transform.invoke(node.text)
             is MessagePatternUtil.ArgNode -> processArgNode(node, transform)
             is MessagePatternUtil.MessageContentsNode -> {
                 // Handle the # placeholder for plural/select
@@ -32,7 +32,7 @@ object ICU4JUtils {
         }
     }
 
-    fun processArgNode(argNode: MessagePatternUtil.ArgNode, transform: (String) -> (Unit)): String {
+    fun processArgNode(argNode: MessagePatternUtil.ArgNode, transform: (String) -> (String)): String {
         return buildString {
             append("{")
             append(argNode.name) // Keep placeholder name as-is

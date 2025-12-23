@@ -89,6 +89,12 @@ class DoraBackend(val config: DoraConfig, val pudding: Pudding) {
             "*",
             "_"
         )
+
+        val PUNCTUATIONS = listOf(
+            ".",
+            "!",
+            "?"
+        )
     }
 
     val random = SecureRandom()
@@ -540,8 +546,15 @@ class DoraBackend(val config: DoraConfig, val pudding: Pudding) {
                                 }
 
                                 // Remove unnecessary punctuations that sometimes Gemma adds
-                                if (fancifiedMachineTranslatedText.endsWith(".") && !stringRow[SourceStrings.text].endsWith(".")) {
-                                    fancifiedMachineTranslatedText = fancifiedMachineTranslatedText.substring(0, fancifiedMachineTranslatedText.length - 1)
+                                for (punctuation in PUNCTUATIONS) {
+                                    if (fancifiedMachineTranslatedText.endsWith(punctuation) && !stringRow[SourceStrings.text].endsWith(punctuation)) {
+                                        fancifiedMachineTranslatedText = fancifiedMachineTranslatedText.substring(0, fancifiedMachineTranslatedText.length - 1)
+                                    }
+                                }
+
+                                // Remove unnecessary "- " that sometimes Gemma adds
+                                if (fancifiedMachineTranslatedText.startsWith("- ") && !stringRow[SourceStrings.text].startsWith("- ")) {
+                                    fancifiedMachineTranslatedText = fancifiedMachineTranslatedText.drop(2)
                                 }
 
                                 val transformers = stringRow[SourceStrings.transformers]
@@ -550,6 +563,7 @@ class DoraBackend(val config: DoraConfig, val pudding: Pudding) {
                                         fancifiedMachineTranslatedText = when (transformer) {
                                             "uppercase" -> ICU4JUtils.contextualTransform(fancifiedMachineTranslatedText) { it.uppercase() }
                                             "lowercase" -> ICU4JUtils.contextualTransform(fancifiedMachineTranslatedText) { it.lowercase() }
+                                            "titlecase" -> ICU4JUtils.contextualTransform(fancifiedMachineTranslatedText) { it.split(" ").joinToString(" ") { it.replaceFirstChar { it.titlecase() } } }
                                             else -> error("Unknown transformer $transformer!")
                                         }
                                     }
