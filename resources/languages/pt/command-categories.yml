@@ -63,28 +63,40 @@ commands:
       successfullyPunished: "Usuário punido. Ninguém mandou quebrar as regras, seu boboca!"
       ban:
         youAreReadyToBan: "Você está prestes a banir {mentions} do seu servidor pelo motivo `{reason}`!"
+        __confirmContext: "Button Label"
         confirm: "Confirmar Ban"
+        __confirmSilentContext: "Button Label, the \"Silencioso\" means that the punishment won't be sent to the user via direct message nor to the punishment log"
         confirmSilent: "Confirmar Ban (Silencioso)"
       unban:
         youAreReadyToUnban: "Você está prestes a desbanir {mentions} do seu servidor com a justificativa `{reason}`!"
+        __confirmContext: "Button Label"
         confirm: "Confirmar Unban"
+        __confirmSilentContext: "Button Label, the \"Silencioso\" means that the punishment won't be sent to the user via direct message nor to the punishment log"
         confirmSilent: "Confirmar Unban (Silencioso)"
       warn:
         youAreReadyToWarn: "Você está prestes a avisar {mentions} no seu servidor pelo motivo `{reason}`!"
+        __confirmContext: "Button Label"
         confirm: "Confirmar Aviso"
+        __confirmSilentContext: "Button Label, the \"Silencioso\" means that the punishment won't be sent to the user via direct message nor to the punishment log"
         confirmSilent: "Confirmar Aviso (Silencioso)"
       kick:
         youAreReadyToKick: "Você está prestes a chutar da bunda do {mentions} do seu servidor pelo motivo `{reason}`!"
+        __confirmContext: "Button Label"
         confirm: "Confirmar Kick"
+        __confirmSilentContext: "Button Label, the \"Silencioso\" means that the punishment won't be sent to the user via direct message nor to the punishment log"
         confirmSilent: "Confirmar Kick (Silencioso)"
       mute:
         youAreReadyToMute: "Você está prestes a silenciar o {mentions} do seu servidor pelo motivo `{reason}` até {expiresAt}!"
         youAreReadyToMutePermanent: "Você está prestes a silenciar o {mentions} do seu servidor pelo motivo `{reason}` permanentemente! (oxe, mas se você quer silenciar alguém permanentemente, não seria melhor banir ela do servidor?)"
+        __confirmContext: "Button Label"
         confirm: "Confirmar Silenciamento"
+        __confirmSilentContext: "Button Label, the \"Silencioso\" means that the punishment won't be sent to the user via direct message nor to the punishment log"
         confirmSilent: "Confirmar Silenciamento (Silencioso)"
       unmute:
         youAreReadyToUnmute: "Você está prestes a retirar o silenciamento de {mentions} do seu servidor com a justificativa `{reason}`!"
+        __confirmContext: "Button Label"
         confirm: "Confirmar Retirada de Silenciamento"
+        __confirmSilentContext: "Button Label, the \"Silencioso\" means that the punishment won't be sent to the user via direct message nor to the punishment log"
         confirmSilent: "Confirmar Retirada de Silenciamento (Silencioso)"
 
       updateTimeoutAuditLogReason: "Atualizando o tempo do castigo, pois o usuário ainda está silenciado na Loritta"
@@ -108,6 +120,7 @@ commands:
         punisherRoleTooLow: "O usuário {mention} não poderá ser punido, pois o seu cargo é menor ou igual ao dele!"
         punisherRoleTooLowHowToFix: "Para que você possa punir, suba o seu cargo acima do cargo da pessoa que você deseja punir na lista de cargos, obrigada!"
         targetIsOwner: "O usuário {mention} não poderá ser punido, pois ele é o dono do servidor! Tá tentando fazer um motim, hein?"
+        __targetIsLoritta: "Keep the \"joke\" vibe, this is because the user tried to punish Loritta, and it doesn't make sense to punish herself. \"Vai ver se eu tô na esquina\" is a idiom that means \"go bother someone else\"."
         targetIsLoritta: "Seu safade, eu não vou me punir grr, vai ver se eu tô na esquina"
         targetIsSelf: "O usuário {mention} não poderá ser punido, pois ele é... você mesmo. Por o acaso você é masoquista para tentar se punir?"
       options:

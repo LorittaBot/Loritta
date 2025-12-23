@@ -30,14 +30,21 @@ headpat:
     user:
       text: "O usuário que você quer fazer cafuné"
 highfive:
+  __highfiveContext: "Command Label, used to high-five someone"
   label: "tocaaqui"
+  __buttonLabelContext: "Button Label, when clicked the target user is high-fived"
   buttonLabel: "Mandar um Toca Aqui"
+  __descriptionContext: "Command Description, sends a high-five to someone"
   description: "Mande um toca aqui para um usuário"
+  __responseContext: "Used when someone gave a high-five to someone"
   response: "{giver} mandou um toca aqui para {receiver}!"
+  __responseSelfLoriContext: "Used when someone tried to high five themselves. In this case, Loritta makes a joke about it and high-fives the user."
   responseSelfLori: "Como você dar um toca aqui em você mesmo? Aqui, {giver} mandou um toca aqui para {receiver}!"
+  __responseLoriContext: "Used when someone high-fives Loritta"
   responseLori: "Vambora! {giver} mandou um toca aqui para {receiver}!"
   options:
     user:
+      __textContext: "The description of the user option, the selected user will be high-fived"
       text: "O usuário que você deseja mandar um toca aqui"
 slap:
   label: "bofetada"

@@ -35,7 +35,9 @@ ednaldo:
     label: "bandeira"
     description: "Olha! Nosso querido deus Ednaldo Pereira está tentando nos mostrar algo incrível em sua bandeira! Vamos conferir!"
 cortesflow:
+  __labelContext: "\"Flow\" is the name of the series \"Flow Podcast\", while \"Cortes\" means that it is a \"Clip\". The command creates fake thumbnails of the show, which is why the name is \"Cortes do Flow\"."
   label: "cortesflow"
+  __descriptionContext: "\"Salve salve família\" is the catchphrase used by one of the Flow's presenters, Igor3k"
   description: "Salve salve família, faça suas próprias thumbnails do Cortes do Flow com seu próprio texto!"
   thumbnails:
     __arthurBenozzatiSmileContext: "\"Arthur Benozzati\" is a person's name"
@@ -99,6 +101,7 @@ cortesflow:
     ratoBorrachudoNoGlasses: "Rato Borrachudo Sem Óculos"
   options:
     thumbnail: "A thumbnail que será utilizada"
+    __textContext: "\"Salve salve família\" is the catchphrase used by one of the Flow's presenters, Igor3k"
     text: "O texto que estará na thumbnail... Salve salve família"
 sam:
   label: "sam"
