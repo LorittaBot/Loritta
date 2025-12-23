@@ -11,6 +11,7 @@ import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.morenitta.utils.ExperienceUtils
+import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
@@ -27,7 +28,7 @@ class PostXP2LevelGuildDashboardRoute(website: LorittaDashboardWebServer) : Requ
         val request = Json.decodeFromString<XP2LevelRequest>(call.receiveText())
 
         call.respondHtmlFragment {
-            text("Nível ${ExperienceUtils.getCurrentLevelForXp(request.xp)}")
+            text(i18nContext.get(DashboardI18nKeysData.XpRewards.CalculatedLevel(request.xp)))
         }
     }
 }
