@@ -8,6 +8,6 @@ object TranslationsStrings : LongIdTable() {
     val language = reference("language_targets", LanguageTargets)
     val sourceString = reference("source_string", SourceStrings)
     val text = text("text")
-    val translatedBy = reference("translated_by", Users)
+    val translatedBy = optReference("translated_by", Users)
     val translatedAt = timestampWithTimeZone("translated_at").nullable()
 }

@@ -14,7 +14,6 @@ fun FlowContent.batchEntry(
     keyId: String,
     context: String?,
     originalText: String,
-    machineTranslatedText: String?,
     translatedText: String?,
     isTranslated: Boolean,
     approvedBy: Translator?,
@@ -33,23 +32,23 @@ fun FlowContent.batchEntry(
                     text(keyId)
                 }
 
-                if (approvedBy != null) {
-                    img(src = approvedBy.effectiveAvatarUrl, alt = approvedBy.name, classes = "section-icon") {
-                        style = "width: 16px; height: 16px; border-radius: 99999px;"
-                    }
+                if (isTranslated) {
+                    if (approvedBy != null) {
+                        img(src = approvedBy.effectiveAvatarUrl, alt = approvedBy.name, classes = "section-icon") {
+                            style = "width: 16px; height: 16px; border-radius: 99999px;"
+                        }
 
-                    div {
-                        text(approvedBy.name)
-                    }
-                }
+                        div {
+                            text(approvedBy.name)
+                        }
+                    } else {
+                        div(classes = "section-icon") {
+                            svgIcon(SVGIcons.Robot)
+                        }
 
-                if (machineTranslatedText != null) {
-                    div(classes = "section-icon") {
-                        svgIcon(SVGIcons.Robot)
-                    }
-
-                    div {
-                        text("Tem machine translation")
+                        div {
+                            text("Machine Translation")
+                        }
                     }
                 }
 
@@ -82,7 +81,7 @@ fun FlowContent.batchEntry(
                         id = "entry-text-$uniqueId"
 
                         name = "translatedText"
-                        text(translatedText ?: machineTranslatedText ?: originalText)
+                        text(translatedText ?: originalText)
                     }
 
                     discordButton(ButtonStyle.PRIMARY) {
@@ -98,14 +97,14 @@ fun FlowContent.batchEntry(
                         text("Cancelar")
                     }
                 } else {
-                    transformedDiscordText(translatedText ?: machineTranslatedText ?: originalText)
+                    transformedDiscordText(translatedText ?: originalText)
 
                     div(classes = "translation-controls") {
                         if (!isTranslated) {
                             hiddenInput {
                                 id = "entry-text-$uniqueId"
                                 name = "translatedText"
-                                value = translatedText ?: machineTranslatedText ?: originalText
+                                value = translatedText ?: originalText
                             }
 
                             discordButton(ButtonStyle.PRIMARY) {

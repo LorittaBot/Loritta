@@ -12,7 +12,6 @@ import net.perfectdreams.dora.routes.RequiresProjectAuthDashboardRoute
 import net.perfectdreams.dora.routes.RequiresUserAuthDashboardLocalizedRoute
 import net.perfectdreams.dora.tables.CachedDiscordUserIdentifications
 import net.perfectdreams.dora.tables.LanguageTargets
-import net.perfectdreams.dora.tables.MachineTranslatedStrings
 import net.perfectdreams.dora.tables.SourceStrings
 import net.perfectdreams.dora.tables.TranslationsStrings
 import net.perfectdreams.dora.tables.Users
@@ -41,10 +40,6 @@ class TableEntryRoute(val dora: DoraBackend) : RequiresProjectAuthDashboardRoute
                 }
                 .leftJoin(Users, { TranslationsStrings.translatedBy }, { Users.id })
                 .leftJoin(CachedDiscordUserIdentifications, { Users.id }, { CachedDiscordUserIdentifications.id })
-                .leftJoin(MachineTranslatedStrings, { SourceStrings.id }, { MachineTranslatedStrings.sourceString })
-                {
-                    MachineTranslatedStrings.language eq language[LanguageTargets.id]
-                }
                 .selectAll()
                 .where {
                     SourceStrings.key eq stringId and (SourceStrings.project eq project.id)
@@ -61,10 +56,9 @@ class TableEntryRoute(val dora: DoraBackend) : RequiresProjectAuthDashboardRoute
                 stringId,
                 sourceStrings[SourceStrings.context],
                 sourceStrings[SourceStrings.text],
-                sourceStrings.getOrNull(MachineTranslatedStrings.text),
                 sourceStrings.getOrNull(TranslationsStrings.text),
                 sourceStrings.getOrNull(TranslationsStrings.text) != null,
-                if (sourceStrings.getOrNull(TranslationsStrings.id) != null) {
+                if (sourceStrings.getOrNull(TranslationsStrings.translatedBy) != null) {
                     Translator(
                         sourceStrings[Users.id].value,
                         sourceStrings.getOrNull(CachedDiscordUserIdentifications.id)?.value ?: 0L,

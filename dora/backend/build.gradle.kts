@@ -28,6 +28,7 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:1.5.22")
     implementation("net.perfectdreams.harmony.logging:harmonylogging-slf4j:1.0.2")
     implementation("commons-codec:commons-codec:1.20.0")
+    implementation("com.ibm.icu:icu4j:78.1")
 }
 
 val sass = tasks.register<SassTask>("sassStyleScss") {

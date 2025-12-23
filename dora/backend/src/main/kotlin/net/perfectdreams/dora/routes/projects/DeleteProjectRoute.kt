@@ -17,7 +17,6 @@ import net.perfectdreams.dora.components.partialSwapWithEntries
 import net.perfectdreams.dora.components.projects
 import net.perfectdreams.dora.routes.RequiresProjectAuthDashboardRoute
 import net.perfectdreams.dora.tables.LanguageTargets
-import net.perfectdreams.dora.tables.MachineTranslatedStrings
 import net.perfectdreams.dora.tables.ProjectUserPermissions
 import net.perfectdreams.dora.tables.Projects
 import net.perfectdreams.dora.tables.SourceStrings
@@ -51,9 +50,6 @@ class DeleteProjectRoute(val dora: DoraBackend) : RequiresProjectAuthDashboardRo
 
             // Delete translations that reference language targets of this project
             TranslationsStrings.deleteWhere { TranslationsStrings.language inList languageTargetIds }
-
-            // Delete machine translated strings that reference language targets of this project
-            MachineTranslatedStrings.deleteWhere { MachineTranslatedStrings.language inList languageTargetIds }
 
             // Delete language targets
             LanguageTargets.deleteWhere { LanguageTargets.project eq project.id }

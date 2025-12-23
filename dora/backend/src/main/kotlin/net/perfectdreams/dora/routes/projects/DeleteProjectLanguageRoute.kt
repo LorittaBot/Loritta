@@ -9,7 +9,6 @@ import net.perfectdreams.dora.ProjectPermissionLevel
 import net.perfectdreams.dora.components.projectOverview
 import net.perfectdreams.dora.routes.RequiresProjectAuthDashboardRoute
 import net.perfectdreams.dora.tables.LanguageTargets
-import net.perfectdreams.dora.tables.MachineTranslatedStrings
 import net.perfectdreams.dora.tables.TranslationsStrings
 import net.perfectdreams.dora.utils.respondHtmlFragment
 import net.perfectdreams.luna.modals.blissCloseModal
@@ -31,10 +30,6 @@ class DeleteProjectLanguageRoute(website: DoraBackend) : RequiresProjectAuthDash
                     LanguageTargets.languageId eq languageSlug and (LanguageTargets.project eq project.id)
                 }
                 .first()
-
-            MachineTranslatedStrings.deleteWhere {
-                MachineTranslatedStrings.language eq languageTarget[LanguageTargets.id]
-            }
 
             TranslationsStrings.deleteWhere {
                 TranslationsStrings.language eq languageTarget[LanguageTargets.id]

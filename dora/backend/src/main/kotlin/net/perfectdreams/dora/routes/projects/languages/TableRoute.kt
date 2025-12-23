@@ -56,10 +56,6 @@ class TableRoute(val dora: DoraBackend) : RequiresProjectAuthDashboardRoute(dora
                     }
                     .leftJoin(Users, { TranslationsStrings.translatedBy }, { Users.id })
                     .leftJoin(CachedDiscordUserIdentifications, { Users.id }, { CachedDiscordUserIdentifications.id })
-                    .leftJoin(MachineTranslatedStrings, { SourceStrings.id }, { MachineTranslatedStrings.sourceString })
-                    {
-                        MachineTranslatedStrings.language eq language[LanguageTargets.id]
-                    }
                     .selectAll()
             }
 
@@ -147,10 +143,9 @@ class TableRoute(val dora: DoraBackend) : RequiresProjectAuthDashboardRoute(dora
                                 string[SourceStrings.key],
                                 string[SourceStrings.context],
                                 string[SourceStrings.text],
-                                string.getOrNull(MachineTranslatedStrings.text),
                                 string.getOrNull(TranslationsStrings.text),
                                 string.getOrNull(TranslationsStrings.text) != null,
-                                if (string.getOrNull(TranslationsStrings.id) != null) {
+                                if (string.getOrNull(TranslationsStrings.translatedBy) != null) {
                                     Translator(
                                         string[Users.id].value,
                                         string.getOrNull(CachedDiscordUserIdentifications.id)?.value ?: 0L,

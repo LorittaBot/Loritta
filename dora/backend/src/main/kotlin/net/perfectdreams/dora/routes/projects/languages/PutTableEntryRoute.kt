@@ -23,7 +23,6 @@ import net.perfectdreams.dora.components.languageProgressBar
 import net.perfectdreams.dora.routes.RequiresProjectAuthDashboardRoute
 import net.perfectdreams.dora.tables.CachedDiscordUserIdentifications
 import net.perfectdreams.dora.tables.LanguageTargets
-import net.perfectdreams.dora.tables.MachineTranslatedStrings
 import net.perfectdreams.dora.tables.SourceStrings
 import net.perfectdreams.dora.tables.TranslationsStrings
 import net.perfectdreams.dora.tables.Users
@@ -63,10 +62,6 @@ class PutTableEntryRoute(val dora: DoraBackend) : RequiresProjectAuthDashboardRo
                 .leftJoin(TranslationsStrings, { SourceStrings.id }, { TranslationsStrings.sourceString })
                 {
                     TranslationsStrings.language eq language[LanguageTargets.id]
-                }
-                .leftJoin(MachineTranslatedStrings, { SourceStrings.id }, { MachineTranslatedStrings.sourceString })
-                {
-                    MachineTranslatedStrings.language eq language[LanguageTargets.id]
                 }
                 .selectAll()
                 .where {
@@ -132,7 +127,6 @@ class PutTableEntryRoute(val dora: DoraBackend) : RequiresProjectAuthDashboardRo
                         stringId,
                         result.sourceStringRow[SourceStrings.context],
                         result.sourceStringRow[SourceStrings.text],
-                        result.sourceStringRow.getOrNull(MachineTranslatedStrings.text),
                         request.translatedText,
                         true,
                         result.translatedBy,

@@ -9,7 +9,6 @@ import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import net.perfectdreams.dora.tables.CachedDiscordUserIdentifications
 import net.perfectdreams.dora.tables.LanguageTargets
-import net.perfectdreams.dora.tables.MachineTranslatedStrings
 import net.perfectdreams.dora.tables.ProjectUserPermissions
 import net.perfectdreams.dora.tables.Projects
 import net.perfectdreams.dora.tables.SourceStrings
@@ -158,7 +157,6 @@ class Pudding(
                 SourceStrings,
                 TranslationsStrings,
                 LanguageTargets,
-                MachineTranslatedStrings,
                 Projects,
                 Users,
                 ProjectUserPermissions

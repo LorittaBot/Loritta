@@ -1,5 +1,6 @@
 package net.perfectdreams.dora
 
+import com.ibm.icu.text.MessagePatternUtil
 import io.ktor.client.*
 import io.ktor.client.engine.java.*
 import io.ktor.client.request.*
@@ -422,11 +423,19 @@ class DoraBackend(val config: DoraConfig, val pudding: Pudding) {
         return "${key.substringBeforeLast(".")}.__${finalSectionOfTheKey}Context"
     }
 
+    fun createTransformersInformationI18nKey(key: String): String {
+        val finalSectionOfTheKey = key.substringAfterLast(".")
+        return "${key.substringBeforeLast(".")}.__${finalSectionOfTheKey}Transformers"
+    }
+
     fun startMachineTranslationTask() {
+        // (projectId-languageId) -> key
+        val failedStringsMap = mutableMapOf<String, MutableSet<String>>()
+
         GlobalScope.launch {
             while (true) {
                 try {
-                    var translatedKeys = 0
+                    var waitUntilNextTranslation = true
 
                     val projects = pudding.transaction {
                         Projects.selectAll().toList()
@@ -442,6 +451,8 @@ class DoraBackend(val config: DoraConfig, val pudding: Pudding) {
                         }
 
                         for (languageTarget in languageTargets) {
+                            val failedStringsMap = failedStringsMap.getOrPut("${project[Projects.slug]}-${languageTarget[LanguageTargets.languageId]}") { mutableSetOf() }
+
                             // Get all translated strings that aren't translated yet
                             val stringRow = pudding.transaction {
                                 SourceStrings
@@ -449,13 +460,9 @@ class DoraBackend(val config: DoraConfig, val pudding: Pudding) {
                                     {
                                         TranslationsStrings.language eq languageTarget[LanguageTargets.id]
                                     }
-                                    .leftJoin(MachineTranslatedStrings, { SourceStrings.id }, { MachineTranslatedStrings.sourceString })
-                                    {
-                                        MachineTranslatedStrings.language eq languageTarget[LanguageTargets.id]
-                                    }
                                     .selectAll()
                                     .where {
-                                        SourceStrings.project eq project[Projects.id] and (TranslationsStrings.id.isNull() and MachineTranslatedStrings.id.isNull())
+                                        SourceStrings.project eq project[Projects.id] and (TranslationsStrings.id.isNull()) and (SourceStrings.key notInList failedStringsMap)
                                     }
                                     .orderBy(SourceStrings.key, SortOrder.ASC)
                                     .firstOrNull()
@@ -465,6 +472,15 @@ class DoraBackend(val config: DoraConfig, val pudding: Pudding) {
                                 val key = stringRow[SourceStrings.key]
 
                                 logger.info { "Translating $key (${stringRow[SourceStrings.text]}) from ${project[Projects.sourceLanguageName]} to ${languageTarget[LanguageTargets.languageName]}..." }
+
+                                val contextualClues = mutableListOf<String>()
+                                if (stringRow[SourceStrings.context] != null) {
+                                    contextualClues.add(stringRow[SourceStrings.context]!!)
+                                }
+
+                                if (project[Projects.slug] == "loritta" && stringRow[SourceStrings.text].contains("|-|")) {
+                                    contextualClues.add("\"|-|\" is used as a separator marker for examples, where the first part is the input and the second part is an explanation of what will happen with the input;")
+                                }
 
                                 val machineTranslatedText = if (!stringRow[SourceStrings.text].isBlank()) {
                                     val httpResponse = http.post("${config.llamaCppBaseUrl.removeSuffix("/")}/v1/chat/completions") {
@@ -483,14 +499,16 @@ class DoraBackend(val config: DoraConfig, val pudding: Pudding) {
                                                                 appendLine("String Key: $key")
                                                                 appendLine("Source Language: ${project[Projects.sourceLanguageId]} (${project[Projects.sourceLanguageName]})")
                                                                 appendLine("Target Language: ${languageTarget[LanguageTargets.languageId]} (${languageTarget[LanguageTargets.languageName]})")
-                                                                if (stringRow[SourceStrings.context] != null) {
-                                                                    appendLine("Context: ${stringRow[SourceStrings.context]}")
+                                                                if (contextualClues.isNotEmpty()) {
+                                                                    appendLine("Context: ${contextualClues.joinToString(" ")}")
                                                                 }
                                                                 appendLine("Text: ${stringRow[SourceStrings.text]}")
                                                             }
                                                         )
                                                     }
                                                 }
+                                                put("seed", System.currentTimeMillis())
+                                                put("temperature", 0.8)
                                                 put("stream", false)
                                             }.toString()
                                         )
@@ -502,6 +520,8 @@ class DoraBackend(val config: DoraConfig, val pudding: Pudding) {
                                     // If the string is empty, use the source as-is
                                     stringRow[SourceStrings.text]
                                 }
+
+                                waitUntilNextTranslation = false
 
                                 println("Response: $machineTranslatedText")
 
@@ -518,6 +538,17 @@ class DoraBackend(val config: DoraConfig, val pudding: Pudding) {
                                     }
                                 }
 
+                                val transformers = stringRow[SourceStrings.transformers]
+                                if (transformers != null) {
+                                    for (transformer in transformers) {
+                                        when (transformer) {
+                                            "uppercase" -> fancifiedMachineTranslatedText = machineTranslatedText.uppercase()
+                                            "lowercase" -> fancifiedMachineTranslatedText = machineTranslatedText.lowercase()
+                                            else -> error("Unknown transformer $transformer!")
+                                        }
+                                    }
+                                }
+
                                 // Special case: If it is a label, we will remove all spaces and lowercase it
                                 if (key.startsWith("commands.command.") && key.endsWith(".label")) {
                                     fancifiedMachineTranslatedText = fancifiedMachineTranslatedText
@@ -526,26 +557,72 @@ class DoraBackend(val config: DoraConfig, val pudding: Pudding) {
                                         .lowercase()
                                 }
 
-                                pudding.transaction {
-                                    MachineTranslatedStrings.deleteWhere {
-                                        MachineTranslatedStrings.sourceString eq stringRow[SourceStrings.id] and (MachineTranslatedStrings.language eq languageTarget[LanguageTargets.id])
-                                    }
-
-                                    MachineTranslatedStrings.insert {
-                                        it[MachineTranslatedStrings.language] = languageTarget[LanguageTargets.id]
-                                        it[MachineTranslatedStrings.sourceString] = stringRow[SourceStrings.id]
-                                        it[MachineTranslatedStrings.text] = fancifiedMachineTranslatedText
-                                        it[MachineTranslatedStrings.translatedAt] = OffsetDateTime.now(ZoneOffset.UTC)
-                                    }
+                                // Special case: Check if Loritta's examples are kept correctly
+                                if (project[Projects.slug] == "loritta" && stringRow[SourceStrings.text].contains("|-|") && !fancifiedMachineTranslatedText.contains("|-|")) {
+                                    logger.warn { "Machine translation for \"$key\" (${stringRow[SourceStrings.text]}) does not contain Loritta's example marker |-|!" }
+                                    failedStringsMap.add(key)
+                                    continue
                                 }
 
-                                translatedKeys++
+                                // Validate if the machine translation has all the parameters of the original string, if it doesn't, well, something went terribly wrong!
+                                val sourceParameters = extractICU4JParametersFromString(stringRow[SourceStrings.text])
+                                val translatedParameters = extractICU4JParametersFromString(fancifiedMachineTranslatedText)
+
+                                if (sourceParameters.size != translatedParameters.size || !sourceParameters.containsAll(translatedParameters) || !translatedParameters.containsAll(sourceParameters)) {
+                                    logger.warn { "Machine translation for \"$key\" (${stringRow[SourceStrings.text]}) has different parameters than the original! (Source: $sourceParameters, Translated: $translatedParameters)" }
+                                    failedStringsMap.add(key)
+                                    continue
+                                }
+
+                                val (translatedCount, totalCount) = pudding.transaction {
+                                    // Is it still not translated yet?
+                                    val hasTranslation = TranslationsStrings.selectAll()
+                                        .where {
+                                            TranslationsStrings.language eq languageTarget[LanguageTargets.id] and (TranslationsStrings.sourceString eq stringRow[SourceStrings.id])
+                                        }
+                                        .count() != 0L
+
+                                    if (!hasTranslation) {
+                                        TranslationsStrings.deleteWhere {
+                                            TranslationsStrings.sourceString eq stringRow[SourceStrings.id] and (TranslationsStrings.language eq languageTarget[LanguageTargets.id])
+                                        }
+
+                                        TranslationsStrings.insert {
+                                            it[TranslationsStrings.language] = languageTarget[LanguageTargets.id]
+                                            it[TranslationsStrings.sourceString] = stringRow[SourceStrings.id]
+                                            it[TranslationsStrings.text] = fancifiedMachineTranslatedText
+                                            it[TranslationsStrings.translatedAt] = OffsetDateTime.now(ZoneOffset.UTC)
+                                        }
+                                    }
+
+                                    // Recalculate progress counts
+                                    val totalCount = SourceStrings.selectAll()
+                                        .where { SourceStrings.project eq project[Projects.id] }
+                                        .count()
+                                        .toInt()
+
+                                    val translatedCount = TranslationsStrings.selectAll()
+                                        .where { TranslationsStrings.language eq languageTarget[LanguageTargets.id] }
+                                        .count()
+                                        .toInt()
+
+                                    return@transaction Pair(translatedCount, totalCount)
+                                }
+
+                                val flow = languageFlows.getOrPut(project[Projects.slug] + "-" + languageTarget[LanguageTargets.languageId]) { MutableStateFlow(TranslationProgress(0, 0)) }
+                                flow.emit(TranslationProgress(translatedCount, totalCount))
+                            } else {
+                                if (failedStringsMap.isNotEmpty()) {
+                                    logger.info { "No string to be translated found, but there are strings on the failedStringsMap! Clearing it..." }
+                                    failedStringsMap.clear()
+                                    waitUntilNextTranslation = false
+                                }
                             }
                         }
                     }
 
-                    if (translatedKeys == 0) {
-                        logger.info { "No untranslated strings found! Waiting 60s..." }
+                    if (waitUntilNextTranslation) {
+                        logger.info { "Waiting 60s until next translation..." }
                         delay(60_000)
                     }
                 } catch (e: Exception) {
@@ -643,6 +720,9 @@ class DoraBackend(val config: DoraConfig, val pudding: Pudding) {
                     }
 
                     val context = translatableStrings[createContextInformationI18nKey(stringRow[SourceStrings.key])]
+                    val transformers = translatableStrings[createTransformersInformationI18nKey(stringRow[SourceStrings.key])]
+                        ?.split(",")
+                        ?.map { it.trim() }
 
                     if (stringRow[SourceStrings.text] != originalText) {
                         // If it is different, we'll update the text!
@@ -652,9 +732,6 @@ class DoraBackend(val config: DoraConfig, val pudding: Pudding) {
 
                         // And delete all translations of this string!
                         TranslationsStrings.deleteWhere { TranslationsStrings.sourceString eq stringRow[SourceStrings.id] }
-
-                        // And delete all machine translations too
-                        MachineTranslatedStrings.deleteWhere { MachineTranslatedStrings.sourceString eq stringRow[SourceStrings.id] }
                     }
 
                     if (stringRow[SourceStrings.context] != context) {
@@ -663,11 +740,16 @@ class DoraBackend(val config: DoraConfig, val pudding: Pudding) {
                         }
                     }
 
+                    if (stringRow[SourceStrings.transformers] != transformers) {
+                        SourceStrings.update({ SourceStrings.id eq stringRow[SourceStrings.id] }) {
+                            it[SourceStrings.transformers] = transformers
+                        }
+                    }
+
                     presentOnDatabaseKeys.add(stringRow[SourceStrings.key])
                 }
 
                 TranslationsStrings.innerJoin(SourceStrings).delete(TranslationsStrings) { SourceStrings.key inList keysToBeDeleted }
-                MachineTranslatedStrings.innerJoin(SourceStrings).delete(MachineTranslatedStrings) { SourceStrings.key inList keysToBeDeleted }
                 SourceStrings.deleteWhere { SourceStrings.key inList keysToBeDeleted and (SourceStrings.project eq project[Projects.id]) }
                 val keysToBeInserted = translatableStringsWithoutContextStrings.filter {
                     it.key !in presentOnDatabaseKeys
@@ -825,5 +907,16 @@ class DoraBackend(val config: DoraConfig, val pudding: Pudding) {
             FileSystems.newFileSystem(uri, env).getPath(path)
         }
         return dirPath
+    }
+
+    private fun extractICU4JParametersFromString(value: String): Set<String> {
+        val messageNode = MessagePatternUtil.buildMessageNode(value)
+        val sourceParameters = mutableSetOf<String>()
+
+        for (node in messageNode.contents.filterIsInstance<MessagePatternUtil.ArgNode>()) {
+            sourceParameters.add(node.name)
+        }
+
+        return sourceParameters
     }
 }
