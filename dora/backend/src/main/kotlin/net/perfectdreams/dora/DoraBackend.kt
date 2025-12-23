@@ -516,8 +516,11 @@ class DoraBackend(val config: DoraConfig, val pudding: Pudding) {
                                                         )
                                                     }
                                                 }
-                                                put("seed", System.currentTimeMillis())
-                                                put("temperature", 0.8)
+                                                // Use a consistent seed for all generations, for deterministic purposes
+                                                // This does mean that failed translations will never get a "correct" translation, but it is what it is
+                                                put("seed", 0L)
+                                                // Because we are translating strings, we don't want the model to go off rails inventing new things
+                                                put("temperature", 0.4)
                                                 put("stream", false)
                                             }.toString()
                                         )
