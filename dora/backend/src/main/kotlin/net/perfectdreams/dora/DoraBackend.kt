@@ -95,6 +95,8 @@ class DoraBackend(val config: DoraConfig, val pudding: Pudding) {
             "!",
             "?"
         )
+
+        val DISCORD_SLASH_COMMAND_LABEL_NEGATION_REGEX = Regex("(?U)[^\\w-]+")
     }
 
     val random = SecureRandom()
@@ -572,7 +574,7 @@ class DoraBackend(val config: DoraConfig, val pudding: Pudding) {
                                 // Special case: If it is a label, we will remove all spaces and lowercase it
                                 if (key.startsWith("commands.command.") && key.endsWith(".label")) {
                                     fancifiedMachineTranslatedText = fancifiedMachineTranslatedText
-                                        .replace(Regex("[^\\w-]"), "") // Discord command RegEx from JDA (thx JDA)
+                                        .replace(DISCORD_SLASH_COMMAND_LABEL_NEGATION_REGEX, "")
                                         .lowercase()
                                 }
 
