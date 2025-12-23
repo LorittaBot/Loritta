@@ -95,25 +95,27 @@ fun FlowContent.batchEntry(
                         text(translatedText ?: originalText)
                     }
 
-                    discordButton(ButtonStyle.PRIMARY) {
-                        attributes["bliss-include-json"] = "#entry-text-$uniqueId"
-                        attributes["bliss-put"] = "/projects/${project.slug}/languages/$languageId/table/$keyId/$uniqueId"
-                        attributes["bliss-swap:200"] = "#entry-area-$uniqueId (outerHTML) -> #entry-area-$uniqueId (outerHTML)"
-                        text("Salvar")
-                    }
-
-                    if (isTranslated) {
-                        discordButton(ButtonStyle.DANGER) {
-                            attributes["bliss-delete"] = "/projects/${project.slug}/languages/$languageId/table/$keyId/$uniqueId"
+                    div(classes = "translation-controls") {
+                        discordButton(ButtonStyle.PRIMARY) {
+                            attributes["bliss-include-json"] = "#entry-text-$uniqueId"
+                            attributes["bliss-put"] = "/projects/${project.slug}/languages/$languageId/table/$keyId/$uniqueId"
                             attributes["bliss-swap:200"] = "#entry-area-$uniqueId (outerHTML) -> #entry-area-$uniqueId (outerHTML)"
-                            text("Excluir Tradução")
+                            text("Salvar")
                         }
-                    }
 
-                    discordButton(ButtonStyle.NO_BACKGROUND_THEME_DEPENDENT_DARK_TEXT) {
-                        attributes["bliss-get"] = "/projects/${project.slug}/languages/$languageId/table/$keyId/$uniqueId"
-                        attributes["bliss-swap:200"] = "#entry-area-$uniqueId (outerHTML) -> #entry-area-$uniqueId (outerHTML)"
-                        text("Cancelar")
+                        if (isTranslated) {
+                            discordButton(ButtonStyle.NO_BACKGROUND_THEME_DEPENDENT_DARK_TEXT) {
+                                attributes["bliss-delete"] = "/projects/${project.slug}/languages/$languageId/table/$keyId/$uniqueId"
+                                attributes["bliss-swap:200"] = "#entry-area-$uniqueId (outerHTML) -> #entry-area-$uniqueId (outerHTML)"
+                                text("Excluir Tradução")
+                            }
+                        }
+
+                        discordButton(ButtonStyle.NO_BACKGROUND_THEME_DEPENDENT_DARK_TEXT) {
+                            attributes["bliss-get"] = "/projects/${project.slug}/languages/$languageId/table/$keyId/$uniqueId"
+                            attributes["bliss-swap:200"] = "#entry-area-$uniqueId (outerHTML) -> #entry-area-$uniqueId (outerHTML)"
+                            text("Cancelar")
+                        }
                     }
                 } else {
                     transformedDiscordText(translatedText ?: originalText)
@@ -135,7 +137,7 @@ fun FlowContent.batchEntry(
                             }
                         } else {
                             // When we do have a translation, allow deleting it
-                            discordButton(ButtonStyle.DANGER) {
+                            discordButton(ButtonStyle.NO_BACKGROUND_THEME_DEPENDENT_DARK_TEXT) {
                                 attributes["bliss-delete"] = "/projects/${project.slug}/languages/$languageId/table/$keyId/$uniqueId"
                                 attributes["bliss-swap:200"] = "#entry-area-$uniqueId (outerHTML) -> #entry-area-$uniqueId (outerHTML)"
                                 text("Excluir Tradução")
