@@ -38,6 +38,7 @@ class TableRoute(val dora: DoraBackend) : RequiresProjectAuthDashboardRoute(dora
         val page = call.request.queryParameters["page"]?.toIntOrNull() ?: 1
         val pageZeroIndexed = page - 1
         val maxEntries = call.request.queryParameters["maxEntries"]?.toIntOrNull() ?: 100
+        val sort = call.request.queryParameters["sort"] ?: "keyasc"
 
         val result = dora.pudding.transaction {
             val language = LanguageTargets.selectAll()
@@ -62,6 +63,14 @@ class TableRoute(val dora: DoraBackend) : RequiresProjectAuthDashboardRoute(dora
             val sourceStrings = sourceStringQuery()
                 .where {
                     SourceStrings.project eq project.id and (if (untranslatedOnly) TranslationsStrings.text.isNull() else Op.TRUE)
+                }
+                .apply {
+                    when (sort) {
+                        "keyasc" -> orderBy(SourceStrings.key, SortOrder.ASC)
+                        "keydesc" -> orderBy(SourceStrings.key, SortOrder.DESC)
+                        "addedasc" -> orderBy(SourceStrings.addedAt, SortOrder.ASC)
+                        "addeddesc" -> orderBy(SourceStrings.addedAt, SortOrder.DESC)
+                    }
                 }
                 .orderBy(SourceStrings.key, SortOrder.ASC)
                 .limit(maxEntries)
