@@ -43,7 +43,7 @@ fun FlowContent.configureServerEntry(
             attributes["bliss-push-url:200"] = "true"
             attributes["bliss-sync"] = "#left-sidebar"
 
-            text("Configurar")
+            text(i18nContext.get(I18nKeysData.Website.Dashboard.ChooseAServer.Entry.ManageServer))
         }
     }
 

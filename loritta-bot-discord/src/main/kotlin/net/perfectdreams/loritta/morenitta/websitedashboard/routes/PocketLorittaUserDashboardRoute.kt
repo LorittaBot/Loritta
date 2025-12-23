@@ -62,7 +62,7 @@ class PocketLorittaUserDashboardRoute(website: LorittaDashboardWebServer) : Requ
                                             "verifyMessageMention" -> {
                                                 TextReplaceControls.ComposableFunctionResult {
                                                     span(classes = "discord-mention") {
-                                                        text("/verificarmensagem")
+                                                        text("/${i18nContext.get(I18nKeysData.Commands.Command.Verifymessage.Label)}")
                                                     }
                                                 }
                                             }

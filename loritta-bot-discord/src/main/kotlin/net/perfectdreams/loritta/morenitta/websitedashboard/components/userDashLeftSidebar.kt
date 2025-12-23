@@ -36,7 +36,7 @@ fun FlowContent.userDashLeftSidebarEntries(
 
     a(classes = "entry section-entry", href = "https://sparklypower.net/?utm_source=loritta&utm_medium=loritta-dashboard&utm_campaign=sparklylori&utm_content=user-profile-sidebar") {
         sectionEntryContent(
-            "Servidor de Minecraft da Loritta",
+            i18nContext.get(DashboardI18nKeysData.LorittaMinecraftServer),
             SVGIcons.Pickaxe,
             false
         )
