@@ -72,6 +72,7 @@ play:
     lost: "Você perdeu..."
     won: "Você ganhou!"
     lostButInsured: "Você perdeu... Mas pelo ou menos você tinha seguro!"
+    __doubledTransformers: "uppercase"
     doubled: "DOBROU!"
     sonhosReward: "{sonhosEmoji} {sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
 

@@ -119,6 +119,7 @@ commands:
         roleTooLowHowToFix: "Para que eu possa punir, suba o meu cargo para acima do cargo da pessoa que você deseja punir na lista de cargos, obrigada!"
         punisherRoleTooLow: "O usuário {mention} não poderá ser punido, pois o seu cargo é menor ou igual ao dele!"
         punisherRoleTooLowHowToFix: "Para que você possa punir, suba o seu cargo acima do cargo da pessoa que você deseja punir na lista de cargos, obrigada!"
+        __targetIsOwnerContext: "Keep the \"joke\" vibe, this is because the user tried to punish the server owner, and it doesn't make sense to punish the server owner because, if they wanted to punish the server owner, then that would mean that they want to do a mutiny (\"motim\")."
         targetIsOwner: "O usuário {mention} não poderá ser punido, pois ele é o dono do servidor! Tá tentando fazer um motim, hein?"
         __targetIsLorittaContext: "Keep the \"joke\" vibe, this is because the user tried to punish Loritta, and it doesn't make sense to punish herself. \"Vai ver se eu tô na esquina\" is a idiom that means \"go bother someone else\"."
         targetIsLoritta: "Seu safade, eu não vou me punir grr, vai ver se eu tô na esquina"

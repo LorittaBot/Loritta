@@ -96,6 +96,7 @@ achievements:
       description: "Veja o seu próprio avatar"
     onePlusOneCalculation:
       title: "Eu só queria ter certeza que eu estava certo!"
+      __descriptionContext: "The \"sóóóóóóó\" is to have a jokey vibe, because of course 1 + 1 is going to always equal 2"
       description: "Calcule o cálculo mais fácil do mundo, sóóóóóó para ter certeza de que a matemática não mudou da noite para o dia"
     #===[ ROLEPLAY ]===
     receivedFirstKiss:
