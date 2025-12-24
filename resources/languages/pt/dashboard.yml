@@ -3,6 +3,7 @@ website:
   dashboard:
     title: "Painel de Controle da Loritta"
     titleShort: "Painel da Loritta"
+    embedDescription: "Meu painel de configuração, aonde você pode me configurar para deixar o seu servidor único e incrível!"
     localePathId: "pt" #The locale ID that is prefixed on every localized page path, example: "/pt/commands/"
     loading: "Carregando..."
     loadingServers: "Carregando Servidores..."

@@ -20,6 +20,7 @@ import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.LorittaDiscordOAuth2AuthorizeScopeURL
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.hostFromHeader
 import net.perfectdreams.loritta.morenitta.websitedashboard.AuthenticationState
+import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
@@ -78,7 +79,7 @@ abstract class RequiresUserAuthDashboardLocalizedRoute(website: LorittaDashboard
             respondWithDiscordLoginPage(
                 call,
                 i18nContext.get(I18nKeysData.Website.Dashboard.TitleShort),
-                "Meu painel de configuração, aonde você pode me configurar para deixar o seu servidor único e incrível!",
+                i18nContext.get(DashboardI18nKeysData.EmbedDescription),
                 "https://stuff.loritta.website/loritta-and-wumpus-dashboard-yafyr.png"
             )
             return
