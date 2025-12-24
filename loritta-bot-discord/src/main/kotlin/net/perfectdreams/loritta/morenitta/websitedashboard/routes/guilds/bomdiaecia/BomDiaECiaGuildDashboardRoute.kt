@@ -103,10 +103,10 @@ class BomDiaECiaGuildDashboardRoute(website: LorittaDashboardWebServer) : Requir
 
                                 toggleableSection(
                                     {
-                                        text("Ativar Bom Dia & Cia")
+                                        text(i18nContext.get(DashboardI18nKeysData.BomDiaECia.Enable.ToggleTitle))
                                     },
                                     {
-                                        text("Ativa o Bom Dia & Cia no seu Servidor, quando o canal de texto do seu servidor estiver ativo, eu terei a chance de anunciar um 4002-8922 no seu servidor! Mas corra, já que eu anuncio em todos os servidores e apenas o primeiro a responder irá ganhar!")
+                                        text(i18nContext.get(DashboardI18nKeysData.BomDiaECia.Enable.Description))
                                     },
                                     bomDiaECiaConfig?.get(BomDiaECiaConfigs.enabled) ?: false,
                                     "enableBomDiaECia",
@@ -116,7 +116,7 @@ class BomDiaECiaGuildDashboardRoute(website: LorittaDashboardWebServer) : Requir
                                         fieldWrapper {
                                             fieldInformationBlock {
                                                 fieldTitle {
-                                                    text("Canais que o Bom Dia & Cia estará desativado")
+                                                    text(i18nContext.get(DashboardI18nKeysData.BomDiaECia.BlockedChannels.SectionTitle))
                                                 }
                                             }
 
@@ -136,9 +136,9 @@ class BomDiaECiaGuildDashboardRoute(website: LorittaDashboardWebServer) : Requir
                                                 bomDiaECiaConfig?.get(BomDiaECiaConfigs.useBlockedChannelsAsAllowedChannels) ?: false,
                                                 "useBlockedChannelsAsAllowedChannels",
                                                 true,
-                                                { text("Usar lista de canais bloqueados como lista de canais permitidos") },
+                                                { text(i18nContext.get(DashboardI18nKeysData.BomDiaECia.UseBlockedAsAllowed.ToggleTitle)) },
                                             ) {
-                                                text("Se ativado, a lista de canais bloqueados acima será usada como uma lista de canais permitidos")
+                                                text(i18nContext.get(DashboardI18nKeysData.BomDiaECia.UseBlockedAsAllowed.Description))
                                             }
                                         }
                                     }

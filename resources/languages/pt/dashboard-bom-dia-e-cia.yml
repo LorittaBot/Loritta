@@ -4,3 +4,11 @@ website:
       title: "Bom Dia & Cia"
       description:
       - "Alôoo? Você está me escutando?"
+      enable:
+        toggleTitle: "Ativar Bom Dia & Cia"
+        description: "Ativa o Bom Dia & Cia no seu Servidor, quando o canal de texto do seu servidor estiver ativo, eu terei a chance de anunciar um 4002-8922 no seu servidor! Mas corra, já que eu anuncio em todos os servidores e apenas o primeiro a responder irá ganhar!"
+      blockedChannels:
+        sectionTitle: "Canais que o Bom Dia & Cia estará desativado"
+      useBlockedAsAllowed:
+        toggleTitle: "Usar lista de canais bloqueados como lista de canais permitidos"
+        description: "Se ativado, a lista de canais bloqueados acima será usada como uma lista de canais permitidos"
