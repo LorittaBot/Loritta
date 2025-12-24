@@ -5,6 +5,8 @@ import kotlinx.html.a
 import kotlinx.html.b
 import kotlinx.html.br
 import kotlinx.html.div
+import kotlinx.html.h1
+import kotlinx.html.hr
 import kotlinx.html.id
 import kotlinx.html.style
 import net.perfectdreams.i18nhelper.core.I18nContext
@@ -15,6 +17,11 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysDat
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.UserDashboardSection
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.cardHeader
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.cardHeaderDescription
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.cardHeaderInfo
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.cardHeaderTitle
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.cardsWithHeader
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.dashboardBase
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.loadingSpinnerImage
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.userDashLeftSidebarEntries
@@ -37,54 +44,26 @@ class ChooseYourServerUserDashboardRoute(website: LorittaDashboardWebServer) : R
                 },
                 {
                     div {
-                        style = "display: flex; flex-direction: column; gap: 16px;"
+                        h1 {
+                            style = "text-align: center;"
 
-                        div(classes = "alert alert-success") {
-                            div {
-                                b {
-                                    text("Novo Painel da Loritta!")
-                                }
-                            }
-
-                            div {
-                                text("Você está usando o NOVO painel da Loritta! A Loritta merecia um painel melhor que o antigo painel dela, então refizemos o painel dela do ZERO, agora com mais facilidade de usar e, é claro, mais bonito! Ele ainda está em beta, então pode ser que ainda tenha alguns probleminhas por aí, já que para o beta sobra nada.")
-                            }
-
-                            br {}
-
-                            div {
-                                text("(A Loritta acabou de me avisar que \"beta\" em programação não tem a ver com ser sigma)")
-                            }
-
-                            br {}
-
-                            div {
-                                text("Achou algum problema, tem sugestões, ou apenas quer mandar um elogio sobre o novo painel? Então entre em nosso ")
-                                a(href = "${website.loritta.config.loritta.website.url.removePrefix("/")}/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/support", target = "_blank") {
-                                    text("servidor de suporte")
-                                }
-                                text("!")
-                            }
-
-                            br {}
-
-                            div {
-                                text("Ah, e sabia que agora o tema escuro do painel *realmente* funciona bem? :3")
-                            }
+                            text(i18nContext.get(DashboardI18nKeysData.ChooseAServer.Title))
                         }
 
-                        div {
-                            id = "user-guilds"
-                            attributes["bliss-post"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds"
-                            attributes["bliss-trigger"] = "load"
-                            attributes["bliss-swap:200"] = "body (innerHTML) -> this (innerHTML)"
-                            attributes["bliss-indicator"] = "this"
+                        hr {}
+                    }
 
-                            div(classes = "fill-loading-screen") {
-                                loadingSpinnerImage()
+                    div {
+                        id = "user-guilds"
+                        attributes["bliss-post"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds"
+                        attributes["bliss-trigger"] = "load"
+                        attributes["bliss-swap:200"] = "body (innerHTML) -> this (innerHTML)"
+                        attributes["bliss-indicator"] = "this"
 
-                                text(i18nContext.get(DashboardI18nKeysData.LoadingServers))
-                            }
+                        div(classes = "fill-loading-screen") {
+                            loadingSpinnerImage()
+
+                            text(i18nContext.get(DashboardI18nKeysData.LoadingServers))
                         }
                     }
                 }

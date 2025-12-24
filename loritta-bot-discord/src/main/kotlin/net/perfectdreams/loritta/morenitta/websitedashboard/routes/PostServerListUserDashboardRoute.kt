@@ -9,10 +9,16 @@ import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.luna.modals.EmbeddedModal
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.utils.LorittaDiscordOAuth2AuthorizeScopeURL
+import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.UnauthorizedTokenException
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.ButtonStyle
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.cardHeader
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.cardHeaderDescription
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.cardHeaderInfo
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.cardHeaderTitle
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.cardsWithHeader
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.configureServerEntry
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.discordButtonLink
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowModal
@@ -91,9 +97,23 @@ class PostServerListUserDashboardRoute(website: LorittaDashboardWebServer) : Req
                     }
                 }
             } else {
-                div(classes = "choose-your-server") {
-                    for (guild in sortedAndFilteredGuilds) {
-                        configureServerEntry(i18nContext, guild, guild.id in favoritedGuilds)
+                cardsWithHeader {
+                    cardHeader {
+                        cardHeaderInfo {
+                            cardHeaderTitle {
+                                text(i18nContext.get(DashboardI18nKeysData.ChooseAServer.YourServers))
+                            }
+
+                            cardHeaderDescription {
+                                text(i18nContext.get(DashboardI18nKeysData.ChooseAServer.YourServersCount(sortedAndFilteredGuilds.size, userGuilds.size)))
+                            }
+                        }
+                    }
+
+                    div(classes = "choose-your-server") {
+                        for (guild in sortedAndFilteredGuilds) {
+                            configureServerEntry(i18nContext, guild, guild.id in favoritedGuilds)
+                        }
                     }
                 }
 

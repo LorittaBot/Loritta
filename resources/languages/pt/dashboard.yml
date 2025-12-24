@@ -50,6 +50,7 @@ website:
     chooseAServer:
       title: "Escolha um Servidor"
       yourServers: "Seus Servidores"
+      yourServersCount: "{configurableServers,plural, =0 {# servidores configuráveis} one {# servidor configurável} other {# servidores configuráveis}}, {totalServers,plural, =0 {# servidores} one {# servidor} other {# servidores}} no total"
       noServerFound: "Nenhum servidor encontrado!"
       tryLoggingIn:
         - "Você não é dono ou você não tem permissão de administrador ou de gerenciar o servidor em algum servidor na sua conta!"
