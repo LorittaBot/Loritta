@@ -27,6 +27,7 @@ import net.perfectdreams.loritta.helper.interactions.commands.vanilla.HelperExec
 import net.perfectdreams.loritta.helper.tables.SelectedResponsesLog
 import net.perfectdreams.loritta.helper.tables.StartedSupportSolicitations
 import net.perfectdreams.loritta.helper.utils.ComponentDataUtils
+import net.perfectdreams.loritta.helper.utils.Constants
 import net.perfectdreams.loritta.helper.utils.GoogleDriveUtils
 import net.perfectdreams.loritta.helper.utils.LorittaLandGuild
 import net.perfectdreams.loritta.helper.utils.buttonroles.GuildRolesData
@@ -47,6 +48,9 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.isNotNull
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.isNull
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Instant
+import java.time.LocalDate
+import java.time.Month
+import java.time.MonthDay
 import java.util.concurrent.TimeUnit
 
 class ComponentInteractionListener(val m: LorittaHelper) : ListenerAdapter() {
@@ -318,6 +322,12 @@ class ComponentInteractionListener(val m: LorittaHelper) : ListenerAdapter() {
             val language = systemInfo.getI18nContext(m.languageManager)
 
             val hook = event.interaction.deferReply(true).await()
+
+            if (isChristmasPeriod() || isNewYearPeriod()) {
+                hook.editOriginal("A equipe está de férias! Volte mais tarde :)")
+                    .await()
+                return
+            }
 
             // Check if user is banned from Loritta, because it is super annoying them creating tickets just to ask them to be unbanned
             val currentBanState = transaction(m.databases.lorittaDatabase) {
@@ -620,5 +630,19 @@ class ComponentInteractionListener(val m: LorittaHelper) : ListenerAdapter() {
                 logger.warn(e) { "Something went wrong while trying to process a pre-defined Helper response!" }
             }
         }
+    }
+
+    private fun isChristmasPeriod(): Boolean {
+        val today = MonthDay.from(LocalDate.now(Constants.TIME_ZONE_ID))
+        val start = MonthDay.of(Month.DECEMBER, 24)
+        val end = MonthDay.of(Month.DECEMBER, 26)
+
+        return today >= start && today <= end
+    }
+
+    fun isNewYearPeriod(): Boolean {
+        val today = LocalDate.now(Constants.TIME_ZONE_ID)
+        return (today.monthValue == 12 && today.dayOfMonth == 31) ||
+                (today.monthValue == 1 && today.dayOfMonth == 1)
     }
 }
