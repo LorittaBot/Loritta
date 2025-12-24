@@ -3,6 +3,7 @@ package net.perfectdreams.dora
 import com.ibm.icu.text.MessagePatternUtil
 import io.ktor.client.*
 import io.ktor.client.engine.java.*
+import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.ContentType
@@ -103,7 +104,11 @@ class DoraBackend(val config: DoraConfig, val pudding: Pudding) {
     val gitMutex = Mutex()
 
     val http = HttpClient(Java) {
-
+        install(HttpTimeout) {
+            requestTimeoutMillis = 15_000
+            connectTimeoutMillis = 5_000
+            socketTimeoutMillis = 15_000
+        }
     }
 
     val oauth2Manager = DiscordOAuth2Manager(
