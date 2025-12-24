@@ -111,7 +111,7 @@ class PutPunishmentLogGuildDashboardRoute(website: LorittaDashboardWebServer) : 
                 ModerationPunishmentMessagesConfig.insert {
                     it[ModerationPunishmentMessagesConfig.guild] = serverConfig.id
                     it[ModerationPunishmentMessagesConfig.punishmentAction] = PunishmentAction.UNMUTE
-                    it[ModerationPunishmentMessagesConfig.punishLogMessage] = request.punishLogMessageUnban
+                    it[ModerationPunishmentMessagesConfig.punishLogMessage] = request.punishLogMessageUnmute
                 }
             }
         }
