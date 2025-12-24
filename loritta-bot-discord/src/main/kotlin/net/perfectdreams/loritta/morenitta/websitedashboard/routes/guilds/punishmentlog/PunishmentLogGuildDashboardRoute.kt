@@ -255,18 +255,20 @@ class PunishmentLogGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
                                                                     "enableMessageOverride$partName",
                                                                     true
                                                                 ) {
-                                                                    discordMessageEditor(
-                                                                        i18nContext,
-                                                                        guild,
-                                                                        { text(i18nContext.get(DashboardI18nKeysData.PunishmentLog.PerActionMessage.SectionLabel)) },
-                                                                        null,
-                                                                        MessageEditorBootstrap.TestMessageTarget.QuerySelector("[name='punishLogChannelId']"),
-                                                                        listOf(),
-                                                                        placeholders,
-                                                                        punishmentMessage?.get(ModerationPunishmentMessagesConfig.punishLogMessage) ?: "",
-                                                                        "punishLogMessage$partName"
-                                                                    ) {
-                                                                        attributes["loritta-config"] = "punishLogMessage$partName"
+                                                                    fieldWrappers {
+                                                                        discordMessageEditor(
+                                                                            i18nContext,
+                                                                            guild,
+                                                                            { text(i18nContext.get(DashboardI18nKeysData.PunishmentLog.PerActionMessage.SectionLabel)) },
+                                                                            null,
+                                                                            MessageEditorBootstrap.TestMessageTarget.QuerySelector("[name='punishLogChannelId']"),
+                                                                            listOf(),
+                                                                            placeholders,
+                                                                            punishmentMessage?.get(ModerationPunishmentMessagesConfig.punishLogMessage) ?: "",
+                                                                            "punishLogMessage$partName"
+                                                                        ) {
+                                                                            attributes["loritta-config"] = "punishLogMessage$partName"
+                                                                        }
                                                                     }
                                                                 }
                                                             }

@@ -848,6 +848,10 @@ aside#that-wasnt-very-cash-money-of-you-fixed-sidebar-reserved-space {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    // Honestly, this sucks and I don't even fricking know why it works
+    // The issue is that sometimes the message preview does NOT SHOW CORRECTLY, the field-wrapper overflows the field-wrappers
+    // And for SOME REASON width: 100% fixes it, I'm still not sure exactly WHY sometimes it works and WHY sometimes it breaks
+    width: 100%;
 }
 
 .field-wrapper {
