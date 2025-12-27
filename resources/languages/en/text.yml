@@ -854,16 +854,16 @@
     "commands.command.getoverhere.label": "getoverhere",
     "commands.command.getoverhere.description": "\"Get over here!\", pull and kick someone with Scorpion's iconic attack!",
     "commands.command.loricoolcards.label": "stickers",
-    "commands.command.loricoolcards.description": "Collect Loritta's Stickers from the Albums!",
+    "commands.command.loricoolcards.description": "Collect Loritta's Stickers from the Loritta's Stickers Album!",
     "commands.command.loricoolcards.buy.label": "buy",
     "commands.command.loricoolcards.buy.description": "Buy a sticker pack",
     "commands.command.loricoolcards.buy.howManyBoosterPacksDoYouWantToBuy": "How many sticker packs do you want to buy and open?",
     "commands.command.loricoolcards.buy.buyAndOpenBoosterPack": "{stickerPackCount,plural, =0 {# Packs} one {# Pack} other {# Packs}} ({sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}})",
-    "commands.command.loricoolcards.buy.nowYouHaveXStickersOfThisType": "You now have {howManyCardsOfThisCardIdWeHave,plural, =0 {# Figurittas} one {# Figuritta} other {# Figurittas}} of this type",
-    "commands.command.loricoolcards.buy.albumProgress": "**Album Progress:** {totalAlbumCompletionCount,number}/{albumCardsCount,number} Figurittas",
+    "commands.command.loricoolcards.buy.nowYouHaveXStickersOfThisType": "You now have {howManyCardsOfThisCardIdWeHave,plural, =0 {# stickers} one {# sticker} other {# stickers}} of this type",
+    "commands.command.loricoolcards.buy.albumProgress": "**Album Progress:** {totalAlbumCompletionCount,number}/{albumCardsCount,number} stickers",
     "commands.command.loricoolcards.buy.nextSticker": "Next Sticker ({currentCount,number}/{totalCount,number})",
     "commands.command.loricoolcards.buy.viewSummary": "View Summary",
-    "commands.command.loricoolcards.buy.stickStickers": "Paste Figurittas",
+    "commands.command.loricoolcards.buy.stickStickers": "Stick Stickers",
     "commands.command.loricoolcards.buy.buyStickerBoosterPack": "Buy Sticker Booster Pack",
     "commands.command.loricoolcards.buy.summary": "Summary",
     "commands.command.loricoolcards.buy.youBoughtXStickerPacks": "You bought {stickerPackCount,plural, =0 {# sticker packs} one {# sticker pack} other {# sticker packs}}! Open the purchased packs using {loriCoolCardsOpenCommandMention}.",
@@ -872,8 +872,8 @@
     "commands.command.loricoolcards.open.description": "Opens your sticker packs",
     "commands.command.loricoolcards.open.youDontHaveAnyUnopenedPacks": "You don't have any unopened packs yet! Want more packs? Then grab your daily reward {dailyCommand} or buy more packs {buyPacksCommand}!",
     "commands.command.loricoolcards.open.youOpenedXStickerPacks": "You opened {stickerPackCount,plural, =0 {# sticker packs} one {# sticker pack} other {# sticker packs}}!",
-    "commands.command.loricoolcards.open.andXMoreStickers": "...and {stickersCount,plural, =0 {# Figurittas} one {# Figuritta} other {# Figurittas}}",
-    "commands.command.loricoolcards.open.tradeTip": "No Figurittas that you fancy? Trade Figurittas with other people using {loriCoolCardsTradeCommand} or be generous and donate them using {loriCoolCardsGiveCommand}!",
+    "commands.command.loricoolcards.open.andXMoreStickers": "...and {stickersCount,plural, =0 {# stickers} one {# sticker} other {# stickers}}",
+    "commands.command.loricoolcards.open.tradeTip": "No stickers that you wanted? Trade stickers with other users using {loriCoolCardsTradeCommand} or be generous and donate them using {loriCoolCardsGiveCommand}!",
     "commands.command.loricoolcards.view.label": "view",
     "commands.command.loricoolcards.view.description": "View information about a sticker from the album",
     "commands.command.loricoolcards.view.youHaveThisStickerInYourAlbum": "You already have this sticker in your album!",
@@ -890,7 +890,7 @@
     "commands.command.loricoolcards.view.options.sticker.text": "The sticker you want to see information about",
     "commands.command.loricoolcards.stick.label": "stick",
     "commands.command.loricoolcards.stick.description": "Stick the stickers you have in your inventory onto your sticker album",
-    "commands.command.loricoolcards.stick.youDontHaveStickersToBeStickied": "You don't have stickers to be stickied! If you have booster packs, don't forget to open them before sticking your stickers with {loriCoolCardsStickStickersCommand}.",
+    "commands.command.loricoolcards.stick.youDontHaveStickersToBeStickied": "You don't have any stickers to be stickied! If you have booster packs, don't forget to open them before sticking your stickers with {loriCoolCardsStickStickersCommand}.",
     "commands.command.loricoolcards.stick.stickXStickers": "Stick +{stickerCount,plural, =0 {# stickers} one {# sticker} other {# stickers}}",
     "commands.command.loricoolcards.album.label": "album",
     "commands.command.loricoolcards.album.description": "View your sticker album pages",
@@ -928,13 +928,13 @@
     "commands.command.loricoolcards.trade.youCantTradeStickersWithYourself": "You can't trade stickers with yourself, silly!",
     "commands.command.loricoolcards.trade.youDidntBuyEnoughBoosterPacks": "You need to have more **{boosterPackCount,plural, =0 {# booster packs} one {# booster pack} other {# booster packs}}** to trade stickers!",
     "commands.command.loricoolcards.trade.youDidntBuyEnoughBoosterPacksSonhosTrade": "You need to have more **{boosterPackCount,plural, =0 {# booster packs} one {# booster pack} other {# booster packs}}** to trade stickers for sonhos!",
-    "commands.command.loricoolcards.trade.receiverDidntBuyEnoughBoosterPacks": "{receiver} needs to buy **{boosterPackCount,plural, =0 {# booster packs} one {# booster pack} other {# booster packs}}** more to be able to trade Figurittas!",
+    "commands.command.loricoolcards.trade.receiverDidntBuyEnoughBoosterPacks": "{receiver} needs to buy **{boosterPackCount,plural, =0 {# booster packs} one {# booster pack} other {# booster packs}}** more to be able to trade stickers!",
     "commands.command.loricoolcards.trade.receiverDidntBuyEnoughBoosterPacksSonhosTrade": "{receiver} needs to buy **{boosterPackCount,plural, =0 {# booster packs} one {# booster pack} other {# booster packs}}** more to be able to trade stickers for sonhos!",
     "commands.command.loricoolcards.trade.youNeedToGetDailyRewardBeforeTradingStickers": "You need to get the Daily Reward before you can trade stickers! {dailyCommand}",
     "commands.command.loricoolcards.trade.userIsTryingToGiveStickersThatArentStickedYet": "{user} is trying to give a sticker that, while it is in their inventory, isn't yet sticked in their album! **Stickers that need to be sticked in the album before they can be given:** {stickerList}",
-    "commands.command.loricoolcards.trade.receiverNeedsToGetDailyRewardBeforeTradingStickers": "{userMention} needs to claim their Daily Reward before they can trade Figurittas! {dailyCommand}",
-    "commands.command.loricoolcards.trade.setStickers": "Place Stickers",
-    "commands.command.loricoolcards.trade.setStickersFill": "Fill Figurittas (Stickers)",
+    "commands.command.loricoolcards.trade.receiverNeedsToGetDailyRewardBeforeTradingStickers": "{userMention} needs to claim their Daily Reward before they can trade stickers! {dailyCommand}",
+    "commands.command.loricoolcards.trade.setStickers": "Set Stickers",
+    "commands.command.loricoolcards.trade.setStickersFill": "Set Stickers (Fill)",
     "commands.command.loricoolcards.trade.setSonhos": "Set Sonhos",
     "commands.command.loricoolcards.trade.acceptTradeButton": "Accept Offer ({totalAccepted,number}/{totalRequiredToAccept,number})",
     "commands.command.loricoolcards.trade.tradeHasAlreadyBeenProcessed": "This trade has already been processed and cannot be changed!",
@@ -956,13 +956,13 @@
     "commands.command.loricoolcards.trade.tradeModal.stickerTrade": "Sticker trade",
     "commands.command.loricoolcards.trade.tradeModal.sonhosToBeTraded": "Sonhos you want to trade",
     "commands.command.loricoolcards.trade.tradeModal.stickersToBeTraded": "List of stickers you want to trade",
-    "commands.command.loricoolcards.trade.tradeModal.stickersToBeTradedFill": "How many Figurittas you want to trade",
-    "commands.command.loricoolcards.trade.options.user.text": "The user you want to trade Figurittas with",
+    "commands.command.loricoolcards.trade.tradeModal.stickersToBeTradedFill": "How many stickers you want to trade",
+    "commands.command.loricoolcards.trade.options.user.text": "The user you want to trade stickers with",
     "commands.command.loricoolcards.stats.label": "stats",
     "commands.command.loricoolcards.stats.description": "Statistics about the Sticker Event",
     "commands.command.loricoolcards.stats.options.album.text": "What album's stats do you want to see",
     "commands.command.loricoolcards.compare.label": "compare",
-    "commands.command.loricoolcards.compare.description": "Compare which Figurittas you have and the other person needs, and vice versa",
+    "commands.command.loricoolcards.compare.description": "Compare which stickers you have and the other person needs, and vice versa",
     "commands.command.loricoolcards.compare.whatStickersYouNeedThatTheOtherUserHas": "**Stickers you need that {userToBeComparedTo} has ({stickerCount,number}):** {stickerList}",
     "commands.command.loricoolcards.compare.whatStickersYouHaveThatTheOtherUserNeeds": "**Stickers that {friend} needs and you have ({stickerCount,number}):** {stickerList}",
     "commands.command.loricoolcards.compare.noStickersToBeCompared": "*No Stickers*",
@@ -971,10 +971,10 @@
     "commands.command.loricoolcards.compare.startTrade": "Start Trade",
     "commands.command.loricoolcards.compare.options.user.text": "The user you want to compare your stickers with",
     "commands.command.loricoolcards.duplicates.label": "duplicates",
-    "commands.command.loricoolcards.duplicates.description": "Shows which duplicate Figurittas you have in your inventory",
+    "commands.command.loricoolcards.duplicates.description": "Shows which duplicate stickers you have in your inventory",
     "commands.command.loricoolcards.duplicates.yourDuplicateStickers": "Your Extra Stickers ({stickerCount,number})",
     "commands.command.loricoolcards.duplicates.userDuplicateStickers": "{user}'s extra stickers ({stickerCount,number})",
-    "commands.command.loricoolcards.duplicates.getListOfStickers": "Get the list of duplicate Figurittas",
+    "commands.command.loricoolcards.duplicates.getListOfStickers": "Get the list of duplicate stickers",
     "commands.command.loricoolcards.duplicates.youHaveSoManyStickersThatItDoesntFitAllInHere": "You have so many extra stickers that they don't all fit in this message!",
     "commands.command.loricoolcards.duplicates.options.user.text": "The user you want to see their extra stickers",
     "commands.command.loricoolcards.missing.label": "missing",
@@ -982,7 +982,7 @@
     "commands.command.loricoolcards.missing.yourMissingStickers": "Stickers missing from your album ({stickerCount,number})",
     "commands.command.loricoolcards.missing.userMissingStickers": "Stickers missing from {user}'s album ({stickerCount,number})",
     "commands.command.loricoolcards.missing.getListOfStickers": "Get the missing sticker list",
-    "commands.command.loricoolcards.missing.options.user.text": "The user you want to see the missing Figurittas in your album",
+    "commands.command.loricoolcards.missing.options.user.text": "The user you want to see the missing stickers in their album",
     "commands.command.loricoolcards.rank.label": "rank",
     "commands.command.loricoolcards.rank.description": "Ranking of who finished Loritta's albums fastest",
     "commands.command.raffle.label": "raffle",
@@ -2561,7 +2561,7 @@
     "commands.command.transactions.types.sparklyPowerLsx.description": "Transactions related to SparklyPower, Loritta's Minecraft Server",
     "commands.command.transactions.types.sparklyPowerLsx.exchangedToSparklyPower": "Transferred {sonhosQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} from Loritta to the account `{playerName}` on SparklyPower [{sparklyPowerIp}], receiving {sparklyPowerSonhosQuantity, plural, one {# sonho} other {# sonecas}} there",
     "commands.command.transactions.types.sparklyPowerLsx.exchangedFromSparklyPower": "Transferred {sparklyPowerSonhosQuantity,plural, =0 {# sonecas} one {# sonho} other {# sonecas}} from account `{playerName}` on SparklyPower [{sparklyPowerIp}] to Loritta, receiving {sonhosQuantity, plural, one {# sonho} other {# sonhos}} here",
-    "commands.command.transactions.types.sonhosBundlePurchase.title": "Dream Bundle Purchase",
+    "commands.command.transactions.types.sonhosBundlePurchase.title": "Sonhos Bundle Purchases",
     "commands.command.transactions.types.sonhosBundlePurchase.description": "Transactions related to sonhos bundle purchases",
     "commands.command.transactions.types.sonhosBundlePurchase.purchasedSonhos": "Bought {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} in Loritta's sonhos store. Thank you for supporting Loritta! {loriKiss}",
     "commands.command.transactions.types.sonhosBundlePurchase.chargebackedSelf": "A divine intervention removed {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} because the user bought sonhos bundles and requested a payment refund",
@@ -3193,7 +3193,7 @@
     "commands.userIsLorittaBanned.bannedBy": "**Banned by:** {staffMention}",
     "commands.userIsLorittaBanned.staffNote": "**Staff Note:** {staffNote}",
     "commands.userIsLorittaBanned.appealLink": "**Appeal Bans:** {appealLink}",
-    "commands.userIsLorittaBanned.tooLateToSaySorry": "Is it too late for him to say sorry",
+    "commands.userIsLorittaBanned.tooLateToSaySorry": "*Is it too late for them to say sorry?*",
     "commands.userIsLorittaBanned.sendABanAppeal": "Send a Ban Appeal",
     "commands.usersFill.notEnoughUsersPermissionsTip": "I could grab members from the server's recent messages, but I need permission to read the channel's message history!",
     "commands.usersFill.notEnoughUsersGuildTip": "I could pull members from recent messages in a server, but... well, we're in a direct message, the only two users here are you and me!",
@@ -3422,7 +3422,7 @@
     "website.dashboard.configurationReset.title": "Configuration reset!",
     "website.dashboard.chooseAServer.yourServers": "Your Servers",
     "website.dashboard.prefixedCommands.lorittaPrefix.title": "Loritta's Prefix",
-    "website.dashboard.prefixedCommands.lorittaPrefix.description": "Prefix is the text that comes before a command. By default, I come with the + character, but you can change it in this option.",
+    "website.dashboard.prefixedCommands.lorittaPrefix.description": "Prefix is the text that comes before a command. By default, I come with the character +, but you can change it in this option.",
     "website.dashboard.resetXp.description1": "This action is irreversible! All members of your server will have their levels and experience reverted to 0!",
     "website.dashboard.resetXp.description2": "After confirming, you won't be able to undo the action. The action only reverts the level and experience; you'll have to manually revert the rewards earned upon leveling up.",
     "website.dashboard.resetXp.resetButton": "Reset XP",
@@ -3486,7 +3486,7 @@
     "website.dashboard.customCommands.actions.edit": "Edit",
     "website.dashboard.customCommands.actions.delete": "Delete",
     "website.dashboard.inviteBlocker.enable.toggleTitle": "Enable Invite Blocker",
-    "website.dashboard.inviteBlocker.allowServerInvites.toggleTitle": "Allow sharing invites for this server",
+    "website.dashboard.inviteBlocker.allowServerInvites.toggleTitle": "Allow sharing invites of this server",
     "website.dashboard.inviteBlocker.deleteMessageOnInvite.toggleTitle": "Delete user message when an invite is detected",
     "website.dashboard.inviteBlocker.allowedChannels.sectionTitle": "Channels where sending invites is allowed",
     "website.dashboard.inviteBlocker.sendMessageOnInvite.toggleTitle": "Send a message to the user when they send an invite",
@@ -3495,7 +3495,7 @@
     "website.dashboard.inviteBlocker.defaultTemplate.content": "{userMention} you can't send invites here!",
     "website.dashboard.xpRewards.roleGiveType.title": "Role Reward Style",
     "website.dashboard.xpRewards.roleGiveType.stack.title": "Stack previous rewards",
-    "website.dashboard.xpRewards.roleGiveType.stack.description": "When leveling up, all rewards the user received will be kept.",
+    "website.dashboard.xpRewards.roleGiveType.stack.description": "When leveling up, all rewards the user received will be kept",
     "website.dashboard.xpRewards.roleGiveType.remove.title": "Remove previous rewards",
     "website.dashboard.xpRewards.roleGiveType.remove.description": "When leveling up, all rewards the user received are removed",
     "website.dashboard.xpRewards.levelUpRewards.title": "Level Up Rewards",
@@ -3531,6 +3531,8 @@
     "website.dashboard.bomDiaECia.blockedChannels.sectionTitle": "Channels where Bom Dia & Cia will be disabled",
     "website.dashboard.bomDiaECia.useBlockedAsAllowed.toggleTitle": "Use blocked channels as allowed channels",
     "website.dashboard.bomDiaECia.useBlockedAsAllowed.description": "If enabled, the above blocked channel list will be used as an allowed channel list",
+    "website.dashboard.embedDescription": "My configuration dashboard, where you can configure me to make your server amazing and unique!",
+    "website.dashboard.chooseAServer.yourServersCount": "{configurableServers,plural, =0 {# configurable servers} one {# configurable server} other {# configurable servers}}, {totalServers,plural, =0 {# servers} one {# server} other {# servers}} in total",
     "website.dashboard.profilePresets.description": [
         "Profile presets are saved combinations of profiles you've created, perfect for saving the combinations you put together with love and care and restoring them later without having to recreate everything from scratch."
     ],
@@ -3696,7 +3698,7 @@
         "Give food to the dog |-| Creates a reminder for you to give food to your dog; I will ask you when I need to remind you after using the command",
         "set a daily reminder |-| Creates a reminder so you don't forget to claim your Daily Sonhos Reward",
         "give reputation |-| Creates a reminder so you don't forget to give reputation to your friend",
-        "lista |-| Mostra a lista de lembretes"
+        "list |-| Shows your reminder list"
     ],
     "commands.command.profileview.examples": [
         "|-| Shows your own profile",
@@ -3854,8 +3856,8 @@
     ],
     "commands.command.minecraft.player.skin.examples": [
         "Loritta |-| Uses the skin of the most beautiful person who exists!",
-        "MrPowerGamerBR |-| Usa a skin da conta \"MrPowerGamerBR\"",
-        "yNilzinha_ |-| Usa a skin da conta \"yNilzinha_\"",
+        "MrPowerGamerBR |-| Uses the skin from the account \"MrPowerGamerBR\"",
+        "yNilzinha_ |-| Uses the skin from the account \"yNilzinha_\"",
         "Monerk |-| Uses the skin from the account \"Monerk\", Monark's skin. Build bridge!",
         "JackSucksAtLife |-| Usa a skin da conta \"JackSucksAtLife\"",
         "hechfx |-| Usa a skin da conta \"hechfx\""
@@ -3864,13 +3866,13 @@
         "Loritta |-| Uses the skin of the most beautiful person who exists!",
         "MrPowerGamerBR |-| Usa a skin da conta \"MrPowerGamerBR\"",
         "yNilzinha_ |-| Usa a skin da conta \"yNilzinha_\"",
-        "Monerk |-| Uses the skin from the account \"Monerk\", Monark's skin. Build a bridge!",
+        "Monerk |-| Uses the skin from the account \"Monerk\", Monark's skin. Bridge bridge!",
         "JackSucksAtLife |-| Usa a skin da conta \"JackSucksAtLife\"",
         "hechfx |-| Usa a skin da conta \"hechfx\""
     ],
     "commands.command.minecraft.player.head.examples": [
         "Loritta |-| Uses the skin of the most beautiful person that exists!",
-        "MrPowerGamerBR |-| Usa a skin da conta \"MrPowerGamerBR\"",
+        "MrPowerGamerBR |-| Uses the skin from the account \"MrPowerGamerBR\"",
         "yNilzinha_ |-| Uses the skin from the account \"yNilzinha_\"",
         "Monerk |-| Uses the skin from the account \"Monerk\", Monark's skin. Bridge bridge!",
         "JackSucksAtLife |-| Usa a skin da conta \"JackSucksAtLife\"",
@@ -3878,8 +3880,8 @@
     ],
     "commands.command.minecraft.player.body.examples": [
         "Loritta |-| Uses the skin of the most beautiful person who exists!",
-        "MrPowerGamerBR |-| Usa a skin da conta \"MrPowerGamerBR\"",
-        "yNilzinha_ |-| Usa a skin da conta \"yNilzinha_\"",
+        "MrPowerGamerBR |-| Uses the skin from the \"MrPowerGamerBR\" account",
+        "yNilzinha_ |-| Uses the skin from the account \"yNilzinha_\"",
         "Monerk |-| Uses the \"Monerk\" account skin, the Monark skin. Build a bridge!",
         "JackSucksAtLife |-| Usa a skin da conta \"JackSucksAtLife\"",
         "hechfx |-| Usa a skin da conta \"hechfx\""
@@ -3909,7 +3911,7 @@
         "123170274651668480 |-| Mostra o avatar de um usuário pelo ID"
     ],
     "commands.command.roll.examples": [
-        "|-| Gira um dado de 6 lados",
+        "|-| Roll a 6-sided die",
         "12 |-| Gira um dado de 12 lados",
         "24 |-| Gira um dado de 24 lados",
         "Roll 2d20 |-| Rolls two 20-sided dice",
@@ -3920,7 +3922,7 @@
         "6 * 10 |-| Gira um dado de 6 lados e multiplica o valor final por 10"
     ],
     "commands.command.baninfo.examples": [
-        "213466096718708737 |-| Mostra as informações do banimento de um meliante pelo ID"
+        "213466096718708737 |-| Shows banishment information for a scoundrel by ID"
     ],
     "commands.command.giveaway.setup.extraEntriesIntro": [
         "Extra entries let you set up a system where participants with a specific role have a higher chance of winning than other participants. Useful if you want to reward users with VIP roles on your server!",
@@ -3930,7 +3932,7 @@
         "2 + 2 |-| Calculates what 2 + 2 is (addition)",
         "40 - 10 |-| Calculates what 40 - 10 is (subtraction)",
         "5 * 5 |-| Calculates what 5 * 5 is (multiplication)",
-        "100 / 5 |-| Calcula quanto é 100 / 5 (divisão)",
+        "100 / 5 |-| Calculates what 100 / 5 (division) is",
         "(sqrt(10) * 4) / 12 |-| Calculates what (sqrt(10) * 4) / 12 is (square root, multiplication, and division)",
         "cos(0) |-| Calculates what the cosine of 0 is",
         "sin(90) |-| Calculates what the sine of 90 is",
@@ -4116,7 +4118,7 @@
         "Everything purchased has no monetary value outside of Loritta; third-party sales are not the responsibility of the Loritta team, and you may also be suspended if you are involved with third-party sales.",
         "Loritta has features that use Sonhos. Losing Sonhos purchased in these features does not guarantee a refund, either in real money or Sonhos.",
         "Paying for our services does not give you the right to have exclusive, prioritized, or special support.",
-        "How cute Loritta is! :3"
+        "That Loritta is very cute! :3"
     ],
     "website.dashboard.purchaseMFARequiredModal.description": [
         "For your safety, you need to enable two-factor authentication for your Discord account before you can purchase anything.",
@@ -4256,7 +4258,7 @@
         "",
         "If you wish to appeal your permanent ban, please read our [ban appeal page]({banAppealPageUrl})! {loriAmeno}",
         "",
-        "Is it too late to say sorry? {loriSob}"
+        "*Is it too late now to say sorry?* {loriSob}"
     ],
     "commands.youAreLorittaBannedTemporary": [
         "You are **temporarily banned**! {loriHmpf}",
@@ -4270,7 +4272,7 @@
         "",
         "If you wish to appeal your temporary ban, please read our [ban appeal page]({banAppealPageUrl})! However, we recommend waiting for the ban to expire instead of appealing your temporary ban. {loriAmeno}",
         "",
-        "Is it too late to apologize? {loriSob}"
+        "*Is it too late now to say sorry?* {loriSob}"
     ],
     "website.dashboard.customCommands.description": [
         "Create custom commands to highlight important messages for your members, or use them for your server's inside jokes."
