@@ -285,4 +285,28 @@ object SimpleSonhosTransactionTransformers {
             )
         )
     }
+
+    val LotteryBuyTicketTransactionTransformer = SimpleSonhosTransactionTransformer<LotteryTicketsTransaction>(false) { _, _, i18nContext, cachedUserInfo, cachedUserInfos, transaction ->
+        append(
+            i18nContext.get(
+                SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.Lottery.BoughtTickets(quantity = transaction.sonhos)
+            )
+        )
+    }
+
+    val LotteryRewardTransactionTransformer = SimpleSonhosTransactionTransformer<LotteryRewardTransaction>(true) { _, _, i18nContext, cachedUserInfo, cachedUserInfos, transaction ->
+        if (!transaction.taxed) {
+            append(
+                i18nContext.get(
+                    SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.Lottery.WonLottery(quantityAfterTax = transaction.sonhos)
+                )
+            )
+        } else {
+            append(
+                i18nContext.get(
+                    SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.Lottery.WonLotteryTaxed(quantityAfterTax = transaction.sonhos, quantity = transaction.payoutWithoutTax)
+                )
+            )
+        }
+    }
 }

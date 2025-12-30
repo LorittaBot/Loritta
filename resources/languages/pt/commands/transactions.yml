@@ -145,6 +145,12 @@ types:
     wonRaffle: "Recebeu {quantityAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (sem taxa!) por ter ganho uma rifa"
     wonRaffleTaxed: "Recebeu {quantityAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (valor sem taxa: {quantity}) por ter ganho uma rifa"
     boughtTickets: "Comprou {ticketQuantity,plural, =0 {# tickets} one {# ticket} other {# tickets}} por {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} na rifa"
+  lottery:
+    title: "Loterias"
+    description: "Transações relacionadas as loterias da Loritta"
+    wonLottery: "Recebeu {quantityAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (sem taxa!) por ter ganho na loteria"
+    wonLotteryTaxed: "Recebeu {quantityAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (valor sem taxa: {quantity}) por ter ganho na loteria"
+    boughtTickets: "Comprou uma cartela por {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} na loteria"
   powerstream:
     title: "Livestreams"
     description: "Transações relacionadas as livestreams da Loritta"

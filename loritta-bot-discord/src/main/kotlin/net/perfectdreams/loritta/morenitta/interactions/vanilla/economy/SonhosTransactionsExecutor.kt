@@ -179,7 +179,7 @@ class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandE
                             maxValues = 25
                             minValues = 0
 
-                            for (transactionType in transactionTypes) {
+                            for (transactionType in transactionTypes.filter { it.available }) {
                                 option(
                                     i18nContext.get(
                                         transactionType.title
@@ -351,6 +351,10 @@ class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandE
                         is MinesJoinedTransaction -> SimpleSonhosTransactionTransformers.MinesJoinedTransactionTransformer
                         is MinesPayoutTransaction -> SimpleSonhosTransactionTransformers.MinesPayoutTransactionTransformer
                         is MinesRefundTransaction -> SimpleSonhosTransactionTransformers.MinesRefundTransactionTransformer
+
+                        // ===[ LOTTERY ]===
+                        is LotteryRewardTransaction -> SimpleSonhosTransactionTransformers.LotteryRewardTransactionTransformer
+                        is LotteryTicketsTransaction -> SimpleSonhosTransactionTransformers.LotteryBuyTicketTransactionTransformer
 
                         // This should never happen because we do a left join with a "isNotNull" check
                         is UnknownSonhosTransaction -> UnknownSonhosTransactionTransformer

@@ -467,6 +467,10 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
                             )
                         }
 
+                        is StoredVacationModeLeaveTransaction -> createUsingReflection(VacationModeLeaveTransaction::class)
+                        is StoredLotteryRewardTransaction -> createUsingReflection(LotteryRewardTransaction::class, stored.lotteryId, stored.taxed, stored.payoutWithoutTax)
+                        is StoredLotteryTicketsTransaction -> createUsingReflection(LotteryTicketsTransaction::class, stored.lotteryId, stored.ticketId)
+
                         is StoredEmojiFightBetSonhosTransaction -> {
                             val emojiFightMatchmakingResult = emojiFightMatchmakingResults.first { it[EmojiFightMatchmakingResults.id].value == stored.emojiFightMatchmakingResultsId }
 
@@ -490,8 +494,6 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
                                 emojiFightMatchmakingResult[EmojiFightMatchmakingResults.taxPercentage]
                             )
                         }
-
-                        is StoredVacationModeLeaveTransaction -> createUsingReflection(VacationModeLeaveTransaction::class)
                     }
                 }
         }

@@ -239,3 +239,14 @@ data class StoredMinesPayoutTransaction(val matchId: Long) : StoredSonhosTransac
 
 @Serializable
 data class StoredMinesRefundTransaction(val matchId: Long) : StoredSonhosTransaction()
+
+@Serializable
+data class StoredLotteryRewardTransaction(
+    val lotteryId: Long,
+    // We need to store it here because multiple users may get the reward with different tax brackets
+    val taxed: Boolean,
+    val payoutWithoutTax: Long
+) : StoredSonhosTransaction()
+
+@Serializable
+data class StoredLotteryTicketsTransaction(val lotteryId: Long, val ticketId: Long) : StoredSonhosTransaction()

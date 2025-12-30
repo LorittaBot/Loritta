@@ -7,6 +7,7 @@ interface UserPremiumPlans {
 	val loriReputationRetribution: Double
 	val dailyMultiplier: Double
 	val totalLoraffleReward: Double
+	val totalLotteryReward: Double
 	val totalCoinFlipReward: Double
 	val thirdPartySonhosTransferTax: Double
 	val customBackground: Boolean
@@ -52,6 +53,7 @@ interface UserPremiumPlans {
 		// O "multiplier" apenas soma o valor do multiplicador final, então pode ser 0.0
 		override val dailyMultiplier = 0.0
 		override val totalLoraffleReward = 0.95
+		override val totalLotteryReward = 0.98
 		override val totalCoinFlipReward = 0.95
 		override val thirdPartySonhosTransferTax = 0.10
 		override val customBackground = false
@@ -70,6 +72,7 @@ interface UserPremiumPlans {
 		override val loriReputationRetribution = 5.0
 		override val dailyMultiplier = 1.0
 		override val totalLoraffleReward = 0.95
+		override val totalLotteryReward = 0.98
 		override val totalCoinFlipReward = 0.95
 		override val thirdPartySonhosTransferTax = 0.10
 		override val customBackground = false
@@ -88,6 +91,7 @@ interface UserPremiumPlans {
 		override val loriReputationRetribution = 10.0
 		override val dailyMultiplier = 2.0
 		override val totalLoraffleReward = 1.0
+		override val totalLotteryReward = 1.0
 		override val totalCoinFlipReward = 1.0
 		override val thirdPartySonhosTransferTax = 0.0
 		override val customBackground = true
@@ -106,6 +110,7 @@ interface UserPremiumPlans {
 		override val loriReputationRetribution = 20.0
 		override val dailyMultiplier = 6.0 // 6.0 em vez de 5.0 para ter aquele "wow"
 		override val totalLoraffleReward = 1.0
+		override val totalLotteryReward = 1.0
 		override val totalCoinFlipReward = 1.0
 		override val thirdPartySonhosTransferTax = 0.0
 		override val customBackground = true

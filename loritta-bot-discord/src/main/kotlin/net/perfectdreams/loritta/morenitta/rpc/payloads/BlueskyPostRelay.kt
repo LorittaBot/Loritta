@@ -18,5 +18,6 @@ data class BlueskyPostRelayRequest(
 
 @Serializable
 sealed class BlueskyPostRelayResponse {
+    @Serializable
     data class Success(val notifiedGuilds: List<Long>) : BlueskyPostRelayResponse()
 }

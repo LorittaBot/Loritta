@@ -579,3 +579,27 @@ data class MinesRefundTransaction(
     val sonhos: Long,
     val matchId: Long
 ) : SonhosTransaction()
+
+// ===[ LOTTERY ]===
+@Serializable
+data class LotteryRewardTransaction(
+    override val id: Long,
+    override val transactionType: TransactionType,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val sonhos: Long,
+    val lotteryId: Long,
+    val taxed: Boolean,
+    val payoutWithoutTax: Long
+) : SonhosTransaction()
+
+@Serializable
+data class LotteryTicketsTransaction(
+    override val id: Long,
+    override val transactionType: TransactionType,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val sonhos: Long,
+    val lotteryId: Long,
+    val ticketId: Long
+) : SonhosTransaction()

@@ -12,6 +12,8 @@ import net.perfectdreams.loritta.morenitta.utils.UserIdAsStringSerializer
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.*
 import net.perfectdreams.loritta.publichttpapi.LoriPublicHttpApiEndpoints
+import net.perfectdreams.loritta.serializable.LotteryRewardTransaction
+import net.perfectdreams.loritta.serializable.LotteryTicketsTransaction
 import net.perfectdreams.loritta.serializable.MinesJoinedTransaction
 import net.perfectdreams.loritta.serializable.MinesPayoutTransaction
 import net.perfectdreams.loritta.serializable.MinesRefundTransaction
@@ -582,6 +584,26 @@ class GetUserTransactionsRoute(m: LorittaBot) : LoriPublicAPIRoute(
                     transaction.user,
                     transaction.sonhos,
                     transaction.matchId
+                )
+
+                is net.perfectdreams.loritta.serializable.LotteryRewardTransaction -> LotteryRewardTransaction(
+                    transaction.id,
+                    transaction.transactionType,
+                    transaction.timestamp,
+                    transaction.user,
+                    transaction.sonhos,
+                    transaction.lotteryId,
+                    transaction.taxed,
+                    transaction.payoutWithoutTax
+                )
+                is net.perfectdreams.loritta.serializable.LotteryTicketsTransaction -> LotteryTicketsTransaction(
+                    transaction.id,
+                    transaction.transactionType,
+                    transaction.timestamp,
+                    transaction.user,
+                    transaction.sonhos,
+                    transaction.lotteryId,
+                    transaction.ticketId
                 )
             }
         }
@@ -1205,6 +1227,31 @@ class GetUserTransactionsRoute(m: LorittaBot) : LoriPublicAPIRoute(
         override val user: UserId,
         val sonhos: Long,
         val matchId: Long
+    ) : SonhosTransaction()
+
+    @Serializable
+    data class LotteryRewardTransaction(
+        override val id: Long,
+        override val transactionType: TransactionType,
+        override val timestamp: kotlinx.datetime.Instant,
+        @Serializable(UserIdAsStringSerializer::class)
+        override val user: UserId,
+        val sonhos: Long,
+        val lotteryId: Long,
+        val taxed: Boolean,
+        val payoutWithoutTax: Long
+    ) : SonhosTransaction()
+
+    @Serializable
+    data class LotteryTicketsTransaction(
+        override val id: Long,
+        override val transactionType: TransactionType,
+        override val timestamp: kotlinx.datetime.Instant,
+        @Serializable(UserIdAsStringSerializer::class)
+        override val user: UserId,
+        val sonhos: Long,
+        val lotteryId: Long,
+        val ticketId: Long
     ) : SonhosTransaction()
 
     @Serializable

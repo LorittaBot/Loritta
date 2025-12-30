@@ -6,6 +6,8 @@ import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.rpc.payloads.BlueskyPostRelayRequest
 import net.perfectdreams.loritta.morenitta.rpc.payloads.BlueskyPostRelayResponse
+import net.perfectdreams.loritta.morenitta.rpc.payloads.BuyLotteryTicketRequest
+import net.perfectdreams.loritta.morenitta.rpc.payloads.BuyLotteryTicketResponse
 import net.perfectdreams.loritta.morenitta.rpc.payloads.DailyShopRefreshedRequest
 import net.perfectdreams.loritta.morenitta.rpc.payloads.DailyShopRefreshedResponse
 import net.perfectdreams.loritta.morenitta.rpc.payloads.NotifyBanAppealRequest
@@ -13,6 +15,8 @@ import net.perfectdreams.loritta.morenitta.rpc.payloads.NotifyBanAppealResponse
 import net.perfectdreams.loritta.morenitta.rpc.payloads.TwitchStreamOnlineEventRequest
 import net.perfectdreams.loritta.morenitta.rpc.payloads.TwitchStreamOnlineEventResponse
 import net.perfectdreams.loritta.morenitta.rpc.payloads.UpdateTwitchSubscriptionsResponse
+import net.perfectdreams.loritta.morenitta.rpc.payloads.ViewLotteryStatusRequest
+import net.perfectdreams.loritta.morenitta.rpc.payloads.ViewLotteryStatusResponse
 import net.perfectdreams.loritta.morenitta.utils.config.LorittaConfig
 
 object LorittaRPC {
@@ -29,6 +33,8 @@ object LorittaRPC {
     val TwitchStreamOnlineEvent = registerCommand<TwitchStreamOnlineEventRequest, TwitchStreamOnlineEventResponse>("twitchStreamOnlineEvent")
     val BlueskyPostRelay = registerCommand<BlueskyPostRelayRequest, BlueskyPostRelayResponse>("blueskyPostRelay")
     val DailyShopRefreshed = registerCommand<DailyShopRefreshedRequest, DailyShopRefreshedResponse>("dailyShopRefreshed")
+    val BuyLotteryTicket = registerCommand<BuyLotteryTicketRequest, BuyLotteryTicketResponse>("buyLotteryTicket")
+    val ViewLotteryStats = registerCommand<ViewLotteryStatusRequest, ViewLotteryStatusResponse>("viewLotteryStats")
 
     class LorittaRPCCommandName<RequestType, ResponseType>(val name: String)
 }

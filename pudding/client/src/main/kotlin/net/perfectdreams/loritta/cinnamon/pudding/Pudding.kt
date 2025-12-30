@@ -23,6 +23,9 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.easter2023.CreatedEaste
 import net.perfectdreams.loritta.cinnamon.pudding.tables.easter2023.Easter2023Drops
 import net.perfectdreams.loritta.cinnamon.pudding.tables.easter2023.Easter2023Players
 import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.*
+import net.perfectdreams.loritta.cinnamon.pudding.tables.lotteries.Lotteries
+import net.perfectdreams.loritta.cinnamon.pudding.tables.lotteries.LotteryTicketNumbers
+import net.perfectdreams.loritta.cinnamon.pudding.tables.lotteries.LotteryTickets
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.CorreiosPackageUpdateUserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.DailyTaxTaxedUserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.DailyTaxWarnUserNotifications
@@ -410,7 +413,10 @@ class Pudding(
             BomDiaECiaConfigs,
             TaxFreeDaysConfigs,
             MinesSinglePlayerMatches,
-            DiscordGuilds
+            DiscordGuilds,
+            Lotteries,
+            LotteryTickets,
+            LotteryTicketNumbers
         )
 
         if (schemas.isNotEmpty()) {

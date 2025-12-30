@@ -1,0 +1,8 @@
+lottery:
+  youWonTheLottery: "Você ganhou na Loteria!"
+  drawnNumbers: "**Números sorteados:** {winningNumbers}"
+  youAndXMoreUsersHitNumbers: "Você e mais {usersCount,plural, =0 {# pessoas} one {# pessoa} other {# pessoas}} acertaram **{hitsCount,plural, =0 {# números} one {# número} other {# números}}**!"
+  youHitNumbers: "Você acertou **{hitsCount,plural, =0 {# números} one {# número} other {# números}}**!"
+  luckyTickets: "**Cartelas Sortudas ({ticketCount}):**"
+  andXTicketsMore: "...e mais {ticketCount,plural, =0 {# cartelas} one {# cartela} other {# cartelas}}!"
+  youWonXSonhos: "Você ganhou {sonhosEmoji} **{sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}**!"

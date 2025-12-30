@@ -1,0 +1,33 @@
+label: "loteria"
+description: "Comandos relacionados a Loteria da Loritta"
+
+buy:
+  label: "comprar"
+  description: "Compra uma cartela da Loteria"
+
+  youBoughtAnTicket: "Você comprou 1 cartela por **{totalPrice,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** com os números {numbers}! Agora é só sentar, relaxar, e acompanhar o status da loteria usando {lotteryStatusMention}!"
+  wantMoreChances: "Querendo mais chances de ganhar? Que tal comprar outra cartela? {lotteryBuyMention}"
+
+  youHaveAlreadyBettedWithTheseNumbers: "Você já tem uma cartela com esses números!"
+  youNeedToBetXNumbers: "A sua cartela precisa ter, exatamente, **{numbers,plural, =0 {# números} one {# número} other {# números}}**!"
+  youCannotBetRepeatedNumbers: "Você não pode ter uma cartela com números repetidos!"
+  invalidNumber: "A sua cartela tem números inválidos! Cada número precisa estar entre **{minNumber}** e **{maxNumber}**!"
+  noActiveLottery: "Não tem nenhuma loteria ativa para você comprar uma cartela..."
+
+  options:
+    numbers:
+      text: "Os números da sua cartela"
+
+status:
+  label: "status"
+  description: "Veja as estatísticas da Loteria atual"
+
+  userBoughtTickets: "**Cartelas que você comprou:** {ticketQuantity,plural, =0 {# tickets} one {# ticket} other {# tickets}}"
+  boughtTickets: "**Cartelas compradas:** {ticketQuantity,plural, =0 {# tickets} one {# ticket} other {# tickets}}"
+  buyAnTicketFor: "Compre uma cartela por **{ticketPrice,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** usando {lotteryBuyMention}!"
+  currentPrize: "**Prêmio atual:** {currentPrize,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
+  usersParticipating: "**Pessoas participando:** {usersParticipating,plural, =0 {# pessoas} one {# pessoa} other {# pessoas}}"
+  resultsIn: "Resultado irá sair em **{result}**!"
+  winningNumbers: "**Números sorteados:** {winningNumbers}"
+  hits: "**Acertos:** {hits,plural, =0 {# acertos} one {# acerto} other {# acertos}}"
+  noActiveLottery: "Não tem nenhuma loteria ativa para você ver os status dela..."

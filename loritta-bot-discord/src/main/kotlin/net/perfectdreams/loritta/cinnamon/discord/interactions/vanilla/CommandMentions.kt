@@ -36,6 +36,9 @@ CommandMentions(private val registeredCommands: List<DiscordCommand>) {
     val raffleStatus = commandMention("rifa status")
     val raffleBuy = commandMention("rifa comprar")
 
+    val lotteryStatus = commandMention("loteria status")
+    val lotteryBuy = commandMention("loteria comprar")
+
     val verifyMessageUrl = commandMention("verificarmensagem url")
     val verifyMessageFile = commandMention("verificarmensagem arquivo")
 

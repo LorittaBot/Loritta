@@ -7,5 +7,6 @@ data class DailyShopRefreshedRequest(val dailyShopId: Long)
 
 @Serializable
 sealed class DailyShopRefreshedResponse {
+    @Serializable
     data object Success : DailyShopRefreshedResponse()
 }
