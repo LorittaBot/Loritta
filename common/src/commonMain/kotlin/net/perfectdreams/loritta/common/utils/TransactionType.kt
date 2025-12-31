@@ -64,7 +64,7 @@ enum class TransactionType(
     RAFFLE(
         I18nKeysData.Commands.Command.Transactions.Types.Raffle.Title,
         I18nKeysData.Commands.Command.Transactions.Types.Raffle.Description,
-        Emotes.Ticket.toLorittaEmojiReference(),
+        Emotes.AdmissionTicket.toLorittaEmojiReference(),
         true,
     ),
     LOTTERY(

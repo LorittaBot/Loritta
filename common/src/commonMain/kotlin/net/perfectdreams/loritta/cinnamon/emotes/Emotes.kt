@@ -103,6 +103,7 @@ object Emotes {
     val WhiteFlag = UnicodeEmote("\uD83C\uDFF3️")
     val BlackFlag = UnicodeEmote("\uD83C\uDFF4")
     val Newspaper = UnicodeEmote("\uD83D\uDCF0")
+    val AdmissionTicket = UnicodeEmote("\uD83C\uDF9F\uFE0F")
     val Ticket = UnicodeEmote("\uD83C\uDFAB")
     val Scissors = UnicodeEmote("✂️")
     val Rock = UnicodeEmote("\uD83E\uDEA8")

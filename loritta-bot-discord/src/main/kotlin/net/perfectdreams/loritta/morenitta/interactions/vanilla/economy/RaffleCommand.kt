@@ -510,7 +510,7 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             context.reply(false) {
                 styled(
                     context.i18nContext.get(I18N_PREFIX.Buy.YouBoughtAnTicket(quantity, quantity * raffleType.ticketPrice, context.i18nContext.get(raffleType.title), loritta.commandMentions.raffleStatus)),
-                    net.perfectdreams.loritta.cinnamon.emotes.Emotes.Ticket
+                    net.perfectdreams.loritta.cinnamon.emotes.Emotes.AdmissionTicket
                 )
 
                 styled(
