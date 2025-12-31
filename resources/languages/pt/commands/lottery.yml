@@ -25,7 +25,7 @@ status:
 
   userBoughtTickets: "**Cartelas que você comprou:** {ticketQuantity,plural, =0 {# tickets} one {# ticket} other {# tickets}}"
   boughtTickets: "**Cartelas compradas:** {ticketQuantity,plural, =0 {# tickets} one {# ticket} other {# tickets}}"
-  buyAnTicketFor: "Compre uma cartela por **{ticketPrice,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** usando {lotteryBuyMention}!"
+  buyAnTicketFor: "Compre uma cartela por **{ticketPrice,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** usando {lotteryBuyMention}! Números vão de {minRange,number} a {maxRange,number} na cartela."
   currentPrize: "**Prêmio atual:** {currentPrize,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
   currentPrizeWithHouseSponsorship: "**Prêmio atual:** {currentPrize,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} ({houseSponsorship,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} são financiados pela Loritta!)"
   usersParticipating: "**Pessoas participando:** {usersParticipating,plural, =0 {# pessoas} one {# pessoa} other {# pessoas}}"

@@ -15,6 +15,7 @@ sealed class ViewLotteryStatusResponse {
         val houseSponsorship: Long?,
         val howManyTicketsYouBought: Long,
         val usersParticipating: Long,
+        val tableTotalNumbers: Int,
         val endsAt: Instant,
         val results: LotteryResults?
     ) : ViewLotteryStatusResponse() {

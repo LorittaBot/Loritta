@@ -203,7 +203,7 @@ class LotteryCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                         } else {
                             styled(
                                 context.i18nContext.get(I18N_PREFIX.Status.CurrentPrize(currentPrize)),
-                                "\uD83E\uDD29",
+                                Emotes.Ticket,
                             )
                         }
 
@@ -230,6 +230,13 @@ class LotteryCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                                     )
                                 ),
                                 "\uD83D\uDD52",
+                            )
+
+                            styled(
+                                context.i18nContext.get(
+                                    I18N_PREFIX.Status.BuyAnTicketFor(response.ticketPrice, loritta.commandMentions.lotteryBuy, 1, response.tableTotalNumbers),
+                                ),
+                                Emotes.DollarBill
                             )
                         } else {
                             styled(

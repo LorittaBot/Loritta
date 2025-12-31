@@ -4,6 +4,7 @@ import dev.minn.jda.ktx.messages.MessageCreateBuilder
 import kotlinx.coroutines.sync.withLock
 import net.perfectdreams.loritta.cinnamon.discord.utils.RunnableCoroutine
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.lotteries.Lotteries
 import net.perfectdreams.loritta.cinnamon.pudding.tables.lotteries.LotteryTicketNumbers
@@ -185,7 +186,7 @@ class LorittaLotteryTask(val m: LorittaBot) : RunnableCoroutine {
 
                                     this.text(
                                         buildString {
-                                            appendLine("## ${i18nContext.get(I18nKeysData.Lottery.YouWonTheLottery)}")
+                                            appendLine("## ${Emotes.LoriRich} ${i18nContext.get(I18nKeysData.Lottery.YouWonTheLottery)}")
 
                                             appendLine()
                                             appendLine(i18nContext.get(I18nKeysData.Lottery.DrawnNumbers(LotteryUtils.formatTicketNumbers(lotteryDM.winningNumbers))))
@@ -198,7 +199,7 @@ class LorittaLotteryTask(val m: LorittaBot) : RunnableCoroutine {
                                             appendLine()
                                             appendLine(i18nContext.get(I18nKeysData.Lottery.YouWonXSonhos(SonhosUtils.getSonhosEmojiOfQuantity(lotteryDM.money), lotteryDM.money)))
                                             appendLine()
-                                            appendLine(i18nContext.get(I18nKeysData.Lottery.LuckyTickets(lotteryDM.winningTicketNumbers.size)))
+                                            appendLine(Emotes.Ticket.toString() + " " + i18nContext.get(I18nKeysData.Lottery.LuckyTickets(lotteryDM.winningTicketNumbers.size)))
                                             for (ticket in lotteryDM.winningTicketNumbers.take(25)) {
                                                 appendLine(LotteryUtils.formatTicketNumbers(ticket))
                                             }

@@ -62,6 +62,7 @@ class ViewLotteryStatusRPCCommand(val loritta: LorittaBot) : LorittaRPCCommand(L
                     activeLottery[Lotteries.houseSponsorship],
                     howManyTicketsYouBought,
                     usersParticipating,
+                    activeLottery[Lotteries.tableTotalNumbers],
                     activeLottery[Lotteries.endsAt].toInstant().toKotlinInstant(),
                     if (activeLottery[Lotteries.endedAt] != null) {
                         ViewLotteryStatusResponse.Success.LotteryResults(
