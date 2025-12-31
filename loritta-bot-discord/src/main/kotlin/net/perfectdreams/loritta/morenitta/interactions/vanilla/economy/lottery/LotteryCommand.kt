@@ -59,14 +59,26 @@ class LotteryCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             val numbers = numbersAsString
                 .replace(",", "")
                 .split(" ")
-                .map { it.toInt() }
+                .map { it.toIntOrNull() }
+
+            if (numbers.any { it == null }) {
+                context.reply(false) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.Buy.InvalidInput),
+                        Emotes.Error
+                    )
+                }
+                return
+            }
+
+            val numbersNotNull = numbers.filterNotNull()
 
             val response = LorittaRPC.BuyLotteryTicket.execute(
                 loritta,
                 loritta.lorittaMainCluster,
                 BuyLotteryTicketRequest(
                     context.user.idLong,
-                    numbers
+                    numbersNotNull
                 )
             )
 
@@ -74,7 +86,7 @@ class LotteryCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 is BuyLotteryTicketResponse.Success -> {
                     context.reply(false) {
                         styled(
-                            context.i18nContext.get(I18N_PREFIX.Buy.YouBoughtAnTicket(response.ticketPrice, LotteryUtils.formatTicketNumbers(numbers), loritta.commandMentions.lotteryStatus)),
+                            context.i18nContext.get(I18N_PREFIX.Buy.YouBoughtAnTicket(response.ticketPrice, LotteryUtils.formatTicketNumbers(numbersNotNull), loritta.commandMentions.lotteryStatus)),
                             Emotes.Ticket
                         )
 

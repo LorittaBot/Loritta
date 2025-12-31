@@ -13,6 +13,7 @@ buy:
   youCannotBetRepeatedNumbers: "Você não pode ter uma cartela com números repetidos!"
   invalidNumber: "A sua cartela tem números inválidos! Cada número precisa estar entre **{minNumber}** e **{maxNumber}**!"
   noActiveLottery: "Não tem nenhuma loteria ativa para você comprar uma cartela..."
+  invalidInput: "Para comprar uma cartela, você precisa passar os números da sua cartela desta forma: `01 30 34 42 67 69`!"
 
   options:
     numbers:
