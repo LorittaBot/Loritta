@@ -33,7 +33,6 @@ class LotteryCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.ECONOMY, UUID.fromString("53568a01-5c50-4bbf-9e9b-2931dd4dd396")) {
         this.enableLegacyMessageSupport = true
         this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
-        this.defaultMemberPermissions = DefaultMemberPermissions.enabledFor(Permission.MESSAGE_MANAGE)
 
         subcommand(I18N_PREFIX.Buy.Label, I18N_PREFIX.Buy.Description, UUID.fromString("85abe25a-c227-4f7b-ae15-97d878a04397")) {
             executor = LotteryBuyTicketExecutor(loritta)
