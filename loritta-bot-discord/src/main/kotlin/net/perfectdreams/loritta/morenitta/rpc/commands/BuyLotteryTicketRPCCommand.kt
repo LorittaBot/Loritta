@@ -63,7 +63,7 @@ class BuyLotteryTicketRPCCommand(val loritta: LorittaBot) : LorittaRPCCommand(Lo
                     .innerJoin(LotteryTickets)
                     .select(LotteryTicketNumbers.ticket, LotteryTickets.lottery)
                     .where {
-                        LotteryTickets.lottery eq activeLottery[Lotteries.id] and (LotteryTicketNumbers.number inList request.numbers)
+                        LotteryTickets.lottery eq activeLottery[Lotteries.id] and (LotteryTicketNumbers.number inList request.numbers) and (LotteryTickets.userId eq request.userId)
                     }
                     .groupBy(LotteryTicketNumbers.ticket, LotteryTickets.lottery)
                     .having { LotteryTicketNumbers.number.count() eq activeLottery[Lotteries.numbersPerTicket].toLong() }
