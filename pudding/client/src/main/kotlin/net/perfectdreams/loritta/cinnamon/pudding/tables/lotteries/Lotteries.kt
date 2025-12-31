@@ -12,4 +12,5 @@ object Lotteries : LongIdTable() {
     val ticketPrice = long("ticket_price")
     val winningNumbers = array<Int>("winning_numbers").nullable()
     val hits = integer("hits").nullable()
+    val houseSponsorship = long("house_sponsorship").nullable()
 }

@@ -1,0 +1,1 @@
+ALTER TABLE lotteries ADD COLUMN house_sponsorship BIGINT;

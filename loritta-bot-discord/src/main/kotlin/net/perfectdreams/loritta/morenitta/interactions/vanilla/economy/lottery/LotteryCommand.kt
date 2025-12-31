@@ -185,16 +185,27 @@ class LotteryCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
             when (response) {
                 is ViewLotteryStatusResponse.Success -> {
+                    var currentPrize = (response.ticketPrice * response.totalTickets)
+                    if (response.houseSponsorship != null)
+                        currentPrize += response.houseSponsorship
+
                     context.reply(false) {
                         styled(
-                            "**Loteria**",
+                            "**Loteritta**",
                             "<:loritta:331179879582269451>"
                         )
 
-                        styled(
-                            context.i18nContext.get(I18N_PREFIX.Status.CurrentPrize(response.ticketPrice * response.totalTickets)),
-                            "\uD83E\uDD29",
-                        )
+                        if (response.houseSponsorship != null) {
+                            styled(
+                                context.i18nContext.get(I18N_PREFIX.Status.CurrentPrizeWithHouseSponsorship(currentPrize, response.houseSponsorship)),
+                                "\uD83E\uDD29",
+                            )
+                        } else {
+                            styled(
+                                context.i18nContext.get(I18N_PREFIX.Status.CurrentPrize(currentPrize)),
+                                "\uD83E\uDD29",
+                            )
+                        }
 
                         styled(
                             context.i18nContext.get(I18N_PREFIX.Status.BoughtTickets(response.totalTickets)),

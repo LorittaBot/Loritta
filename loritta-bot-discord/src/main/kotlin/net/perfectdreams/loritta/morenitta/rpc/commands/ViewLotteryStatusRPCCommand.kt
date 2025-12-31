@@ -59,6 +59,7 @@ class ViewLotteryStatusRPCCommand(val loritta: LorittaBot) : LorittaRPCCommand(L
                 return@transaction ViewLotteryStatusResponse.Success(
                     totalTickets,
                     activeLottery[Lotteries.ticketPrice],
+                    activeLottery[Lotteries.houseSponsorship],
                     howManyTicketsYouBought,
                     usersParticipating,
                     activeLottery[Lotteries.endsAt].toInstant().toKotlinInstant(),

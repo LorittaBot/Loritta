@@ -12,6 +12,7 @@ sealed class ViewLotteryStatusResponse {
     data class Success(
         val totalTickets: Long,
         val ticketPrice: Long,
+        val houseSponsorship: Long?,
         val howManyTicketsYouBought: Long,
         val usersParticipating: Long,
         val endsAt: Instant,

@@ -84,7 +84,10 @@ class LorittaLotteryTask(val m: LorittaBot) : RunnableCoroutine {
                                     .having { LotteryTicketNumbers.number.count() eq requiredNumbersToGet.toLong() }
                                     .toList()
 
-                                val totalPayout = currentLottery[Lotteries.ticketPrice] * totalTickets
+                                var totalPayout = currentLottery[Lotteries.ticketPrice] * totalTickets
+                                val houseSponsorship = currentLottery[Lotteries.houseSponsorship]
+                                if (houseSponsorship != null)
+                                    totalPayout += houseSponsorship
 
                                 if (winningTickets.isNotEmpty()) {
                                     // Set ticket winners
