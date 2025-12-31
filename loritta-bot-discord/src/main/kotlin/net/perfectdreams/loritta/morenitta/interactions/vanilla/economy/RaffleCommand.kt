@@ -320,7 +320,7 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
                 styled(
                     context.i18nContext.get(I18N_PREFIX.Status.BoughtTickets(currentTickets)),
-                    "\uD83C\uDFAB",
+                    net.perfectdreams.loritta.cinnamon.emotes.Emotes.AdmissionTicket,
                 )
 
                 styled(
