@@ -62,7 +62,9 @@ fun FlowContent.discordMessageRenderer(
                         if (title != null) {
                             val titleUrl = embed.url
                             if (titleUrl != null) {
-                                a(href = titleUrl, classes = "discord-embed-title") {
+                                // No need to point it to the real URL
+                                // (See: anchor "javascript:" tag)
+                                a(href = "#", classes = "discord-embed-title") {
                                     transformedDiscordText(title, channels, roles, placeholders)
                                 }
                             } else {
@@ -372,7 +374,9 @@ fun FlowContent.discordAuthor(
         }
 
         if (authorUrl != null) {
-            a(href = authorUrl, classes = "discord-embed-text") {
+            // No need to point it to the real URL
+            // (See: anchor "javascript:" tag)
+            a(href = "#", classes = "discord-embed-text") {
                 content()
             }
         } else {
