@@ -61,6 +61,8 @@ class PutWarnActionsGuildDashboardRoute(website: LorittaDashboardWebServer) : Re
                     }
                 }
             }
+
+            serverConfig.moderationConfig = moderationConfig
         }
 
         call.respondConfigSaved(i18nContext)
