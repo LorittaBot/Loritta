@@ -1,4 +1,3 @@
-
 title: "A História da Criação da Loritta (Bot)"
 authors: [ "mrpowergamerbr" ]
 ---  
