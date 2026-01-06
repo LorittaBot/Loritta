@@ -637,7 +637,7 @@
     "commands.command.brmemes.briggscover.description": "Look! @GuilhermeBriggs bought a new game and is showing off to everyone!",
     "commands.command.brmemes.romerobritto.label": "romerobritto",
     "commands.command.brmemes.romerobritto.description": "Have Romero Britto paint your amazing art!",
-    "commands.command.money.label": "coin",
+    "commands.command.money.label": "currency",
     "commands.command.money.description": "Converts a currency value to another. Useful if you want to know how much a Discord Nitro costs in your currency!",
     "commands.command.money.result": "**{input,number,#.##} {fromCurrency} in {toCurrency}: {result,number,#.##} {toCurrency}**",
     "commands.command.money.invalidCurrency": "`{currency}` is not a valid currency!",
