@@ -1200,3 +1200,19 @@ aside#that-wasnt-very-cash-money-of-you-fixed-sidebar-reserved-space {
         }
     }
 }
+
+.computer-description {
+    display: block;
+
+    @media (1280px > width) {
+        display: none;
+    }
+}
+
+.mobile-description {
+    display: none;
+
+    @media (1280px > width) {
+        display: block;
+    }
+}
