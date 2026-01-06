@@ -2,4 +2,5 @@ website:
   dashboard:
     overview:
       title: "Visão geral"
-      description: "Acesse as seções na sidebar para configurar as minhas funcionalidades!"
+      descriptionComputer: "Acesse as seções do painel na barra lateral para configurar as minhas funcionalidades!"
+      descriptionMobile: "Clique no botão de hamburger {hamburgerButton} para abrir a barra lateral e ter acesso as seções do painel para configurar as minhas funcionalidades!"
