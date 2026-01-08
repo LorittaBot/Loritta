@@ -492,14 +492,21 @@ class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandE
         context: LegacyMessageCommandContext,
         args: List<String>
     ): Map<OptionReference<*>, Any?> {
-        val user = context.getUser(0) ?: context.user
-        val page = args.getOrNull(0)?.toLongOrNull() ?: args.getOrNull(1)?.toLongOrNull() ?: 1
+        val user = context.getUser(0)
+        val firstArgAsLong = args.getOrNull(0)?.toLongOrNull()
+
+        if (args.size == 1 && user != null) {
+            // If we have one argument and it is a user, then we will use it as the user
+            return mapOf(
+                options.user to UserAndMember(user, null),
+                options.page to 1L
+            )
+        }
+
+        val page = args.getOrNull(1)?.toLongOrNull() ?: firstArgAsLong ?: 1L
 
         return mapOf(
-            options.user to UserAndMember(
-                user,
-                null
-            ),
+            options.user to user?.let { UserAndMember(it, null) },
             options.page to page
         )
     }
