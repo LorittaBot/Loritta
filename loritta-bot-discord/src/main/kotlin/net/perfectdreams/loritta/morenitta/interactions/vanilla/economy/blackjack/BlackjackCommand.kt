@@ -740,6 +740,23 @@ class BlackjackCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper
                         }
                     }
 
+                    val refreshButton = loritta.interactivityManager.buttonForUser(
+                        context.user,
+                        context.alwaysEphemeral,
+                        UnleashedButton.of(
+                            ButtonStyle.SECONDARY,
+                            context.i18nContext.get(I18N_PREFIX.Play.Buttons.Refresh)
+                        )
+                    ) {
+                        val hook = it.deferEditAsync()
+
+                        mutex.withLock {
+                            hook.await().editMessage {
+                                createMessage(context, blackjack, titleSuit, matchId, matchBet, buttons)
+                            }.await()
+                        }
+                    }
+
                     buttons = BlackjackButtons(
                         hitButton,
                         standButton,
@@ -747,7 +764,8 @@ class BlackjackCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper
                         splitButton,
                         payInsuranceButton,
                         howToPlayButton,
-                        houseRulesButton
+                        houseRulesButton,
+                        refreshButton
                     )
 
                     if (blackjack.gameState is Blackjack.GameState.GameOver) {
@@ -1079,7 +1097,8 @@ class BlackjackCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper
             } else {
                 this.actionRow(
                     buttons.howToPlayButton,
-                    buttons.houseRulesButton
+                    buttons.houseRulesButton,
+                    buttons.refreshButton
                 )
             }
         }

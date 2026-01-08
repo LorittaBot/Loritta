@@ -24,6 +24,9 @@ play:
 
   withdrawSonhos: "Sacar ({sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}})"
   end: "Encerrar"
+  __refreshContext: "Button Label"
+  __refreshTransformers: "titlecase"
+  refresh: "Atualizar"
 
   congratulations: "Parabéns!"
   youWon: "Você saiu vivo da caverna e, após vender **{gemsCount,plural, =0 {nenhuma pedra preciosa} one {uma pedra preciosa} other {# pedras preciosas}}**, ganhou {sonhosEmoji} **{sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** ({sonhosProfitEmoji} +{sonhosProfits,plural, =0 {# sonhos} one {# sonho} other {# sonhos}})!"

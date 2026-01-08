@@ -449,10 +449,26 @@ class MinesCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                         }
                     }
 
+                    val refreshButton = loritta.interactivityManager.buttonForUser(
+                        context.user,
+                        context.alwaysEphemeral,
+                        ButtonStyle.SECONDARY,
+                        context.i18nContext.get(I18N_PREFIX.Play.Refresh)
+                    ) { context ->
+                        val hook = context.deferEditAsync()
+
+                        mutex.withLock {
+                            hook.await().editMessage {
+                                createMessage(context, matchId, minesPlayfield, minesButtons, matchBet)
+                            }.await()
+                        }
+                    }
+
                     minesButtons = MinesButtons(
                         buttons,
                         randomPickButton,
-                        payoutButton
+                        payoutButton,
+                        refreshButton
                     )
 
                     val message = context.reply(false) {
@@ -678,7 +694,8 @@ class MinesCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
                 this.actionRow(
                     buttons.randomPickButton
-                        .withDisabled(minesPlayfield.gameState !is MinesPlayfield.GameState.Playing)
+                        .withDisabled(minesPlayfield.gameState !is MinesPlayfield.GameState.Playing),
+                    buttons.refreshButton
                 )
 
                 this.text(

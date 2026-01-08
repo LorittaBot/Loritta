@@ -9,5 +9,6 @@ class BlackjackButtons(
     val splitButton: Button,
     val payInsuranceButton: Button,
     val howToPlayButton: Button,
-    val houseRulesButton: Button
+    val houseRulesButton: Button,
+    val refreshButton: Button
 )

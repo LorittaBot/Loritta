@@ -6,4 +6,5 @@ class MinesButtons(
     val playfieldButtons: List<Button>,
     val randomPickButton: Button,
     val payoutButton: Button,
+    val refreshButton: Button
 )

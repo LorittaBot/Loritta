@@ -36,6 +36,9 @@ play:
     __houseRulesContext: "Button Label"
     __houseRulesTransformers: "titlecase"
     houseRules: "Regras da Casa"
+    __refreshContext: "Button Label"
+    __refreshTransformers: "titlecase"
+    refresh: "Atualizar"
 
   errors:
     cannotDoThisNow: "Você não pode fazer isto agora!"
