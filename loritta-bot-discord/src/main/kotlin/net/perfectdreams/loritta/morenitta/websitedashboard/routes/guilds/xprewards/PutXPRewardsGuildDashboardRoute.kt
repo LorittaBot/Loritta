@@ -42,6 +42,7 @@ class PutXPRewardsGuildDashboardRoute(website: LorittaDashboardWebServer) : Requ
             }
 
             // Main
+            serverConfig.levelConfig = levelConfig
             levelConfig.roleGiveType = request.roleGiveType
 
             // Deletar todas que já existem
