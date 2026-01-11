@@ -393,7 +393,7 @@ fun Permission.getI18nKey() = when (this) {
     MESSAGE_SEND_POLLS -> I18nKeys.Permissions.MessageSendPolls
     USE_EXTERNAL_APPLICATIONS -> I18nKeys.Permissions.UseExternalApplications
     PIN_MESSAGES -> I18nKeys.Permissions.PinMessages
-    BYPASS_SLOWMODE -> TODO()
+    BYPASS_SLOWMODE -> I18nKeys.Permissions.BypassSlowmode
     UNKNOWN -> I18nKeys.Permissions.UnknownPermission
 }
 
