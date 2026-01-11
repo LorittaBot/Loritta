@@ -13,17 +13,50 @@ website:
           title: "Avisar quando alguém for banido"
         memberUnbanned:
           title: "Avisar quando alguém for desbanido"
+        memberJoin:
+          title: "Avisar quando alguém entrar no servidor"
+        memberLeave:
+          title: "Avisar quando alguém sair do servidor"
+        memberRoleAdd:
+          title: "Avisar quando um cargo for adicionado a um membro"
+        memberRoleRemove:
+          title: "Avisar quando um cargo for removido de um membro"
+        memberTimeout:
+          title: "Avisar quando alguém for colocado em timeout"
         messageEdited:
           title: "Avisar quando uma mensagem for editada"
           description: "Para a Loritta notificar quando uma mensagem for editada, ela terá que salvar as mensagens enviadas no seu servidor"
         messageDeleted:
           title: "Avisar quando uma mensagem for deletada"
           description: "Para a Loritta notificar quando uma mensagem for deletada, ela terá que salvar as mensagens enviadas no seu servidor"
+        imageDeleted:
+          title: "Avisar quando uma imagem for deletada"
+          description: "Para a Loritta notificar quando uma imagem for deletada, ela terá que salvar as mensagens enviadas no seu servidor"
+        bulkMessageDeleted:
+          title: "Avisar quando mensagens forem deletadas em massa"
+        inviteCreated:
+          title: "Avisar quando um convite for criado"
+        moderatorCommands:
+          title: "Avisar quando comandos de moderação forem usados"
         nicknameChanges:
           title: "Avisar quando alguém alterar o nickname"
         avatarChanges:
           title: "Avisar quando alguém alterar o avatar"
+        roleCreate:
+          title: "Avisar quando um cargo for criado"
+        roleDelete:
+          title: "Avisar quando um cargo for deletado"
+        roleUpdate:
+          title: "Avisar quando um cargo for atualizado"
+        channelCreate:
+          title: "Avisar quando um canal for criado"
+        channelDelete:
+          title: "Avisar quando um canal for deletado"
+        channelUpdate:
+          title: "Avisar quando um canal for atualizado"
         voiceChannelJoins:
           title: "Avisar quando alguém entrar em um canal de voz"
         voiceChannelLeaves:
           title: "Avisar quando alguém sair de um canal de voz"
+        voiceChannelMove:
+          title: "Avisar quando alguém mudar de canal de voz"
