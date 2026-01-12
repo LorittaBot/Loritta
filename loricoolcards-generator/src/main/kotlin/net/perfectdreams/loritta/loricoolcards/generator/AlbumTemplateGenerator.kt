@@ -24,7 +24,7 @@ fun main() {
         var isFirstLine = true
         var imageFileName: String? = null
 
-        File("D:\\Pictures\\Loritta\\LoriCoolCards\\pages\\$fileName.psd.txt")
+        File("/mnt/HDDThings/Pictures/Loritta/LoriCoolCards/pages/$fileName.psd.txt")
             .readLines()
             .forEach {
                 if (isFirstLine) {
@@ -453,7 +453,7 @@ fun main() {
             sonhosReward = 1_000_000,
             stickersInPack = 5,
             boosterPacksOnDailyReward = 6,
-            boosterPacksPurchaseAvailableAfter = Instant.parse("2025-12-01T22:00:00+00"),
+            boosterPacksPurchaseAvailableAfter = Instant.parse("2026-01-01T22:00:00+00"),
             stickerProbabilityWeights = mapOf(
                 CardRarity.COMMON to 1.0,
                 CardRarity.UNCOMMON to 1.0,
@@ -470,8 +470,8 @@ fun main() {
     )
 
     File("album.sql")
-        .writeText("INSERT INTO loricoolcardsevents (event_name, starts_at, ends_at, template) VALUES ('Top 500 Mais Rápidos (Temporada 1)', '2025-12-01T03:00:00+00', '2026-01-01 03:00:00+00', '$resultAsJson');")
-    if (true) {
+        .writeText("INSERT INTO loricoolcardsevents (event_name, starts_at, ends_at, template) VALUES ('Top 500 Mais Rápidos (Ato 2: Temporada 2)', '2026-12-01T03:00:00+00', '2026-02-01 03:00:00+00', '$resultAsJson');")
+    if (false) {
         println(
             "UPDATE loricoolcardsevents SET template = '${resultAsJson}' WHERE id = 30;"
         )

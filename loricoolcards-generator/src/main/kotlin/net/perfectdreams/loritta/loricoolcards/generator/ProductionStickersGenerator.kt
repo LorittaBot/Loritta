@@ -76,7 +76,7 @@ suspend fun main() {
 }
 
 suspend fun generateCards(config: LoriCoolCardsGeneratorProductionStickersConfig) {
-    val folderName = "production_v16_befopti"
+    val folderName = "production_v17_befopti"
     val http = HttpClient {}
 
     println("Max memory: ${Runtime.getRuntime().maxMemory()}")
@@ -94,7 +94,7 @@ suspend fun generateCards(config: LoriCoolCardsGeneratorProductionStickersConfig
         .build()
         .awaitReady()
 
-    val sqlCommandsFile = File("D:\\Pictures\\Loritta\\LoriCoolCards\\$folderName\\sql_commands.sql")
+    val sqlCommandsFile = File("/mnt/HDDThings/Pictures/Loritta/LoriCoolCards/$folderName/sql_commands.sql")
     if (sqlCommandsFile.exists()) {
         println("SQL commands file already exists!")
         readLine()
@@ -152,7 +152,9 @@ suspend fun generateCards(config: LoriCoolCardsGeneratorProductionStickersConfig
         ReactionEventBadge.Anniversary2025ReactionEventSuperBadge(pudding),
         TopLoveLetterBadge(pudding),
         ReactionEventBadge.Halloween2025ReactionEventBadge(pudding),
-        ReactionEventBadge.Halloween2025ReactionEventSuperBadge(pudding)
+        ReactionEventBadge.Halloween2025ReactionEventSuperBadge(pudding),
+        ReactionEventBadge.Christmas2025ReactionEventBadge(pudding),
+        ReactionEventBadge.Christmas2025ReactionEventSuperBadge(pudding)
     )
 
     // Badges that requires a "Loritta" instance, so, to avoid changing the badges too much, we just pretend that the badge is valid and carry on with our lives
@@ -215,7 +217,7 @@ suspend fun generateCards(config: LoriCoolCardsGeneratorProductionStickersConfig
         351760430991147010L,
         437731723350900739L,
         472085605623529496L,
-        236167700777271297L,
+        670071034074103854L,
         716468730799980587L,
         197501878399926272L
     )
@@ -242,7 +244,7 @@ suspend fun generateCards(config: LoriCoolCardsGeneratorProductionStickersConfig
         staffProfilesTemporary.first { it[Profiles.id].value == 437731723350900739L }, // nathaan
         staffProfilesTemporary.first { it[Profiles.id].value == 472085605623529496L }, // José
 
-        staffProfilesTemporary.first { it[Profiles.id].value == 236167700777271297L }, // Hech
+        staffProfilesTemporary.first { it[Profiles.id].value == 670071034074103854L }, // Hech
         staffProfilesTemporary.first { it[Profiles.id].value == 716468730799980587L }, // Furalha
         staffProfilesTemporary.first { it[Profiles.id].value == 197501878399926272L }, // Paum
     )
@@ -395,7 +397,7 @@ suspend fun generateCards(config: LoriCoolCardsGeneratorProductionStickersConfig
                         ImageIO.write(
                             frontFacingCard,
                             "png",
-                            File("D:\\Pictures\\Loritta\\LoriCoolCards\\$folderName\\sticker-$outputName-front.png")
+                            File("/mnt/HDDThings/Pictures/Loritta/LoriCoolCards/$folderName/sticker-$outputName-front.png")
                         )
 
                         println("Took ${Clock.System.now() - start} to generate the front facing card for ${user.idLong}")
@@ -407,8 +409,8 @@ suspend fun generateCards(config: LoriCoolCardsGeneratorProductionStickersConfig
                             LoriCoolCardsManager.StickerReceivedRenderType.LoriCoolCardsEvent
                         )
 
-                        File("D:\\Pictures\\Loritta\\LoriCoolCards\\$folderName\\sticker-$outputName-animated.gif")
-                        File("D:\\Pictures\\Loritta\\LoriCoolCards\\$folderName\\sticker-$outputName-animated.gif")
+                        File("/mnt/HDDThings/Pictures/Loritta/LoriCoolCards/$folderName/sticker-$outputName-animated.gif")
+                        File("/mnt/HDDThings/Pictures/Loritta/LoriCoolCards/$folderName/sticker-$outputName-animated.gif")
                             .writeBytes(stickerReceivedGIF)
 
                         println("Took ${Clock.System.now() - start2} to generate the card animated GIF for ${user.idLong}")
