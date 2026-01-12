@@ -42,6 +42,7 @@ play:
 
   errors:
     cannotDoThisNow: "Você não pode fazer isto agora!"
+    cannotDoThisNowTip: "**Dica:** As vezes eu recebo o seu pedido, mas acabo falhando ao editar a mensagem devido a fatores fora do meu controle. Se isso aconteceu, clique no botão de \"Atualizar\"!"
     alreadyStanding: "Você não pode pedir mais cartas pois você já pediu para parar"
     alreadyDoubledDown: "Você não pode dobrar mais que uma vez!"
     cannotDoubleDown: "Você não pode dobrar com essa mão!"

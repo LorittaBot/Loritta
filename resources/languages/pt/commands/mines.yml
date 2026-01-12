@@ -38,6 +38,7 @@ play:
 
   errors:
     cannotDoThisNow: "Você não pode fazer isto agora!"
+    cannotDoThisNowTip: "**Dica:** As vezes eu recebo o seu pedido, mas acabo falhando ao editar a mensagem devido a fatores fora do meu controle. Se isso aconteceu, clique no botão de \"Atualizar\"!"
     youNeedToPickAtLeastOneTileBeforePayingOut: "Você precisa limpar pelo ou menos um quadrado para poder pedir payout!"
     youAlreadyPickedThisTile: "Você já limpou este quadrado!"
 

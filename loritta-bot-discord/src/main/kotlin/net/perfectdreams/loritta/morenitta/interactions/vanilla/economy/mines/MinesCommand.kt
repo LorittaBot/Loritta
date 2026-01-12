@@ -29,6 +29,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.interactions.components.ComponentContext
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.blackjack.BlackjackCommand
 import net.perfectdreams.loritta.morenitta.mines.MinesPlayfield
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
@@ -286,6 +287,11 @@ class MinesCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                                     styled(
                                         context.i18nContext.get(I18N_PREFIX.Play.Errors.CannotDoThisNow)
                                     )
+
+                                    styled(
+                                        context.i18nContext.get(I18N_PREFIX.Play.Errors.CannotDoThisNowTip),
+                                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriLurk
+                                    )
                                 }
                                 return@buttonForUser
                             }
@@ -339,6 +345,11 @@ class MinesCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                             context.reply(false) {
                                 styled(
                                     context.i18nContext.get(I18N_PREFIX.Play.Errors.CannotDoThisNow)
+                                )
+
+                                styled(
+                                    context.i18nContext.get(I18N_PREFIX.Play.Errors.CannotDoThisNowTip),
+                                    net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriLurk
                                 )
                             }
                             return

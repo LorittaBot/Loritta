@@ -316,6 +316,11 @@ class BlackjackCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper
                                     styled(
                                         context.i18nContext.get(I18N_PREFIX.Play.Errors.CannotDoThisNow)
                                     )
+
+                                    styled(
+                                        context.i18nContext.get(I18N_PREFIX.Play.Errors.CannotDoThisNowTip),
+                                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriLurk
+                                    )
                                 }
                                 return@buttonForUser
                             }
@@ -376,6 +381,11 @@ class BlackjackCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper
                                     styled(
                                         context.i18nContext.get(I18N_PREFIX.Play.Errors.CannotDoThisNow)
                                     )
+
+                                    styled(
+                                        context.i18nContext.get(I18N_PREFIX.Play.Errors.CannotDoThisNowTip),
+                                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriLurk
+                                    )
                                 }
                                 return@buttonForUser
                             }
@@ -430,6 +440,11 @@ class BlackjackCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper
                                 context.reply(false) {
                                     styled(
                                         context.i18nContext.get(I18N_PREFIX.Play.Errors.CannotDoThisNow)
+                                    )
+
+                                    styled(
+                                        context.i18nContext.get(I18N_PREFIX.Play.Errors.CannotDoThisNowTip),
+                                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriLurk
                                     )
                                 }
                                 return@buttonForUser
@@ -530,6 +545,11 @@ class BlackjackCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper
                                     styled(
                                         context.i18nContext.get(I18N_PREFIX.Play.Errors.CannotDoThisNow)
                                     )
+
+                                    styled(
+                                        context.i18nContext.get(I18N_PREFIX.Play.Errors.CannotDoThisNowTip),
+                                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriLurk
+                                    )
                                 }
                                 return@buttonForUser
                             }
@@ -602,6 +622,11 @@ class BlackjackCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper
                                 context.reply(false) {
                                     styled(
                                         context.i18nContext.get(I18N_PREFIX.Play.Errors.CannotDoThisNow)
+                                    )
+
+                                    styled(
+                                        context.i18nContext.get(I18N_PREFIX.Play.Errors.CannotDoThisNowTip),
+                                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriLurk
                                     )
                                 }
                                 return@buttonForUser
