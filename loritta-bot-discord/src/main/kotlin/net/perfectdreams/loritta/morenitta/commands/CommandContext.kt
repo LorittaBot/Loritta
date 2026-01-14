@@ -178,7 +178,10 @@ class CommandContext(
 		addInlineReply: Boolean = true
 	) {
 		if (!isPrivateChannel && webhook != null) { // Se a webhook é diferente de null, então use a nossa webhook disponível!
-			webhook.sendMessage(message).await()
+			webhook.sendMessage(message)
+				.setUsername(username)
+				.setAvatarUrl(avatarUrl)
+				.await()
 		} else { // Se não, iremos usar embeds mesmo...
 			val builder = EmbedBuilder()
 			builder.setAuthor(username, null, avatarUrl)
