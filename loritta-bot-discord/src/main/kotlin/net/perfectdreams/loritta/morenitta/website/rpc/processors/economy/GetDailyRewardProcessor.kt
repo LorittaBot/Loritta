@@ -33,6 +33,7 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.GuildProfile
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.loricoolcards.StickerAlbumTemplate
+import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.rpc.processors.LorittaRpcProcessor
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.trueIp
@@ -45,6 +46,9 @@ import net.perfectdreams.loritta.serializable.responses.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.OffsetDateTime
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -91,6 +95,8 @@ class GetDailyRewardProcessor(val m: LorittaWebsite) : LorittaRpcProcessor {
                 val lorittaProfile = loritta.getOrCreateLorittaProfile(cachedUserIdentification.id)
 
                 val userIdentification = result.userIdentification
+
+                val now = OffsetDateTime.now(Constants.LORITTA_TIMEZONE)
 
                 return when (DailyAccountSafetyUtils.verifyIfAccountAndIpAreSafe(m.loritta, userIdentification, ip)) {
                     DailyAccountSafetyUtils.AccountCheckResult.BlockedEmail -> UserVerificationError.BlockedEmail()
@@ -164,6 +170,17 @@ class GetDailyRewardProcessor(val m: LorittaWebsite) : LorittaRpcProcessor {
                                         val hasJoinedVivoSponsor = mutualGuilds.any { it.id == vivoGuildId }
                                         if (hasJoinedVivoSponsor) {
                                             bestServerInfo = mutualGuilds.first { it.id == vivoGuildId }
+
+                                            multipliedBy = 2.5
+                                            sponsoredBy = bestServerInfo
+                                            sponsoredByUserId = null
+                                            return@newSuspendedTransaction
+                                        }
+
+                                        val reveryGuildId = 1150841346991591515L
+                                        val hasJoinedReverySponsor = mutualGuilds.any { it.id == reveryGuildId }
+                                        if (hasJoinedReverySponsor && LocalDateTime.of(2026, 2, 21, 0, 0, 0) > now.toLocalDateTime()) {
+                                            bestServerInfo = mutualGuilds.first { it.id == reveryGuildId }
 
                                             multipliedBy = 2.5
                                             sponsoredBy = bestServerInfo
