@@ -1,8 +1,7 @@
 package net.perfectdreams.loritta.morenitta.utils
 
-import club.minnced.discord.webhook.WebhookClient
-import club.minnced.discord.webhook.WebhookClientBuilder
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.WebhookClient
 import net.dv8tion.jda.api.entities.WebhookType
 import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
@@ -21,7 +20,7 @@ object WebhookUtils {
 	 * @param name        Nome do Webhook
 	 * @return TemmieWebhook pronto para ser usado
 	 */
-	suspend fun getOrCreateWebhook(loritta: LorittaBot, channel: MessageChannel, name: String): WebhookClient? {
+	suspend fun getOrCreateWebhook(loritta: LorittaBot, channel: MessageChannel, name: String): WebhookClient<*>? {
 		if (channel.type == ChannelType.PRIVATE) // Se a Loritta não pode acessar as webhooks do servidor, retorne null
 			return null
 
@@ -48,11 +47,6 @@ object WebhookUtils {
 			webhooks[0]
 		}
 
-		val temmie = WebhookClientBuilder(webhook.url)
-				.setExecutorService(loritta.webhookExecutor)
-				.setHttpClient(loritta.webhookOkHttpClient)
-				.build()
-
-		return temmie
+		return WebhookClient.createClient(webhook.jda, webhook.url)
 	}
 }

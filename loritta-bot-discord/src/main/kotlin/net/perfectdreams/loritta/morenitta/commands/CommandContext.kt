@@ -1,7 +1,5 @@
 package net.perfectdreams.loritta.morenitta.commands
 
-import club.minnced.discord.webhook.WebhookClient
-import club.minnced.discord.webhook.send.WebhookMessage
 import com.github.kevinsawicki.http.HttpRequest
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
@@ -172,12 +170,18 @@ class CommandContext(
 		}
 	}
 
-	suspend fun sendMessage(webhook: WebhookClient?, message: WebhookMessage, addInlineReply: Boolean = true) {
+	suspend fun sendMessage(
+		webhook: WebhookClient<*>?,
+		message: MessageCreateData,
+		username: String,
+		avatarUrl: String,
+		addInlineReply: Boolean = true
+	) {
 		if (!isPrivateChannel && webhook != null) { // Se a webhook é diferente de null, então use a nossa webhook disponível!
-			webhook.send(message)
+			webhook.sendMessage(message).await()
 		} else { // Se não, iremos usar embeds mesmo...
 			val builder = EmbedBuilder()
-			builder.setAuthor(message.username, null, message.avatarUrl)
+			builder.setAuthor(username, null, avatarUrl)
 			builder.setDescription(message.content)
 			builder.setFooter("Não consigo usar as permissões de webhook aqui... então estou usando o modo de pobre!", null)
 

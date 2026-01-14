@@ -45,7 +45,6 @@ dependencies {
     implementation(libs.deviousjda)
     implementation(libs.jdaKtx)
     runtimeOnly(libs.discord.zstd.java.jni.impl)
-    implementation("club.minnced:discord-webhooks:0.8.4")
 
     // Exposed & Databases
     implementation(libs.postgresqljdbcdriver)

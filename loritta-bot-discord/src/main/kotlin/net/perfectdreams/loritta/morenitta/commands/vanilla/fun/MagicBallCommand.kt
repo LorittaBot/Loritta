@@ -1,16 +1,16 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.`fun`
 
-import club.minnced.discord.webhook.send.WebhookMessageBuilder
-import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
-import net.perfectdreams.loritta.morenitta.commands.CommandContext
-import net.perfectdreams.loritta.morenitta.utils.WebhookUtils
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
+import net.perfectdreams.loritta.morenitta.commands.CommandContext
+import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
+import net.perfectdreams.loritta.morenitta.utils.WebhookUtils
 
 class MagicBallCommand(loritta: LorittaBot) : AbstractCommand(loritta, "vieirinha", listOf("8ball", "magicball", "eightball"), net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.vieirinha.description")
@@ -34,11 +34,14 @@ class MagicBallCommand(loritta: LorittaBot) : AbstractCommand(loritta, "vieirinh
 		if (context.args.isNotEmpty()) {
 			val temmie = WebhookUtils.getOrCreateWebhook(loritta, context.event.textChannel!!, "Vieirinha")
 
-			context.sendMessage(temmie, WebhookMessageBuilder()
-					.setUsername("Vieirinha")
+			context.sendMessage(
+				temmie,
+				MessageCreateBuilder()
 					.setContent(context.getAsMention(true) + locale.getList("commands.command.vieirinha.responses").random())
-					.setAvatarUrl("http://i.imgur.com/rRtHdti.png")
-					.build())
+					.build(),
+				"Vieirnha",
+				"http://i.imgur.com/rRtHdti.png"
+			)
 		} else {
 			context.explain()
 		}

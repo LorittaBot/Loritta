@@ -236,8 +236,6 @@ class LorittaBot(
 
     // ===[ LORITTA ]===
     lateinit var lorittaShards: LorittaShards
-    val webhookExecutor = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors(), ThreadFactoryBuilder().setNameFormat("Webhook Sender %d").build())
-    val webhookOkHttpClient = OkHttpClient()
     val ecbManager = ECBManager()
 
     val legacyCommandManager = CommandManager(this) // Nosso command manager
