@@ -8,112 +8,115 @@ Se você foi banido de usar a Loritta, você pode ter o privilégio a ter uma se
 Nesta página, quando estamos dizendo que é para "esperar X meses", significa que é para esperar X meses desde a data que você foi banido de usar a Loritta ANTES DE FAZER UM APELO. A data de quando você foi banido aparece quando alguém tenta visualizar o seu perfil com o comando `+perfil` da Loritta.
 
 ## Regras para Apelos
-* Você apenas possui uma chance para fazer um apelo, caso o seu apelo for rejeitado, você não terá uma outra chance!
-* Usar a Loritta não é um direito, e sim um privilégio! Nós não somos obrigados a te desbanir só porque você ficou arrependido do que você fez.
-* Insistir para a equipe da Loritta verificar seu apelo fará ele ser rejeitado.
-* Você é obrigado a verificar se já passou tempo suficiente desde o dia que você foi banido de usar a Loritta em nossa lista de motivos de ban abaixo. Caso você crie um apelo antes do tempo suficiente ter passado, o seu apelo será rejeitado e você não terá outra chance de fazer um novo apelo para ser desbanido!
-* A equipe reserva o direito de aceitar ou rejeitar apelos da forma que ela preferir. A equipe não é obrigada a justificar o motivo para a gente ter aceitado ou rejeitado um apelo.
-* Pedir unban fora do formulário, como em canais de suporte ou em outros servidores, é proibido e fará seu apelo ser rejeitado.
-* Se "amigos" seus começarem a perturbar a equipe pedindo para que você seja desbanido, nós iremos entender que você mesmo pediu para eles fazerem isso, e isso fará seu apelo ser rejeitado.
-* Se você foi babaca com membros e/ou com a equipe da Loritta, o seu apelo será rejeitado.
+- Você possui chances de fazer o apelo uma vez a cada 30 dias, mas evite fazer antes do tempo necessário para o seu motivo de ban!
+- Usar a Loritta não é um direito, e sim um privilégio! Nós não somos obrigados a te desbanir só porque você ficou arrependido do que você fez.
+- Insistir para a equipe da Loritta verificar seu apelo fará ele ser rejeitado.
+- A equipe reserva o direito de aceitar ou rejeitar apelos da forma que ela preferir. A equipe não é obrigada a justificar o motivo para a gente ter aceitado ou rejeitado um apelo.
+- Pedir unban fora do formulário, como em canais de suporte ou em outros servidores, é proibido e fará seu apelo ser rejeitado.
+- Se "amigos" seus começarem a perturbar a equipe pedindo que você seja desbanido, nós iremos entender que você mesmo pediu para eles fazerem isso, e seu apelo será rejeitado.
+- Se você foi babaca com membros e/ou com a equipe da Loritta, o seu apelo pode ser rejeitado.
+- Se você precisa conversar com a equipe, acesse o servidor de [Tribunal da Loritta](https://discord.gg/bNNEqXQCGS).
 
-## Banimentos considerados injustos
-* Se você acha que que seu banimento foi injusto, você pode fazer o apelo independentemente do tempo que você está banido, mas fique ciente de que a regra de poder fazer o formulário apenas uma vez ainda está valendo. Você também perderá a chance de ser desbanido caso o seu banimento tenha sido realmente justo.
-* Ao fazer o formulário, envie todas as justificativas e comprovantes que o seu banimento não foi justo. É permitido que você anexe as provas na parte "Desenhe um Gatinho" do formulário.
+## Banimentos Considerados Injustos
+- Se você acha que que seu banimento foi injusto, você pode fazer o apelo independentemente do tempo que você está banido, mas prefira conversar com a equipe no servidor de [Tribunal da Loritta](https://discord.gg/bNNEqXQCGS).
+- Ao fazer o formulário, envie todas as justificativas e comprovantes que o seu banimento não foi justo. É permitido que você anexe as provas na parte "Desenhe um Gatinho" do formulário.
 
-## Motivos que são PERMANENTES e que terão os seus apelos rejeitados
+## Múltiplos motivos no seu ban
+- Se você possui múltiplos motivos no seu ban, você deve somar o tempo de cada um, presentes nesta página. Caso ele seja não listado, considere 3 meses, que é o tempo mínimo.
+- **Exemplo:** Se você foi banido por "Comércio de sonhos (compra) e burlar o LSX do SparklyPower", você soma 12 meses + 3 meses = 15 meses de ban.
 
+## Motivos que são PERMANENTES
 Alguns tipos de banimento na Loritta não permitem apelo, pois são motivos de banimentos que a pessoa teve que agir de forma maliciosa para quebrar as regras, que não é algo que ela consegue fazer sem saber.
 
-No passado, alguns motivos dessa lista permitiam apelo, mas tivemos que remover a possibilidade de apelo. Isso porque a maioria das pessoas que tiveram os seus apelos aceitos voltavam a quebrar as regras, abusando da nossa boa vontade de desbanir ela. Além disso, muitos usuários mentiam para a equipe, alegando não ter evadido o banimento quando, na verdade, possuíam várias contas alternativas para contornar a punição. Isto dificultava o trabalho da equipe.
+Antigamente, alguns motivos da lista tinham apelo, mas tiramos essa possibilidade pois a maioria voltava a quebrar as regras e mentiam para a equipe escondendo evasões, abusando da nossa boa vontade e dificultando nosso trabalho.
 
-Lembrando que mesmo que seja permanente sem ter chance de apelo, a equipe tem total direito de desbanir qualquer pessoa que quebrou as regras da Loritta, até mesmo se o motivo dela seja um motivo sem chance de apelo.
+Lembrando que, mesmo os bans permanentes não terem chance de apelo, a equipe tem total direito de desbanir qualquer pessoa que quebrou as regras da Loritta, até mesmo se o motivo dela seja um motivo sem chance de apelo, e não é obrigada a justificar nada.
 
-### Comércio de Sonhos (Compra e Venda)
-* "Comércio de Sonhos" significa comprar coisas com valor monetário real por sonhos, como comprar Discord Nitro, e outras coisas, por sonhos.
+### Comércio de Sonhos (Venda)
+- Venda sonhos por valor monetário real ou venda produtos de valor monetário real (como Discord Nitro, contas, itens de jogo e etc) por sonhos, e a equipe da Loritta possui provas concretas do ocorrido.
 
-### Evasão de Ban
-* Caso você tenha tentado evadir bans em outras contas, o seu ban é permanente e você não poderá fazer um apelo para ser desbanido.
-* Usar outra conta do Discord enquanto você está banido da Loritta na sua principal não é "evasão de ban", desde que você não use funcionalidades da Loritta enquanto usa a outra conta. Mas no momento que você usar quaisquer funcionalidades da Loritta, você pode ser banido por evasão de ban. Ou seja, você não precisa se preocupar em levar ban por evasão ao entrar no servidor da Loritta para fazer um apelo. Entretanto, a equipe pode ter outros critérios que possa fazer você ser banido na sua outra conta mesmo se você não tiver usado funcionalidades da Loritta nela, por exemplo, se você ficar provocando a equipe para te desbanir, dependendo do seu motivo do seu ban original, entre outros motivos.
+### Evasão de Ban (Mais de 4 contas)
+- Evadir o ban principal mais de 4 vezes muda o ban para permanente, e você não poderá fazer um apelo.
+- **Atenção:** Usar outra conta do Discord enquanto você está banido da Loritta na sua principal não é "evasão de ban" desde que você não use as funcionalidades da Loritta. Mas no momento em que  você usar quaisquer funcionalidades da Loritta, você pode ser banido por evasão de ban.
 
-### Usar múltiplas contas para farmar sonhos no daily
-* Usar múltiplas contas para farmar sonhos no daily para burlar a restrição de um prêmio diário por pessoa fará você ser banido permanente.
+### Golpes e Roubos de Token/Conta
+- Inclui apenas golpes envolvendo roubos de contas/tokens, onde a pessoa faz engenharia social para roubar usuários, tanto suas contas quanto seus sonhos.
 
-### Abuso de Bugs/Exploits
-* Abusar de bugs ou exploits na Loritta ou em outros serviços relacionados a Loritta te fará você ser banido permanente.
-* **Exceção:** Se você abusou mas ajudou a equipe a descobrir o problema, nós poderemos transformar o seu ban em um ban temporário.
+### Chargeback
+- Os termos de pagamento/compra são aceitos na hora da compra, e existe uma cláusula que indica que pedir devolução do dinheiro é proibido e você será banido de usar a Loritta, já que isso prejudica a Loritta.
+- **Exceção:** Caso você consiga provas que não recebeu o produto, você pode fazer um apelo.
+- Caso você esteja no mínimo 3 anos banido e não evadiu, você pode tentar um apelo.
 
-### Mentir para a equipe da Loritta
-* Se você mentiu para a equipe da Loritta significa que você não aprendeu a sua lição e que você deve continuar banido.
+### Abuso de Bugs (Economia)
+- Abuso de bugs envolvendo a economia da Loritta, bem como a do SparklyPower, não tem a mínima chance alguma de unban, afinal você fez uma escolha e ninguém abusa de bugs de economia sem querer. Esse tipo de abuso trás horas de trabalho para a equipe arrumar a burrada toda.
 
-### Raiding em servidores relacionados a Loritta
-* Contra os termos de uso do Discord, o apelo será rejeitado.
+### Se passar pela Equipe da Loritta (Scam)
+- Se passar pela Equipe da Loritta para aplicar Scam e/ou golpes em usuários da comunidade não dá chance de unban. Afinal, se você é da equipe, você consegue se desbanir sozinho, não?
 
-### Conteúdo NSFW em comandos da Loritta ou como avatar/banner no Discord
-* Contra os termos de uso do Discord, o apelo será rejeitado.
+### Xingar/Ofender a Loritta (Específico)
+- Alterar o nome da Loritta pra algo desrespeitoso ou preconceituoso (racista, homofóbico e etc) no seu servidor não dá chance de apelo.
 
-### Espalhar informações pessoais de uma pessoa
-* Contra os termos de uso do Discord, o apelo será rejeitado.
+### Associação
+- Ser associado a pessoas que causaram extremo transtorno para a Equipe ou para o dono da Loritta, não dá direito a fazer apelo.
 
-### Roubo de Sonhos
-* **Exceção:** A pessoa que foi roubada avisou para a equipe que você poderá ser desbanido, neste caso você precisa esperar 12 meses antes de fazer um apelo. Seus sonhos serão removidos.
+## Tempo necessário de cada motivo de ban
 
-### Se passar pela a equipe da Loritta
-* Se você é realmente da equipe da Loritta você consegue se desbanir sozinho, rs.
+### Comércio de Sonhos (Compra)
+- Compra sonhos fora do website da Loritta ou compra produtos de valor monetário real por sonhos.
+- Aguarde **no mínimo 12 meses** para fazer um apelo.
 
-### Pedir para deletar os dados da conta
-* Foi você que pediu para deletar e a Loritta te avisou que você seria banido!
+### Dono/Staff de Servidor com Comércio de Sonhos (Compra/Venda)
+- Ter cargo no servidor, mas não ser a pessoa que comercializou, mas ainda sim havia uma "lojinha" ou um "anúncio" de comercialização de sonhos em canais oficiais do servidor.
+- Aguardar **no mínimo 12 meses** caso seja o Dono.
+- Aguardar **no mínimo 3 meses** caso seja um Staff.
+- **Atenção:** Caso o servidor tenha sido banido, você pode abrir um ticket para verificação do unban.
 
-### Ficar spammando comandos durante o cooldown
-* Pessoas normais não tentam ficar spammando comandos quando a Loritta fica falando que o tempo de espera começa a aumentar. A proteção existe para não floodarem mensagens com o objetivo dela cair.
+### Uso de Alt para Farmar Daily
+- Pegar daily em mais de uma conta no mesmo dia, independente da quantidade de contas usadas.
+- Aguarde **no mínimo 12 meses** para fazer um apelo.
 
-### Chargeback/Solicitar devolução de dinheiro
-* Você aceitou os termos de pagamento na hora da compra, aonde existe uma cláusula que indica que pedir devolução de dinheiro é proibido e você será banido de usar a Loritta, já que isso prejudica a Loritta.
-* **Exceção:** Caso você consiga provar que não recebeu o produto, você pode fazer um apelo.
+### Evasão de ban (4 contas ou menos)
+- Evadir ban 4 vezes ou menos
+- Aguarde **no mínimo 12 meses** para fazer um apelo.
+- Se você não evadiu e foi banido por evasão injustamente, converse com a equipe no servidor de [Tribunal da Loritta](https://discord.gg/bNNEqXQCGS) para verificar alguma possibilidade.
+- **Atenção:** O tempo não é somado ao tempo do seu ban principal, mas, a partir do momento que você evade, o tempo muda para 12 meses a partir da data do ban da evasão, independente do motivo inicial.
+- **Atenção:** Não garantimos nenhum tipo de unban caso você tenha vendido/emprestado/doado uma conta sua ou tenha usado contas de outras pessoas que fizeram besteira e foram banidas. A equipe não é responsável em fazer verificações sobre isso, quem escolheu vincular seus dados pessoais com outras pessoas, foi você.
 
-### Comércio por sonhos de assinaturas pagas conseguidas ilegalmente 
-* Isto é crime, o apelo será rejeitado.
+### Burlar o LSX do SparklyPower
+- Usado e/ou ajudar um usuário a transferir do SparklyPower para a Loritta (ou ao contrário) sem que a pessoa tenha acesso ao LSX.
+- Aguarde **no mínimo 3 meses** para fazer um apelo.
 
-## Motivos Especiais
+### Abuso de Bugs
+- Abusar de bugs que não envolvem economia.
+- Aguarde **no mínimo 6 meses** para fazer um apelo.
 
-### Banimentos considerados injustos
-* Se você acha que que seu banimento foi injusto, você pode fazer o apelo independentemente do tempo que você está banido, mas fique ciente de que a regra de poder fazer o formulário apenas uma vez ainda está valendo. Você também perderá a chance de ser desbanido caso o seu banimento tenha sido realmente justo.
-* Ao fazer o formulário, envie todas as justificativas e comprovantes que o seu banimento não foi justo. É permitido que você anexe as provas na parte "Desenhe um Gatinho" do formulário.
+### Se passar pela Equipe da Loritta
+- Se passar pela equipe da Loritta sem fazer mal a nenhum usuário da comunidade.
+- Aguarde **no mínimo 3 meses** para fazer um apelo.
 
-### Múltiplos motivos no seu banimento
-* Se você possui múltiplos motivos no seu banimento, você deverá usar como tempo base a infração que tem o maior tempo de espera, e aí somar com os restos das infrações dividido por dois, e assim você terá o tempo que você precisa esperar.
-* **Exemplo:** Se você foi banido por "Criar múltiplas contas para farmar sonhos no daily" e "Comércio de Sonhos (Venda)", você deverá somar 18 + (9 / 2), que dá 22,5. Logo você terá que esperar 22,5 meses antes de enviar um apelo.
-
-## Tempo mínimo de bans necessários antes de pedir um apelo
-
-### Comércio de Sonhos (Servidor de Rewards/Apenas da Equipe)
-* Apenas para pessoas que não interagiram no chat/reações/etc antes da mensagem de venda feita por um superior na equipe, caso tenha interagido depois, as regras de "Comércio de Sonhos (Venda)" são as que valem
-* Você precisa esperar 3 meses antes de fazer um apelo
-
-### Banido por associação
-* Você precisa esperar 9 meses antes de fazer um apelo
-* **Exceção:** Se a pessoa que te fez ser banida originalmente for desbanida, você pode fazer um apelo sem esperar.
-
-### Se passar pela a Loritta
-* Você precisa esperar 1 mês antes de fazer um apelo
-* **Exceção:** Você tentou se passar pela Loritta em servidores relacionados a ela.
-* * Se você apenas mandou "oi" e foi banido antes da equipe ou outros membros pedirem para mudar, o ban aumenta de um mês para três meses.
-* * Se você continuou a se passar pela a Loritta mesmo após os avisos da equipe e de membros, o ban é permanente e o apelo será rejeitado.
-* **Exceção:** Você criou um bot para se passar pela Loritta, o ban é permanente e o apelo será rejeitado.
-* **Exceção:** Se você está propositalmente se passando pela Loritta para enganar outras pessoas
-
-### Ofender/Xingar a Loritta
-* Você precisa esperar 2 meses antes de fazer um apelo
-* **Exceção:** Caso o xingamento foi em servidores relacionados a Loritta, o ban aumenta de 2 meses para 6 meses. Afinal, você gostaria que alguém entrasse na sua casa só para xingar o seu trabalho?
-* **Exceção:** Caso o xingamento foi algo racista, homofóbico ou coisas inapropriadas, o ban é permanente e o apelo será rejeitado.
+### Xingar/Ofender a Loritta
+- Ofender a Loritta de formas pesadas nos servidores oficiais dela.
+- Aguarde **no mínimo 3 meses** para fazer um apelo.
 
 ### Pedir para ser banido
-* eh mole kkkk, recebeu o que queria e agora se arrependeu
-* Você precisa esperar 1 mês antes de fazer um apelo
+- Aguarde **no mínimo 1 mês** para fazer um apelo.
 
-### Outros motivos
-* Caso o motivo não esteja em nossa lista, tenha bom senso e pense se você foi banido por tempo suficiente para poder ser desbanido.
+### Acobertar quebra de regra
+- Acobertar Comercialização de Sonhos/Produtos por Sonhos (Compra ou Venda), você precisa esperar o mesmo tempo que a pessoa que comercializou.
+- Qualquer outra quebra de regra, **no mínimo 6 meses** para fazer um apelo.
+
+### Associação
+- Se o associado ainda está banido, **no mínimo 6 meses**.
+- Se o associado for desbanido, você pode fazer o apelo independente do tempo.
+- Se o associado for alguém que causou transtorno e perturbou a equipe, não tem chance de apelo, a menos que ele tenha sido desbanido.
+
+## Unban geral por tempo
+- Caso você tenha sido banido por algum motivo permanente, você pode **pedir unban a partir de 3 anos** a partir do tempo da sua última quebra de regra.
+- **Atenção:** Isso não se aplica a pessoas que causaram transtorno e/ou perturbaram a equipe ou o dono da Loritta.
+
+## Bans não listados
+- Aguarde o **tempo mínimo de 3 meses** para fazer um apelo.
+- Seu ban foi algo MUITO específico? Verifique com o Staff responsável e, caso ele não seja mais da Equipe, aguarde **no mínimo 6 meses** e/ou contate outro Staff no servidor de [Tribunal da Loritta](https://discord.gg/bNNEqXQCGS) para verificação.
 
 ## Como posso fazer um apelo?
-
 Acesse https://appeals.loritta.website/ e envie o seu apelo por lá. Boa sorte!
