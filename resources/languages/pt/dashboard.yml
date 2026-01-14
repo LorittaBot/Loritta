@@ -32,6 +32,13 @@ website:
     sectionNewBadge: "Novo!"
     goBackToUserDashboardButtonLabel: "Voltar ao Painel de Usuário"
 
+    roleValidation:
+      roleNotFound: "O cargo com ID {roleId} não existe mais no servidor!"
+      roleIsEveryone: "Você não pode configurar o cargo @everyone!"
+      roleIsManaged: "O cargo \"{roleName}\" é gerenciado por uma integração e não pode ser dado manualmente!"
+      userCannotInteract: "O cargo \"{roleName}\" está acima do seu cargo mais alto! Você só pode configurar cargos abaixo do seu na lista de cargos."
+      lorittaCannotInteract: "O cargo \"{roleName}\" está acima do cargo da Loritta! Mova o cargo da Loritta para cima na lista de cargos ou escolha um cargo mais baixo."
+
     userCategories:
       sonhos: "Sonhos"
       customization: "Personalização"

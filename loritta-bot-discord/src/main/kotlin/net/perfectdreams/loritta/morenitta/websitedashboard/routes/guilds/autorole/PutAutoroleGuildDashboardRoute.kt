@@ -16,8 +16,11 @@ import net.perfectdreams.loritta.morenitta.website.utils.extensions.trueIp
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.RoleValidationResult
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.WebAuditLogUtils
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondConfigSaved
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondRoleValidationError
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.validateRolesForConfiguration
 import net.perfectdreams.loritta.serializable.ColorTheme
 
 class PutAutoroleGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/autorole") {
@@ -31,6 +34,18 @@ class PutAutoroleGuildDashboardRoute(website: LorittaDashboardWebServer) : Requi
 
     override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: LorittaUserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans, member: Member) {
         val request = Json.decodeFromString<SaveAutoroleRequest>(call.receiveText())
+
+        // Validate roles to prevent privilege escalation
+        val validationResult = validateRolesForConfiguration(
+            guild,
+            member,
+            request.roles
+        )
+
+        if (validationResult !is RoleValidationResult.Success) {
+            call.respondRoleValidationError(validationResult, i18nContext)
+            return
+        }
 
         website.loritta.newSuspendedTransaction {
             val serverConfig = website.loritta.getOrCreateServerConfig(guild.idLong)
