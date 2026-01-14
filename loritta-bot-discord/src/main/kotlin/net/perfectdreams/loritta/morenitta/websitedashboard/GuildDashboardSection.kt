@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.morenitta.websitedashboard
 
 enum class GuildDashboardSection {
     OVERVIEW,
+    AUDIT_LOG,
     COMMANDS,
     PREFIXED_COMMANDS,
     COMMAND_CHANNELS,

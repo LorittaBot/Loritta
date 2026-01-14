@@ -12,17 +12,20 @@ import net.dv8tion.jda.api.entities.Member
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.TrackedYouTubeAccounts
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
+import net.perfectdreams.loritta.common.utils.TrackedChangeType
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.luna.toasts.EmbeddedToast
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.youtube.YouTubeWebUtils
+import net.perfectdreams.loritta.morenitta.website.utils.extensions.trueIp
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.sectionConfig
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.trackedProfileEditorSaveBar
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.trackedYouTubeChannelEditor
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.WebAuditLogUtils
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.configSaved
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
@@ -58,6 +61,14 @@ class PostYouTubeChannelGuildDashboardRoute(website: LorittaDashboardWebServer) 
                     if (totalAccounts >= guildPremiumPlan.maxYouTubeChannels) {
                         return@transaction null
                     }
+
+                    WebAuditLogUtils.addEntry(
+                        guild.idLong,
+                        session.userId,
+                        call.request.trueIp,
+                        call.request.userAgent(),
+                        TrackedChangeType.CREATED_YOUTUBE_TRACK
+                    )
 
                     TrackedYouTubeAccounts.insert {
                         it[TrackedYouTubeAccounts.youTubeChannelId] = request.youtubeChannelId

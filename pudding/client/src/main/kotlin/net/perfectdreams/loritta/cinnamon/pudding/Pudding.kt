@@ -203,7 +203,6 @@ class Pudding(
         fun insertIfValid(vararg tables: Table) =
             schemas.addAll(tables.filter { shouldBeUpdated.invoke(it::class.simpleName!!) })
         insertIfValid(
-            AuditLog,
             BackgroundPayments,
             Backgrounds,
             BackgroundVariations,
@@ -416,7 +415,8 @@ class Pudding(
             DiscordGuilds,
             Lotteries,
             LotteryTickets,
-            LotteryTicketNumbers
+            LotteryTicketNumbers,
+            AuditLogEntries
         )
 
         if (schemas.isNotEmpty()) {

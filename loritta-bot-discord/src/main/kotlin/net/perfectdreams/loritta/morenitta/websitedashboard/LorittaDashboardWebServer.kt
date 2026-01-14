@@ -55,6 +55,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.dailyshop.Pos
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.dailyshop.SSEDailyShopTimerUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.PostTestMessageGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.added.AddedLorittaGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.auditlog.AuditLogGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.autorole.AutoroleGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.autorole.PostAddRoleToListAutoroleGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.autorole.PostRemoveRoleFromListAutoroleGuildDashboardRoute
@@ -489,6 +490,9 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
         // Tax Free Days
         TaxFreeDaysGuildDashboardRoute(this),
         PutTaxFreeDaysGuildDashboardRoute(this),
+
+        // Audit Log
+        AuditLogGuildDashboardRoute(this),
 
         // Special
         DiscordLoginUserDashboardRoute(this),

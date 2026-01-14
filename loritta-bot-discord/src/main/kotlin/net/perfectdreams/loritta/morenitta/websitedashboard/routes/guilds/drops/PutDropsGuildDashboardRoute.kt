@@ -13,13 +13,16 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordInviteUtils
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.DropsConfigs
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
+import net.perfectdreams.loritta.common.utils.TrackedChangeType
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.luna.toasts.EmbeddedToast
 import net.perfectdreams.loritta.morenitta.utils.Constants
+import net.perfectdreams.loritta.morenitta.website.utils.extensions.trueIp
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.WebAuditLogUtils
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondConfigSaved
@@ -97,6 +100,14 @@ class PutDropsGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                 it[DropsConfigs.guildInviteCode] = inviteCode
                 it[DropsConfigs.updatedAt] = OffsetDateTime.now(Constants.LORITTA_TIMEZONE)
             }
+
+            WebAuditLogUtils.addEntry(
+                guild.idLong,
+                session.userId,
+                call.request.trueIp,
+                call.request.userAgent(),
+                TrackedChangeType.CHANGED_DROPS
+            )
         }
 
         call.respondConfigSaved(i18nContext)

@@ -2,12 +2,13 @@ package net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.youtu
 
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.TrackedYouTubeAccounts
+import net.perfectdreams.loritta.common.utils.TrackedChangeType
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.GenericUpdateProfileGuildDashboardRoute
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.update
 
-class PutYouTubeChannelGuildDashboardRoute(website: LorittaDashboardWebServer) : GenericUpdateProfileGuildDashboardRoute(website, "youtube") {
+class PutYouTubeChannelGuildDashboardRoute(website: LorittaDashboardWebServer) : GenericUpdateProfileGuildDashboardRoute(website, "youtube", TrackedChangeType.CHANGED_YOUTUBE_TRACK) {
     override fun updateProfile(
         guild: Guild,
         entryId: Long,

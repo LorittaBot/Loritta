@@ -5,6 +5,7 @@ import io.ktor.client.request.parameter
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.*
+import io.ktor.server.request.userAgent
 import io.ktor.server.util.getOrFail
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
@@ -12,16 +13,19 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.TrackedBlueskyAccounts
 import net.perfectdreams.loritta.common.utils.JsonIgnoreUnknownKeys
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
+import net.perfectdreams.loritta.common.utils.TrackedChangeType
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.luna.toasts.EmbeddedToast
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.bluesky.BlueskyProfile
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.bluesky.BlueskyProfiles
+import net.perfectdreams.loritta.morenitta.website.utils.extensions.trueIp
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.TrackedProfile
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.trackedBlueskyProfilesSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.WebAuditLogUtils
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseAllModals
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
@@ -51,6 +55,14 @@ class DeleteBlueskyProfileGuildDashboardRoute(website: LorittaDashboardWebServer
                     TrackedBlueskyAccounts.guildId eq guild.idLong
                 }
                 .toList()
+
+            WebAuditLogUtils.addEntry(
+                guild.idLong,
+                session.userId,
+                call.request.trueIp,
+                call.request.userAgent(),
+                TrackedChangeType.DELETED_BLUESKY_TRACK
+            )
 
             return@transaction Result.Success(profiles)
         }

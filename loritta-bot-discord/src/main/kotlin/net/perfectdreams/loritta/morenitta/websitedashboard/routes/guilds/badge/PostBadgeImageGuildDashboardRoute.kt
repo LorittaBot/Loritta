@@ -4,6 +4,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.*
 import io.ktor.server.request.receiveText
+import io.ktor.server.request.userAgent
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
@@ -17,6 +18,7 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.utils.MediaTypeUtils
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.common.utils.StoragePaths
+import net.perfectdreams.loritta.common.utils.TrackedChangeType
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.luna.toasts.EmbeddedToast
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
@@ -24,9 +26,11 @@ import net.perfectdreams.loritta.morenitta.dao.DonationConfig
 import net.perfectdreams.loritta.morenitta.utils.SimpleImageInfo
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import net.perfectdreams.loritta.morenitta.utils.toBufferedImage
+import net.perfectdreams.loritta.morenitta.website.utils.extensions.trueIp
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.WebAuditLogUtils
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseAllModals
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
@@ -141,6 +145,14 @@ class PostBadgeImageGuildDashboardRoute(website: LorittaDashboardWebServer) : Re
                 donationConfig.customBadgePreferredMediaType = badgePreferredMediaType
 
                 serverConfig.donationConfig = donationConfig
+
+                WebAuditLogUtils.addEntry(
+                    guild.idLong,
+                    session.userId,
+                    call.request.trueIp,
+                    call.request.userAgent(),
+                    TrackedChangeType.CHANGED_CUSTOM_BADGE_IMAGE
+                )
             }
 
             call.respondHtmlFragment {

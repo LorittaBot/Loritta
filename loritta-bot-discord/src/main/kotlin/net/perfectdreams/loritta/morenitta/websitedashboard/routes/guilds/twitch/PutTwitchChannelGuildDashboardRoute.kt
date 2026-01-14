@@ -4,6 +4,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.TrackedTwitchAccounts
+import net.perfectdreams.loritta.common.utils.TrackedChangeType
 import net.perfectdreams.loritta.morenitta.rpc.LorittaRPC
 import net.perfectdreams.loritta.morenitta.rpc.execute
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
@@ -13,7 +14,7 @@ import net.perfectdreams.loritta.serializable.internal.responses.LorittaInternal
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.update
 
-class PutTwitchChannelGuildDashboardRoute(website: LorittaDashboardWebServer) : GenericUpdateProfileGuildDashboardRoute(website, "twitch") {
+class PutTwitchChannelGuildDashboardRoute(website: LorittaDashboardWebServer) : GenericUpdateProfileGuildDashboardRoute(website, "twitch", TrackedChangeType.EDITED_TWITCH_TRACK) {
     override fun updateProfile(
         guild: Guild,
         entryId: Long,

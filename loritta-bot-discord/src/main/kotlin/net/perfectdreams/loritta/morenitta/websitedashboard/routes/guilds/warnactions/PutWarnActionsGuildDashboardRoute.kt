@@ -12,12 +12,15 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.WarnActions
 import net.perfectdreams.loritta.common.utils.PunishmentAction
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
+import net.perfectdreams.loritta.common.utils.TrackedChangeType
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.ModerationConfig
+import net.perfectdreams.loritta.morenitta.website.utils.extensions.trueIp
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.WebAuditLogUtils
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondConfigSaved
 import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -63,6 +66,14 @@ class PutWarnActionsGuildDashboardRoute(website: LorittaDashboardWebServer) : Re
             }
 
             serverConfig.moderationConfig = moderationConfig
+
+            WebAuditLogUtils.addEntry(
+                guild.idLong,
+                session.userId,
+                call.request.trueIp,
+                call.request.userAgent(),
+                TrackedChangeType.CHANGED_WARN_ACTIONS
+            )
         }
 
         call.respondConfigSaved(i18nContext)

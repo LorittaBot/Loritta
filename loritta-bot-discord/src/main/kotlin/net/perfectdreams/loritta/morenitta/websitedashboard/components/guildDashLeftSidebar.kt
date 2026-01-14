@@ -57,6 +57,7 @@ fun FlowContent.guildDashLeftSidebarEntries(
     leftSidebarHr()
 
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/overview", i18nContext.get(DashboardI18nKeysData.Overview.Title), SVGIcons.SquaresFour, selectedGuildSection == GuildDashboardSection.OVERVIEW, false)
+    aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/audit-log", i18nContext.get(DashboardI18nKeysData.AuditLog.Title), SVGIcons.Binoculars, selectedGuildSection == GuildDashboardSection.AUDIT_LOG, true)
 
     leftSidebarHr()
 
