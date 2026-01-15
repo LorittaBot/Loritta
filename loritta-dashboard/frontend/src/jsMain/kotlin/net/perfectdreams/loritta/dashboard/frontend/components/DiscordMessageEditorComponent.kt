@@ -7,6 +7,10 @@ import kotlinx.html.div
 import kotlinx.html.stream.createHTML
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.decodeFromJsonElement
+import kotlinx.serialization.json.jsonObject
 import net.perfectdreams.luna.bliss.BlissComponent
 import net.perfectdreams.luna.modals.Modal
 import net.perfectdreams.loritta.dashboard.BlissHex
@@ -102,7 +106,16 @@ class DiscordMessageEditorComponent(val m: LorittaDashboardFrontend) : BlissComp
 
         renderComposable(rootNode) {
             val parsedMessage = try {
-                JsonForDiscordMessages.decodeFromString<DiscordMessage>(rawMessage)
+                // We COULD make a custom serializable...
+                // But honestly? That's a bit tricky because we only want to remap ONE specific field that may be named "embed" OR "embeds" :(
+                val messageAsMap = JsonForDiscordMessages.parseToJsonElement(rawMessage).jsonObject.toMutableMap()
+                val embed = messageAsMap["embed"]
+                if (embed != null) {
+                    messageAsMap.remove("embed")
+                    messageAsMap["embeds"] = JsonArray(listOf(embed))
+                }
+
+                JsonForDiscordMessages.decodeFromJsonElement<DiscordMessage>(JsonObject(messageAsMap))
             } catch (e: SerializationException) {
                 null
             } catch (e: IllegalStateException) {
