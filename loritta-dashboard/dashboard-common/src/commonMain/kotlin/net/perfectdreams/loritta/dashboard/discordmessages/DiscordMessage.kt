@@ -8,5 +8,5 @@ data class DiscordMessage(
     val tts: Boolean = false,
     val embeds: List<DiscordEmbed>? = null,
     val components: List<DiscordComponent>? = null,
-    val flags: Int? = null
+    val flags: Int = 0
 )

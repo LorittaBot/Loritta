@@ -177,6 +177,129 @@
                 display: flex;
                 gap: 0.5em;
             }
+
+            // Components V2 Styles
+            .discord-section {
+                display: flex;
+                gap: 0.5em;
+                padding: 0.5em 0;
+
+                .discord-section-content {
+                    flex: 1;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.5em;
+                }
+
+                .discord-section-accessory {
+                    margin-left: auto;
+                    flex-shrink: 0;
+                }
+            }
+
+            .discord-text-display {
+                line-height: 1.375;
+                font-size: 0.9375rem;
+                word-wrap: break-word;
+            }
+
+            .discord-thumbnail {
+                max-width: 80px;
+
+                .discord-thumbnail-image {
+                    width: 100%;
+                    border-radius: 4px;
+                }
+
+                .discord-thumbnail-description {
+                    font-size: 0.75rem;
+                    color: var(--content-text-secondary-color);
+                    margin-top: 0.25em;
+                }
+
+                &.spoiler {
+                    .discord-thumbnail-image {
+                        filter: blur(1px);
+
+                        // Disable blur when hovering on a spoilered container
+                        &:hover {
+                            filter: blur(0px);
+                        }
+                    }
+                }
+            }
+
+            .discord-media-gallery {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 0.5em;
+                max-width: 520px;
+
+                .discord-media-gallery-item {
+                    .discord-media-gallery-image {
+                        width: 100%;
+                        border-radius: 4px;
+                    }
+
+                    .discord-media-gallery-description {
+                        font-size: 0.75rem;
+                        color: var(--content-text-secondary-color);
+                        margin-top: 0.25em;
+                    }
+
+                    &.spoiler {
+                        .discord-media-gallery-image {
+                            filter: blur(1px);
+
+                            // Disable blur when hovering on a spoilered container
+                            &:hover {
+                                filter: blur(0px);
+                            }
+                        }
+                    }
+                }
+            }
+
+            .discord-separator {
+                &.small-spacing {
+                    margin-top: 0.5em;
+                    margin-bottom: 0.5em;
+                }
+
+                &.large-spacing {
+                    margin-top: 1.5em;
+                    margin-bottom: 1.5em;
+                }
+
+                .discord-separator-line {
+                    border: none;
+                    border-top: 1px solid var(--card-border-color);
+                    margin: 0;
+                }
+            }
+
+            .discord-container {
+                background-color: var(--discord-embed-background-color);
+                border-left: 4px solid var(--discord-embed-pill-color);
+                border-radius: 4px;
+                padding: 1em;
+                max-width: 520px;
+
+                .discord-container-content {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.5em;
+                }
+
+                &.spoiler {
+                    filter: blur(1px);
+
+                    // Disable blur when hovering on a spoilered container
+                    &:hover {
+                        filter: blur(0px);
+                    }
+                }
+            }
         }
 
         .discord-message-attachments {

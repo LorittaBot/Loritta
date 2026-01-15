@@ -193,7 +193,7 @@ fun FlowContent.discordMessageRenderer(
                 if (components != null) {
                     div(classes = "discord-components") {
                         for (component in components) {
-                            discordComponent(component)
+                            discordComponent(component, channels, roles, placeholders)
                         }
                     }
                 }
@@ -392,53 +392,102 @@ fun FlowContent.discordAuthor(
     }
 }
 
-fun FlowContent.discordComponent(component: DiscordComponent) {
+fun FlowContent.discordComponent(
+    component: DiscordComponent,
+    channels: List<DiscordChannel>,
+    roles: List<DiscordRole>,
+    placeholders: List<MessageEditorMessagePlaceholderGroup>
+) {
     when (component) {
-        is DiscordComponent.DiscordActionRow -> discordActionRow(component)
+        is DiscordComponent.DiscordActionRow -> discordActionRow(component, channels, roles, placeholders)
         is DiscordComponent.DiscordButton -> discordLinkButton(component)
         is DiscordComponent.DiscordSection -> {
-            // TODO: Implement Section rendering
-            div(classes = "discord-component-placeholder") {
-                +"[Section Component]"
+            div(classes = "discord-section") {
+                div(classes = "discord-section-content") {
+                    for (textDisplay in component.components) {
+                        discordComponent(textDisplay, channels, roles, placeholders)
+                    }
+                }
+                val accessory = component.accessory
+                if (accessory != null) {
+                    div(classes = "discord-section-accessory") {
+                        discordComponent(accessory, channels, roles, placeholders)
+                    }
+                }
             }
         }
         is DiscordComponent.DiscordTextDisplay -> {
-            // TODO: Implement TextDisplay rendering
-            div(classes = "discord-component-placeholder") {
-                +"[Text Display: ${component.content}]"
+            div(classes = "discord-text-display") {
+                transformedDiscordText(component.content, channels, roles, placeholders)
             }
         }
         is DiscordComponent.DiscordThumbnail -> {
-            // TODO: Implement Thumbnail rendering
-            div(classes = "discord-component-placeholder") {
-                +"[Thumbnail Component]"
+            div(classes = "discord-thumbnail ${if (component.spoiler) "spoiler" else ""}") {
+                val description = component.description
+                img(src = DiscordMessageUtils.parsePlaceholdersToString(component.url, placeholders)) {
+                    classes = setOf("discord-thumbnail-image")
+                    if (description != null) {
+                        alt = DiscordMessageUtils.parsePlaceholdersToString(description, placeholders)
+                    }
+                }
+                if (description != null) {
+                    div(classes = "discord-thumbnail-description") {
+                        +DiscordMessageUtils.parsePlaceholdersToString(description, placeholders)
+                    }
+                }
             }
         }
         is DiscordComponent.DiscordMediaGallery -> {
-            // TODO: Implement MediaGallery rendering
-            div(classes = "discord-component-placeholder") {
-                +"[Media Gallery Component]"
+            div(classes = "discord-media-gallery") {
+                for (item in component.items) {
+                    div(classes = "discord-media-gallery-item ${if (item.spoiler) "spoiler" else ""}") {
+                        img(src = DiscordMessageUtils.parsePlaceholdersToString(item.media.url, placeholders)) {
+                            classes = setOf("discord-media-gallery-image")
+                        }
+                    }
+                }
             }
         }
         is DiscordComponent.DiscordSeparator -> {
-            // TODO: Implement Separator rendering
-            div(classes = "discord-component-placeholder") {
-                +"[Separator Component]"
+            val spacingClass = when (component.spacing) {
+                2 -> "large-spacing"
+                else -> "small-spacing"
+            }
+            div(classes = "discord-separator $spacingClass") {
+                if (component.divider) {
+                    hr(classes = "discord-separator-line")
+                }
             }
         }
         is DiscordComponent.DiscordContainer -> {
-            // TODO: Implement Container rendering
-            div(classes = "discord-component-placeholder") {
-                +"[Container Component]"
+            div(classes = "discord-container ${if (component.spoiler) "spoiler" else ""}") {
+                val accentColor = component.accentColor
+                if (accentColor != null) {
+                    val red = accentColor shr 16 and 0xFF
+                    val green = accentColor shr 8 and 0xFF
+                    val blue = accentColor and 0xFF
+                    style = "border-left-color: rgb($red, $green, $blue);"
+                }
+
+                div(classes = "discord-container-content") {
+                    for (childComponent in component.components) {
+                        discordComponent(childComponent, channels, roles, placeholders)
+                    }
+                }
             }
         }
     }
 }
 
-fun FlowContent.discordActionRow(component: DiscordComponent.DiscordActionRow) {
+fun FlowContent.discordActionRow(
+    component: DiscordComponent.DiscordActionRow,
+    channels: List<DiscordChannel>,
+    roles: List<DiscordRole>,
+    placeholders: List<MessageEditorMessagePlaceholderGroup>
+) {
     div(classes = "discord-action-row") {
         for (componentItem in component.components) {
-            discordComponent(componentItem)
+            discordComponent(componentItem, channels, roles, placeholders)
         }
     }
 }

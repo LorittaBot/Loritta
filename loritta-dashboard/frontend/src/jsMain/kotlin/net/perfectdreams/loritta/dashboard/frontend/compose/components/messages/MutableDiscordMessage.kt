@@ -90,10 +90,20 @@ class MutableDiscordMessage(
     var content = source.content
     var embeds = source.embeds?.map { MutableDiscordEmbed(it) }?.toMutableList() ?: mutableListOf()
     val components = source.components?.map { transformIntoMutable(it) }?.toMutableList() ?: mutableListOf()
+    var flags = source.flags
+
+    fun isComponentsV2() = flags and (1 shl 15) != 0
+    fun setComponentsV2Mode(enabled: Boolean) {
+        flags = if (enabled) {
+            flags or (1 shl 15)
+        } else {
+            flags and (1 shl 15).inv()
+        }
+    }
 
     fun transformToData() = DiscordMessage(
-        content,
-        embeds = embeds.map {
+        content = if (isComponentsV2()) null else content,
+        embeds = if (isComponentsV2()) null else embeds.map {
             DiscordEmbed(
                 author = it.author?.let {
                     DiscordEmbed.Author(it.name!!, it.url, it.iconUrl)
@@ -118,7 +128,8 @@ class MutableDiscordMessage(
         },
         components = components.map {
             transformToData(it)
-        }.ifEmpty { null }
+        }.ifEmpty { null },
+        flags = flags
     )
 
     /**
