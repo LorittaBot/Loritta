@@ -108,12 +108,100 @@ class PostTestMessageGuildDashboardRoute(website: LorittaDashboardWebServer) : R
             }
         }
 
-        val message = MessageUtils.generateMessage(
-            request.message,
-            guild,
-            request.placeholders,
-            true
-        )
+        val message = try {
+            MessageUtils.generateMessage(
+                request.message,
+                guild,
+                request.placeholders,
+                true
+            )
+        } catch (e: IllegalStateException) {
+            if (e.message == "Cannot build message with no V2 components, or did you forget to disable them?") {
+                call.respondHtmlFragment(status = HttpStatusCode.BadRequest) {
+                    blissShowToast(
+                        createEmbeddedToast(
+                            EmbeddedToast.Type.WARN,
+                            "Mensagem inválida!"
+                        ) {
+                            text("Você precisa ter pelo ou menos um componente na mensagem!")
+                        }
+                    )
+                }
+                return
+            }
+
+            if (e.message == "Cannot have a section without an accessory!") {
+                call.respondHtmlFragment(status = HttpStatusCode.BadRequest) {
+                    blissShowToast(
+                        createEmbeddedToast(
+                            EmbeddedToast.Type.WARN,
+                            "Mensagem inválida!"
+                        ) {
+                            text("Uma seção precisa ter um acessório!")
+                        }
+                    )
+                }
+                return
+            }
+
+            if (e.message == "Cannot build an empty message. You need at least one of content, embeds, components, poll, or files") {
+                call.respondHtmlFragment(status = HttpStatusCode.BadRequest) {
+                    blissShowToast(
+                        createEmbeddedToast(
+                            EmbeddedToast.Type.WARN,
+                            "Mensagem inválida!"
+                        ) {
+                            text("Você não pode enviar uma mensagem vazia!")
+                        }
+                    )
+                }
+                return
+            }
+            throw e
+        } catch (e: IllegalArgumentException) {
+            if (e.message == "Row may not be empty") {
+                call.respondHtmlFragment(status = HttpStatusCode.BadRequest) {
+                    blissShowToast(
+                        createEmbeddedToast(
+                            EmbeddedToast.Type.WARN,
+                            "Mensagem inválida!"
+                        ) {
+                            text("Você não pode ter uma linha de botões vazia! Remova a linha ou adicione um botão nela.")
+                        }
+                    )
+                }
+                return
+            }
+
+            if (e.message == "URL may not be blank") {
+                call.respondHtmlFragment(status = HttpStatusCode.BadRequest) {
+                    blissShowToast(
+                        createEmbeddedToast(
+                            EmbeddedToast.Type.WARN,
+                            "Mensagem inválida!"
+                        ) {
+                            text("Você não pode ter uma URL vazia!")
+                        }
+                    )
+                }
+                return
+            }
+
+            if (e.message == "Content may not be blank") {
+                call.respondHtmlFragment(status = HttpStatusCode.BadRequest) {
+                    blissShowToast(
+                        createEmbeddedToast(
+                            EmbeddedToast.Type.WARN,
+                            "Mensagem inválida!"
+                        ) {
+                            text("Você não pode ter um componente de texto vazio!")
+                        }
+                    )
+                }
+                return
+            }
+            throw e
+        }
 
         // This is a bit crappy, but we need to create a builder from the already generated message
         val patchedMessage = MessageCreateBuilder.from(message)
