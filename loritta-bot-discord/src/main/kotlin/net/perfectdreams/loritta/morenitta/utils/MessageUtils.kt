@@ -4,6 +4,10 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonParser
 import dev.minn.jda.ktx.messages.MessageCreate
 import kotlinx.serialization.SerializationException
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.decodeFromJsonElement
+import kotlinx.serialization.json.jsonObject
 import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.components.Component
@@ -27,9 +31,10 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.*
-import net.perfectdreams.loritta.common.utils.embeds.DiscordComponent
-import net.perfectdreams.loritta.common.utils.embeds.DiscordMessage
 import net.perfectdreams.loritta.common.utils.placeholders.*
+import net.perfectdreams.loritta.dashboard.discordmessages.DiscordComponent
+import net.perfectdreams.loritta.dashboard.discordmessages.DiscordEmbed
+import net.perfectdreams.loritta.dashboard.discordmessages.DiscordMessage
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
@@ -158,7 +163,16 @@ object MessageUtils {
         safe: Boolean
     ): MessageCreateData {
         val originalDiscordMessage = try {
-            JsonIgnoreUnknownKeys.decodeFromString<DiscordMessage>(message)
+            // We COULD make a custom serializable...
+            // But honestly? That's a bit tricky because we only want to remap ONE specific field that may be named "embed" OR "embeds" :(
+            val messageAsMap = JsonIgnoreUnknownKeys.parseToJsonElement(message).jsonObject.toMutableMap()
+            val embed = messageAsMap["embed"]
+            if (embed != null) {
+                messageAsMap.remove("embed")
+                messageAsMap["embeds"] = JsonArray(listOf(embed))
+            }
+
+            JsonIgnoreUnknownKeys.decodeFromJsonElement<DiscordMessage>(JsonObject(messageAsMap))
         } catch (e: SerializationException) {
             DiscordMessage(content = message) // If the message is null, use the message as the content!
         } catch (e: IllegalStateException) {
@@ -190,61 +204,8 @@ object MessageUtils {
         val discordMessage = with(originalDiscordMessage) {
             copy(
                 content = processStringAndReplaceTokens(content, 2000, guild, customTokens),
-                embed = embed?.let {
-                    with(it) {
-                        this.copy(
-                            author = with(author) {
-                                this?.copy(
-                                    name = processStringAndReplaceTokens(this.name, 256, guild, customTokens),
-                                    url = processUrlIfNotNull(replaceTokensIfNotNull(url, guild, customTokens)),
-                                    iconUrl = processUrlIfNotNull(
-                                        replaceTokensIfNotNull(
-                                            iconUrl,
-                                            guild,
-                                            customTokens
-                                        )
-                                    )
-                                )
-                            },
-                            title = processStringAndReplaceTokensIfNotNull(title, 256, guild, customTokens),
-                            description = processStringAndReplaceTokensIfNotNull(
-                                description,
-                                4096,
-                                guild,
-                                customTokens
-                            ),
-                            url = processUrlIfNotNull(replaceTokensIfNotNull(url, guild, customTokens)),
-                            footer = with(footer) {
-                                this?.copy(
-                                    text = processStringAndReplaceTokens(text, 2048, guild, customTokens),
-                                    iconUrl = processImageUrlIfNotNull(
-                                        replaceTokensIfNotNull(
-                                            iconUrl,
-                                            guild,
-                                            customTokens
-                                        )
-                                    )
-                                )
-                            },
-                            image = with(image) {
-                                this?.copy(
-                                    url = processImageUrl(replaceTokens(url, guild, customTokens))
-                                )
-                            },
-                            thumbnail = with(thumbnail) {
-                                this?.copy(
-                                    url = processImageUrl(replaceTokens(url, guild, customTokens))
-                                )
-                            },
-                            fields = fields.map {
-                                it.copy(
-                                    name = processStringAndReplaceTokens(it.name, 256, guild, customTokens),
-                                    value = processStringAndReplaceTokens(it.value, 1024, guild, customTokens),
-                                    inline = it.inline
-                                )
-                            }
-                        )
-                    }
+                embeds = embeds?.map {
+                    processEmbed(it, guild, customTokens)
                 },
                 components = components?.map { recursiveComponentReplacer(it) }
             )
@@ -252,29 +213,31 @@ object MessageUtils {
 
         val messageBuilder = MessageCreateBuilder()
         messageBuilder.setContent(discordMessage.content)
-        val discordEmbed = discordMessage.embed
-        if (discordEmbed != null) {
-            val embed = EmbedBuilder()
-                .setAuthor(discordEmbed.author?.name, discordEmbed.author?.url, discordEmbed.author?.iconUrl)
-                .setTitle(discordEmbed.title, discordEmbed.url)
-                .setDescription(discordEmbed.description)
-                .setThumbnail(discordEmbed.thumbnail?.url)
-                .setImage(discordEmbed.image?.url)
-                .setFooter(discordEmbed.footer?.text, discordEmbed.footer?.iconUrl)
 
-            for (field in discordEmbed.fields) {
-                embed.addField(field.name, field.value, field.inline)
-            }
+        if (discordMessage.embeds != null) {
+            for (discordEmbed in discordMessage.embeds) {
+                val embed = EmbedBuilder()
+                    .setAuthor(discordEmbed.author?.name, discordEmbed.author?.url, discordEmbed.author?.iconUrl)
+                    .setTitle(discordEmbed.title, discordEmbed.url)
+                    .setDescription(discordEmbed.description)
+                    .setThumbnail(discordEmbed.thumbnail?.url)
+                    .setImage(discordEmbed.image?.url)
+                    .setFooter(discordEmbed.footer?.text, discordEmbed.footer?.iconUrl)
 
-            val color = discordEmbed.color
-            if (color != null)
-                embed.setColor(color)
+                for (field in discordEmbed.fields) {
+                    embed.addField(field.name, field.value, field.inline)
+                }
 
-            try {
-                messageBuilder.setEmbeds(embed.build())
-            } catch (e: Exception) {
-                // Creating a empty embed can cause errors, so we just wrap it in a try .. catch block and hope
-                // for the best!
+                val color = discordEmbed.color
+                if (color != null)
+                    embed.setColor(color)
+
+                try {
+                    messageBuilder.addEmbeds(embed.build())
+                } catch (e: Exception) {
+                    // Creating a empty embed can cause errors, so we just wrap it in a try .. catch block and hope
+                    // for the best!
+                }
             }
         }
 
@@ -548,6 +511,63 @@ object MessageUtils {
         }
 
         return message
+    }
+
+    private fun processEmbed(embed: DiscordEmbed, guild: Guild?, customTokens: Map<String, String>): DiscordEmbed {
+        return with(embed) {
+            this.copy(
+                author = with(author) {
+                    this?.copy(
+                        name = processStringAndReplaceTokens(this.name, 256, guild, customTokens),
+                        url = processUrlIfNotNull(replaceTokensIfNotNull(url, guild, customTokens)),
+                        iconUrl = processUrlIfNotNull(
+                            replaceTokensIfNotNull(
+                                iconUrl,
+                                guild,
+                                customTokens
+                            )
+                        )
+                    )
+                },
+                title = processStringAndReplaceTokensIfNotNull(title, 256, guild, customTokens),
+                description = processStringAndReplaceTokensIfNotNull(
+                    description,
+                    4096,
+                    guild,
+                    customTokens
+                ),
+                url = processUrlIfNotNull(replaceTokensIfNotNull(url, guild, customTokens)),
+                footer = with(footer) {
+                    this?.copy(
+                        text = processStringAndReplaceTokens(text, 2048, guild, customTokens),
+                        iconUrl = processImageUrlIfNotNull(
+                            replaceTokensIfNotNull(
+                                iconUrl,
+                                guild,
+                                customTokens
+                            )
+                        )
+                    )
+                },
+                image = with(image) {
+                    this?.copy(
+                        url = processImageUrl(replaceTokens(url, guild, customTokens))
+                    )
+                },
+                thumbnail = with(thumbnail) {
+                    this?.copy(
+                        url = processImageUrl(replaceTokens(url, guild, customTokens))
+                    )
+                },
+                fields = fields.map {
+                    it.copy(
+                        name = processStringAndReplaceTokens(it.name, 256, guild, customTokens),
+                        value = processStringAndReplaceTokens(it.value, 1024, guild, customTokens),
+                        inline = it.inline
+                    )
+                }
+            )
+        }
     }
 
     private fun replaceTokensIfNotNull(text: String?, guild: Guild?, customTokens: Map<String, String>) = text?.let { replaceTokens(text, guild, customTokens) }

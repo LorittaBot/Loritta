@@ -4,10 +4,10 @@ import kotlinx.html.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.common.utils.embeds.DiscordMessage
 import net.perfectdreams.loritta.common.utils.placeholders.MessagePlaceholder
 import net.perfectdreams.loritta.common.utils.placeholders.PlaceholderSectionType
 import net.perfectdreams.loritta.common.utils.placeholders.SectionPlaceholders
+import net.perfectdreams.loritta.dashboard.discordmessages.DiscordMessage
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.website.components.FancyDetails.fancyDetails
 import net.perfectdreams.loritta.serializable.DiscordGuild

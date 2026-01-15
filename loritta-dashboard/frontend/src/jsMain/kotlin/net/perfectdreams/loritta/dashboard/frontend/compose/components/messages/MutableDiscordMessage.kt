@@ -35,12 +35,12 @@ class MutableDiscordMessage(
     }
 
     var content = source.content
-    var embed = source.embed?.let { MutableDiscordEmbed(it) }
+    var embeds = source.embeds?.map { MutableDiscordEmbed(it) }?.toMutableList() ?: mutableListOf()
     val components = source.components?.map { transformIntoMutable(it) }?.toMutableList() ?: mutableListOf()
 
     fun transformToData() = DiscordMessage(
         content,
-        embed = embed?.let {
+        embeds = embeds.map {
             DiscordEmbed(
                 author = it.author?.let {
                     DiscordEmbed.Author(it.name!!, it.url, it.iconUrl)

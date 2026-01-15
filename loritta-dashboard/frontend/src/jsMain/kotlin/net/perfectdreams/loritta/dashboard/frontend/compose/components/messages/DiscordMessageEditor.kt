@@ -7,9 +7,13 @@ import kotlinx.html.div
 import kotlinx.html.stream.createHTML
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonNull
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.decodeFromJsonElement
+import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.put
 import net.perfectdreams.luna.bliss.Bliss
 import net.perfectdreams.luna.bliss.HttpMethod
@@ -71,7 +75,16 @@ fun DiscordMessageEditor(
         classes("message-editor")
     }) {
         val parsedMessage = try {
-            JsonForDiscordMessages.decodeFromString<DiscordMessage>(rawMessage)
+            // We COULD make a custom serializable...
+            // But honestly? That's a bit tricky because we only want to remap ONE specific field that may be named "embed" OR "embeds" :(
+            val messageAsMap = JsonForDiscordMessages.parseToJsonElement(rawMessage).jsonObject.toMutableMap()
+            val embed = messageAsMap["embed"]
+            if (embed != null) {
+                messageAsMap.remove("embed")
+                messageAsMap["embeds"] = JsonArray(listOf(embed))
+            }
+
+            JsonForDiscordMessages.decodeFromJsonElement<DiscordMessage>(JsonObject(messageAsMap))
         } catch (e: SerializationException) {
             null
         } catch (e: IllegalStateException) {
@@ -196,7 +209,7 @@ fun DiscordMessageEditor(
                                                                             JsonForDiscordMessages.encodeToString(
                                                                                 DiscordMessage(
                                                                                     "",
-                                                                                    embed
+                                                                                    embed?.let { listOf(it) }
                                                                                 )
                                                                             )
                                                                         )
@@ -355,9 +368,11 @@ fun DiscordMessageEditor(
                                 DiscordButtonType.PRIMARY,
                                 attrs = {
                                     onClick {
-                                        mutableMessage.embed = MutableDiscordMessage.MutableDiscordEmbed(
-                                            DiscordEmbed(
-                                                description = "A Loritta é muito fofa!"
+                                        mutableMessage.embeds.add(
+                                            MutableDiscordMessage.MutableDiscordEmbed(
+                                                DiscordEmbed(
+                                                    description = "A Loritta é muito fofa!"
+                                                )
                                             )
                                         )
                                         mutableMessage.triggerUpdate()
@@ -390,16 +405,10 @@ fun DiscordMessageEditor(
                             }
                         }
 
-                        val embed = mutableMessage.embed
+                        val embeds = mutableMessage.embeds
 
-                        // We check for the components to make it look BETTER, putting two buttons side by side
-                        if (embed == null) {
-                            if (mutableMessage.components.isNotEmpty()) {
-                                // If an embed is NOT present...
-                                // Add embed button
-                                CreateEmbedButton()
-                            }
-                        } else {
+
+                        for (embed in embeds) {
                             VerticalList(attrs = {
                                 val embedColor = embed.color
                                 val hex = if (embedColor != null) {
@@ -427,7 +436,7 @@ fun DiscordMessageEditor(
                                             Color(red, green, blue)
                                         }
                                     ) {
-                                        mutableMessage.embed?.color = it?.rgb
+                                        embed.color = it?.rgb
                                         mutableMessage.triggerUpdate()
                                     }
                                 }
@@ -734,7 +743,7 @@ fun DiscordMessageEditor(
                                     DiscordButtonType.NO_BACKGROUND_THEME_DEPENDENT_DARK_TEXT,
                                     attrs = {
                                         onClick {
-                                            mutableMessage.embed = null
+                                            mutableMessage.embeds.remove(embed)
                                             mutableMessage.triggerUpdate()
                                         }
                                     }
@@ -744,6 +753,7 @@ fun DiscordMessageEditor(
                             }
                         }
 
+                        val canAddMoreEmbeds = 10 > mutableMessage.embeds.size
                         VerticalList {
                             val components = mutableMessage.components
 
@@ -751,7 +761,7 @@ fun DiscordMessageEditor(
                                 ComponentEditor(m, null, component, mutableMessage)
                             }
 
-                            if (embed == null && components.isEmpty()) {
+                            if (canAddMoreEmbeds && components.isEmpty()) {
                                 HorizontalList(attrs = {
                                     classes("child-flex-grow")
                                 }) {

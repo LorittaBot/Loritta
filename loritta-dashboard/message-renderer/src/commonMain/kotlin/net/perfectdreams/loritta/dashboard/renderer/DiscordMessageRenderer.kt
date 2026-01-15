@@ -30,154 +30,156 @@ fun FlowContent.discordMessageRenderer(
                 transformedDiscordText(message.content, channels, roles, placeholders)
             }
 
-            val embed = message.embed
+            val embeds = message.embeds
             discordMessageAccessories {
                 val attachments = additionalMessageData?.attachments
                 if (attachments != null)
                     discordMessageAttachments(attachments.map { it.url })
 
                 // ===[ EMBED ]===
-                if (embed != null) {
-                    discordMessageEmbed(
-                        embed.color,
-                        embed.thumbnail?.url?.let {
-                            DiscordMessageUtils.parsePlaceholdersToString(it, placeholders)
-                        }
-                    ) {
-                        // ===[ EMBED AUTHOR ]===
-                        val embedAuthor = embed.author
-                        if (embedAuthor != null) {
-                            discordAuthor(
-                                embedAuthor.url?.let { DiscordMessageUtils.parsePlaceholdersToString(it, placeholders) },
-                                embedAuthor.iconUrl?.let { DiscordMessageUtils.parsePlaceholdersToString(it, placeholders) }
-                            ) {
-                                text(
-                                    DiscordMessageUtils.parsePlaceholdersToString(embedAuthor.name, placeholders)
-                                )
+                if (embeds != null) {
+                    for (embed in embeds) {
+                        discordMessageEmbed(
+                            embed.color,
+                            embed.thumbnail?.url?.let {
+                                DiscordMessageUtils.parsePlaceholdersToString(it, placeholders)
                             }
-                        }
-
-                        // ===[ EMBED TITLE ]===
-                        val title = embed.title
-                        if (title != null) {
-                            val titleUrl = embed.url
-                            if (titleUrl != null) {
-                                // No need to point it to the real URL
-                                // (See: anchor "javascript:" tag)
-                                a(href = "#", classes = "discord-embed-title") {
-                                    transformedDiscordText(title, channels, roles, placeholders)
-                                }
-                            } else {
-                                div(classes = "discord-embed-title") {
-                                    transformedDiscordText(title, channels, roles, placeholders)
+                        ) {
+                            // ===[ EMBED AUTHOR ]===
+                            val embedAuthor = embed.author
+                            if (embedAuthor != null) {
+                                discordAuthor(
+                                    embedAuthor.url?.let { DiscordMessageUtils.parsePlaceholdersToString(it, placeholders) },
+                                    embedAuthor.iconUrl?.let { DiscordMessageUtils.parsePlaceholdersToString(it, placeholders) }
+                                ) {
+                                    text(
+                                        DiscordMessageUtils.parsePlaceholdersToString(embedAuthor.name, placeholders)
+                                    )
                                 }
                             }
-                        }
 
-                        // ===[ EMBED DESCRIPTION ]===
-                        val description = embed.description
-                        if (description != null)
-                            discordEmbedDescription {
-                                transformedDiscordText(description, channels, roles, placeholders)
-                            }
-
-                        if (embed.fields.isNotEmpty()) {
-                            div(classes = "discord-embed-fields") {
-                                // Rendering *inline* fields is hard as fucc
-                                // We know that there can be at *maximum* three inline fields in a row in a embed
-                                // So, if we want to place everything nicely, we need to keep track of the previous and next
-                                // inline fields.
-                                // After all...
-                                // [inline field]
-                                // [inline field]
-                                // [field]
-                                // [inline field]
-                                // [inline field]
-                                // [inline field]
-                                // should be displayed as
-                                // [inline field] [inline field]
-                                // [field]
-                                // [inline field] [inline field] [inline field]
-                                // So, to do that, let's split up everything in different chunks, inlined and non inlined chunks
-                                val chunks = mutableListOf<MutableList<DiscordEmbed.Field>>()
-
-                                for (field in embed.fields) {
-                                    val currentChunk = chunks.lastOrNull() ?: run {
-                                        val newList = mutableListOf<DiscordEmbed.Field>()
-                                        chunks.add(newList)
-                                        newList
+                            // ===[ EMBED TITLE ]===
+                            val title = embed.title
+                            if (title != null) {
+                                val titleUrl = embed.url
+                                if (titleUrl != null) {
+                                    // No need to point it to the real URL
+                                    // (See: anchor "javascript:" tag)
+                                    a(href = "#", classes = "discord-embed-title") {
+                                        transformedDiscordText(title, channels, roles, placeholders)
                                     }
-
-                                    if (currentChunk.firstOrNull()?.inline != field.inline) {
-                                        // New chunk needs to be created!
-                                        val newList = mutableListOf<DiscordEmbed.Field>()
-                                        newList.add(field)
-                                        chunks.add(newList)
-                                    } else {
-                                        // Same type, so we are going to append to the current chunk
-                                        currentChunk.add(field)
+                                } else {
+                                    div(classes = "discord-embed-title") {
+                                        transformedDiscordText(title, channels, roles, placeholders)
                                     }
                                 }
+                            }
 
-                                var fieldIndex = 0
-                                for (fieldChunk in chunks) {
-                                    // Because fields are grouped by three, we are going to chunk again
-                                    val groupedFields = fieldChunk.chunked(3)
+                            // ===[ EMBED DESCRIPTION ]===
+                            val description = embed.description
+                            if (description != null)
+                                discordEmbedDescription {
+                                    transformedDiscordText(description, channels, roles, placeholders)
+                                }
 
-                                    for (fieldGroup in groupedFields) {
-                                        for ((index, field) in fieldGroup.withIndex()) {
-                                            div(classes = "discord-embed-field") {
-                                                style = if (!field.inline) "grid-column: 1 / 13;" else {
-                                                    if (fieldGroup.size == 3) {
-                                                        when (index) {
-                                                            2 -> "grid-column: 9 / 13;"
-                                                            1 -> "grid-column: 5 / 9;"
-                                                            else -> "grid-column: 1 / 5;"
+                            if (embed.fields.isNotEmpty()) {
+                                div(classes = "discord-embed-fields") {
+                                    // Rendering *inline* fields is hard as fucc
+                                    // We know that there can be at *maximum* three inline fields in a row in a embed
+                                    // So, if we want to place everything nicely, we need to keep track of the previous and next
+                                    // inline fields.
+                                    // After all...
+                                    // [inline field]
+                                    // [inline field]
+                                    // [field]
+                                    // [inline field]
+                                    // [inline field]
+                                    // [inline field]
+                                    // should be displayed as
+                                    // [inline field] [inline field]
+                                    // [field]
+                                    // [inline field] [inline field] [inline field]
+                                    // So, to do that, let's split up everything in different chunks, inlined and non inlined chunks
+                                    val chunks = mutableListOf<MutableList<DiscordEmbed.Field>>()
+
+                                    for (field in embed.fields) {
+                                        val currentChunk = chunks.lastOrNull() ?: run {
+                                            val newList = mutableListOf<DiscordEmbed.Field>()
+                                            chunks.add(newList)
+                                            newList
+                                        }
+
+                                        if (currentChunk.firstOrNull()?.inline != field.inline) {
+                                            // New chunk needs to be created!
+                                            val newList = mutableListOf<DiscordEmbed.Field>()
+                                            newList.add(field)
+                                            chunks.add(newList)
+                                        } else {
+                                            // Same type, so we are going to append to the current chunk
+                                            currentChunk.add(field)
+                                        }
+                                    }
+
+                                    var fieldIndex = 0
+                                    for (fieldChunk in chunks) {
+                                        // Because fields are grouped by three, we are going to chunk again
+                                        val groupedFields = fieldChunk.chunked(3)
+
+                                        for (fieldGroup in groupedFields) {
+                                            for ((index, field) in fieldGroup.withIndex()) {
+                                                div(classes = "discord-embed-field") {
+                                                    style = if (!field.inline) "grid-column: 1 / 13;" else {
+                                                        if (fieldGroup.size == 3) {
+                                                            when (index) {
+                                                                2 -> "grid-column: 9 / 13;"
+                                                                1 -> "grid-column: 5 / 9;"
+                                                                else -> "grid-column: 1 / 5;"
+                                                            }
+                                                        } else {
+                                                            when (index) {
+                                                                1 -> "grid-column: 7 / 13;"
+                                                                else -> "grid-column: 1 / 7;"
+                                                            }
                                                         }
-                                                    } else {
-                                                        when (index) {
-                                                            1 -> "grid-column: 7 / 13;"
-                                                            else -> "grid-column: 1 / 7;"
-                                                        }
+                                                    }
+
+                                                    div(classes = "discord-embed-field-name") {
+                                                        transformedDiscordText(field.name, channels, roles, placeholders)
+                                                    }
+
+                                                    div(classes = "discord-embed-field-value") {
+                                                        transformedDiscordText(field.value, channels, roles, placeholders)
                                                     }
                                                 }
 
-                                                div(classes = "discord-embed-field-name") {
-                                                    transformedDiscordText(field.name, channels, roles, placeholders)
-                                                }
-
-                                                div(classes = "discord-embed-field-value") {
-                                                    transformedDiscordText(field.value, channels, roles, placeholders)
-                                                }
+                                                fieldIndex++
                                             }
-
-                                            fieldIndex++
                                         }
                                     }
                                 }
                             }
-                        }
 
-                        // ===[ EMBED IMAGE ]===
-                        val imageUrl = embed.image?.url
-                        if (imageUrl != null)
-                            discordEmbedImage(DiscordMessageUtils.parsePlaceholdersToString(imageUrl, placeholders))
+                            // ===[ EMBED IMAGE ]===
+                            val imageUrl = embed.image?.url
+                            if (imageUrl != null)
+                                discordEmbedImage(DiscordMessageUtils.parsePlaceholdersToString(imageUrl, placeholders))
 
-                        val footer = embed.footer
-                        if (footer != null) {
-                            div(classes = "discord-embed-footer") {
-                                val footerIconUrl = footer.iconUrl
-                                if (footerIconUrl != null) {
-                                    img(
-                                        src = DiscordMessageUtils.parsePlaceholdersToString(footerIconUrl, placeholders),
-                                        classes = "discord-embed-footer-icon"
-                                    )
-                                }
+                            val footer = embed.footer
+                            if (footer != null) {
+                                div(classes = "discord-embed-footer") {
+                                    val footerIconUrl = footer.iconUrl
+                                    if (footerIconUrl != null) {
+                                        img(
+                                            src = DiscordMessageUtils.parsePlaceholdersToString(footerIconUrl, placeholders),
+                                            classes = "discord-embed-footer-icon"
+                                        )
+                                    }
 
-                                span(classes = "discord-embed-footer-text") {
-                                    text(
-                                        DiscordMessageUtils.parsePlaceholdersToString(footer.text, placeholders)
-                                    )
+                                    span(classes = "discord-embed-footer-text") {
+                                        text(
+                                            DiscordMessageUtils.parsePlaceholdersToString(footer.text, placeholders)
+                                        )
+                                    }
                                 }
                             }
                         }

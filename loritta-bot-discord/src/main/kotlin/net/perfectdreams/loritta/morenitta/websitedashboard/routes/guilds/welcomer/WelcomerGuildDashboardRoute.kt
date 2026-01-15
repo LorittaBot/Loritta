@@ -61,10 +61,12 @@ class WelcomerGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                 "Embed Simples",
                 DiscordMessage(
                     content = "{@user}",
-                    embed = DiscordEmbed(
-                        color = -9270822,
-                        title = "👋 Seja bem-vindo(a)!",
-                        description = "Olá {@user}! Seja bem-vindo(a) ao {guild}!"
+                    embeds = listOf(
+                        DiscordEmbed(
+                            color = -9270822,
+                            title = "👋 Seja bem-vindo(a)!",
+                            description = "Olá {@user}! Seja bem-vindo(a) ao {guild}!"
+                        )
                     )
                 )
             ),
@@ -72,19 +74,21 @@ class WelcomerGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                 "Embed com Avatar",
                 DiscordMessage(
                     content = "{@user}",
-                    embed = DiscordEmbed(
-                        color = -9270822,
-                        title = "👋 Bem-vindo(a)!",
-                        description = "Olá {@user}, espero que você se divirta no meu servidor! <:loritta:331179879582269451>",
-                        author = DiscordEmbed.Author(
-                            "{user.tag}",
-                            iconUrl = "{user.avatar}"
-                        ),
-                        thumbnail = DiscordEmbed.EmbedUrl(
-                            "{user.avatar}"
-                        ),
-                        footer = DiscordEmbed.Footer(
-                            "ID do usuário: {user.id}"
+                    embeds = listOf(
+                        DiscordEmbed(
+                            color = -9270822,
+                            title = "👋 Bem-vindo(a)!",
+                            description = "Olá {@user}, espero que você se divirta no meu servidor! <:loritta:331179879582269451>",
+                            author = DiscordEmbed.Author(
+                                "{user.tag}",
+                                iconUrl = "{user.avatar}"
+                            ),
+                            thumbnail = DiscordEmbed.EmbedUrl(
+                                "{user.avatar}"
+                            ),
+                            footer = DiscordEmbed.Footer(
+                                "ID do usuário: {user.id}"
+                            )
                         )
                     )
                 )
@@ -93,22 +97,24 @@ class WelcomerGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                 "Embed com Avatar e Imagem",
                 DiscordMessage(
                     content = "{@user}",
-                    embed = DiscordEmbed(
-                        color = -9270822,
-                        title = "👋 Bem-vindo(a)!",
-                        description = "Olá {@user}, espero que você se divirta no meu servidor! <:loritta:331179879582269451>",
-                        author = DiscordEmbed.Author(
-                            "{user.tag}",
-                            iconUrl = "{user.avatar}"
-                        ),
-                        thumbnail = DiscordEmbed.EmbedUrl(
-                            "{user.avatar}"
-                        ),
-                        image = DiscordEmbed.EmbedUrl(
-                            "https://media.giphy.com/media/GPQBFuG4ABACA/source.gif"
-                        ),
-                        footer = DiscordEmbed.Footer(
-                            "ID do usuário: {user.id}"
+                    embeds = listOf(
+                        DiscordEmbed(
+                            color = -9270822,
+                            title = "👋 Bem-vindo(a)!",
+                            description = "Olá {@user}, espero que você se divirta no meu servidor! <:loritta:331179879582269451>",
+                            author = DiscordEmbed.Author(
+                                "{user.tag}",
+                                iconUrl = "{user.avatar}"
+                            ),
+                            thumbnail = DiscordEmbed.EmbedUrl(
+                                "{user.avatar}"
+                            ),
+                            image = DiscordEmbed.EmbedUrl(
+                                "https://media.giphy.com/media/GPQBFuG4ABACA/source.gif"
+                            ),
+                            footer = DiscordEmbed.Footer(
+                                "ID do usuário: {user.id}"
+                            )
                         )
                     )
                 )
@@ -117,37 +123,39 @@ class WelcomerGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                 "Embed com Informações",
                 DiscordMessage(
                     content = "{@user}",
-                    embed = DiscordEmbed(
-                        color = -14689638,
-                        title = "{user} | Bem-vindo(a)!",
-                        description = "<:lori_hug:515328576611155968> Olá, seja bem-vindo(a) ao {guild}!",
-                        fields = listOf(
-                            DiscordEmbed.Field(
-                                "\uD83D\uDC4B Sabia que...",
-                                "Atualmente temos {guild.size} membros no servidor?",
-                                true
+                    embeds = listOf(
+                        DiscordEmbed(
+                            color = -14689638,
+                            title = "{user} | Bem-vindo(a)!",
+                            description = "<:lori_hug:515328576611155968> Olá, seja bem-vindo(a) ao {guild}!",
+                            fields = listOf(
+                                DiscordEmbed.Field(
+                                    "\uD83D\uDC4B Sabia que...",
+                                    "Atualmente temos {guild.size} membros no servidor?",
+                                    true
+                                ),
+                                DiscordEmbed.Field(
+                                    "🛡 Tag do Usuário",
+                                    "`{user.tag}` ({user.id})",
+                                    true
+                                ),
+                                DiscordEmbed.Field(
+                                    "\uD83D\uDCDB Precisando de ajuda?",
+                                    "Caso você tenha alguma dúvida ou problema, chame a nossa equipe!",
+                                    true
+                                ),
+                                DiscordEmbed.Field(
+                                    "\uD83D\uDC6E Evite punições!",
+                                    "Leia as nossas #regras para evitar ser punido no servidor!",
+                                    true
+                                )
                             ),
-                            DiscordEmbed.Field(
-                                "🛡 Tag do Usuário",
-                                "`{user.tag}` ({user.id})",
-                                true
+                            thumbnail = DiscordEmbed.EmbedUrl(
+                                "{user.avatar}"
                             ),
-                            DiscordEmbed.Field(
-                                "\uD83D\uDCDB Precisando de ajuda?",
-                                "Caso você tenha alguma dúvida ou problema, chame a nossa equipe!",
-                                true
-                            ),
-                            DiscordEmbed.Field(
-                                "\uD83D\uDC6E Evite punições!",
-                                "Leia as nossas #regras para evitar ser punido no servidor!",
-                                true
+                            footer = DiscordEmbed.Footer(
+                                "{guild} • © Todos os direitos reservados."
                             )
-                        ),
-                        thumbnail = DiscordEmbed.EmbedUrl(
-                            "{user.avatar}"
-                        ),
-                        footer = DiscordEmbed.Footer(
-                            "{guild} • © Todos os direitos reservados."
                         )
                     )
                 )
@@ -156,22 +164,24 @@ class WelcomerGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                 "Kit Social Influencer™",
                 DiscordMessage(
                     content = "{@user}",
-                    embed = DiscordEmbed(
-                        color = -2342853,
-                        title = "{user} | Bem-vindo(a)!",
-                        description = "Salve {@user}! Você acabou de entrar no servidor do {guild}, aqui você poderá se interagir com fãs do {guild}, conversar sobre suas coisas favoritas e muito mais!",
-                        fields = listOf(
-                            DiscordEmbed.Field(
-                                "\uD83D\uDCE2 Fique atento!",
-                                "Novos vídeos do {guild} serão anunciados no #vídeos-novos!",
-                                true
+                    embeds = listOf(
+                        DiscordEmbed(
+                            color = -2342853,
+                            title = "{user} | Bem-vindo(a)!",
+                            description = "Salve {@user}! Você acabou de entrar no servidor do {guild}, aqui você poderá se interagir com fãs do {guild}, conversar sobre suas coisas favoritas e muito mais!",
+                            fields = listOf(
+                                DiscordEmbed.Field(
+                                    "\uD83D\uDCE2 Fique atento!",
+                                    "Novos vídeos do {guild} serão anunciados no #vídeos-novos!",
+                                    true
+                                )
+                            ),
+                            thumbnail = DiscordEmbed.EmbedUrl(
+                                "{user.avatar}"
+                            ),
+                            footer = DiscordEmbed.Footer(
+                                "{guild} • © Todos os direitos reservados."
                             )
-                        ),
-                        thumbnail = DiscordEmbed.EmbedUrl(
-                            "{user.avatar}"
-                        ),
-                        footer = DiscordEmbed.Footer(
-                            "{guild} • © Todos os direitos reservados."
                         )
                     ),
                     components = listOf(
@@ -224,10 +234,12 @@ class WelcomerGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                 "Embed Simples",
                 DiscordMessage(
                     content = "",
-                    embed = DiscordEmbed(
-                        color = -6250077,
-                        title = "Tchau...",
-                        description = "{user} saiu do {guild}... espero que algum dia ele volte..."
+                    embeds = listOf(
+                        DiscordEmbed(
+                            color = -6250077,
+                            title = "Tchau...",
+                            description = "{user} saiu do {guild}... espero que algum dia ele volte..."
+                        )
                     )
                 )
             ),
@@ -235,19 +247,21 @@ class WelcomerGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                 "Embed com Avatar",
                 DiscordMessage(
                     content = "",
-                    embed = DiscordEmbed(
-                        color = -6250077,
-                        title = "😭 #chateada!",
-                        description = "⚰ **{user}** saiu do servidor... <:lori_triste:370344565967814659>",
-                        author = DiscordEmbed.Author(
-                            "{user.tag}",
-                            iconUrl = "{user.avatar}"
-                        ),
-                        thumbnail = DiscordEmbed.EmbedUrl(
-                            "{user.avatar}"
-                        ),
-                        footer = DiscordEmbed.Footer(
-                            "ID do usuário: {user.id}"
+                    embeds = listOf(
+                        DiscordEmbed(
+                            color = -6250077,
+                            title = "😭 #chateada!",
+                            description = "⚰ **{user}** saiu do servidor... <:lori_triste:370344565967814659>",
+                            author = DiscordEmbed.Author(
+                                "{user.tag}",
+                                iconUrl = "{user.avatar}"
+                            ),
+                            thumbnail = DiscordEmbed.EmbedUrl(
+                                "{user.avatar}"
+                            ),
+                            footer = DiscordEmbed.Footer(
+                                "ID do usuário: {user.id}"
+                            )
                         )
                     )
                 )
@@ -256,22 +270,24 @@ class WelcomerGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                 "Embed com Avatar e Imagem",
                 DiscordMessage(
                     content = "{@user}",
-                    embed = DiscordEmbed(
-                        color = -9270822,
-                        title = "😭 #chateada!",
-                        description = "⚰ **{user}** saiu do servidor... <:lori_triste:370344565967814659>",
-                        author = DiscordEmbed.Author(
-                            "{user.tag}",
-                            iconUrl = "{user.avatar}"
-                        ),
-                        thumbnail = DiscordEmbed.EmbedUrl(
-                            "{user.avatar}"
-                        ),
-                        image = DiscordEmbed.EmbedUrl(
-                            "https://i.imgur.com/RUIaWW3.png"
-                        ),
-                        footer = DiscordEmbed.Footer(
-                            "ID do usuário: {user.id}"
+                    embeds = listOf(
+                        DiscordEmbed(
+                            color = -9270822,
+                            title = "😭 #chateada!",
+                            description = "⚰ **{user}** saiu do servidor... <:lori_triste:370344565967814659>",
+                            author = DiscordEmbed.Author(
+                                "{user.tag}",
+                                iconUrl = "{user.avatar}"
+                            ),
+                            thumbnail = DiscordEmbed.EmbedUrl(
+                                "{user.avatar}"
+                            ),
+                            image = DiscordEmbed.EmbedUrl(
+                                "https://i.imgur.com/RUIaWW3.png"
+                            ),
+                            footer = DiscordEmbed.Footer(
+                                "ID do usuário: {user.id}"
+                            )
                         )
                     )
                 )
