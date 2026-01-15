@@ -153,9 +153,7 @@ class SpicyMorenitta : Logging {
 		LorittaItemShopTimerComponentMounter(),
 		LorittaGameCanvasComponentMounter(this),
 		SynchronizeFormWithSaveBarComponentMounter(),
-		LorittaSelectMenuComponentMounter(this),
-		LorittaDiscordMessageEditorComponentMounter(this),
-		GuildGeneralComponentMounter(this)
+		LorittaSelectMenuComponentMounter(this)
 	)
 
 	@OptIn(ExperimentalEncodingApi::class)
