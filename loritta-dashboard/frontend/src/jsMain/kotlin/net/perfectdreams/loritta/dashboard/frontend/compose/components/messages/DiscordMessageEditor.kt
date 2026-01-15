@@ -50,11 +50,6 @@ import org.jetbrains.compose.web.dom.Thead
 import org.jetbrains.compose.web.dom.Tr
 import kotlin.random.Random
 
-val JsonForDiscordMessages = Json {
-    prettyPrint = true
-    ignoreUnknownKeys = true
-}
-
 @Composable
 fun DiscordMessageEditor(
     m: LorittaDashboardFrontend,
@@ -75,24 +70,7 @@ fun DiscordMessageEditor(
     Div(attrs = {
         classes("message-editor")
     }) {
-        val parsedMessage = try {
-            // We COULD make a custom serializable...
-            // But honestly? That's a bit tricky because we only want to remap ONE specific field that may be named "embed" OR "embeds" :(
-            val messageAsMap = JsonForDiscordMessages.parseToJsonElement(rawMessage).jsonObject.toMutableMap()
-            val embed = messageAsMap["embed"]
-            if (embed != null) {
-                messageAsMap.remove("embed")
-                messageAsMap["embeds"] = JsonArray(listOf(embed))
-            }
-
-            JsonForDiscordMessages.decodeFromJsonElement<DiscordMessage>(JsonObject(messageAsMap))
-        } catch (e: SerializationException) {
-            null
-        } catch (e: IllegalStateException) {
-            null // This may be triggered when a message has invalid message components
-        } catch (e: IllegalArgumentException) {
-            null // This may be triggered when a message has invalid message components²
-        }
+        val parsedMessage = DiscordMessage.decodeFromJsonString(rawMessage)
 
         val mutableMessage = MutableDiscordMessage(
             parsedMessage ?: DiscordMessage(
@@ -188,7 +166,7 @@ fun DiscordMessageEditor(
                                                         TextArea {
                                                             onInput {
                                                                 embed = try {
-                                                                    JsonForDiscordMessages.decodeFromString<DiscordEmbed>(
+                                                                    DiscordMessage.JsonForDiscordMessages.decodeFromString<DiscordEmbed>(
                                                                         it.value
                                                                     )
                                                                 } catch (e: SerializationException) {
@@ -207,7 +185,7 @@ fun DiscordMessageEditor(
                                                                 else
                                                                     onClick {
                                                                         onMessageContentChange.invoke(
-                                                                            JsonForDiscordMessages.encodeToString(
+                                                                            DiscordMessage.JsonForDiscordMessages.encodeToString(
                                                                                 DiscordMessage(
                                                                                     "",
                                                                                     false,
@@ -334,7 +312,7 @@ fun DiscordMessageEditor(
                         // Automatically disable the format JSON button if you are editing it raw
                         if (parsedMessage != null && editorType == EditorType.RAW) {
                             onClick {
-                                onMessageContentChange.invoke(JsonForDiscordMessages.encodeToString(parsedMessage))
+                                onMessageContentChange.invoke(DiscordMessage.JsonForDiscordMessages.encodeToString(parsedMessage))
                             }
                         } else disabled()
                     }

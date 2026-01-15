@@ -137,7 +137,7 @@ class MutableDiscordMessage(
      */
     fun triggerUpdate() {
         try {
-            onMessageContentChange.invoke(JsonForDiscordMessages.encodeToString(transformToData()))
+            onMessageContentChange.invoke(DiscordMessage.JsonForDiscordMessages.encodeToString(transformToData()))
         } catch (e: Exception) {
             e.printStackTrace()
         }

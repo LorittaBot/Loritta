@@ -169,22 +169,7 @@ object MessageUtils {
         customTokens: Map<String, String>,
         safe: Boolean
     ): MessageCreateData {
-        val originalDiscordMessage = try {
-            // We COULD make a custom serializable...
-            // But honestly? That's a bit tricky because we only want to remap ONE specific field that may be named "embed" OR "embeds" :(
-            val messageAsMap = JsonIgnoreUnknownKeys.parseToJsonElement(message).jsonObject.toMutableMap()
-            val embed = messageAsMap["embed"]
-            if (embed != null) {
-                messageAsMap.remove("embed")
-                messageAsMap["embeds"] = JsonArray(listOf(embed))
-            }
-
-            JsonIgnoreUnknownKeys.decodeFromJsonElement<DiscordMessage>(JsonObject(messageAsMap))
-        } catch (e: SerializationException) {
-            DiscordMessage(content = message) // If the message is null, use the message as the content!
-        } catch (e: IllegalStateException) {
-            DiscordMessage(content = message) // This may be triggered when a message has invalid message components
-        }
+        val originalDiscordMessage = DiscordMessage.decodeFromJsonString(message) ?: DiscordMessage(content = message)
 
         fun recursiveComponentReplacer(component: DiscordComponent): DiscordComponent {
             return when (component) {

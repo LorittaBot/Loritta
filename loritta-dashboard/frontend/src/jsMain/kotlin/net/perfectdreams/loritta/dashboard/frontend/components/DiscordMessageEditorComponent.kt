@@ -5,24 +5,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import kotlinx.html.div
 import kotlinx.html.stream.createHTML
-import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.decodeFromJsonElement
-import kotlinx.serialization.json.jsonObject
-import net.perfectdreams.luna.bliss.BlissComponent
-import net.perfectdreams.luna.modals.Modal
 import net.perfectdreams.loritta.dashboard.BlissHex
 import net.perfectdreams.loritta.dashboard.discordmessages.DiscordMessage
 import net.perfectdreams.loritta.dashboard.frontend.LorittaDashboardFrontend
 import net.perfectdreams.loritta.dashboard.frontend.compose.components.RawHtml
 import net.perfectdreams.loritta.dashboard.frontend.compose.components.messages.DiscordMessageEditor
-import net.perfectdreams.loritta.dashboard.frontend.compose.components.messages.JsonForDiscordMessages
 import net.perfectdreams.loritta.dashboard.frontend.compose.components.messages.TargetChannelResult
 import net.perfectdreams.loritta.dashboard.frontend.utils.SVGIconManager
 import net.perfectdreams.loritta.dashboard.messageeditor.MessageEditorBootstrap
 import net.perfectdreams.loritta.dashboard.renderer.discordMessageRenderer
+import net.perfectdreams.luna.bliss.BlissComponent
+import net.perfectdreams.luna.modals.Modal
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.renderComposable
 import web.dom.document
@@ -105,26 +99,7 @@ class DiscordMessageEditorComponent(val m: LorittaDashboardFrontend) : BlissComp
         }
 
         renderComposable(rootNode) {
-            val parsedMessage = try {
-                // We COULD make a custom serializable...
-                // But honestly? That's a bit tricky because we only want to remap ONE specific field that may be named "embed" OR "embeds" :(
-                val messageAsMap = JsonForDiscordMessages.parseToJsonElement(rawMessage).jsonObject.toMutableMap()
-                val embed = messageAsMap["embed"]
-                if (embed != null) {
-                    messageAsMap.remove("embed")
-                    messageAsMap["embeds"] = JsonArray(listOf(embed))
-                }
-
-                JsonForDiscordMessages.decodeFromJsonElement<DiscordMessage>(JsonObject(messageAsMap))
-            } catch (e: SerializationException) {
-                null
-            } catch (e: IllegalStateException) {
-                null // This may be triggered when a message has invalid message components
-            } catch (e: IllegalArgumentException) {
-                null // This may be triggered when a message has invalid message components²
-            } ?: DiscordMessage(
-                content = rawMessage
-            )
+            val parsedMessage = DiscordMessage.decodeFromJsonString(rawMessage) ?: DiscordMessage(content = rawMessage)
 
             Div(attrs = { classes("message-preview-section") }) {
                 Div(attrs = { classes("message-preview-wrapper") }) {
