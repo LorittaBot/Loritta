@@ -209,6 +209,7 @@ fun DiscordMessageEditor(
                                                                             JsonForDiscordMessages.encodeToString(
                                                                                 DiscordMessage(
                                                                                     "",
+                                                                                    false,
                                                                                     embed?.let { listOf(it) }
                                                                                 )
                                                                             )

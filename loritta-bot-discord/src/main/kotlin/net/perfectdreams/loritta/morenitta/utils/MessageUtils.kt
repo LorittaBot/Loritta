@@ -213,6 +213,7 @@ object MessageUtils {
 
         val messageBuilder = MessageCreateBuilder()
         messageBuilder.setContent(discordMessage.content)
+        messageBuilder.setTTS(discordMessage.tts)
 
         if (discordMessage.embeds != null) {
             for (discordEmbed in discordMessage.embeds) {
