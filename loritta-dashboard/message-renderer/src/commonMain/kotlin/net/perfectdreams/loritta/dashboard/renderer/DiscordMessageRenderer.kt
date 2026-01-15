@@ -26,8 +26,11 @@ fun FlowContent.discordMessageRenderer(
     discordMessageStyle {
         discordMessageBlock(author.name, author.avatarUrl, author.bot, author.isAppVerified, verifiedIconRawHtml) {
             // ===[ MESSAGE CONTENT ]===
-            div {
-                transformedDiscordText(message.content, channels, roles, placeholders)
+            val content = message.content
+            if (content != null) {
+                div {
+                    transformedDiscordText(content, channels, roles, placeholders)
+                }
             }
 
             val embeds = message.embeds
@@ -393,6 +396,42 @@ fun FlowContent.discordComponent(component: DiscordComponent) {
     when (component) {
         is DiscordComponent.DiscordActionRow -> discordActionRow(component)
         is DiscordComponent.DiscordButton -> discordLinkButton(component)
+        is DiscordComponent.DiscordSection -> {
+            // TODO: Implement Section rendering
+            div(classes = "discord-component-placeholder") {
+                +"[Section Component]"
+            }
+        }
+        is DiscordComponent.DiscordTextDisplay -> {
+            // TODO: Implement TextDisplay rendering
+            div(classes = "discord-component-placeholder") {
+                +"[Text Display: ${component.content}]"
+            }
+        }
+        is DiscordComponent.DiscordThumbnail -> {
+            // TODO: Implement Thumbnail rendering
+            div(classes = "discord-component-placeholder") {
+                +"[Thumbnail Component]"
+            }
+        }
+        is DiscordComponent.DiscordMediaGallery -> {
+            // TODO: Implement MediaGallery rendering
+            div(classes = "discord-component-placeholder") {
+                +"[Media Gallery Component]"
+            }
+        }
+        is DiscordComponent.DiscordSeparator -> {
+            // TODO: Implement Separator rendering
+            div(classes = "discord-component-placeholder") {
+                +"[Separator Component]"
+            }
+        }
+        is DiscordComponent.DiscordContainer -> {
+            // TODO: Implement Container rendering
+            div(classes = "discord-component-placeholder") {
+                +"[Container Component]"
+            }
+        }
     }
 }
 

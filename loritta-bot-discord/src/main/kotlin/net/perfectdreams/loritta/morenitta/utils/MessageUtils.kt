@@ -15,6 +15,13 @@ import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponent
 import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.components.section.Section
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay
+import net.dv8tion.jda.api.components.thumbnail.Thumbnail
+import net.dv8tion.jda.api.components.mediagallery.MediaGallery
+import net.dv8tion.jda.api.components.mediagallery.MediaGalleryItem
+import net.dv8tion.jda.api.components.separator.Separator
+import net.dv8tion.jda.api.components.container.Container
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
@@ -197,23 +204,99 @@ object MessageUtils {
                         )
                     }
                 }
+
+                is DiscordComponent.DiscordSection -> {
+                    with(component) {
+                        component.copy(
+                            components = this.components.map { recursiveComponentReplacer(it) },
+                            accessory = this.accessory?.let { recursiveComponentReplacer(it) }
+                        )
+                    }
+                }
+
+                is DiscordComponent.DiscordTextDisplay -> {
+                    with(component) {
+                        component.copy(
+                            // Text displays can have up to 4000 chars total in V2
+                            // For individual component, use a reasonable limit (e.g., 2000)
+                            content = processStringAndReplaceTokens(this.content, 2000, guild, customTokens)
+                        )
+                    }
+                }
+
+                is DiscordComponent.DiscordThumbnail -> {
+                    with(component) {
+                        component.copy(
+                            url = replaceTokens(this.url, guild, customTokens),
+                            description = this.description?.let {
+                                processStringAndReplaceTokens(it, 1024, guild, customTokens)
+                            }
+                        )
+                    }
+                }
+
+                is DiscordComponent.DiscordMediaGallery -> {
+                    with(component) {
+                        component.copy(
+                            items = this.items.map { item ->
+                                item.copy(
+                                    media = item.media.copy(replaceTokens(item.media.url, guild, customTokens)),
+                                    description = item.description?.let {
+                                        processStringAndReplaceTokens(it, 1024, guild, customTokens)
+                                    }
+                                )
+                            }
+                        )
+                    }
+                }
+
+                is DiscordComponent.DiscordSeparator -> component
+
+                is DiscordComponent.DiscordContainer -> {
+                    with(component) {
+                        component.copy(
+                            components = this.components.map { recursiveComponentReplacer(it) }
+                            // accentColor and spoiler don't need token replacement
+                        )
+                    }
+                }
             }
         }
 
-        // Let's replace all the tokens!
-        val discordMessage = with(originalDiscordMessage) {
-            copy(
-                content = processStringAndReplaceTokens(content, 2000, guild, customTokens),
-                embeds = embeds?.map {
-                    processEmbed(it, guild, customTokens)
-                },
-                components = components?.map { recursiveComponentReplacer(it) }
-            )
+        // Check for Components V2 flag
+        val isComponentsV2 = (originalDiscordMessage.flags ?: 0) and (1 shl 15) != 0
+
+        // Process the message based on V2 flag
+        val discordMessage = if (isComponentsV2) {
+            // V2 mode: clear content/embeds, process all components
+            with(originalDiscordMessage) {
+                copy(
+                    content = null, // Must be null in V2 mode
+                    embeds = null, // Cannot have embeds in V2 mode
+                    components = components?.map { recursiveComponentReplacer(it) }
+                )
+            }
+        } else {
+            // Legacy mode: process content/embeds normally
+            with(originalDiscordMessage) {
+                copy(
+                    content = content?.let { processStringAndReplaceTokens(it, 2000, guild, customTokens) },
+                    embeds = embeds?.map { processEmbed(it, guild, customTokens) },
+                    components = components?.map { recursiveComponentReplacer(it) }
+                )
+            }
         }
 
         val messageBuilder = MessageCreateBuilder()
-        messageBuilder.setContent(discordMessage.content)
-        messageBuilder.setTTS(discordMessage.tts)
+
+        // Enable V2 mode in JDA if flag is set
+        if (isComponentsV2) {
+            messageBuilder.useComponentsV2()
+        } else {
+            // Set content and embeds only in legacy mode
+            messageBuilder.setContent(discordMessage.content)
+            messageBuilder.setTTS(discordMessage.tts)
+        }
 
         if (discordMessage.embeds != null) {
             for (discordEmbed in discordMessage.embeds) {
@@ -242,7 +325,7 @@ object MessageUtils {
             }
         }
 
-        // This code must be refactored later due to Components V2
+        // Component converter that handles both legacy and Components V2 types
         fun recursiveComponentConverter(component: DiscordComponent): Component {
             return when (component) {
                 is DiscordComponent.DiscordActionRow -> {
@@ -258,15 +341,112 @@ object MessageUtils {
                         component.label
                     )
                 }
+
+                is DiscordComponent.DiscordSection -> {
+                    val accessory = component.accessory
+                    if (accessory != null) {
+                        // JDA requires non-null accessory for Section
+                        // Cast components to proper types
+                        val convertedAccessory = recursiveComponentConverter(accessory) as net.dv8tion.jda.api.components.section.SectionAccessoryComponent
+                        val convertedContent = component.components.map {
+                            recursiveComponentConverter(it) as net.dv8tion.jda.api.components.section.SectionContentComponent
+                        }
+                        Section.of(convertedAccessory, convertedContent)
+                    } else {
+                        error("Cannot have a section without an accessory!")
+                    }
+                }
+
+                is DiscordComponent.DiscordTextDisplay -> {
+                    TextDisplay.of(component.content)
+                }
+
+                is DiscordComponent.DiscordThumbnail -> {
+                    var thumbnail = Thumbnail.fromUrl(component.url)
+
+                    if (component.description != null) {
+                        thumbnail = thumbnail.withDescription(component.description)
+                    }
+
+                    if (component.spoiler) {
+                        thumbnail = thumbnail.withSpoiler(true)
+                    }
+
+                    thumbnail
+                }
+
+                is DiscordComponent.DiscordMediaGallery -> {
+                    val items = component.items.map { item ->
+                        var galleryItem = MediaGalleryItem.fromUrl(item.media.url)
+
+                        if (item.description != null) {
+                            galleryItem = galleryItem.withDescription(item.description)
+                        }
+
+                        if (item.spoiler) {
+                            galleryItem = galleryItem.withSpoiler(true)
+                        }
+
+                        galleryItem
+                    }
+
+                    MediaGallery.of(items)
+                }
+
+                is DiscordComponent.DiscordSeparator -> {
+                    val spacing = when (component.spacing) {
+                        1 -> Separator.Spacing.SMALL
+                        2 -> Separator.Spacing.LARGE
+                        else -> Separator.Spacing.SMALL // Default fallback
+                    }
+
+                    if (component.divider) {
+                        Separator.createDivider(spacing)
+                    } else {
+                        Separator.createInvisible(spacing)
+                    }
+                }
+
+                is DiscordComponent.DiscordContainer -> {
+                    // Convert child components - cast components to proper types
+                    val childComponents = component.components.map {
+                        recursiveComponentConverter(it) as net.dv8tion.jda.api.components.container.ContainerChildComponent
+                    }
+
+                    // Create container
+                    var jdaContainer: Container = Container.of(childComponents)
+
+                    // Apply accent color if specified
+                    if (component.accentColor != null) {
+                        jdaContainer = jdaContainer.withAccentColor(component.accentColor)
+                    }
+
+                    // Apply spoiler if specified
+                    if (component.spoiler) {
+                        jdaContainer = jdaContainer.withSpoiler(true)
+                    }
+
+                    jdaContainer
+                }
             }
         }
 
+        // Process components
         val components = discordMessage.components
         if (components != null) {
             for (component in components) {
-                // The first component must be a layout component (also known as... ActionRow)
-                // If it isn't, then the JSON is invalid!
-                messageBuilder.addComponents(recursiveComponentConverter(component) as ActionRow) // Always MUST be an ActionRow here
+                val convertedComponent = recursiveComponentConverter(component)
+
+                if (isComponentsV2) {
+                    // V2 mode: components can be top-level (not just ActionRow)
+                    // Cast to MessageTopLevelComponent for V2
+                    messageBuilder.addComponents(convertedComponent as net.dv8tion.jda.api.components.MessageTopLevelComponent)
+                } else {
+                    // Legacy mode: must be ActionRow
+                    if (convertedComponent is ActionRow) {
+                        messageBuilder.addComponents(convertedComponent)
+                    }
+                }
             }
         }
 

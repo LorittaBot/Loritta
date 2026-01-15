@@ -357,7 +357,8 @@ fun DiscordMessageEditor(
                                 FieldLabel("Conteúdo da Mensagem")
                             }
 
-                            TextAreaWithEntityPickers(targetGuild, mutableMessage.content) {
+                            // For Components v1, the message MUST have a non-null content
+                            TextAreaWithEntityPickers(targetGuild, mutableMessage.content ?: "") {
                                 mutableMessage.content = it
                                 mutableMessage.triggerUpdate()
                             }
@@ -1054,6 +1055,25 @@ fun ComponentEditor(
         is MutableDiscordMessage.MutableDiscordComponent.MutableButton -> ButtonEditor(
             parentComponent ?: error("Button on the root component is not allowed!"), component, message
         )
+
+        is MutableDiscordMessage.MutableDiscordComponent.MutableContainer -> {
+            // TODO: Implement editor!
+        }
+        is MutableDiscordMessage.MutableDiscordComponent.MutableMediaGallery -> {
+            // TODO: Implement editor!
+        }
+        is MutableDiscordMessage.MutableDiscordComponent.MutableSection -> {
+            // TODO: Implement editor!
+        }
+        is MutableDiscordMessage.MutableDiscordComponent.MutableSeparator -> {
+            // TODO: Implement editor!
+        }
+        is MutableDiscordMessage.MutableDiscordComponent.MutableTextDisplay -> {
+            // TODO: Implement editor!
+        }
+        is MutableDiscordMessage.MutableDiscordComponent.MutableThumbnail -> {
+            // TODO: Implement editor!
+        }
     }
 }
 

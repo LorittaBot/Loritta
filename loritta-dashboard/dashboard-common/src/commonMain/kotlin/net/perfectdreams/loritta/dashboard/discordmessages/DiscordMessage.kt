@@ -4,8 +4,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class DiscordMessage(
-    val content: String,
+    val content: String? = null,
     val tts: Boolean = false,
     val embeds: List<DiscordEmbed>? = null,
-    val components: List<DiscordComponent>? = null
+    val components: List<DiscordComponent>? = null,
+    val flags: Int? = null
 )

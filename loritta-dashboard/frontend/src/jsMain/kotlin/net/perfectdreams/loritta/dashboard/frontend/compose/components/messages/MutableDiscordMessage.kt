@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.dashboard.frontend.compose.components.messages
 import net.perfectdreams.loritta.dashboard.discordmessages.DiscordComponent
 import net.perfectdreams.loritta.dashboard.discordmessages.DiscordEmbed
 import net.perfectdreams.loritta.dashboard.discordmessages.DiscordMessage
+import net.perfectdreams.loritta.dashboard.frontend.compose.components.messages.MutableDiscordMessage.MutableDiscordComponent.*
 
 class MutableDiscordMessage(
     source: DiscordMessage,
@@ -11,11 +12,20 @@ class MutableDiscordMessage(
     companion object {
         private fun transformIntoMutable(component: DiscordComponent) = when (component) {
             is DiscordComponent.DiscordActionRow -> {
-                MutableDiscordComponent.MutableActionRow(component)
+                MutableActionRow(component)
             }
             is DiscordComponent.DiscordButton -> {
-                MutableDiscordComponent.MutableButton(component)
+                MutableButton(component)
             }
+
+            is DiscordComponent.DiscordContainer -> {
+                MutableContainer(component)
+            }
+            is DiscordComponent.DiscordMediaGallery -> MutableMediaGallery(component)
+            is DiscordComponent.DiscordSection -> MutableSection(component)
+            is DiscordComponent.DiscordSeparator -> MutableSeparator(component)
+            is DiscordComponent.DiscordTextDisplay -> MutableTextDisplay(component)
+            is DiscordComponent.DiscordThumbnail -> MutableThumbnail(component)
         }
 
         private fun transformToData(component: MutableDiscordComponent): DiscordComponent {
@@ -25,10 +35,53 @@ class MutableDiscordMessage(
                         transformToData(it)
                     }
                 )
+
                 is MutableDiscordComponent.MutableButton -> DiscordComponent.DiscordButton(
                     label = component.label ?: "",
                     style = 5,
                     url = component.url ?: ""
+                )
+
+                is MutableDiscordComponent.MutableContainer -> DiscordComponent.DiscordContainer(
+                    components = component.components.map {
+                        transformToData(it)
+                    },
+                    accentColor = component.accentColor,
+                    spoiler = component.spoiler
+                )
+
+                is MutableDiscordComponent.MutableMediaGallery -> DiscordComponent.DiscordMediaGallery(
+                    items = component.items.map {
+                        DiscordComponent.DiscordMediaGallery.MediaGalleryItem(
+                            media = DiscordComponent.DiscordMediaGallery.MediaGalleryItem.UnfurledMediaItem(
+                                url = it.media.url
+                            ),
+                            description = it.description,
+                            spoiler = it.spoiler
+                        )
+                    }
+                )
+
+                is MutableDiscordComponent.MutableSection -> DiscordComponent.DiscordSection(
+                    components = component.components.map {
+                        transformToData(it)
+                    },
+                    accessory = component.accessory?.let { transformToData(it) }
+                )
+
+                is MutableDiscordComponent.MutableSeparator -> DiscordComponent.DiscordSeparator(
+                    divider = component.divider,
+                    spacing = component.spacing
+                )
+
+                is MutableDiscordComponent.MutableTextDisplay -> DiscordComponent.DiscordTextDisplay(
+                    content = component.content
+                )
+
+                is MutableDiscordComponent.MutableThumbnail -> DiscordComponent.DiscordThumbnail(
+                    url = component.url,
+                    description = component.description,
+                    spoiler = component.spoiler
                 )
             }
         }
@@ -116,6 +169,46 @@ class MutableDiscordMessage(
         class MutableButton(source: DiscordComponent.DiscordButton) : MutableDiscordComponent() {
             var label: String? = source.label
             var url: String? = source.url
+        }
+
+        class MutableContainer(source: DiscordComponent.DiscordContainer) : MutableDiscordComponent() {
+            var accentColor = source.accentColor
+            var spoiler = source.spoiler
+            val components = source.components.map { transformIntoMutable(it) }.toMutableList()
+        }
+
+        class MutableMediaGallery(source: DiscordComponent.DiscordMediaGallery) : MutableDiscordComponent() {
+            val items = source.items.map { MutableMediaGalleryItem(it) }.toMutableList()
+
+            class MutableMediaGalleryItem(source: DiscordComponent.DiscordMediaGallery.MediaGalleryItem) {
+                var media = MutableUnfurledMediaItem(source.media)
+                var description = source.description
+                var spoiler = source.spoiler
+
+                class MutableUnfurledMediaItem(source: DiscordComponent.DiscordMediaGallery.MediaGalleryItem.UnfurledMediaItem) {
+                    var url = source.url
+                }
+            }
+        }
+
+        class MutableSection(source: DiscordComponent.DiscordSection) : MutableDiscordComponent() {
+            val components = source.components.map { transformIntoMutable(it) }.toMutableList()
+            var accessory = source.accessory?.let { transformIntoMutable(it) }
+        }
+
+        class MutableSeparator(source: DiscordComponent.DiscordSeparator) : MutableDiscordComponent() {
+            var divider = source.divider
+            var spacing = source.spacing
+        }
+
+        class MutableTextDisplay(source: DiscordComponent.DiscordTextDisplay) : MutableDiscordComponent() {
+            var content = source.content
+        }
+
+        class MutableThumbnail(source: DiscordComponent.DiscordThumbnail) : MutableDiscordComponent() {
+            var url = source.url
+            var description = source.description
+            var spoiler = source.spoiler
         }
     }
 }
