@@ -38,6 +38,8 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.getEffectiveAvatarUr
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.morenitta.utils.eventlog.EventLog
+import net.perfectdreams.loritta.morenitta.utils.eventlog.EventLog.setAuthorOnEmbed
 import org.apache.commons.io.IOUtils
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
@@ -143,7 +145,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 
 								val embed = EmbedBuilder()
 								embed.setTimestamp(Instant.now())
-								embed.setAuthor("${event.user.name}#${event.user.discriminator}", null, event.user.effectiveAvatarUrl)
+								EventLog.setAuthorOnEmbed(embed, event.user)
 								embed.setColor(Constants.DISCORD_BLURPLE.rgb)
 								embed.setImage("attachment://avatar.png")
 
@@ -200,8 +202,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 					embed.setTimestamp(Instant.now())
 					embed.setFooter(i18nContext.get(I18nKeysData.Modules.EventLog.UserId(userId = user.id.toString())), null)
 					embed.setColor(Color(221, 0, 0).rgb)
-
-					embed.setAuthor(user.name + "#" + user.discriminator, null, user.effectiveAvatarUrl)
+					EventLog.setAuthorOnEmbed(embed, user)
 
 					val savedMessage = storedMessage.decryptContent(loritta)
 					var deletedMessage = "\uD83D\uDCDD ${i18nContext.get(I18nKeysData.Modules.EventLog.MessageDeleted(messageContent = savedMessage.content, channelMention = "<#${storedMessage.channelId}>")).joinToString("\n")}"
@@ -262,7 +263,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 						val embed = EmbedBuilder()
 						embed.setTimestamp(Instant.now())
 						embed.setColor(Color(221, 0, 0).rgb)
-						embed.setAuthor(user.name + "#" + user.discriminator, null, user.effectiveAvatarUrl)
+						EventLog.setAuthorOnEmbed(embed, user)
 
 						val lines = mutableListOf<String>()
 
@@ -339,7 +340,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 
 				val message = "\uD83D\uDEAB **${i18nContext.get(I18nKeysData.Modules.EventLog.Banned(username = event.user.name))}**"
 
-				embed.setAuthor("${event.user.name}#${event.user.discriminator}", null, event.user.effectiveAvatarUrl)
+				EventLog.setAuthorOnEmbed(embed, event.user)
 				embed.setDescription(message)
 				embed.setFooter(i18nContext.get(I18nKeysData.Modules.EventLog.UserId(userId = event.user.id)), null)
 
@@ -385,7 +386,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 
 				val message = "\uD83E\uDD1D **${i18nContext.get(I18nKeysData.Modules.EventLog.Unbanned(username = event.user.name))}**"
 
-				embed.setAuthor("${event.user.name}#${event.user.discriminator}", null, event.user.effectiveAvatarUrl)
+				EventLog.setAuthorOnEmbed(embed, event.user)
 				embed.setDescription(message)
 				embed.setFooter(i18nContext.get(I18nKeysData.Modules.EventLog.UserId(userId = event.user.id)), null)
 
@@ -408,7 +409,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 				val embed = EmbedBuilder()
 				embed.setColor(Color(35, 209, 96).rgb)
 				embed.setTimestamp(Instant.now())
-				embed.setAuthor("${event.member.user.name}#${event.member.user.discriminator}", null, event.member.user.effectiveAvatarUrl)
+				EventLog.setAuthorOnEmbed(embed, event.member.user)
 
 				// ===[ NICKNAME ]===
 				val textChannel = event.guild.getGuildMessageChannelById(eventLogConfig.nicknameChangesLogChannelId ?: eventLogConfig.eventLogChannelId) ?: return@launch

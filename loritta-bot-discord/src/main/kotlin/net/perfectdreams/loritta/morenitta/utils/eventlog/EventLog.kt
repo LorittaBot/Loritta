@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion
 import net.dv8tion.jda.api.utils.FileUpload
 import net.perfectdreams.i18nhelper.core.I18nContext
@@ -14,6 +15,8 @@ import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.dao.StoredMessage
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.EventLogConfig
 import net.perfectdreams.loritta.morenitta.messageverify.LoriMessageDataUtils
+import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
+import net.perfectdreams.loritta.morenitta.utils.extensions.asPomeloOrLegacyTag
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import java.awt.Color
@@ -25,6 +28,22 @@ import javax.crypto.spec.SecretKeySpec
 
 object EventLog {
 	private val logger by HarmonyLoggerFactory.logger {}
+
+	fun setAuthorOnEmbed(embed: EmbedBuilder, author: User) {
+		embed.setAuthor(
+			author.asPomeloOrLegacyTag,
+			null,
+			author.effectiveAvatarUrl
+		)
+	}
+
+	fun setAuthorOnEmbed(embed: EmbedBuilder, author: CachedUserInfo) {
+		embed.setAuthor(
+			if (author.discriminator == "0000") "@${author.name}" else "${author.name}#${author.discriminator}",
+			null,
+			author.effectiveAvatarUrl
+		)
+	}
 
 	suspend fun onMessageReceived(loritta: LorittaBot, serverConfig: ServerConfig, message: Message) {
 		try {
@@ -82,11 +101,9 @@ object EventLog {
 										).joinToString("\n")
 									}"
 								)
-								.setAuthor(
-									"${message.author.name}#${message.author.discriminator}",
-									null,
-									message.author.effectiveAvatarUrl
-								)
+								.apply {
+									setAuthorOnEmbed(this, message.author)
+								}
 								.setFooter(i18nContext.get(I18nKeysData.Modules.EventLog.UserId(userId = message.author.id)), null)
 								.setTimestamp(Instant.now())
 
@@ -126,7 +143,9 @@ object EventLog {
 				val embed = EmbedBuilder()
 					.setColor(Color(35, 209, 96).rgb)
 					.setDescription("\uD83D\uDC49\uD83C\uDFA4 **${i18nContext.get(I18nKeysData.Modules.EventLog.JoinedVoiceChannel(memberMention = member.asMention, channelName = channelJoined.name))}**")
-					.setAuthor("${member.user.name}#${member.user.discriminator}", null, member.user.effectiveAvatarUrl)
+					.apply {
+						setAuthorOnEmbed(this, member.user)
+					}
 					.setFooter(i18nContext.get(I18nKeysData.Modules.EventLog.UserId(userId = member.user.id)), null)
 					.setTimestamp(Instant.now())
 					.build()
