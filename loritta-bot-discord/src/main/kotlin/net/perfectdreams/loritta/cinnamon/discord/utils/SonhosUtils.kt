@@ -182,7 +182,7 @@ object SonhosUtils {
             styled(
                 i18nContext.get(
                     GACampaigns.sonhosBundlesUpsellDiscordMessage(
-                        loritta.config.loritta.website.url,
+                        loritta.config.loritta.dashboard.url,
                         upsellMedium,
                         upsellCampaignContent
                     )
