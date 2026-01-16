@@ -13,7 +13,7 @@ kotlinWrappers = "2025.12.6"
 jdaKtx = "e7b0e50683"
 
 [libraries]
-deviousjda = { module = "com.github.LorittaBot:DeviousJDA", version = "d507774897" }
+deviousjda = { module = "com.github.LorittaBot:DeviousJDA", version = "40cd40811d" }
 jdaKtx = { module = "com.github.freya022:jda-ktx", version.ref = "jdaKtx" }
 
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
