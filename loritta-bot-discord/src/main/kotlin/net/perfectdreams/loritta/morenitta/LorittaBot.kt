@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta
 
+import club.minnced.discord.jdave.interop.JDaveSessionFactory
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.set
@@ -28,6 +29,7 @@ import kotlinx.serialization.json.long
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDAInfo
 import net.dv8tion.jda.api.OnlineStatus
+import net.dv8tion.jda.api.audio.AudioModuleConfig
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel
@@ -445,6 +447,10 @@ class LorittaBot(
             .setRawEventsEnabled(true)
             // We want to override JDA's shutdown hook to store the cache on disk when shutting down
             .setEnableShutdownHook(false)
+            .setAudioModuleConfig(
+                AudioModuleConfig()
+                    .withDaveSessionFactory(JDaveSessionFactory())
+            )
             .apply {
                 val baseUrl = config.loritta.discord.baseUrl
                 if (baseUrl != null) {

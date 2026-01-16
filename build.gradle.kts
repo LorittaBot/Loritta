@@ -33,13 +33,13 @@ allprojects {
 subprojects {
     plugins.withId("org.jetbrains.kotlin.multiplatform") {
         extensions.configure<KotlinMultiplatformExtension> {
-            jvmToolchain(21)
+            jvmToolchain(Versions.JVM_TARGET.toInt())
         }
     }
 
     plugins.withId("org.jetbrains.kotlin.jvm") {
         extensions.configure<KotlinJvmProjectExtension> {
-            jvmToolchain(21)
+            jvmToolchain(Versions.JVM_TARGET.toInt())
         }
     }
 

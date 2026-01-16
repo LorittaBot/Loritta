@@ -81,6 +81,10 @@ dependencies {
 }
 
 jib {
+    container {
+        mainClass = "net.perfectdreams.loritta.helper.LorittaHelperLauncher"
+    }
+    
     to {
         image = "ghcr.io/lorittabot/loritta-helper"
 

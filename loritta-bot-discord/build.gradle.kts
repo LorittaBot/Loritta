@@ -45,6 +45,8 @@ dependencies {
     implementation(libs.deviousjda)
     implementation(libs.jdaKtx)
     runtimeOnly(libs.discord.zstd.java.jni.impl)
+    implementation(libs.jdave.api)
+    runtimeOnly(libs.jdave.nativeLinuxAmd64)
 
     // Exposed & Databases
     implementation(libs.postgresqljdbcdriver)

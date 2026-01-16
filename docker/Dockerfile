@@ -1,4 +1,4 @@
-FROM eclipse-temurin:24-noble
+FROM eclipse-temurin:25-jdk-noble
 ARG NODE_MAJOR=18
 
 # Install required dependencies
