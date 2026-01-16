@@ -36,6 +36,8 @@ import net.perfectdreams.loritta.morenitta.utils.debug.DebugLog
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getEffectiveAvatarUrl
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
+import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import org.apache.commons.io.IOUtils
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
@@ -125,7 +127,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 							val eventLogChannelId = it[EventLogConfigs.avatarChangesLogChannelId] ?: it[EventLogConfigs.eventLogChannelId]
 							val eventLogConfig = loritta.newSuspendedTransaction { EventLogConfig.wrapRow(it) }
 
-							val locale = loritta.localeManager.getLocaleById(it[ServerConfigs.localeId])
+							val i18nContext = loritta.languageManager.getI18nContextByLegacyLocaleId(it[ServerConfigs.localeId])
 
 							val guild = guilds.first { it.idLong == guildId }
 
@@ -145,8 +147,8 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 								embed.setColor(Constants.DISCORD_BLURPLE.rgb)
 								embed.setImage("attachment://avatar.png")
 
-								embed.setDescription("\uD83D\uDDBC ${locale["modules.eventLog.avatarChanged", event.user.asMention]}")
-								embed.setFooter(locale["modules.eventLog.userID", event.user.id], null)
+								embed.setDescription("\uD83D\uDDBC ${i18nContext.get(I18nKeysData.Modules.EventLog.AvatarChanged(userMention = event.user.asMention))}")
+								embed.setFooter(i18nContext.get(I18nKeysData.Modules.EventLog.UserId(userId = event.user.id)), null)
 
 								val message = MessageCreateBuilder()
 									.setContent(" ")
@@ -177,7 +179,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
-			val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
+			val i18nContext = loritta.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
 			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(loritta, ServerConfig::eventLogConfig) ?: return@launch
 
 			if (eventLogConfig.enabled && eventLogConfig.messageDeleted) {
@@ -196,20 +198,20 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 
 					val embed = EmbedBuilder()
 					embed.setTimestamp(Instant.now())
-					embed.setFooter(locale["modules.eventLog.userID", user.id.toString()], null)
+					embed.setFooter(i18nContext.get(I18nKeysData.Modules.EventLog.UserId(userId = user.id.toString())), null)
 					embed.setColor(Color(221, 0, 0).rgb)
 
 					embed.setAuthor(user.name + "#" + user.discriminator, null, user.effectiveAvatarUrl)
 
 					val savedMessage = storedMessage.decryptContent(loritta)
-					var deletedMessage = "\uD83D\uDCDD ${locale.getList("modules.eventLog.messageDeleted", savedMessage.content, "<#${storedMessage.channelId}>").joinToString("\n")}"
+					var deletedMessage = "\uD83D\uDCDD ${i18nContext.get(I18nKeysData.Modules.EventLog.MessageDeleted(messageContent = savedMessage.content, channelMention = "<#${storedMessage.channelId}>")).joinToString("\n")}"
 
 					if (savedMessage.attachments.isNotEmpty()) {
 						// We use proxy URL due to this: https://i.imgur.com/VyVlzVe.png
 						val storedAttachments = savedMessage.attachments.map {
 							it.proxyUrl
 						}
-						deletedMessage += "\n${locale["modules.eventLog.messageDeletedUploads"]}\n" + storedAttachments.joinToString(separator = "\n")
+						deletedMessage += "\n${i18nContext.get(I18nKeysData.Modules.EventLog.MessageDeletedUploads)}\n" + storedAttachments.joinToString(separator = "\n")
 					}
 
 					val fileName = LoriMessageDataUtils.createFileNameForSavedMessageImage(savedMessage)
@@ -233,7 +235,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
-			val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
+			val i18nContext = loritta.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
 			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(loritta, ServerConfig::eventLogConfig) ?: return@launch
 
 			if (eventLogConfig.enabled && eventLogConfig.messageDeleted) {
@@ -283,7 +285,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 
 						val targetStream = IOUtils.toInputStream(lines.joinToString("\n"), Charset.defaultCharset())
 
-						val deletedMessage = "\uD83D\uDCDD ${locale["modules.eventLog.bulkDeleted"]}"
+						val deletedMessage = "\uD83D\uDCDD ${i18nContext.get(I18nKeysData.Modules.EventLog.BulkDeleted)}"
 
 						embed.setDescription(deletedMessage)
 
@@ -322,7 +324,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 
 			if (eventLogConfig.enabled && eventLogConfig.memberBanned) {
 				val textChannel = event.guild.getGuildMessageChannelById(eventLogConfig.memberBannedLogChannelId ?: eventLogConfig.eventLogChannelId) ?: return@launch
-				val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
+				val i18nContext = loritta.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
 
 				if (!textChannel.canTalk())
 					return@launch
@@ -335,11 +337,11 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 				embed.setTimestamp(Instant.now())
 				embed.setColor(Color(35, 209, 96).rgb)
 
-				val message = "\uD83D\uDEAB **${locale["modules.eventLog.banned", event.user.name]}**"
+				val message = "\uD83D\uDEAB **${i18nContext.get(I18nKeysData.Modules.EventLog.Banned(username = event.user.name))}**"
 
 				embed.setAuthor("${event.user.name}#${event.user.discriminator}", null, event.user.effectiveAvatarUrl)
 				embed.setDescription(message)
-				embed.setFooter(locale["modules.eventLog.userID", event.user.id], null)
+				embed.setFooter(i18nContext.get(I18nKeysData.Modules.EventLog.UserId(userId = event.user.id)), null)
 
 				textChannel.sendMessageEmbeds(embed.build()).await()
 				return@launch
@@ -369,7 +371,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 
 			if (eventLogConfig.enabled && eventLogConfig.memberUnbanned) {
 				val textChannel = event.guild.getGuildMessageChannelById(eventLogConfig.memberUnbannedLogChannelId ?: eventLogConfig.eventLogChannelId) ?: return@launch
-				val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
+				val i18nContext = loritta.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
 				if (!textChannel.canTalk())
 					return@launch
 				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
@@ -381,11 +383,11 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 				embed.setTimestamp(Instant.now())
 				embed.setColor(Color(35, 209, 96).rgb)
 
-				val message = "\uD83E\uDD1D **${locale["modules.eventLog.unbanned", event.user.name]}**"
+				val message = "\uD83E\uDD1D **${i18nContext.get(I18nKeysData.Modules.EventLog.Unbanned(username = event.user.name))}**"
 
 				embed.setAuthor("${event.user.name}#${event.user.discriminator}", null, event.user.effectiveAvatarUrl)
 				embed.setDescription(message)
-				embed.setFooter(locale["modules.eventLog.userID", event.user.id], null)
+				embed.setFooter(i18nContext.get(I18nKeysData.Modules.EventLog.UserId(userId = event.user.id)), null)
 
 				textChannel.sendMessageEmbeds(embed.build()).await()
 				return@launch
@@ -402,7 +404,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(loritta, ServerConfig::eventLogConfig) ?: return@launch
 
 			if (eventLogConfig.enabled && eventLogConfig.nicknameChanges) {
-				val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
+				val i18nContext = loritta.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
 				val embed = EmbedBuilder()
 				embed.setColor(Color(35, 209, 96).rgb)
 				embed.setTimestamp(Instant.now())
@@ -417,11 +419,11 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 				if (!event.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
 					return@launch
 
-				val oldNickname = if (event.oldNickname == null) "\uD83E\uDD37 ${locale["modules.eventLog.noNickname"]}" else event.oldNickname
-				val newNickname = if (event.newNickname == null) "\uD83E\uDD37 ${locale["modules.eventLog.noNickname"]}" else event.newNickname
+				val oldNickname = event.oldNickname ?: "\uD83E\uDD37 ${i18nContext.get(I18nKeysData.Modules.EventLog.NoNickname)}"
+				val newNickname = event.newNickname ?: "\uD83E\uDD37 ${i18nContext.get(I18nKeysData.Modules.EventLog.NoNickname)}"
 
-				embed.setDescription("\uD83D\uDCDD ${locale.getList("modules.eventLog.nicknameChanged", oldNickname, newNickname).joinToString("\n")}")
-				embed.setFooter(locale["modules.eventLog.userID", event.member.user.id], null)
+				embed.setDescription("\uD83D\uDCDD ${i18nContext.get(I18nKeysData.Modules.EventLog.NicknameChanged(oldNickname = oldNickname, newNickname = newNickname)).joinToString("\n")}")
+				embed.setFooter(i18nContext.get(I18nKeysData.Modules.EventLog.UserId(userId = event.member.user.id)), null)
 
 				textChannel.sendMessageEmbeds(embed.build()).await()
 				return@launch

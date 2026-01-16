@@ -531,7 +531,7 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 					),
 					lorittaProfile)
 
-				EventLog.onMessageUpdate(loritta, serverConfig, locale, event.message)
+				EventLog.onMessageUpdate(loritta, serverConfig, i18nContext, event.message)
 
 				val lorittaMessageEvent = LorittaMessageEvent(
 					event.author,

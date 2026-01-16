@@ -7,7 +7,8 @@ import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion
 import net.dv8tion.jda.api.utils.FileUpload
-import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.dao.StoredMessage
@@ -47,7 +48,7 @@ object EventLog {
 		}
 	}
 
-	suspend fun onMessageUpdate(loritta: LorittaBot, serverConfig: ServerConfig, locale: BaseLocale, message: Message) {
+	suspend fun onMessageUpdate(loritta: LorittaBot, serverConfig: ServerConfig, i18nContext: I18nContext, message: Message) {
 		try {
 			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(loritta, ServerConfig::eventLogConfig) ?: return
 
@@ -71,21 +72,22 @@ object EventLog {
 								.setColor(Color(238, 241, 0).rgb)
 								.setDescription(
 									"\uD83D\uDCDD ${
-										locale.getList(
-											"modules.eventLog.messageEdited",
-											message.member?.asMention,
-											savedMessage.content,
-											message.contentRaw,
-											message.guildChannel.asMention
+										i18nContext.get(
+											I18nKeysData.Modules.EventLog.MessageEdited(
+												memberMention = message.author.asMention,
+												oldContent = savedMessage.content,
+												newContent = message.contentRaw,
+												channelMention = message.guildChannel.asMention
+											)
 										).joinToString("\n")
 									}"
 								)
 								.setAuthor(
-									"${message.member?.user?.name}#${message.member?.user?.discriminator}",
+									"${message.author.name}#${message.author.discriminator}",
 									null,
-									message.member?.user?.effectiveAvatarUrl
+									message.author.effectiveAvatarUrl
 								)
-								.setFooter(locale["modules.eventLog.userID", message.member?.user?.id], null)
+								.setFooter(i18nContext.get(I18nKeysData.Modules.EventLog.UserId(userId = message.author.id)), null)
 								.setTimestamp(Instant.now())
 
 							val fileName = LoriMessageDataUtils.createFileNameForSavedMessageImage(savedMessage)
@@ -112,7 +114,7 @@ object EventLog {
 
 			if (eventLogConfig.enabled && eventLogConfig.voiceChannelJoins) {
 				val textChannel = member.guild.getGuildMessageChannelById(eventLogConfig.voiceChannelJoinsLogChannelId ?: eventLogConfig.eventLogChannelId) ?: return
-				val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
+				val i18nContext = loritta.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
 
 				if (!textChannel.canTalk())
 					return
@@ -123,9 +125,9 @@ object EventLog {
 
 				val embed = EmbedBuilder()
 					.setColor(Color(35, 209, 96).rgb)
-					.setDescription("\uD83D\uDC49\uD83C\uDFA4 **${locale["modules.eventLog.joinedVoiceChannel", member.asMention, channelJoined.name]}**")
+					.setDescription("\uD83D\uDC49\uD83C\uDFA4 **${i18nContext.get(I18nKeysData.Modules.EventLog.JoinedVoiceChannel(memberMention = member.asMention, channelName = channelJoined.name))}**")
 					.setAuthor("${member.user.name}#${member.user.discriminator}", null, member.user.effectiveAvatarUrl)
-					.setFooter(locale["modules.eventLog.userID", member.user.id], null)
+					.setFooter(i18nContext.get(I18nKeysData.Modules.EventLog.UserId(userId = member.user.id)), null)
 					.setTimestamp(Instant.now())
 					.build()
 
@@ -143,7 +145,7 @@ object EventLog {
 
 			if (eventLogConfig.enabled && eventLogConfig.voiceChannelLeaves) {
 				val textChannel = member.guild.getGuildMessageChannelById(eventLogConfig.voiceChannelLeavesLogChannelId ?: eventLogConfig.eventLogChannelId) ?: return
-				val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
+				val i18nContext = loritta.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
 				if (!textChannel.canTalk())
 					return
 				if (!member.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
@@ -153,9 +155,9 @@ object EventLog {
 
 				val embed = EmbedBuilder()
 					.setColor(Color(35, 209, 96).rgb)
-					.setDescription("\uD83D\uDC48\uD83C\uDFA4 **${locale["modules.eventLog.leftVoiceChannel", member.asMention, channelLeft.name]}**")
+					.setDescription("\uD83D\uDC48\uD83C\uDFA4 **${i18nContext.get(I18nKeysData.Modules.EventLog.LeftVoiceChannel(memberMention = member.asMention, channelName = channelLeft.name))}**")
 					.setAuthor("${member.user.name}#${member.user.discriminator}", null, member.user.effectiveAvatarUrl)
-					.setFooter(locale["modules.eventLog.userID", member.user.id], null)
+					.setFooter(i18nContext.get(I18nKeysData.Modules.EventLog.UserId(userId = member.user.id)), null)
 					.setTimestamp(Instant.now())
 					.build()
 
