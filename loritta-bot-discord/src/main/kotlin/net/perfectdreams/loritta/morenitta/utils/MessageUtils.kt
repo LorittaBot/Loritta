@@ -212,7 +212,7 @@ object MessageUtils {
                 is DiscordComponent.DiscordThumbnail -> {
                     with(component) {
                         component.copy(
-                            url = replaceTokens(this.url, guild, customTokens),
+                            media = component.media.copy(replaceTokens(component.media.url, guild, customTokens)),
                             description = this.description?.let {
                                 processStringAndReplaceTokens(it, 1024, guild, customTokens)
                             }
@@ -347,7 +347,7 @@ object MessageUtils {
                 }
 
                 is DiscordComponent.DiscordThumbnail -> {
-                    var thumbnail = Thumbnail.fromUrl(component.url)
+                    var thumbnail = Thumbnail.fromUrl(component.media.url)
 
                     if (component.description != null) {
                         thumbnail = thumbnail.withDescription(component.description)

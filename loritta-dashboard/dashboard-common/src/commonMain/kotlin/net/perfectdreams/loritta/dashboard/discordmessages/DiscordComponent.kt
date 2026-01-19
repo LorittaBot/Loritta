@@ -40,7 +40,7 @@ sealed class DiscordComponent {
     @Serializable
     data class DiscordThumbnail(
         @EncodeDefault override val type: Int = 11,
-        val url: String, // Image URL with token replacement
+        val media: UnfurledMediaItem, // Image URL with token replacement
         val description: String? = null, // Max 1024 chars, with token replacement
         val spoiler: Boolean = false
     ) : DiscordComponent()
@@ -55,13 +55,13 @@ sealed class DiscordComponent {
             val media: UnfurledMediaItem, // Media URL with token replacement
             val description: String? = null, // Max 1024 chars
             val spoiler: Boolean = false
-        ) {
-            @Serializable
-            data class UnfurledMediaItem(
-                val url: String
-            )
-        }
+        )
     }
+
+    @Serializable
+    data class UnfurledMediaItem(
+        val url: String
+    )
 
     @Serializable
     data class DiscordSeparator(

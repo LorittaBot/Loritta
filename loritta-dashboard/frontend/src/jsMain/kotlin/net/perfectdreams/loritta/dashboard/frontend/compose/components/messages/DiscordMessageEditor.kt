@@ -1147,7 +1147,7 @@ fun SectionEditor(
                         DiscordButton(DiscordButtonType.PRIMARY, attrs = {
                             onClick {
                                 component.accessory = MutableDiscordMessage.MutableDiscordComponent.MutableThumbnail(
-                                    DiscordComponent.DiscordThumbnail(url = "")
+                                    DiscordComponent.DiscordThumbnail(media = DiscordComponent.UnfurledMediaItem(url = ""))
                                 )
                                 message.triggerUpdate()
                             }
@@ -1211,9 +1211,9 @@ fun ThumbnailEditor(
     VerticalList {
         FieldWrapper {
             FieldInformation { FieldLabel("URL da Imagem") }
-            TextInput(component.url) {
+            TextInput(component.media.url) {
                 onInput {
-                    component.url = it.value
+                    component.media.url = it.value
                     message.triggerUpdate()
                 }
             }
@@ -1324,7 +1324,7 @@ fun MediaGalleryEditor(
                         component.items.add(
                             MutableDiscordMessage.MutableDiscordComponent.MutableMediaGallery.MutableMediaGalleryItem(
                                 DiscordComponent.DiscordMediaGallery.MediaGalleryItem(
-                                    media = DiscordComponent.DiscordMediaGallery.MediaGalleryItem.UnfurledMediaItem(""),
+                                    media = DiscordComponent.UnfurledMediaItem(""),
                                     description = null,
                                     spoiler = false
                                 )
@@ -1762,7 +1762,7 @@ fun AddGalleryButton(
                     DiscordComponent.DiscordMediaGallery(
                         items = listOf(
                             DiscordComponent.DiscordMediaGallery.MediaGalleryItem(
-                                media = DiscordComponent.DiscordMediaGallery.MediaGalleryItem.UnfurledMediaItem(""),
+                                media = DiscordComponent.UnfurledMediaItem(""),
                                 description = null,
                                 spoiler = false
                             )

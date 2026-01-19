@@ -53,7 +53,7 @@ class MutableDiscordMessage(
                 is MutableDiscordComponent.MutableMediaGallery -> DiscordComponent.DiscordMediaGallery(
                     items = component.items.map {
                         DiscordComponent.DiscordMediaGallery.MediaGalleryItem(
-                            media = DiscordComponent.DiscordMediaGallery.MediaGalleryItem.UnfurledMediaItem(
+                            media = DiscordComponent.UnfurledMediaItem(
                                 url = it.media.url
                             ),
                             description = it.description,
@@ -79,7 +79,9 @@ class MutableDiscordMessage(
                 )
 
                 is MutableDiscordComponent.MutableThumbnail -> DiscordComponent.DiscordThumbnail(
-                    url = component.url,
+                    media = DiscordComponent.UnfurledMediaItem(
+                        url = component.media.url
+                    ),
                     description = component.description,
                     spoiler = component.spoiler
                 )
@@ -195,11 +197,11 @@ class MutableDiscordMessage(
                 var media = MutableUnfurledMediaItem(source.media)
                 var description = source.description
                 var spoiler = source.spoiler
-
-                class MutableUnfurledMediaItem(source: DiscordComponent.DiscordMediaGallery.MediaGalleryItem.UnfurledMediaItem) {
-                    var url = source.url
-                }
             }
+        }
+
+        class MutableUnfurledMediaItem(source: DiscordComponent.UnfurledMediaItem) {
+            var url = source.url
         }
 
         class MutableSection(source: DiscordComponent.DiscordSection) : MutableDiscordComponent() {
@@ -217,7 +219,7 @@ class MutableDiscordMessage(
         }
 
         class MutableThumbnail(source: DiscordComponent.DiscordThumbnail) : MutableDiscordComponent() {
-            var url = source.url
+            var media = MutableUnfurledMediaItem(source.media)
             var description = source.description
             var spoiler = source.spoiler
         }

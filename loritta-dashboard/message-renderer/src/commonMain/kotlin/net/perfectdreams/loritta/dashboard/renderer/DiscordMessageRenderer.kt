@@ -424,7 +424,7 @@ fun FlowContent.discordComponent(
         is DiscordComponent.DiscordThumbnail -> {
             div(classes = "discord-thumbnail ${if (component.spoiler) "spoiler" else ""}") {
                 val description = component.description
-                img(src = DiscordMessageUtils.parsePlaceholdersToString(component.url, placeholders)) {
+                img(src = DiscordMessageUtils.parsePlaceholdersToString(component.media.url, placeholders)) {
                     classes = setOf("discord-thumbnail-image")
                     if (description != null) {
                         alt = DiscordMessageUtils.parsePlaceholdersToString(description, placeholders)
