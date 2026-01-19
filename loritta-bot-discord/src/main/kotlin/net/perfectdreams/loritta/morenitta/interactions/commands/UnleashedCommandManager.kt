@@ -870,6 +870,10 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                                 description,
                                 interaKTionsOption.required
                             ).apply {
+                                forEachI18nContextWithValidLocale { discordLocale, i18nContext ->
+                                    setDescriptionLocalization(discordLocale, i18nContext.get(interaKTionsOption.description).shortenWithEllipsis(100))
+                                }
+
                                 if (interaKTionsOption.autocompleteExecutor != null) {
                                     isAutoComplete = true
                                 }
@@ -888,6 +892,10 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                                 description,
                                 interaKTionsOption.required
                             ).apply {
+                                forEachI18nContextWithValidLocale { discordLocale, i18nContext ->
+                                    setDescriptionLocalization(discordLocale, i18nContext.get(interaKTionsOption.description).shortenWithEllipsis(100))
+                                }
+
                                 if (interaKTionsOption.autocompleteExecutor != null) {
                                     isAutoComplete = true
                                 }
@@ -906,6 +914,10 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                                 description,
                                 interaKTionsOption.required
                             ).apply {
+                                forEachI18nContextWithValidLocale { discordLocale, i18nContext ->
+                                    setDescriptionLocalization(discordLocale, i18nContext.get(interaKTionsOption.description).shortenWithEllipsis(100))
+                                }
+
                                 if (interaKTionsOption.autocompleteExecutor != null) {
                                     isAutoComplete = true
                                 }
@@ -939,7 +951,11 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                                 interaKTionsOption.name,
                                 description,
                                 interaKTionsOption.required
-                            )
+                            ).apply {
+                                forEachI18nContextWithValidLocale { discordLocale, i18nContext ->
+                                    setDescriptionLocalization(discordLocale, i18nContext.get(interaKTionsOption.description).shortenWithEllipsis(100))
+                                }
+                            }
                         )
                     }
 
@@ -949,7 +965,11 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                                 interaKTionsOption.name,
                                 description,
                                 interaKTionsOption.required
-                            )
+                            ).apply {
+                                forEachI18nContextWithValidLocale { discordLocale, i18nContext ->
+                                    setDescriptionLocalization(discordLocale, i18nContext.get(interaKTionsOption.description).shortenWithEllipsis(100))
+                                }
+                            }
                         )
                     }
 
@@ -959,7 +979,11 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                                 interaKTionsOption.name,
                                 description,
                                 interaKTionsOption.required
-                            )
+                            ).apply {
+                                forEachI18nContextWithValidLocale { discordLocale, i18nContext ->
+                                    setDescriptionLocalization(discordLocale, i18nContext.get(interaKTionsOption.description).shortenWithEllipsis(100))
+                                }
+                            }
                         )
                     }
 
@@ -969,7 +993,11 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                                 interaKTionsOption.name,
                                 description,
                                 interaKTionsOption.required
-                            )
+                            ).apply {
+                                forEachI18nContextWithValidLocale { discordLocale, i18nContext ->
+                                    setDescriptionLocalization(discordLocale, i18nContext.get(interaKTionsOption.description).shortenWithEllipsis(100))
+                                }
+                            }
                         )
                     }
 
@@ -979,7 +1007,11 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                                 interaKTionsOption.name,
                                 description,
                                 interaKTionsOption.required
-                            )
+                            ).apply {
+                                forEachI18nContextWithValidLocale { discordLocale, i18nContext ->
+                                    setDescriptionLocalization(discordLocale, i18nContext.get(interaKTionsOption.description).shortenWithEllipsis(100))
+                                }
+                            }
                         )
                     }
                 }
