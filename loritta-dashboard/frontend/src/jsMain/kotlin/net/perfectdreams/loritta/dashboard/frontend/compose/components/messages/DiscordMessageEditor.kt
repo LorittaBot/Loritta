@@ -1351,6 +1351,9 @@ fun SeparatorEditor(
     message: MutableDiscordMessage,
     onRemove: () -> (Unit)
 ) {
+    // Used to fix a bug where, if you have two separators and you change the spacing of the second one, the first radio button just *explodes*
+    val rId = Random.nextLong()
+
     VerticalList {
         FieldWrapper {
             FieldInformation { FieldLabel("Separador") }
@@ -1370,7 +1373,7 @@ fun SeparatorEditor(
                 FieldInformation { FieldLabel("Espaçamento") }
                 VerticalList {
                     FancyRadioInput(
-                        name = "separator-spacing",
+                        name = "separator-spacing-$rId",
                         value = "1",
                         checked = component.spacing == 1,
                         onChange = {
@@ -1396,7 +1399,7 @@ fun SeparatorEditor(
                     }
 
                     FancyRadioInput(
-                        name = "separator-spacing",
+                        name = "separator-spacing-$rId",
                         value = "2",
                         checked = component.spacing == 2,
                         onChange = {
