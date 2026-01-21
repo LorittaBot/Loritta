@@ -11,7 +11,8 @@ data class LorittaHelperConfig(
     val secretKey: String,
     val pantufaUrl: String? = null,
     val ignoreLorittaBanTimeoutsOnGuilds: Set<Long>,
-    val ignoreBanSynchronizationOnGuilds: Set<Long>
+    val ignoreBanSynchronizationOnGuilds: Set<Long>,
+    val commandRegistrationGuilds: List<Long> = emptyList()
 ) {
     @Serializable
     data class InnerHelperConfig(
