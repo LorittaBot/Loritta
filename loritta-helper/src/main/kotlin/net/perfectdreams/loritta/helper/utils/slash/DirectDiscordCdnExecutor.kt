@@ -8,7 +8,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaMessageC
 
 class DirectDiscordCdnExecutor(helper: LorittaHelper) : LorittaMessageCommandExecutor() {
     override suspend fun execute(context: ApplicationCommandContext, targetMessage: Message) {
-        if (!context.member.roles.map { it.idLong }.any { it in HelperExecutor.HELPER_ROLES }) {
+        if (!context.member.roles.map { it.idLong }.any { it in context.loritta.config.permissionRoles.helperRoles }) {
             context.reply(true) {
                 content = "Você não tem o poder de usar isto!"
             }

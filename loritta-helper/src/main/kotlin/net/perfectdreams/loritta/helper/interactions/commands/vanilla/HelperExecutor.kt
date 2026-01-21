@@ -10,27 +10,6 @@ abstract class HelperExecutor(
     val helper: LorittaHelper,
     val requiredPermissionLevel: PermissionLevel
 ) : LorittaSlashCommandExecutor() {
-    companion object {
-        val ADMIN_ROLES = listOf(
-            333602159998271489L, // SparklyPower Admins
-            693606685943660545L, // SparklyPower Coords
-            333601725862641664L, // SparklyPower Owners
-            351473717194522647,  // Loritta Bodyguards Community
-            421325022951637015L, // Loritta Bodyguards Support
-            1438662722924580974L // Loritta Staff Ban Support Portuguese
-        )
-
-        val HELPER_ROLES = listOf(
-            399301696892829706L, // Support Community
-            421325387889377291L, // Support BR Server
-            332650495522897920L, // SparklyPower Staff
-        )
-
-        val FAN_ARTS_MANAGER_ROLES = listOf(
-            924649809103691786L
-        )
-    }
-
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         val guild = context.guildOrNull
 
@@ -41,11 +20,12 @@ abstract class HelperExecutor(
             return
         }
 
+        val permissionRoles = helper.config.permissionRoles
         val roleIds = context.member.roles.map { it.idLong }
         val permissionLevel = when {
-            ADMIN_ROLES.any { it in roleIds } -> PermissionLevel.ADMIN
-            HELPER_ROLES.any { it in roleIds } -> PermissionLevel.HELPER
-            FAN_ARTS_MANAGER_ROLES.any { it in roleIds } -> PermissionLevel.FAN_ARTS_MANAGER
+            permissionRoles.adminRoles.any { it in roleIds } -> PermissionLevel.ADMIN
+            permissionRoles.helperRoles.any { it in roleIds } -> PermissionLevel.HELPER
+            permissionRoles.fanArtsManagerRoles.any { it in roleIds } -> PermissionLevel.FAN_ARTS_MANAGER
             else -> PermissionLevel.NOTHING
         }
 

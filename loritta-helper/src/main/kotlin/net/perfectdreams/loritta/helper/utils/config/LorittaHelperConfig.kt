@@ -12,8 +12,16 @@ data class LorittaHelperConfig(
     val pantufaUrl: String? = null,
     val ignoreLorittaBanTimeoutsOnGuilds: Set<Long>,
     val ignoreBanSynchronizationOnGuilds: Set<Long>,
-    val commandRegistrationGuilds: List<Long> = emptyList()
+    val commandRegistrationGuilds: List<Long>,
+    val permissionRoles: PermissionRolesConfig
 ) {
+    @Serializable
+    data class PermissionRolesConfig(
+        val adminRoles: List<Long>,
+        val helperRoles: List<Long>,
+        val fanArtsManagerRoles: List<Long>
+    )
+
     @Serializable
     data class InnerHelperConfig(
         val token: String,

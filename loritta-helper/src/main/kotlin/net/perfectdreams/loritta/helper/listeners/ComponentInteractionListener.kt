@@ -345,7 +345,7 @@ class ComponentInteractionListener(val m: LorittaHelper) : ListenerAdapter() {
             }
 
             // If the user is Loritta banned, we will do some checks...
-            val canBypassBanCheck = member.unsortedRoles.any { it.idLong in HelperExecutor.ADMIN_ROLES }
+            val canBypassBanCheck = member.unsortedRoles.any { it.idLong in m.config.permissionRoles.adminRoles }
             if (!canBypassBanCheck) {
                 if (ticketSystemTypeData.systemType == TicketUtils.TicketSystemType.BAN_SUPPORT_PORTUGUESE) {
                     if (currentBanState == null) {
