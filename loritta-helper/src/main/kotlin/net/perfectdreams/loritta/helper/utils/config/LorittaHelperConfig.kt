@@ -47,7 +47,8 @@ data class LorittaHelperConfig(
         val sparklyPower: SparklyPowerConfig,
         val community: CommunityConfig,
         val english: EnglishConfig,
-        val banAppealsSupport: BanAppealsSupportConfig
+        val banAppealsSupport: BanAppealsSupportConfig,
+        val lorittaPartners: LorittaPartnersConfig
     ) {
         @Serializable
         data class SparklyPowerConfig(
@@ -149,6 +150,23 @@ data class LorittaHelperConfig(
             data class RolesConfig(
                 val lorittaStaffRoleId: Long,
                 val sparklyPowerStaffRoleId: Long
+            )
+        }
+
+        @Serializable
+        data class LorittaPartnersConfig(
+            val id: Long,
+            val channels: ChannelsConfig,
+            val roles: RolesConfig
+        ) {
+            @Serializable
+            data class ChannelsConfig(
+                val partnerSupportChannelId: Long
+            )
+
+            @Serializable
+            data class RolesConfig(
+                val lorittaStaffRoleId: Long
             )
         }
     }

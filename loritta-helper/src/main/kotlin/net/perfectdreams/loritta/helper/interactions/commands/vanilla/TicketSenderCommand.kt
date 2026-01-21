@@ -30,6 +30,7 @@ import net.perfectdreams.loritta.helper.utils.tickets.TicketUtils
 import net.perfectdreams.loritta.helper.utils.tickets.systems.FirstFanArtTicketSystem
 import net.perfectdreams.loritta.helper.utils.tickets.systems.HelpDeskTicketSystem
 import net.perfectdreams.loritta.helper.utils.tickets.systems.LorittaBanSupportTicketSystem
+import net.perfectdreams.loritta.helper.utils.tickets.systems.LorittaPartnersTicketSystem
 import net.perfectdreams.loritta.helper.utils.tickets.systems.ServerBanSupportTicketSystem
 import net.perfectdreams.loritta.morenitta.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
@@ -69,6 +70,10 @@ class TicketSenderCommand(val helper: LorittaHelper) : SlashCommandDeclarationWr
                 choice(
                     "Suporte de Apelos de Ban do Servidor (SparklyPower)",
                     TicketUtils.TicketSystemType.SERVER_BAN_SUPPORT_SPARKLYPOWER.name
+                )
+                choice(
+                    "Loritta Partners (Português)",
+                    TicketUtils.TicketSystemType.LORITTA_PARTNERS_PORTUGUESE.name
                 )
             }
         }
@@ -531,6 +536,32 @@ Antes de perguntar, verifique se a resposta dela não está no <#${systemInfo.fa
                         }
                     ).await()
                 }
+            } else if (systemInfo is LorittaPartnersTicketSystem) {
+                channel.sendMessage(
+                    MessageCreate {
+                        this.useComponentsV2 = true
+
+                        container {
+                            text("""
+                                ## <:lori_analise:853052040425766922> Suporte de Servidores
+                                
+                                <:nd:908743835285344276> Abra um ticket para ter um suporte direcionado ao seu servidor ou relacionado a sua parceria com a Loritta.
+                            """.trimIndent())
+                        }
+
+                        actionRow(
+                            Button.of(
+                                net.dv8tion.jda.api.components.buttons.ButtonStyle.PRIMARY,
+                                "create_ticket:${
+                                    ComponentDataUtils.encode(
+                                        TicketSystemTypeData(systemInfo.systemType)
+                                    )
+                                }",
+                                i18nContext.get(I18nKeysData.Tickets.CreateTicket)
+                            ).withEmoji(Emoji.fromUnicode("➕"))
+                        )
+                    }
+                ).await()
             }
         }
     }

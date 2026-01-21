@@ -7,6 +7,7 @@ import net.perfectdreams.loritta.helper.serverresponses.sparklypower.SparklyPowe
 import net.perfectdreams.loritta.helper.utils.tickets.systems.FirstFanArtTicketSystem
 import net.perfectdreams.loritta.helper.utils.tickets.systems.LorittaBanSupportTicketSystem
 import net.perfectdreams.loritta.helper.utils.tickets.systems.LorittaHelpDeskTicketSystem
+import net.perfectdreams.loritta.helper.utils.tickets.systems.LorittaPartnersTicketSystem
 import net.perfectdreams.loritta.helper.utils.tickets.systems.ServerBanSupportTicketSystem
 import net.perfectdreams.loritta.helper.utils.tickets.systems.SparklyPowerHelpDeskTicketSystem
 
@@ -15,6 +16,7 @@ class TicketUtils(val m: LorittaHelper) {
     private val english = m.config.guilds.english
     private val sparklyPower = m.config.guilds.sparklyPower
     private val banAppealsSupport = m.config.guilds.banAppealsSupport
+    private val lorittaPartners = m.config.guilds.lorittaPartners
 
     private val portugueseResponses = PortugueseResponses(m.config)
     private val englishResponses = EnglishResponses(m.config)
@@ -102,6 +104,16 @@ class TicketUtils(val m: LorittaHelper) {
             sparklyPower.id,
             banAppealsSupport.roles.sparklyPowerStaffRoleId,
             "https://discord.gg/sparklypower"
+        ),
+
+        // Loritta Partners Channel
+        lorittaPartners.channels.partnerSupportChannelId to LorittaPartnersTicketSystem(
+            m.jda,
+            TicketSystemType.LORITTA_PARTNERS_PORTUGUESE,
+            LanguageName.PORTUGUESE,
+            lorittaPartners.id,
+            lorittaPartners.channels.partnerSupportChannelId,
+            lorittaPartners.roles.lorittaStaffRoleId
         )
     )
 
@@ -114,7 +126,8 @@ class TicketUtils(val m: LorittaHelper) {
         SPARKLYPOWER_HELP_DESK_PORTUGUESE,
         BAN_SUPPORT_PORTUGUESE,
         SERVER_BAN_SUPPORT_LORITTA_COMMUNITY,
-        SERVER_BAN_SUPPORT_SPARKLYPOWER
+        SERVER_BAN_SUPPORT_SPARKLYPOWER,
+        LORITTA_PARTNERS_PORTUGUESE
     }
 
     enum class LanguageName {

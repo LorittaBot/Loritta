@@ -27,6 +27,7 @@ class StatsTicketsExecutor(helper: LorittaHelper) : HelperExecutor(helper, Permi
                         TicketUtils.TicketSystemType.BAN_SUPPORT_PORTUGUESE -> "Suporte de Bans (Português)"
                         TicketUtils.TicketSystemType.SERVER_BAN_SUPPORT_LORITTA_COMMUNITY -> "Suporte de Bans do Servidor (Loritta)"
                         TicketUtils.TicketSystemType.SERVER_BAN_SUPPORT_SPARKLYPOWER -> "Suporte de Bans do Servidor (SparklyPower)"
+                        TicketUtils.TicketSystemType.LORITTA_PARTNERS_PORTUGUESE -> "Loritta Partners (Português)"
                     },
                     type.name
                 )
