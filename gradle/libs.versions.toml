@@ -14,7 +14,7 @@ jdaKtx = "e7b0e50683"
 jdave = "0.1.3"
 
 [libraries]
-deviousjda = { module = "com.github.LorittaBot:DeviousJDA", version = "984267902a" }
+deviousjda = { module = "com.github.LorittaBot:DeviousJDA", version = "9c3d8ac94d" }
 jdaKtx = { module = "com.github.freya022:jda-ktx", version.ref = "jdaKtx" }
 jdave-api = { module = "club.minnced:jdave-api", version.ref = "jdave" }
 jdave-nativeLinuxAmd64 = { module = "club.minnced:jdave-native-linux-x86-64", version.ref = "jdave" }

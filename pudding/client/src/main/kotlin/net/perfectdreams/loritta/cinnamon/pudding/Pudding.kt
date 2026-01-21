@@ -416,7 +416,10 @@ class Pudding(
             Lotteries,
             LotteryTickets,
             LotteryTicketNumbers,
-            AuditLogEntries
+            AuditLogEntries,
+            PartnerApplications,
+            LorittaPartners,
+            LorittaPartnersServerInvites
         )
 
         if (schemas.isNotEmpty()) {

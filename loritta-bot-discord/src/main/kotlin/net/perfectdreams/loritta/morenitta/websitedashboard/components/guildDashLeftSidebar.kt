@@ -4,9 +4,7 @@ import kotlinx.html.FlowContent
 import kotlinx.html.a
 import kotlinx.html.classes
 import kotlinx.html.div
-import kotlinx.html.hr
 import kotlinx.html.img
-import kotlinx.html.ins
 import kotlinx.html.style
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
@@ -58,6 +56,7 @@ fun FlowContent.guildDashLeftSidebarEntries(
 
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/overview", i18nContext.get(DashboardI18nKeysData.Overview.Title), SVGIcons.SquaresFour, selectedGuildSection == GuildDashboardSection.OVERVIEW, false)
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/audit-log", i18nContext.get(DashboardI18nKeysData.AuditLog.Title), SVGIcons.Binoculars, selectedGuildSection == GuildDashboardSection.AUDIT_LOG, true)
+    aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/loritta-partners", i18nContext.get(DashboardI18nKeysData.LorittaPartners.Title), SVGIcons.Heart, selectedGuildSection == GuildDashboardSection.LORITTA_PARTNERS, true)
 
     leftSidebarHr()
 

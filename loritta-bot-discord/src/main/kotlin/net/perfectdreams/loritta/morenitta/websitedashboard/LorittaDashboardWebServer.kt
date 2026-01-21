@@ -29,7 +29,6 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.ChooseYourSer
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.DashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.DiscordAddBotUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.DiscordLoginUserDashboardRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.PostFavoriteGuildUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.PocketLorittaUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.banappeals.PostBanAppealsOverrideRoute
@@ -61,6 +60,10 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.autoro
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.autorole.PostRemoveRoleFromListAutoroleGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.autorole.PutAutoroleGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.badge.BadgeGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.lorittapartners.LorittaPartnersFormRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.lorittapartners.LorittaPartnersOverviewRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.lorittapartners.PostLorittaPartnersFormRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.lorittapartners.PostJoinPartnerServerRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.badge.PostBadgeImageGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.badge.PutBadgeGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.bluesky.AddBlueskyProfileGuildDashboardRoute
@@ -105,6 +108,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.invite
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.inviteblocker.PostAddChannelToListInviteBlockerGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.inviteblocker.PostRemoveChannelFromListInviteBlockerGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.inviteblocker.PutInviteBlockerGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.lorittapartners.PostLorittaPartnersInviteGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.membercounter.MemberCounterChannelGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.membercounter.MemberCounterGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.membercounter.PostMemberCounterPreviewGuildDashboardRoute
@@ -424,6 +428,13 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
         PostAddRoleToListAutoroleGuildDashboardRoute(this),
         PostRemoveRoleFromListAutoroleGuildDashboardRoute(this),
         PutAutoroleGuildDashboardRoute(this),
+
+        // Loritta Partners
+        LorittaPartnersOverviewRoute(this),
+        LorittaPartnersFormRoute(this),
+        PostLorittaPartnersFormRoute(this),
+        PostJoinPartnerServerRoute(this),
+        PostLorittaPartnersInviteGuildDashboardRoute(this),
 
         // Custom Badge
         BadgeGuildDashboardRoute(this),

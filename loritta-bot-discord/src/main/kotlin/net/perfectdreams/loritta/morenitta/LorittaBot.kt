@@ -202,7 +202,7 @@ class LorittaBot(
         // We multiply by 8 because... uuuh, sometimes threads get stuck due to dumb stuff that we need to fix.
         val MESSAGE_EXECUTOR_THREADS = Runtime.getRuntime().availableProcessors() * 8
 
-        const val SCHEMA_VERSION = 126 // Bump this every time any table is added/updated!
+        const val SCHEMA_VERSION = 127 // Bump this every time any table is added/updated!
     }
 
     // This needs to be created BEFORE the commands is registered because this is used in the Musical Chairs init
@@ -262,6 +262,7 @@ class LorittaBot(
     val thirdPartySonhosTransferInteractionsListener = ThirdPartySonhosTransferInteractionsListener(this)
     val deviousGuildModifiedListener = DeviousGuildModifiedListener(this)
     val banAppealInteractionsListener = BanAppealInteractionsListener(this)
+    val partnerApplicationInteractionsListener = PartnerApplicationInteractionsListener(this)
     val trackGuildsListener = TrackGuildsListener(this)
 
     var builder: DefaultShardManagerBuilder
@@ -475,6 +476,7 @@ class LorittaBot(
                 thirdPartySonhosTransferInteractionsListener,
                 deviousGuildModifiedListener,
                 banAppealInteractionsListener,
+                partnerApplicationInteractionsListener,
                 trackGuildsListener
             )
             .addEventListenerProvider {

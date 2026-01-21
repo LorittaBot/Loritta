@@ -1,0 +1,111 @@
+website:
+  dashboard:
+    lorittaPartners:
+      title: "Loritta Partners"
+      description:
+        - "Queremos apoiar as comunidades que usam a Loritta e adaptar ela para atender as necessidades da sua equipe. Vire um Loritta Partner para crescermos juntos!"
+      betaStatus:
+        description: "O sistema de parcerias ainda é experimental. Estamos vendo como funciona na prática para decidir se iremos mantê-lo."
+
+      startApplication: "Inscrever-se para Loritta Partner"
+
+      featureCards:
+        privateServer:
+          title: "Servidor Privado"
+          description: "Acesso exclusivo ao servidor privado do Loritta Partners, onde você pode conversar com outros parceiros e a equipe."
+
+        feedbacks:
+          title: "Feedbacks"
+          description: "Queremos saber as necessidades de servidores grandes. Em nosso servidor privado você pode comentar com a gente como podemos melhorar a Loritta para o seu servidor."
+
+        rewards:
+          title: "Recompensas"
+          description: "Receba recompensas exclusivas para ajudar a engajar o seu servidor com a Loritta!"
+      loadingInviteInformation: "Carregando informações do convite..."
+      noInviteConfigured: "Nenhum convite configurado!"
+      invalidInviteUrl: "Link do convite inválido!"
+      invalidInvite: "Não foi possível carregar as informações do convite!"
+      invalidInviteWrongGuild: "O convite configurado não é deste servidor!"
+
+      applicationForm:
+        title: "Candidatura para Parceria"
+        guildIconAlt: "Ícone de {guildName}"
+        loading: "Carregando..."
+
+        rules:
+          requirementsAndRules: "Requisitos e Regras"
+
+          useLorittaFrequently:
+            title: "Usar a Loritta com Frequência"
+            description: "Seu servidor precisa usar a Loritta com frequência. Se você não usa ela, você não saberá o que a gente pode melhorar nela. Os membros do seu servidor também devem usar a Loritta com frequência."
+
+          participateOnThePartnerServer:
+            title: "Participar no Servidor de Parceiros"
+            description: "Quando nós dizemos \"participar\", não queremos dizer que você é obrigado a ficar batendo papo no servidor de parceiros, pois sabemos que você já é da equipe de servidores grandes e você tem problemas maiores para resolver. Mas um dos objetivos da parceria é que você esteja disposto a falar o que você precisa e o que a gente poderia melhorar a Loritta. Por exemplo, \"Por que você prefere usar outro bot ao invés de usar a Loritta para fazer tal coisa?\". Servidores que não ajudam a Loritta com feedbacks serão removidos do sistema de parceria."
+
+          beHonest:
+            title: "Seja Honesto"
+            description: "Forneça informações verdadeiras sobre o seu servidor. Informações falsas resultarão em rejeição automática. A gente consegue ver se o seu servidor realmente é o que você está dizendo."
+
+          beRespectful:
+            title: "Seja Respeitoso"
+            description: "Seu servidor deve seguir os Termos de Serviço do Discord e as Regras da Loritta e manter um ambiente saudável para a comunidade."
+
+          beAuthentic:
+            title: "Seja Autêntico"
+            description: "Queremos ouvir as suas palavras, não as de um robô. Apelos escritos com inteligência artificial (como o ChatGPT) serão rejeitados."
+
+        goodLuck: "Boa sorte!"
+
+        inviteLink:
+          title: "Convite do Servidor"
+          description: "Coloque aqui o link de convite permanente do seu servidor. Se o seu convite não for válido quando olharmos o seu formulário, o seu servidor será rejeitado."
+
+        serverPurpose:
+          title: "Qual é o propósito do seu servidor?"
+          description: "Descreva o tema, objetivo e tipo de comunidade do seu servidor. Seja detalhado e explique o que torna seu servidor especial."
+
+        whyPartner:
+          title: "Por que seu servidor deveria se tornar parceiro da Loritta?"
+          description: "Explique por que você acha que seu servidor merece a parceria. O que você pode oferecer para a Loritta?"
+
+        submit: "Enviar Candidatura"
+
+      success:
+        title: "Candidatura #{id} enviada!"
+        description: "Sua candidatura chegou até a nossa equipe e ela será analisada em breve."
+        successfullySentDM: "Você recebeu uma mensagem direta confirmando o envio. As atualizações sobre a candidatura serão enviadas via mensagem direta."
+        failedSentDM: "Eu tentei te enviar uma mensagem direta confirmando o envio, mas as suas mensagens diretas estão fechadas! Se você quiser receber atualizações sobre a candidatura, mantenha ele aberto!"
+
+        toast:
+          title: "Candidatura enviada!"
+
+      applicationStatus:
+        requirementsNotMet:
+          title: "O seu servidor não cumpre os requisitos..."
+          description: "Você precisa ter {minimumMemberCount,plural, =0 {# membros} one {# membro} other {# membros}} para poder se candidatar!"
+
+        notAppliedYet:
+          title: "Seu servidor ainda não se candidatou!"
+
+        pending:
+          title: "Candidatura em Análise"
+          description: "Sua candidatura está sendo analisada pela nossa equipe!"
+          applicationId: "ID da Candidatura: #{applicationId}"
+
+        approved:
+          title: "Parabéns! Vocês são parceiros!"
+          description: "Sua candidatura foi aprovada! Você pode entrar no servidor exclusivo para parceiros da Loritta. Nós recomendamos que tenha, no máximo, quatro pessoas por servidor, sendo um dono + três administradores."
+          joinServer: "Entrar no Servidor"
+
+        denied:
+          title: "Candidatura Negada"
+          description: "Sua candidatura foi negada. Você pode enviar uma nova candidatura após o período de espera."
+          canReapplyAt: "Você poderá enviar uma nova candidatura em: {formattedDate}"
+
+        previouslyDenied:
+          title: "Candidatura Anterior Negada"
+          description: "Sua candidatura anterior foi negada, mas você já pode enviar uma nova!"
+
+      errors:
+        invalidInvite: "O link de convite é inválido!"

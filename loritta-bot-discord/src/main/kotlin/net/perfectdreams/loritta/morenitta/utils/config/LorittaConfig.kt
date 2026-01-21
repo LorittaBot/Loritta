@@ -42,6 +42,7 @@ data class LorittaConfig(
     val twitch: TwitchConfig,
     val bluesky: BlueskyConfig,
     val banAppeals: BanAppealsConfig,
+    val partnerApplications: PartnerApplicationsConfig,
     val quirky: QuirkyConfig,
     val donatorsOstentation: DonatorsOstentationConfig,
     val connectionManager: ConnectionManagerConfig,
@@ -331,5 +332,15 @@ data class LorittaConfig(
         val channelId: Long,
         val roleId: Long,
         val supportInviteUrl: String
+    )
+
+    @Serializable
+    data class PartnerApplicationsConfig(
+        val guildId: Long,
+        val channelId: Long,
+        val roleId: Long,
+        val partnerGuildId: Long,
+        val inviteLoggingChannelId: Long,
+        val inviteChannelId: Long
     )
 }

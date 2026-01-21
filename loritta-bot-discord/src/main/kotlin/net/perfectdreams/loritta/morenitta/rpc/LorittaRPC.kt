@@ -12,11 +12,17 @@ import net.perfectdreams.loritta.morenitta.rpc.payloads.DailyShopRefreshedReques
 import net.perfectdreams.loritta.morenitta.rpc.payloads.DailyShopRefreshedResponse
 import net.perfectdreams.loritta.morenitta.rpc.payloads.NotifyBanAppealRequest
 import net.perfectdreams.loritta.morenitta.rpc.payloads.NotifyBanAppealResponse
+import net.perfectdreams.loritta.morenitta.rpc.payloads.NotifyPartnerApplicationRequest
+import net.perfectdreams.loritta.morenitta.rpc.payloads.NotifyPartnerApplicationResponse
+import net.perfectdreams.loritta.morenitta.rpc.payloads.QueryGuildInfoRequest
+import net.perfectdreams.loritta.morenitta.rpc.payloads.QueryGuildInfoResponse
 import net.perfectdreams.loritta.morenitta.rpc.payloads.TwitchStreamOnlineEventRequest
 import net.perfectdreams.loritta.morenitta.rpc.payloads.TwitchStreamOnlineEventResponse
 import net.perfectdreams.loritta.morenitta.rpc.payloads.UpdateTwitchSubscriptionsResponse
 import net.perfectdreams.loritta.morenitta.rpc.payloads.ViewLotteryStatusRequest
 import net.perfectdreams.loritta.morenitta.rpc.payloads.ViewLotteryStatusResponse
+import net.perfectdreams.loritta.morenitta.rpc.payloads.CreatePartnerInviteRequest
+import net.perfectdreams.loritta.morenitta.rpc.payloads.CreatePartnerInviteResponse
 import net.perfectdreams.loritta.morenitta.utils.config.LorittaConfig
 
 object LorittaRPC {
@@ -29,12 +35,15 @@ object LorittaRPC {
     }
 
     val NotifyBanAppeal = registerCommand<NotifyBanAppealRequest, NotifyBanAppealResponse>("notifyBanAppeal")
+    val NotifyPartnerApplication = registerCommand<NotifyPartnerApplicationRequest, NotifyPartnerApplicationResponse>("notifyPartnerApplication")
+    val QueryGuildInfo = registerCommand<QueryGuildInfoRequest, QueryGuildInfoResponse>("queryGuildInfo")
     val UpdateTwitchSubscriptions = registerCommand<Unit, UpdateTwitchSubscriptionsResponse>("updateTwitchSubscriptions")
     val TwitchStreamOnlineEvent = registerCommand<TwitchStreamOnlineEventRequest, TwitchStreamOnlineEventResponse>("twitchStreamOnlineEvent")
     val BlueskyPostRelay = registerCommand<BlueskyPostRelayRequest, BlueskyPostRelayResponse>("blueskyPostRelay")
     val DailyShopRefreshed = registerCommand<DailyShopRefreshedRequest, DailyShopRefreshedResponse>("dailyShopRefreshed")
     val BuyLotteryTicket = registerCommand<BuyLotteryTicketRequest, BuyLotteryTicketResponse>("buyLotteryTicket")
     val ViewLotteryStats = registerCommand<ViewLotteryStatusRequest, ViewLotteryStatusResponse>("viewLotteryStats")
+    val CreatePartnerInvite = registerCommand<CreatePartnerInviteRequest, CreatePartnerInviteResponse>("createPartnerInvite")
 
     class LorittaRPCCommandName<RequestType, ResponseType>(val name: String)
 }
