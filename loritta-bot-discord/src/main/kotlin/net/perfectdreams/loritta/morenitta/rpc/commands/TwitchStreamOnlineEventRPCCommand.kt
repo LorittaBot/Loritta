@@ -18,7 +18,7 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import org.jetbrains.exposed.sql.selectAll
 
-class TwitchStreamOnlineEventCommand(val loritta: LorittaBot) : LorittaRPCCommand(LorittaRPC.TwitchStreamOnlineEvent) {
+class TwitchStreamOnlineEventRPCCommand(val loritta: LorittaBot) : LorittaRPCCommand(LorittaRPC.TwitchStreamOnlineEvent) {
     companion object {
         private val logger by HarmonyLoggerFactory.logger {}
     }

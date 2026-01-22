@@ -19,14 +19,13 @@ import net.perfectdreams.loritta.morenitta.rpc.payloads.NotifyBanAppealResponse
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.serializable.UserBannedState
 import net.perfectdreams.loritta.serializable.UserId
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
 import java.time.OffsetDateTime
 
-class NotifyBanAppealCommand(val loritta: LorittaBot) : LorittaRPCCommand(LorittaRPC.NotifyBanAppeal) {
+class NotifyBanAppealRPCCommand(val loritta: LorittaBot) : LorittaRPCCommand(LorittaRPC.NotifyBanAppeal) {
     override suspend fun onRequest(call: ApplicationCall) {
         val request = Json.decodeFromString<NotifyBanAppealRequest>(call.receiveText())
 

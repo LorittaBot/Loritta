@@ -21,7 +21,7 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import org.jetbrains.exposed.sql.selectAll
 
-class NotifyPartnerApplicationCommand(val loritta: LorittaBot) : LorittaRPCCommand(LorittaRPC.NotifyPartnerApplication) {
+class NotifyPartnerApplicationRPCCommand(val loritta: LorittaBot) : LorittaRPCCommand(LorittaRPC.NotifyPartnerApplication) {
     override suspend fun onRequest(call: ApplicationCall) {
         val request = Json.decodeFromString<NotifyPartnerApplicationRequest>(call.receiveText())
 

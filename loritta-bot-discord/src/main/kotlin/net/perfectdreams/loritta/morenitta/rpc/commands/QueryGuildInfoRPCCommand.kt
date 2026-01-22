@@ -8,7 +8,7 @@ import net.perfectdreams.loritta.morenitta.rpc.LorittaRPC
 import net.perfectdreams.loritta.morenitta.rpc.payloads.QueryGuildInfoRequest
 import net.perfectdreams.loritta.morenitta.rpc.payloads.QueryGuildInfoResponse
 
-class QueryGuildInfoCommand(val loritta: LorittaBot) : LorittaRPCCommand(LorittaRPC.QueryGuildInfo) {
+class QueryGuildInfoRPCCommand(val loritta: LorittaBot) : LorittaRPCCommand(LorittaRPC.QueryGuildInfo) {
     override suspend fun onRequest(call: ApplicationCall) {
         val request = Json.decodeFromString<QueryGuildInfoRequest>(call.receiveText())
 

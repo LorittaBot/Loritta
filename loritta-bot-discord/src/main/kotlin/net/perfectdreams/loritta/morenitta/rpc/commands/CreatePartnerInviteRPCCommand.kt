@@ -19,7 +19,7 @@ import org.jetbrains.exposed.sql.insert
 import java.time.OffsetDateTime
 import java.util.concurrent.TimeUnit
 
-class CreatePartnerInviteCommand(val loritta: LorittaBot) : LorittaRPCCommand(LorittaRPC.CreatePartnerInvite) {
+class CreatePartnerInviteRPCCommand(val loritta: LorittaBot) : LorittaRPCCommand(LorittaRPC.CreatePartnerInvite) {
     companion object {
         private val logger by HarmonyLoggerFactory.logger {}
         const val INVITE_MAX_AGE_SECONDS = 3600L // 1 hour

@@ -13,7 +13,6 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.utils.FileUpload
-import net.dv8tion.jda.api.utils.MarkdownSanitizer
 import net.dv8tion.jda.api.utils.TimeFormat
 import net.perfectdreams.galleryofdreams.common.data.DiscordSocialConnection
 import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
@@ -25,39 +24,29 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyShopItems
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesigns
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.LorittaDailyShopNotificationsConfigs
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.TrackedTwitchAccounts
 import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.common.utils.Color
 import net.perfectdreams.loritta.common.utils.Rarity
-import net.perfectdreams.loritta.common.utils.placeholders.BlueskyPostMessagePlaceholders
 import net.perfectdreams.loritta.common.utils.placeholders.DailyShopTrinketsNotificationMessagePlaceholders
-import net.perfectdreams.loritta.common.utils.placeholders.TwitchStreamOnlineMessagePlaceholders
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.profile.ProfileDesignManager
 import net.perfectdreams.loritta.morenitta.rpc.LorittaRPC
-import net.perfectdreams.loritta.morenitta.rpc.payloads.BlueskyPostRelayRequest
-import net.perfectdreams.loritta.morenitta.rpc.payloads.BlueskyPostRelayResponse
 import net.perfectdreams.loritta.morenitta.rpc.payloads.DailyShopRefreshedRequest
 import net.perfectdreams.loritta.morenitta.rpc.payloads.DailyShopRefreshedResponse
-import net.perfectdreams.loritta.morenitta.rpc.payloads.TwitchStreamOnlineEventRequest
-import net.perfectdreams.loritta.morenitta.rpc.payloads.TwitchStreamOnlineEventResponse
 import net.perfectdreams.loritta.morenitta.utils.ImageFormat
 import net.perfectdreams.loritta.morenitta.utils.MessageUtils
-import net.perfectdreams.loritta.morenitta.utils.escapeMentions
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import net.perfectdreams.loritta.morenitta.utils.extensions.getIconUrl
 import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
-import net.perfectdreams.loritta.morenitta.websiteinternal.InternalWebServer
 import net.perfectdreams.loritta.serializable.Background
 import net.perfectdreams.loritta.serializable.BackgroundStorageType
 import net.perfectdreams.loritta.serializable.BackgroundWithVariations
 import net.perfectdreams.loritta.serializable.DailyShopBackgroundEntry
 import net.perfectdreams.loritta.serializable.DefaultBackgroundVariation
 import net.perfectdreams.loritta.serializable.ProfileDesign
-import net.perfectdreams.loritta.serializable.internal.responses.LorittaInternalRPCResponse
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.innerJoin
 import org.jetbrains.exposed.sql.or
@@ -65,7 +54,7 @@ import org.jetbrains.exposed.sql.selectAll
 import java.time.Instant
 import kotlin.collections.chunked
 
-class DailyShopRefreshedCommand(val loritta: LorittaBot) : LorittaRPCCommand(LorittaRPC.DailyShopRefreshed) {
+class DailyShopRefreshedRPCCommand(val loritta: LorittaBot) : LorittaRPCCommand(LorittaRPC.DailyShopRefreshed) {
     companion object {
         private val logger by HarmonyLoggerFactory.logger {}
     }

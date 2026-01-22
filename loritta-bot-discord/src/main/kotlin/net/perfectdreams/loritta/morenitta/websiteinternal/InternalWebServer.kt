@@ -28,25 +28,22 @@ import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsEventCards
 import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsEvents
 import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsFinishedAlbumUsers
-import net.perfectdreams.loritta.common.utils.placeholders.BlueskyPostMessagePlaceholders
-import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.analytics.LorittaMetrics
 import net.perfectdreams.loritta.morenitta.loricoolcards.StickerAlbumTemplate
 import net.perfectdreams.loritta.morenitta.loricoolcards.StickerMetadata
 import net.perfectdreams.loritta.morenitta.rpc.LorittaRPC
-import net.perfectdreams.loritta.morenitta.rpc.commands.BlueskyPostRelayCommand
+import net.perfectdreams.loritta.morenitta.rpc.commands.BlueskyPostRelayRPCCommand
 import net.perfectdreams.loritta.morenitta.rpc.commands.BuyLotteryTicketRPCCommand
-import net.perfectdreams.loritta.morenitta.rpc.commands.DailyShopRefreshedCommand
-import net.perfectdreams.loritta.morenitta.rpc.commands.NotifyBanAppealCommand
-import net.perfectdreams.loritta.morenitta.rpc.commands.NotifyPartnerApplicationCommand
-import net.perfectdreams.loritta.morenitta.rpc.commands.QueryGuildInfoCommand
-import net.perfectdreams.loritta.morenitta.rpc.commands.TwitchStreamOnlineEventCommand
-import net.perfectdreams.loritta.morenitta.rpc.commands.UpdateTwitchSubscriptionsCommand
+import net.perfectdreams.loritta.morenitta.rpc.commands.DailyShopRefreshedRPCCommand
+import net.perfectdreams.loritta.morenitta.rpc.commands.NotifyBanAppealRPCCommand
+import net.perfectdreams.loritta.morenitta.rpc.commands.NotifyPartnerApplicationRPCCommand
+import net.perfectdreams.loritta.morenitta.rpc.commands.QueryGuildInfoRPCCommand
+import net.perfectdreams.loritta.morenitta.rpc.commands.TwitchStreamOnlineEventRPCCommand
+import net.perfectdreams.loritta.morenitta.rpc.commands.UpdateTwitchSubscriptionsRPCCommand
 import net.perfectdreams.loritta.morenitta.rpc.commands.ViewLotteryStatusRPCCommand
-import net.perfectdreams.loritta.morenitta.rpc.commands.CreatePartnerInviteCommand
+import net.perfectdreams.loritta.morenitta.rpc.commands.CreatePartnerInviteRPCCommand
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
-import net.perfectdreams.loritta.morenitta.utils.MessageUtils
 import net.perfectdreams.loritta.morenitta.utils.PendingUpdate
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
@@ -96,16 +93,16 @@ class InternalWebServer(val m: LorittaBot) {
         GetThirdPartySonhosTransferStatusRoute(m)
     )
     private val rpcCommands = listOf(
-        NotifyBanAppealCommand(m),
-        NotifyPartnerApplicationCommand(m),
-        QueryGuildInfoCommand(m),
-        UpdateTwitchSubscriptionsCommand(m),
-        TwitchStreamOnlineEventCommand(m),
-        BlueskyPostRelayCommand(m),
-        DailyShopRefreshedCommand(m),
+        NotifyBanAppealRPCCommand(m),
+        NotifyPartnerApplicationRPCCommand(m),
+        QueryGuildInfoRPCCommand(m),
+        UpdateTwitchSubscriptionsRPCCommand(m),
+        TwitchStreamOnlineEventRPCCommand(m),
+        BlueskyPostRelayRPCCommand(m),
+        DailyShopRefreshedRPCCommand(m),
         BuyLotteryTicketRPCCommand(m),
         ViewLotteryStatusRPCCommand(m),
-        CreatePartnerInviteCommand(m),
+        CreatePartnerInviteRPCCommand(m),
     )
 
     private val internalAPIRoutes = listOf<BaseRoute>()

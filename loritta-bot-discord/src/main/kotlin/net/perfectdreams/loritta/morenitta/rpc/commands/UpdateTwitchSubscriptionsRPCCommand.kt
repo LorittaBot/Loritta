@@ -7,7 +7,7 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.rpc.LorittaRPC
 import net.perfectdreams.loritta.morenitta.rpc.payloads.UpdateTwitchSubscriptionsResponse
 
-class UpdateTwitchSubscriptionsCommand(val loritta: LorittaBot) : LorittaRPCCommand(LorittaRPC.UpdateTwitchSubscriptions) {
+class UpdateTwitchSubscriptionsRPCCommand(val loritta: LorittaBot) : LorittaRPCCommand(LorittaRPC.UpdateTwitchSubscriptions) {
     override suspend fun onRequest(call: ApplicationCall) {
         if (loritta.isMainInstance) {
             GlobalScope.launch {
