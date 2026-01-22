@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.helper.i18n.I18nKeysData
 import net.perfectdreams.loritta.helper.utils.tickets.TicketUtils
 
 class LorittaPartnersTicketSystem(
@@ -20,18 +21,22 @@ class LorittaPartnersTicketSystem(
         content = (
                 listOf(
                     LorittaReply(
-                        "Envie a sua solicitação de parceria!",
+                        language.get(I18nKeysData.Tickets.ThreadCreated.Ready),
                         "<:lori_coffee:727631176432484473>",
                         mentionUser = true
                     ),
                     LorittaReply(
-                        "Após enviado, os <@&${partnersManagerRoleId}> irão averiguar a sua solicitação!",
-                        "<:lori_analise:853052040425766922>",
+                        language.get(I18nKeysData.Tickets.ThreadCreated.QuestionTips("<@&${partnersManagerRoleId}>")),
+                        "<:lori_coffee:727631176432484473>",
                         mentionUser = false
                     ),
+                    LorittaReply(
+                        language.get(I18nKeysData.Tickets.ThreadCreated.AfterAnswer),
+                        "<a:lori_pat:706263175892566097>",
+                        mentionUser = false
+                    )
                 )
                 )
-            .joinToString("\n")
-            { it.build(sender) }
+            .joinToString("\n") { it.build(sender) }
     }
 }
