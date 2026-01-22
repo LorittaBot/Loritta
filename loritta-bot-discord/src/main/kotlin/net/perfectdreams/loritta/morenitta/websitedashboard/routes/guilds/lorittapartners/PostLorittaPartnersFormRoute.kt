@@ -11,6 +11,7 @@ import kotlinx.html.hr
 import kotlinx.html.p
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Invite
 import net.dv8tion.jda.api.entities.Member
@@ -48,6 +49,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissSoundEffe
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
 import net.perfectdreams.loritta.partnerapplications.PartnerApplicationResult
+import net.perfectdreams.loritta.partnerapplications.PartnerPermissionLevel
 import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.luna.toasts.EmbeddedToast
@@ -161,6 +163,13 @@ class PostLorittaPartnersFormRoute(website: LorittaDashboardWebServer) : Require
                 return
             }
 
+            val submitterPermissionLevel = when {
+                member.isOwner -> PartnerPermissionLevel.OWNER
+                member.hasPermission(Permission.ADMINISTRATOR) -> PartnerPermissionLevel.ADMINISTRATOR
+                member.hasPermission(Permission.MANAGE_SERVER) -> PartnerPermissionLevel.MANAGER
+                else -> error("User ${member.idLong} doesn't have any expected permission level! Bug?")
+            }
+
             val result = website.loritta.transaction {
                 val now = OffsetDateTime.now(Constants.LORITTA_TIMEZONE)
                 val cooldownTime = now.minusSeconds(PartnerApplicationsUtils.APPLICATION_COOLDOWN.inWholeSeconds)
@@ -198,6 +207,7 @@ class PostLorittaPartnersFormRoute(website: LorittaDashboardWebServer) : Require
                     it[PartnerApplications.reviewedBy] = null
                     it[PartnerApplications.reviewedAt] = null
                     it[PartnerApplications.reviewerNotes] = null
+                    it[PartnerApplications.submitterPermissionLevel] = submitterPermissionLevel
                 }
 
                 return@transaction ApplicationCreationResult.Success(application)

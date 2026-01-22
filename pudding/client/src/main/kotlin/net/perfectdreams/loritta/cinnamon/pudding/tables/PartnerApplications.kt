@@ -1,12 +1,14 @@
 package net.perfectdreams.loritta.cinnamon.pudding.tables
 
 import net.perfectdreams.loritta.partnerapplications.PartnerApplicationResult
+import net.perfectdreams.loritta.partnerapplications.PartnerPermissionLevel
 import org.jetbrains.exposed.dao.id.LongIdTable
 import org.jetbrains.exposed.sql.javatime.timestampWithTimeZone
 
 object PartnerApplications : LongIdTable() {
     val submittedBy = long("submitted_by").index()
     val guildId = long("guild_id").index()
+    val submitterPermissionLevel = enumerationByName<PartnerPermissionLevel>("submitter_permission_level", 64)
 
     val languageId = text("language_id")
     val inviteLink = text("invite_link")

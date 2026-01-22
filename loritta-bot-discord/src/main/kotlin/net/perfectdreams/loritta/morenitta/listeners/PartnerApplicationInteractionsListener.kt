@@ -65,7 +65,8 @@ class PartnerApplicationInteractionsListener(val m: LorittaBot) : ListenerAdapte
             reviewedBy,
             reviewedAt,
             reviewerNotes,
-            applicationResult
+            applicationResult,
+            applicationRow[PartnerApplications.submitterPermissionLevel]
         )
     }
 
@@ -191,6 +192,7 @@ class PartnerApplicationInteractionsListener(val m: LorittaBot) : ListenerAdapte
                                     result.application.serverPurpose,
                                     result.application.whyPartner,
                                     result.application.applicationResult,
+                                    result.application.submitterPermissionLevel,
                                     result.application.reviewedBy,
                                     result.application.reviewedAt,
                                     result.application.reviewerNotes
@@ -349,6 +351,7 @@ class PartnerApplicationInteractionsListener(val m: LorittaBot) : ListenerAdapte
                                             result.application.serverPurpose,
                                             result.application.whyPartner,
                                             result.application.applicationResult,
+                                            result.application.submitterPermissionLevel,
                                             result.application.reviewedBy,
                                             result.application.reviewedAt,
                                             result.application.reviewerNotes

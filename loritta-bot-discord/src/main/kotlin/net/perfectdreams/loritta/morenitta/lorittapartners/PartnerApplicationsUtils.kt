@@ -69,7 +69,7 @@ object PartnerApplicationsUtils {
             this.separator(isDivider = true, spacing = Separator.Spacing.LARGE)
 
             this.section(Thumbnail(submittedByUser.effectiveAvatarUrl)) {
-                text("### Enviado por ${convertToUserNameCodeBlockPreviewTag(submittedByUser.id, submittedByUser.name, submittedByUser.globalName, submittedByUser.discriminator, stripCodeMarksFromInput = false, stripLinksFromInput = false)}")
+                text("### Enviado por ${convertToUserNameCodeBlockPreviewTag(submittedByUser.id, submittedByUser.name, submittedByUser.globalName, submittedByUser.discriminator, stripCodeMarksFromInput = false, stripLinksFromInput = false)} (${applicationData.submitterPermissionLevel})")
             }
 
             this.text("-# Candidatura #${applicationData.id}")

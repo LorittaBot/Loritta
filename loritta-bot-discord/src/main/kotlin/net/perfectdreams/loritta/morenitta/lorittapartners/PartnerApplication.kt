@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.morenitta.lorittapartners
 
 import net.perfectdreams.loritta.partnerapplications.PartnerApplicationResult
+import net.perfectdreams.loritta.partnerapplications.PartnerPermissionLevel
 import java.time.OffsetDateTime
 
 data class PartnerApplication(
@@ -15,5 +16,6 @@ data class PartnerApplication(
     val reviewedBy: Long?,
     val reviewedAt: OffsetDateTime?,
     val reviewerNotes: String?,
-    val applicationResult: PartnerApplicationResult
+    val applicationResult: PartnerApplicationResult,
+    val submitterPermissionLevel: PartnerPermissionLevel
 )

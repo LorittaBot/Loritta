@@ -52,6 +52,7 @@ class NotifyPartnerApplicationCommand(val loritta: LorittaBot) : LorittaRPCComma
             serverPurpose = partnerApplication[PartnerApplications.serverPurpose],
             whyPartner = partnerApplication[PartnerApplications.whyPartner],
             result = partnerApplication[PartnerApplications.applicationResult],
+            submitterPermissionLevel = partnerApplication[PartnerApplications.submitterPermissionLevel],
             reviewedBy = partnerApplication[PartnerApplications.reviewedBy],
             reviewedAt = partnerApplication[PartnerApplications.reviewedAt],
             reviewerNotes = partnerApplication[PartnerApplications.reviewerNotes]
