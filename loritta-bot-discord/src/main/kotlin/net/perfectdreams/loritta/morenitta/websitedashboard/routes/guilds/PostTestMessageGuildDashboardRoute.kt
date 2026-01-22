@@ -200,6 +200,21 @@ class PostTestMessageGuildDashboardRoute(website: LorittaDashboardWebServer) : R
                 }
                 return
             }
+
+            if (e.message == "Items may not be empty") {
+                call.respondHtmlFragment(status = HttpStatusCode.BadRequest) {
+                    blissShowToast(
+                        createEmbeddedToast(
+                            EmbeddedToast.Type.WARN,
+                            "Mensagem inválida!"
+                        ) {
+                            text("Você não pode ter uma galeria de mídia vazia!")
+                        }
+                    )
+                }
+                return
+            }
+
             throw e
         }
 
