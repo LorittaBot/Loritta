@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class CreatePartnerInviteRequest(
     val userId: Long,
+    val requestedForGuildId: Long,
     val partnerGuildId: Long,
     val partnerInviteChannelId: Long
 )

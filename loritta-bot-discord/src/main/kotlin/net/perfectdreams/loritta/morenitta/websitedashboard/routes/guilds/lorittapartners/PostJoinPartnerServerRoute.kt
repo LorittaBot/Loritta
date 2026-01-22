@@ -66,13 +66,14 @@ class PostJoinPartnerServerRoute(website: LorittaDashboardWebServer) : RequiresG
 
         // Call RPC to create the invite
         try {
-            val cluster = DiscordUtils.getLorittaClusterForGuildId(website.loritta, guild.idLong)
+            val cluster = DiscordUtils.getLorittaClusterForGuildId(website.loritta, website.loritta.config.loritta.partnerApplications.partnerGuildId)
             val response = LorittaRPC.CreatePartnerInvite.execute(
                 website.loritta,
                 cluster,
                 CreatePartnerInviteRequest(
                     userId = session.userId,
-                    partnerGuildId = website.loritta.config.loritta.partnerApplications.guildId,
+                    requestedForGuildId = guild.idLong,
+                    partnerGuildId = website.loritta.config.loritta.partnerApplications.partnerGuildId,
                     partnerInviteChannelId = website.loritta.config.loritta.partnerApplications.inviteChannelId
                 )
             )

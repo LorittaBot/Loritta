@@ -66,7 +66,7 @@ class CreatePartnerInviteCommand(val loritta: LorittaBot) : LorittaRPCCommand(Lo
             loritta.transaction {
                 LorittaPartnersServerInvites.insert {
                     it[LorittaPartnersServerInvites.userId] = request.userId
-                    it[LorittaPartnersServerInvites.guildId] = request.partnerGuildId
+                    it[LorittaPartnersServerInvites.guildId] = request.requestedForGuildId
                     it[LorittaPartnersServerInvites.inviteCode] = invite.code
                     it[LorittaPartnersServerInvites.createdAt] = now
                     it[LorittaPartnersServerInvites.expiresAt] = expiresAt
