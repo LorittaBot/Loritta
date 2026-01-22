@@ -189,7 +189,10 @@ class PartnerApplicationInteractionsListener(val m: LorittaBot) : ListenerAdapte
                                     result.application.inviteLink,
                                     result.application.serverPurpose,
                                     result.application.whyPartner,
-                                    result.application.applicationResult
+                                    result.application.applicationResult,
+                                    result.application.reviewedBy,
+                                    result.application.reviewedAt,
+                                    result.application.reviewerNotes
                                 ),
                                 submittedByUser,
                                 applicationGuildInfo
@@ -343,7 +346,10 @@ class PartnerApplicationInteractionsListener(val m: LorittaBot) : ListenerAdapte
                                             result.application.inviteLink,
                                             result.application.serverPurpose,
                                             result.application.whyPartner,
-                                            result.application.applicationResult
+                                            result.application.applicationResult,
+                                            result.application.reviewedBy,
+                                            result.application.reviewedAt,
+                                            result.application.reviewerNotes
                                         ),
                                         submittedByUser,
                                         applicationGuildInfo

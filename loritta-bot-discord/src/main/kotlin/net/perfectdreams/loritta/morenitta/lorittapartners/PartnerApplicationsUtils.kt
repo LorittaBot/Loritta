@@ -76,6 +76,27 @@ object PartnerApplicationsUtils {
 
         val alreadyReviewed = applicationData.result != PartnerApplicationResult.PENDING
 
+        if (alreadyReviewed) {
+            container {
+                this.accentColorRaw = LorittaColors.LorittaAqua.rgb
+
+                text(
+                    buildString {
+                        when (applicationData.result) {
+                            PartnerApplicationResult.PENDING -> error("This should never happen!")
+                            PartnerApplicationResult.APPROVED -> {
+                                appendLine("**<@${applicationData.reviewedBy}> (`${applicationData.reviewedBy}`) aprovou esta candidatura em ${DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(applicationData.reviewedAt!!.toInstant())}**")
+                            }
+                            PartnerApplicationResult.DENIED -> {
+                                appendLine("**<@${applicationData.reviewedBy}> (`${applicationData.reviewedBy}`) rejeitou esta candidatura em ${DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(applicationData.reviewedAt!!.toInstant())}**")
+                                appendLine("**Motivo:** ${applicationData.reviewerNotes}")
+                            }
+                        }
+                    }
+                )
+            }
+        }
+
         actionRow(
             Button.of(ButtonStyle.SUCCESS, "partner_accept:${applicationData.id}", "Aceitar")
                 .withDisabled(alreadyReviewed),

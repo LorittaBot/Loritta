@@ -51,7 +51,10 @@ class NotifyPartnerApplicationCommand(val loritta: LorittaBot) : LorittaRPCComma
             inviteLink = partnerApplication[PartnerApplications.inviteLink],
             serverPurpose = partnerApplication[PartnerApplications.serverPurpose],
             whyPartner = partnerApplication[PartnerApplications.whyPartner],
-            result = partnerApplication[PartnerApplications.applicationResult]
+            result = partnerApplication[PartnerApplications.applicationResult],
+            reviewedBy = partnerApplication[PartnerApplications.reviewedBy],
+            reviewedAt = partnerApplication[PartnerApplications.reviewedAt],
+            reviewerNotes = partnerApplication[PartnerApplications.reviewerNotes]
         )
 
         val submittedByUser = loritta.lorittaShards.retrieveUserInfoById(partnerApplication[PartnerApplications.submittedBy])
