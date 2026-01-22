@@ -47,6 +47,7 @@ object PartnerApplicationsUtils {
                 appendLine("**Servidor:** ${guildInfo?.name ?: "Desconhecido"} (`${applicationData.guildId}`)")
                 appendLine("**Membros:** ${guildInfo?.memberCount ?: "???"}")
                 appendLine("**Convite:** https://discord.gg/${applicationData.inviteLink}")
+                appendLine("**Dono do Servidor:** ${guildInfo?.ownerId ?: "???"}")
             }
 
             if (guildIconUrl != null) {

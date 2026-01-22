@@ -4,6 +4,7 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.header
 import io.ktor.server.response.respondText
+import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
@@ -22,6 +23,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuild
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtmlFragment
+import net.perfectdreams.loritta.partnerapplications.PartnerPermissionLevel
 import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.luna.toasts.EmbeddedToast
@@ -64,6 +66,14 @@ class PostJoinPartnerServerRoute(website: LorittaDashboardWebServer) : RequiresG
             return
         }
 
+        // Determine the generator's permission level
+        val generatorPermissionLevel = when {
+            member.isOwner -> PartnerPermissionLevel.OWNER
+            member.hasPermission(Permission.ADMINISTRATOR) -> PartnerPermissionLevel.ADMINISTRATOR
+            member.hasPermission(Permission.MANAGE_SERVER) -> PartnerPermissionLevel.MANAGER
+            else -> error("User ${member.idLong} doesn't have any expected permission level! Bug?")
+        }
+
         // Call RPC to create the invite
         try {
             val cluster = DiscordUtils.getLorittaClusterForGuildId(website.loritta, website.loritta.config.loritta.partnerApplications.partnerGuildId)
@@ -74,7 +84,8 @@ class PostJoinPartnerServerRoute(website: LorittaDashboardWebServer) : RequiresG
                     userId = session.userId,
                     requestedForGuildId = guild.idLong,
                     partnerGuildId = website.loritta.config.loritta.partnerApplications.partnerGuildId,
-                    partnerInviteChannelId = website.loritta.config.loritta.partnerApplications.inviteChannelId
+                    partnerInviteChannelId = website.loritta.config.loritta.partnerApplications.inviteChannelId,
+                    generatorPermissionLevel = generatorPermissionLevel
                 )
             )
 

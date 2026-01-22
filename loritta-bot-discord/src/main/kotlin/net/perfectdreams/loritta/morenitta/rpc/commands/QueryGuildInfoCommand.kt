@@ -23,7 +23,8 @@ class QueryGuildInfoCommand(val loritta: LorittaBot) : LorittaRPCCommand(Loritta
                 guildId = guild.idLong,
                 name = guild.name,
                 memberCount = guild.memberCount,
-                iconUrl = guild.iconUrl
+                iconUrl = guild.iconUrl,
+                ownerId = guild.ownerIdLong
             )
         )
     }

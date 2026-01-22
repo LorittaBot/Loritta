@@ -76,7 +76,8 @@ class NotifyPartnerApplicationCommand(val loritta: LorittaBot) : LorittaRPCComma
             is QueryGuildInfoResponse.Success -> PartnerGuildInfo(
                 name = applicationGuildInfoResponse.name,
                 memberCount = applicationGuildInfoResponse.memberCount,
-                iconUrl = applicationGuildInfoResponse.iconUrl
+                iconUrl = applicationGuildInfoResponse.iconUrl,
+                ownerId = applicationGuildInfoResponse.ownerId
             )
             is QueryGuildInfoResponse.GuildNotFound -> null
         }

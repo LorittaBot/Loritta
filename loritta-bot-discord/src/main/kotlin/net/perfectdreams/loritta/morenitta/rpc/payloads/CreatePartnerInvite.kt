@@ -1,13 +1,15 @@
 package net.perfectdreams.loritta.morenitta.rpc.payloads
 
 import kotlinx.serialization.Serializable
+import net.perfectdreams.loritta.partnerapplications.PartnerPermissionLevel
 
 @Serializable
 data class CreatePartnerInviteRequest(
     val userId: Long,
     val requestedForGuildId: Long,
     val partnerGuildId: Long,
-    val partnerInviteChannelId: Long
+    val partnerInviteChannelId: Long,
+    val generatorPermissionLevel: PartnerPermissionLevel
 )
 
 @Serializable

@@ -173,7 +173,8 @@ class PartnerApplicationInteractionsListener(val m: LorittaBot) : ListenerAdapte
                     is QueryGuildInfoResponse.Success -> PartnerGuildInfo(
                         name = applicationGuildInfoResponse.name,
                         memberCount = applicationGuildInfoResponse.memberCount,
-                        iconUrl = applicationGuildInfoResponse.iconUrl
+                        iconUrl = applicationGuildInfoResponse.iconUrl,
+                        ownerId = applicationGuildInfoResponse.ownerId
                     )
                     is QueryGuildInfoResponse.GuildNotFound -> null
                 }
@@ -330,7 +331,8 @@ class PartnerApplicationInteractionsListener(val m: LorittaBot) : ListenerAdapte
                             is QueryGuildInfoResponse.Success -> PartnerGuildInfo(
                                 name = applicationGuildInfoResponse.name,
                                 memberCount = applicationGuildInfoResponse.memberCount,
-                                iconUrl = applicationGuildInfoResponse.iconUrl
+                                iconUrl = applicationGuildInfoResponse.iconUrl,
+                                ownerId = applicationGuildInfoResponse.ownerId
                             )
                             is QueryGuildInfoResponse.GuildNotFound -> null
                         }
