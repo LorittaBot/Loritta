@@ -80,14 +80,14 @@ class CreatePartnerInviteCommand(val loritta: LorittaBot) : LorittaRPCCommand(Lo
             val loggingChannel = loggingGuild?.getGuildMessageChannelById(loggingChannelId)
 
             if (loggingChannel != null) {
-                loggingChannel.sendMessage("Usuário <@${request.userId}> (`${request.userId}`) criou o convite `${invite.code}` pelo servidor `${request.partnerGuildId}`").await()
+                loggingChannel.sendMessage("Usuário <@${request.userId}> (`${request.userId}`) criou o convite `${invite.code}` pelo servidor `${request.requestedForGuildId}`").await()
             } else {
                 logger.warn { "Could not find logging channel $loggingChannelId in guild $partnerGuildId to log partner invite creation" }
             }
 
             call.respondRPCResponse<CreatePartnerInviteResponse>(CreatePartnerInviteResponse.Success(inviteCode = invite.code))
         } catch (e: Exception) {
-            logger.warn(e) { "Failed to create partner invite for user ${request.userId} in guild ${request.partnerGuildId}" }
+            logger.warn(e) { "Failed to create partner invite for user ${request.userId} in guild ${request.requestedForGuildId}" }
             call.respondRPCResponse<CreatePartnerInviteResponse>(CreatePartnerInviteResponse.InviteCreationFailed)
         }
     }
