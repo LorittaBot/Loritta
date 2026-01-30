@@ -47,7 +47,8 @@ class DropCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             297732013006389252L, // Loritta
             268353819409252352L, // Ideias Aleatórias
             320248230917046282L, // SparklyPower
-            1204104683380285520L // Vortex
+            1204104683380285520L, // Vortex
+            748917809995841666L // Padaria
         )
 
         suspend fun checkChargeCreatorSonhos(context: UnleashedContext, isLorittaAdminOption: Boolean): Boolean? {
