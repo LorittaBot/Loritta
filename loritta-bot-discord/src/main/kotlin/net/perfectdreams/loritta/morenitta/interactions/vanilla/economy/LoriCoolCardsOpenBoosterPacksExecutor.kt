@@ -91,6 +91,11 @@ class LoriCoolCardsOpenBoosterPacksExecutor(val loritta: LorittaBot, private val
                     }.first()[cardDistinctField]
                 val selectedCardsWithMetadata = mutableListOf<OpenBoosterPacksResult.Success.CardResult>()
 
+                // OPTIMIZATION: Track the album completion count in memory instead of querying the database for each card
+                // We start with the count before adding cards, then increment when we encounter a new unique card type
+                var currentAlbumCompletionCount = unmodifiableCountBeforeAddingCards
+                val newUniqueCardIdsSeenThisSession = mutableSetOf<Long>()
+
                 // Technically this is *bad* for performance, but it is what it is rn
                 for (boosterPackId in unopenedBoosterPacks.map { it[LoriCoolCardsUserBoughtBoosterPacks.id] }) {
                     LoriCoolCardsUserBoughtBoosterPacks.update({ LoriCoolCardsUserBoughtBoosterPacks.id eq boosterPackId }) {
@@ -138,20 +143,25 @@ class LoriCoolCardsOpenBoosterPacksExecutor(val loritta: LorittaBot, private val
                         }
 
                         // Count how many cards of this specific type we have
-                        val howManyCardsOfThisCardIdWeHave = (howManyStickersOfTheseStickersCardIdWeHave[card[LoriCoolCardsEventCards.id].value] ?: 0) + 1 // If not present, then it means we had 0 stickers (+1, because now we have one of them (yay))
-                        howManyStickersOfTheseStickersCardIdWeHave[card[LoriCoolCardsEventCards.id].value] = howManyCardsOfThisCardIdWeHave // Update the map (required because there may be duplicate stickers)
+                        val cardIdValue = card[LoriCoolCardsEventCards.id].value
+                        val previousCount = howManyStickersOfTheseStickersCardIdWeHave[cardIdValue] ?: 0
+                        val howManyCardsOfThisCardIdWeHave = previousCount + 1 // If not present, then it means we had 0 stickers (+1, because now we have one of them (yay))
+                        howManyStickersOfTheseStickersCardIdWeHave[cardIdValue] = howManyCardsOfThisCardIdWeHave // Update the map (required because there may be duplicate stickers)
 
-                        // We also need to calculate how many cards the user now has for each "step" of the journey
-                        val unmodifiableCount = LoriCoolCardsUserOwnedCards.select(cardDistinctField)
-                            .where {
-                                LoriCoolCardsUserOwnedCards.user eq context.user.idLong and (LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id])
-                            }.first()[cardDistinctField]
+                        // OPTIMIZATION: Track album completion count in memory
+                        // A card is a new unique type if:
+                        // 1. We didn't have any of this card before (previousCount == 0)
+                        // 2. We haven't already counted it in this session
+                        if (previousCount == 0L && cardIdValue !in newUniqueCardIdsSeenThisSession) {
+                            currentAlbumCompletionCount++
+                            newUniqueCardIdsSeenThisSession.add(cardIdValue)
+                        }
 
                         selectedCardsWithMetadata.add(
                             OpenBoosterPacksResult.Success.CardResult(
                                 card,
                                 howManyCardsOfThisCardIdWeHave,
-                                unmodifiableCount,
+                                currentAlbumCompletionCount,
                                 haveWeAlreadySeenThisCardBefore
                             )
                         )
