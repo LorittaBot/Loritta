@@ -10,6 +10,7 @@ abstract class SimpleTextTransformSubcommand(
     val label: StringI18nData,
     val description: StringI18nData,
     val textOption: StringI18nData,
+    val alternativeLegacyAbsoluteCommandPaths: List<String> = emptyList()
 ) {
     abstract fun transform(text: String): String
 }
@@ -18,7 +19,8 @@ class TextTransformVaporwaveSubcommand : SimpleTextTransformSubcommand(
     uniqueId = UUID.fromString("bed4c9cb-f5f8-485d-9bde-f585a137a9ff"),
     label = I18N_PREFIX.Label,
     description = I18N_PREFIX.Description,
-    textOption = I18N_PREFIX.Options.Text
+    textOption = I18N_PREFIX.Options.Text,
+    alternativeLegacyAbsoluteCommandPaths = listOf("vaporonda", "vaporwave")
 ) {
     override fun transform(text: String): String =
         VaporwaveUtils.vaporwave(text)
@@ -78,7 +80,8 @@ class TextTransformQualitySubcommand : SimpleTextTransformSubcommand(
     uniqueId = UUID.fromString("511461f1-1b98-446d-be42-4d34265ca615"),
     label = I18N_PREFIX.Label,
     description = I18N_PREFIX.Description,
-    textOption = I18N_PREFIX.Options.Text
+    textOption = I18N_PREFIX.Options.Text,
+    alternativeLegacyAbsoluteCommandPaths = listOf("qualidade")
 ) {
     override fun transform(text: String): String =
         quality(text)
@@ -92,7 +95,8 @@ class TextTransformVaporQualitySubcommand : SimpleTextTransformSubcommand(
     uniqueId = UUID.fromString("b05a32f7-3b45-46b4-9a5b-6cb5fe905bc4"),
     label = I18N_PREFIX.Label,
     description = I18N_PREFIX.Description,
-    textOption = I18N_PREFIX.Options.Text
+    textOption = I18N_PREFIX.Options.Text,
+    alternativeLegacyAbsoluteCommandPaths = listOf("vaporqualidade")
 ) {
     override fun transform(text: String): String =
         VaporwaveUtils.vaporwave(quality(text))

@@ -24,6 +24,7 @@ class TextTransformCommand: SlashCommandDeclarationWrapper {
             for (simpleSubcommand in simpleSubcommands) {
                 subcommand(simpleSubcommand.label, simpleSubcommand.description, simpleSubcommand.uniqueId) {
                     executor = SimpleTextTransformCommandExecutor(simpleSubcommand)
+                    this.alternativeLegacyAbsoluteCommandPaths.addAll(simpleSubcommand.alternativeLegacyAbsoluteCommandPaths)
                 }
             }
             subcommand(
