@@ -32,8 +32,11 @@ import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.linkButton
 import net.perfectdreams.loritta.morenitta.utils.ClusterOfflineException
+import net.perfectdreams.loritta.morenitta.utils.LorittaDiscordOAuth2AddBotURL
 import net.perfectdreams.loritta.morenitta.utils.devious.GatewayShardStartupResumeStatus
 import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
+import net.perfectdreams.loritta.morenitta.websitedashboard.AuthenticationState
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.AuthenticationStateUtils
 import org.jetbrains.exposed.sql.selectAll
 import java.lang.management.ManagementFactory
 import java.time.Instant
@@ -49,6 +52,7 @@ class LorittaCommand(val m: LorittaBot) : SlashCommandDeclarationWrapper {
         private val INFO_I18N_PREFIX = I18N_PREFIX.Info
         private val NERD_I18N_PREFIX = I18N_PREFIX.Nerd
         private val APPEAL_I18N_PREFIX = I18N_PREFIX.Appeal
+        private val INVITE_I18N_PREFIX = I18N_PREFIX.Invite
     }
 
     override fun command() = slashCommand(I18nKeysData.Commands.Command.Loritta.Label, TodoFixThisData, CommandCategory.DISCORD, UUID.fromString("7ff3e80c-5832-48f5-9137-6640ef341863")) {
@@ -95,6 +99,18 @@ class LorittaCommand(val m: LorittaBot) : SlashCommandDeclarationWrapper {
             this.allowUsageEvenIfLorittaBanned = true
 
             executor = LorittaAppealExecutor(m)
+        }
+
+        subcommand(INVITE_I18N_PREFIX.Label, INVITE_I18N_PREFIX.Description, UUID.fromString("f8a9b2c3-d4e5-6789-abcd-ef0123456789")) {
+            alternativeLegacyAbsoluteCommandPaths.apply {
+                add("invite")
+                add("convidar")
+                add("convidarbot")
+                add("invitebot")
+                add("convite")
+            }
+
+            executor = LorittaInviteExecutor(m)
         }
     }
 
@@ -572,6 +588,48 @@ class LorittaCommand(val m: LorittaBot) : SlashCommandDeclarationWrapper {
                         context.i18nContext.get(I18nKeysData.Commands.UserIsLorittaBanned.SendABanAppeal)
                     ).withEmoji(Emotes.LoriAngel.toJDA())
                 )
+            }
+        }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ) = LorittaLegacyMessageCommandExecutor.NO_ARGS
+    }
+
+    class LorittaInviteExecutor(val m: LorittaBot) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            val sourceTrackingString = context.channelOrNull?.let {
+                AuthenticationStateUtils.createDiscordSourceTrackingString(it)
+            } ?: "unknown"
+
+            val inviteUrl = LorittaDiscordOAuth2AddBotURL(
+                m,
+                state = AuthenticationStateUtils.createStateAsBase64(
+                    AuthenticationState(
+                        source = sourceTrackingString,
+                        medium = "inline_link",
+                        campaign = null,
+                        content = "invite_command"
+                    ),
+                    m
+                )
+            ).toString()
+
+            context.reply(false) {
+                embed {
+                    color = LorittaColors.LorittaAqua.rgb
+
+                    description = context.i18nContext.get(
+                        INVITE_I18N_PREFIX.InviteInfo(
+                            inviteUrl,
+                            m.config.loritta.dashboard.url,
+                            "${m.config.loritta.website.url}support"
+                        )
+                    ).joinToString("\n")
+
+                    thumbnail = "${m.config.loritta.website.url}assets/img/loritta_gabizinha_v1.png"
+                }
             }
         }
 

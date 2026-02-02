@@ -38,3 +38,12 @@ appeal:
   description: "Foi banido da Loritta? Então envie um apelo de ban para conseguir uma segunda chance!"
 
   brokeTheRules: "Você quebrou as regras da Loritta e queria uma segunda chance? Então envie um apelo de ban!"
+invite:
+  label: "convidar"
+  description: "Envia o link de convite para me adicionar em outros servidores!"
+  inviteInfo:
+    - "Você quer me adicionar em outros servidores do Discord? Então clique [aqui]({inviteUrl}) para me adicionar em outro servidor!"
+    - ""
+    - "Se você quiser configurar algo (como meu prefixo, comandos ativados, etc), então vá até meu painel de administração clicando [aqui]({dashboardUrl})!"
+    - ""
+    - "E, é claro, entre no meu servidor para dar sugestões, reportar bugs e muito mais! {supportUrl}"
