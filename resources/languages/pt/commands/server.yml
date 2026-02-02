@@ -45,6 +45,21 @@ channel:
     createdAt: "Criado em"
     options:
       channel: "Um canal para mostrar informações sobre ele"
+info:
+  label: "info"
+  description: "Mostra informações do servidor"
+  unknownGuild: "Eu não conheço nenhum servidor com o ID `{guildId}`..."
+  owner: "Dono"
+  ownerFemale: "Dona"
+  channels: "Canais"
+  textChannels: "Texto"
+  voiceChannels: "Voz"
+  createdAt: "Criado em"
+  joinedAt: "Entrei aqui em"
+  members: "Membros"
+  options:
+    serverId:
+      text: "ID do servidor que você deseja ver as informações dele"
 role:
   label: "cargo"
   info:

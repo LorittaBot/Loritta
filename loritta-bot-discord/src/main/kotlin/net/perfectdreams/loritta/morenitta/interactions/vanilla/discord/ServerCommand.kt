@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.discord
 
+import com.github.salomonbrys.kotson.int
 import com.github.salomonbrys.kotson.long
 import com.github.salomonbrys.kotson.nullString
 import com.github.salomonbrys.kotson.string
@@ -16,6 +17,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.utils.Gender
 import net.perfectdreams.loritta.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.i18n.I18nKeys
 import net.perfectdreams.loritta.i18n.I18nKeysData
@@ -27,6 +29,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionR
 import net.perfectdreams.loritta.morenitta.interactions.retrieveMemberCount
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
+import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.getLocalizedName
 import net.perfectdreams.loritta.morenitta.utils.isValidSnowflake
 import net.perfectdreams.loritta.morenitta.utils.toLocalized
@@ -71,6 +74,15 @@ class ServerCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             }
 
             executor = ServerSplashExecutor()
+        }
+
+        subcommand(I18N_PREFIX.Info.Label, I18N_PREFIX.Info.Description, UUID.fromString("a3b7c9d1-2e4f-5a6b-8c0d-1e2f3a4b5c6d")) {
+            alternativeLegacyAbsoluteCommandPaths.apply {
+                add("serverinfo")
+                add("guildinfo")
+            }
+
+            executor = ServerInfoExecutor()
         }
 
         subcommandGroup(I18N_PREFIX.Role.Label, TodoFixThisData) {
@@ -267,6 +279,170 @@ class ServerCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             args: List<String>
         ): Map<OptionReference<*>, Any?> {
             return LorittaLegacyMessageCommandExecutor.NO_ARGS
+        }
+    }
+
+    inner class ServerInfoExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        inner class Options : ApplicationCommandOptions() {
+            val serverId = optionalString("server_id", I18N_PREFIX.Info.Options.ServerId.Text)
+        }
+
+        override val options = Options()
+
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            // Baseado no comando ?serverinfo do Dyno
+            val userProvidedServerId = args[options.serverId]
+
+            data class GuildInfo(
+                val id: Long,
+                val name: String,
+                val iconUrl: String?,
+                val splashUrl: String?,
+                val shardId: Int,
+                val ownerId: Long,
+                val textChannelCount: Int,
+                val voiceChannelCount: Int,
+                val timeCreated: Long,
+                val timeJoined: Long,
+                val memberCount: Int
+            )
+
+            val guildInfo: GuildInfo
+
+            if (userProvidedServerId != null) {
+                val userProvidedServerIdAsLong = userProvidedServerId.toLongOrNull()
+                    ?: context.fail(true) {
+                        styled(
+                            context.i18nContext.get(I18N_PREFIX.Icon.InvalidId),
+                            Emotes.Error
+                        )
+                    }
+
+                if (userProvidedServerIdAsLong == context.guildId) {
+                    // No need to query if it is on this instance
+                    guildInfo = GuildInfo(
+                        context.guild.idLong,
+                        context.guild.name,
+                        context.guild.iconUrl,
+                        context.guild.splashUrl,
+                        context.guild.jda.shardInfo.shardId,
+                        context.guild.ownerIdLong,
+                        context.guild.textChannels.size,
+                        context.guild.voiceChannels.size,
+                        context.guild.timeCreated.toEpochSecond() * 1000,
+                        context.guild.selfMember.timeJoined.toEpochSecond() * 1000,
+                        context.guild.memberCount
+                    )
+                } else {
+                    val guild = loritta.lorittaShards.queryGuildById(userProvidedServerIdAsLong)
+                        ?: context.fail(true) {
+                            styled(
+                                context.i18nContext.get(I18N_PREFIX.Info.UnknownGuild(userProvidedServerId)),
+                                Emotes.LoriSob
+                            )
+                        }
+
+                    val count = guild.get("count").asJsonObject
+                    guildInfo = GuildInfo(
+                        guild.get("id").long,
+                        guild.get("name").string,
+                        guild.get("iconUrl").nullString,
+                        guild.get("splashUrl").nullString,
+                        guild.get("shardId").int,
+                        guild.get("ownerId").string.toLong(),
+                        count.get("textChannels").int,
+                        count.get("voiceChannels").int,
+                        guild.get("timeCreated").long,
+                        guild.get("timeJoined").long,
+                        count.get("members").int
+                    )
+                }
+            } else {
+                guildInfo = GuildInfo(
+                    context.guild.idLong,
+                    context.guild.name,
+                    context.guild.iconUrl,
+                    context.guild.splashUrl,
+                    context.guild.jda.shardInfo.shardId,
+                    context.guild.ownerIdLong,
+                    context.guild.textChannels.size,
+                    context.guild.voiceChannels.size,
+                    context.guild.timeCreated.toEpochSecond() * 1000,
+                    context.guild.selfMember.timeJoined.toEpochSecond() * 1000,
+                    context.guild.memberCount
+                )
+            }
+
+            val cluster = DiscordUtils.getLorittaClusterForGuildId(loritta, guildInfo.id)
+            val owner = loritta.lorittaShards.retrieveUserInfoById(guildInfo.ownerId)
+            val ownerProfile = loritta.getLorittaProfile(guildInfo.ownerId)
+            val ownerGender = loritta.newSuspendedTransaction { ownerProfile?.settings?.gender ?: Gender.UNKNOWN }
+
+            val ownerLabel = if (ownerGender == Gender.FEMALE)
+                context.i18nContext.get(I18N_PREFIX.Info.OwnerFemale)
+            else
+                context.i18nContext.get(I18N_PREFIX.Info.Owner)
+
+            val timeCreatedFormatted = DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(guildInfo.timeCreated)
+            val timeJoinedFormatted = DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(guildInfo.timeJoined)
+
+            context.reply(false) {
+                embed {
+                    title = "${Emotes.Discord} ${guildInfo.name}"
+                    thumbnail = guildInfo.iconUrl
+                    image = guildInfo.splashUrl?.replace("jpg", "png")?.plus("?size=2048")
+                    color = Constants.DISCORD_BLURPLE.rgb
+
+                    field {
+                        name = "${Emotes.LoriId} ID"
+                        value = "`${guildInfo.id}`"
+                        inline = true
+                    }
+
+                    field {
+                        name = "${Emotes.Computer} Shard ID"
+                        value = "${guildInfo.shardId} — Loritta Cluster ${cluster.id} (`${cluster.name}`)"
+                        inline = true
+                    }
+
+                    field {
+                        name = "\uD83D\uDC51 $ownerLabel"
+                        value = if (owner != null) "`${owner.name}` (${guildInfo.ownerId})" else "${guildInfo.ownerId}"
+                        inline = true
+                    }
+
+                    field {
+                        name = "\uD83D\uDCAC ${context.i18nContext.get(I18N_PREFIX.Info.Channels)} (${guildInfo.textChannelCount + guildInfo.voiceChannelCount})"
+                        value = "\uD83D\uDCDD **${context.i18nContext.get(I18N_PREFIX.Info.TextChannels)}:** ${guildInfo.textChannelCount}\n${Emotes.SpeakingHead} **${context.i18nContext.get(I18N_PREFIX.Info.VoiceChannels)}:** ${guildInfo.voiceChannelCount}"
+                        inline = true
+                    }
+
+                    field {
+                        name = "${Emotes.LoriCalendar} ${context.i18nContext.get(I18N_PREFIX.Info.CreatedAt)}"
+                        value = timeCreatedFormatted
+                        inline = true
+                    }
+
+                    field {
+                        name = "${Emotes.Sparkles} ${context.i18nContext.get(I18N_PREFIX.Info.JoinedAt)}"
+                        value = timeJoinedFormatted
+                        inline = true
+                    }
+
+                    field {
+                        name = "${Emotes.BustsInSilhouette} ${context.i18nContext.get(I18N_PREFIX.Info.Members)} (${guildInfo.memberCount})"
+                        value = ""
+                        inline = true
+                    }
+                }
+            }
+        }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?> {
+            return mapOf(options.serverId to args.getOrNull(0))
         }
     }
 

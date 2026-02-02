@@ -20,7 +20,6 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.nashorn.NashornCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.*
-import net.perfectdreams.loritta.morenitta.commands.vanilla.discord.ServerInfoCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.`fun`.*
 import net.perfectdreams.loritta.morenitta.commands.vanilla.images.*
 import net.perfectdreams.loritta.morenitta.commands.vanilla.magic.*
@@ -113,7 +112,6 @@ class CommandManager(val loritta: LorittaBot) {
 		// =======[ DISCORD ]=======
 		// commandMap.add(ServerIconCommand(loritta))
 		// commandMap.add(EmojiCommand(loritta))
-		commandMap.add(ServerInfoCommand(loritta))
 		// commandMap.add(InviteInfoCommand(loritta))
 		// commandMap.add(EmojiInfoCommand(loritta))
 
