@@ -101,7 +101,6 @@ class CommandManager(val loritta: LorittaBot) {
 		commandMap.add(GenderCommand(loritta))
 
 		// =======[ UTILS ]=======
-		commandMap.add(TranslateCommand(loritta))
 		commandMap.add(WikipediaCommand(loritta))
 		commandMap.add(ColorInfoCommand(loritta))
 		commandMap.add(TempoCommand(loritta))

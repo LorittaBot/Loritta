@@ -13,6 +13,7 @@ import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.autocomplete.AutocompleteContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import java.util.*
 
 class TranslateCommand(private val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
@@ -26,10 +27,16 @@ class TranslateCommand(private val loritta: LorittaBot) : SlashCommandDeclaratio
         category = CommandCategory.UTILS,
         uniqueId = UUID.fromString("24bb7b9b-096a-4814-ac86-be01c6082855")
     ) {
-        executor = TranslateExecutor(loritta)
+        enableLegacyMessageSupport = true
+
+        alternativeLegacyLabels.apply {
+            add("translate")
+        }
+
+        executor = TranslateExecutor()
     }
 
-    class TranslateExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor() {
+    inner class TranslateExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         inner class Options : ApplicationCommandOptions() {
             val cinnamonAutocomplete: (AutocompleteContext, AutoCompleteQuery, Boolean) -> (Map<String, String>) = { autocompleteContext, focusedCommandOption, includeAuto ->
                 val value = focusedCommandOption.value
@@ -142,6 +149,22 @@ class TranslateCommand(private val loritta: LorittaBot) : SlashCommandDeclaratio
                     color = LorittaColors.LorittaAqua.rgb
                 }
             }
+        }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?>? {
+            if (2 > args.size) {
+                context.explain()
+                return null
+            }
+
+            return mapOf(
+                options.from to GoogleTranslateLanguage.AUTO_DETECT.code,
+                options.to to args[0],
+                options.text to args.drop(1).joinToString(" ")
+            )
         }
     }
 }
