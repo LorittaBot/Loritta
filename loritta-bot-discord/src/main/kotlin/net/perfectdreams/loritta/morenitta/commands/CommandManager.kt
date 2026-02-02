@@ -137,7 +137,6 @@ class CommandManager(val loritta: LorittaBot) {
 		commandMap.add(RoleIdCommand(loritta))
 		commandMap.add(SlowModeCommand(loritta))
 		commandMap.add(WarnListCommand(loritta))
-		commandMap.add(QuickPunishmentCommand(loritta))
 
 		// =======[ MAGIC ]========
 		commandMap.add(ReloadCommand(loritta))
