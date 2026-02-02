@@ -125,17 +125,18 @@ class GiveawayManager(val loritta: LorittaBot) {
                         this.appendLine(description)
                         this.appendLine()
                         if (extraEntries.isNotEmpty()) {
+                            this.appendLine("**${i18nContext.get(I18N_PREFIX.ExtraEntries)}:**")
                             for (extraEntry in extraEntries.sortedByDescending { it.weight }) {
                                 if (extraEntriesShouldStack) {
-                                    this.appendLine("**${i18nContext.get(I18N_PREFIX.RoleExtraEntryStacked("<@&${extraEntry.roleId}>", extraEntry.weight))}**")
+                                    this.appendLine(i18nContext.get(I18N_PREFIX.RoleExtraEntryStacked("<@&${extraEntry.roleId}>", extraEntry.weight)))
                                 } else {
-                                    this.appendLine("**${i18nContext.get(I18N_PREFIX.RoleExtraEntry("<@&${extraEntry.roleId}>", extraEntry.weight, 1))}**")
+                                    this.appendLine(i18nContext.get(I18N_PREFIX.RoleExtraEntry("<@&${extraEntry.roleId}>", extraEntry.weight)))
                                 }
                             }
                             if (extraEntriesShouldStack) {
-                                this.appendLine(i18nContext.get(I18N_PREFIX.ExtraEntriesStack))
+                                this.appendLine("-# ${i18nContext.get(I18N_PREFIX.ExtraEntriesStack)}")
                             } else {
-                                this.appendLine(i18nContext.get(I18N_PREFIX.ExtraEntriesLargestWeight))
+                                this.appendLine("-# ${i18nContext.get(I18N_PREFIX.ExtraEntriesLargestWeight)}")
                             }
                             this.appendLine()
                         }
