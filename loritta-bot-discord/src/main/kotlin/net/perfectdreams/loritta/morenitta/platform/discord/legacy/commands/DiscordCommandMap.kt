@@ -57,7 +57,6 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 
 			// ===[ ECONOMY ]===
 			TransactionsCommand(loritta),
-			GuessNumberCommand(loritta),
 			ScratchCardCommand(loritta),
 			ScratchCardTopCommand(loritta),
 			CoinFlipBetStatsCommand(loritta),
