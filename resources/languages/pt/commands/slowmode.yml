@@ -1,0 +1,12 @@
+label: "slowmode"
+description: "Ativa ou desativa o modo lento em um canal"
+disabledInChannel: "Modo lento desativado no canal {channel}!"
+enabledInChannel: "Modo lento ativado no canal {channel}! Agora os usuários só podem enviar mensagens a cada {seconds} segundos."
+invalidSeconds: "O tempo de segundos precisa estar entre 0 e 21600 (6 horas)!"
+channelDoesNotSupportSlowmode: "Este canal não suporta modo lento!"
+
+options:
+  seconds:
+    text: "O tempo em segundos do modo lento (0 para desativar)"
+  channel:
+    text: "O canal onde o modo lento será ativado"
