@@ -5,7 +5,6 @@ import dev.minn.jda.ktx.messages.InlineMessage
 import dev.minn.jda.ktx.messages.MessageEdit
 import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.components.section.Section
@@ -25,6 +24,7 @@ import net.perfectdreams.loritta.common.utils.ColorUtils
 import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.dao.servers.Giveaway
 import net.perfectdreams.loritta.morenitta.interactions.InteractionMessage
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedButton
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
@@ -55,6 +55,7 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
         const val MAX_GIVEAWAY_TEMPLATES = 5
         private val I18N_PREFIX = I18nKeysData.Commands.Command.Giveaway
         private val SETUP_I18N_PREFIX = I18N_PREFIX.Setup
+        private val EDIT_I18N_PREFIX = I18N_PREFIX.Edit
         private val URL_PATTERN = Regex("\\s*(https?)://\\S+\\s*", RegexOption.IGNORE_CASE)
     }
 
@@ -304,6 +305,142 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
                     context.i18nContext.get(SETUP_I18N_PREFIX.GiveawayCreatedCreateTemplateIfYouWantToSaveItLater),
                     Emotes.LoriCoffee
                 )
+
+                styled(
+                    context.i18nContext.get(SETUP_I18N_PREFIX.GiveawayCreatedHowToEdit(m.commandMentions.giveawayEdit)),
+                    Emotes.LoriLurk
+                )
+            }
+        }
+
+        val saveChangesButton = m.interactivityManager.buttonForUser(
+            context.user,
+            context.alwaysEphemeral,
+            ButtonStyle.SUCCESS,
+            context.i18nContext.get(EDIT_I18N_PREFIX.SaveChanges),
+            {
+                loriEmoji = Emotes.Tada
+            }
+        ) { context ->
+            context.deferChannelMessage(true)
+
+            val editModeAttributes = requireNotNull(builder.editModeAttributes) // This should NEVER be null here
+
+            // Validate giveaway info
+            val giveawayDatabaseId = editModeAttributes.giveawayDatabaseId
+            val existingMessageId = editModeAttributes.existingMessageId
+            val existingChannelId = editModeAttributes.existingChannelId
+
+            // Get the channel from the existing channel ID
+            val channel = context.guild.getGuildMessageChannelById(existingChannelId)
+            if (channel == null) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(SETUP_I18N_PREFIX.YouNeedToSetupAChannelBeforeStarting),
+                        Emotes.Error
+                    )
+                }
+                return@buttonForUser
+            }
+
+            if (!validateGiveawayChannel(context, channel))
+                return@buttonForUser
+
+            val roleIds = builder.roleIds ?: emptyList()
+            for (roleId in roleIds) {
+                val role = context.guild.getRoleById(roleId)
+                if (role != null)
+                    if (!validateGiveawayRole(context, role))
+                        return@buttonForUser
+            }
+
+            val now = System.currentTimeMillis()
+            val epoch = TimeUtils.convertToMillisRelativeToNow(builder.duration)
+
+            if (now > epoch) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(SETUP_I18N_PREFIX.DateInThePast(DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(epoch))),
+                        Emotes.Error
+                    )
+                }
+                return@buttonForUser
+            }
+
+            // Get the message
+            val message = try {
+                channel.retrieveMessageById(existingMessageId).await()
+            } catch (e: Exception) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(EDIT_I18N_PREFIX.GiveawayMessageDeleted),
+                        Emotes.Error
+                    )
+                }
+                return@buttonForUser
+            }
+
+            // Load giveaway from database
+            val giveaway = m.newSuspendedTransaction {
+                Giveaway.findById(giveawayDatabaseId)
+            }
+
+            requireNotNull(giveaway) // This should NOT ever happen, because we never delete giveaways from the database
+
+            if (giveaway.finished) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(EDIT_I18N_PREFIX.GiveawayAlreadyFinished),
+                        Emotes.Error
+                    )
+                }
+                return@buttonForUser
+            }
+
+            // Update the giveaway
+            m.giveawayManager.updateGiveaway(
+                context.locale,
+                context.i18nContext,
+                channel,
+                message,
+                giveaway,
+                builder.name,
+                builder.description,
+                builder.imageUrl,
+                builder.thumbnailUrl,
+                builder.color,
+                builder.reaction,
+                epoch,
+                builder.numberOfWinners,
+                null, // Technically unused because the builder does not give access to this
+                builder.roleIds?.ifEmpty { null }?.map { it.toString() },
+                builder.allowedRolesIds?.ifEmpty { null }?.let {
+                    GiveawayRoles(
+                        it,
+                        builder.allowedRolesIsAndCondition
+                    )
+                },
+                builder.deniedRolesIds?.ifEmpty { null }?.let {
+                    GiveawayRoles(
+                        it,
+                        builder.deniedRolesIsAndCondition
+                    )
+                },
+                builder.needsToGetDailyBeforeParticipating,
+                builder.extraEntries.map {
+                    GiveawayRoleExtraEntry(
+                        it.roleId,
+                        it.weight
+                    )
+                },
+                builder.extraEntriesShouldStack
+            )
+
+            context.reply(true) {
+                styled(
+                    context.i18nContext.get(EDIT_I18N_PREFIX.GiveawayUpdated("https://discord.com/channels/${giveaway.guildId}/${giveaway.textChannelId}/${giveaway.messageId}")),
+                    Emotes.LoriHappyJumping
+                )
             }
         }
 
@@ -315,6 +452,7 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
             configureMiscellaneousButton,
             templatesButton,
             startGiveawayButton,
+            saveChangesButton,
         )
     }
 
@@ -329,13 +467,14 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
             buildGiveawayButtons.configureMiscellaneousButton
         )
 
-        this.components += row(
-            buildGiveawayButtons.templatesButton
-        )
-
-        this.components += row(
-            buildGiveawayButtons.startGiveawayButton
-        )
+        if (builder.editModeAttributes != null) {
+            // In edit mode, show only the Save Changes button (no templates)
+            this.components += row(buildGiveawayButtons.saveChangesButton)
+        } else {
+            // In create mode, show Templates and Start Giveaway buttons
+            this.components += row(buildGiveawayButtons.templatesButton)
+            this.components += row(buildGiveawayButtons.startGiveawayButton)
+        }
     }
 
     fun OptionExplanationCombo(title: String, description: String? = null, value: String? = null): TextDisplay {
@@ -773,13 +912,15 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
                         rolesToBeGivenToTheWinners
                     )
 
-                    this.components += OptionExplanationCombo(
-                        context.i18nContext.get(SETUP_I18N_PREFIX.GiveawayChannel.Title)
-                    )
+                    if (builder.editModeAttributes == null) {
+                        this.components += OptionExplanationCombo(
+                            context.i18nContext.get(SETUP_I18N_PREFIX.GiveawayChannel.Title)
+                        )
 
-                    this.components += row(
-                        channelSelectMenu
-                    )
+                        this.components += row(
+                            channelSelectMenu
+                        )
+                    }
                 }
 
                 appendDefaultButtons(context, builder)
@@ -1580,6 +1721,16 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
         var extraEntries = mutableListOf<ExtraEntry>()
 
         var extraEntryBuilder = ExtraEntryBuilder()
+
+        // ===[ EDIT MODE FIELDS ]===
+        // If not null, then the edit mode is enabled!
+        var editModeAttributes: EditModeAttributes? = null
+
+        data class EditModeAttributes(
+            val giveawayDatabaseId: Long,
+            val existingMessageId: Long,
+            val existingChannelId: Long
+        )
     }
 
     class ExtraEntryBuilder {
@@ -1600,6 +1751,7 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
         val configureMiscellaneousButton: Button,
         val templatesButton: Button,
         val startGiveawayButton: Button,
+        val saveChangesButton: Button,
     )
 
     data class GiveawayTemplateInformation(

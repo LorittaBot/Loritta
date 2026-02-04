@@ -40,12 +40,15 @@ import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.Disc
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.MessageUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.*
+import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.substringIfNeeded
 import net.perfectdreams.loritta.serializable.GiveawayRoleExtraEntry
 import net.perfectdreams.loritta.serializable.GiveawayRoles
 import net.perfectdreams.sequins.text.StringUtils
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.batchInsert
+import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.selectAll
 import java.awt.Color
 import java.sql.Connection
@@ -248,7 +251,7 @@ class GiveawayManager(val loritta: LorittaBot) {
             ).await()
         } catch (e: ErrorResponseException) {
             if (e.errorCode == 50035) {
-                logger.debug(e) { "Looks like the emote $validReaction doesn't exist, falling back to the default emote (if possible)"}
+                logger.debug(e) { "Looks like the emote $validReaction doesn't exist, falling back to the default emote (if possible)" }
                 validReaction = "\uD83C\uDF89"
                 channel.sendMessage(
                     createGiveawayMessage(i18nContext, reason, description, "\uD83C\uDF89", imageUrl, thumbnailUrl, color, epoch, channel.guild, customMessage, null, 0, allowedRoles, deniedRoles, extraEntries, extraEntriesShouldStack)
@@ -337,6 +340,101 @@ class GiveawayManager(val loritta: LorittaBot) {
         return giveaway
     }
 
+    suspend fun updateGiveaway(
+        locale: BaseLocale,
+        i18nContext: I18nContext,
+        channel: GuildMessageChannel,
+        message: Message,
+        giveaway: Giveaway,
+        reason: String,
+        description: String,
+        imageUrl: String?,
+        thumbnailUrl: String?,
+        color: Color?,
+        reaction: String,
+        epoch: Long,
+        numberOfWinners: Int,
+        customMessage: String?,
+        roleIds: List<String>?,
+        allowedRoles: GiveawayRoles?,
+        deniedRoles: GiveawayRoles?,
+        needsToGetDailyBeforeParticipating: Boolean,
+        extraEntries: List<GiveawayRoleExtraEntry>,
+        extraEntriesShouldStack: Boolean
+    ): Giveaway {
+        logger.debug { "Updating Giveaway ${giveaway.id.value}!" }
+
+        var validReaction = reaction
+
+        val giveawayParticipants = loritta.newSuspendedTransaction {
+            GiveawayParticipants.selectAll().where {
+                GiveawayParticipants.giveawayId eq giveaway.id.value
+            }.count()
+        }
+
+        // Attempt to update the giveaway message BEFORE we do anything
+        // We need to do this because we need to validate if the new reaction is actually valid
+        try {
+            message.editMessage(
+                MessageEditData.fromCreateData(createGiveawayMessage(i18nContext, reason, description, reaction, imageUrl, thumbnailUrl, color, epoch, channel.guild, customMessage, giveaway.id.value, giveawayParticipants, allowedRoles, deniedRoles, extraEntries, extraEntriesShouldStack))
+            ).await()
+        } catch (e: ErrorResponseException) {
+            if (e.errorCode == 50035) {
+                logger.debug(e) { "Looks like the emote $validReaction doesn't exist, falling back to the default emote (if possible)" }
+                validReaction = "\uD83C\uDF89"
+                message.editMessage(
+                    MessageEditData.fromCreateData(createGiveawayMessage(i18nContext, reason, description, reaction, imageUrl, thumbnailUrl, color, epoch, channel.guild, customMessage, giveaway.id.value, giveawayParticipants, allowedRoles, deniedRoles, extraEntries, extraEntriesShouldStack))
+                ).await()
+            } else throw e
+        }
+        val previousFinishAt = giveaway.finishAt
+
+        // Update giveaway in database
+        loritta.newSuspendedTransaction {
+            giveaway.reason = reason
+            giveaway.description = description
+            giveaway.imageUrl = imageUrl
+            giveaway.thumbnailUrl = thumbnailUrl
+            giveaway.color = color?.let { String.format("#%02x%02x%02x", it.red, it.green, it.blue) }
+            giveaway.reaction = validReaction
+            giveaway.finishAt = epoch
+            giveaway.numberOfWinners = numberOfWinners
+            giveaway.roleIds = roleIds
+            giveaway.allowedRoles = allowedRoles?.let { Json.encodeToString(it) }
+            giveaway.deniedRoles = deniedRoles?.let { Json.encodeToString(it) }
+            giveaway.needsToGetDailyBeforeParticipating = needsToGetDailyBeforeParticipating
+            giveaway.extraEntriesShouldStack = extraEntriesShouldStack
+            giveaway.customMessage = customMessage
+
+            // Delete old extra entries and insert new ones
+            GiveawayRoleExtraEntries.deleteWhere { GiveawayRoleExtraEntries.giveawayId eq giveaway.id }
+
+            GiveawayRoleExtraEntries.batchInsert(extraEntries) {
+                this[GiveawayRoleExtraEntries.giveawayId] = giveaway.id
+                this[GiveawayRoleExtraEntries.roleId] = it.roleId
+                this[GiveawayRoleExtraEntries.weight] = it.weight
+            }
+        }
+
+        // If finish time changed, reschedule the job
+        if (previousFinishAt != epoch) {
+            logger.info { "Finish time changed for giveaway ${giveaway.id.value}, rescheduling job..." }
+
+            // This is a look weird, but hear me out:
+            // We NEED to wait the original task to finish BEFORE we create a new job
+            // Otherwise, the job will be created while the old coroutine has not "finished" yet, which causes the coroutine to stop and remove our new job
+            // So we will cancel the task, wait for the coroutine to finish and THEN we create a new coroutine
+            val taskToBeCancelled = giveawayTasks.remove(giveaway.id.value)
+            taskToBeCancelled?.cancel()
+            try {
+                taskToBeCancelled?.join()
+            } catch (e: CancellationException) {}
+            createGiveawayJob(giveaway)
+        }
+
+        return giveaway
+    }
+
     /**
      * Gets all entities related to this giveaway.
      *
@@ -390,6 +488,7 @@ class GiveawayManager(val loritta: LorittaBot) {
         // Vamos tentar pegar e ver se a guild ou o canal de texto existem
         getGiveawayGuildMessageChannel(giveaway, getGiveawayGuild(giveaway, false) ?: return, false) ?: return
 
+        logger.info { "Giveaway ${giveaway.id.value} has the guild and channel present! Continuing setup..." }
         giveawayTasks[giveaway.id.value] = GlobalScope.launch {
             try {
                 while (giveaway.finishAt > System.currentTimeMillis()) {
@@ -435,7 +534,7 @@ class GiveawayManager(val loritta: LorittaBot) {
     }
 
     suspend fun cancelGiveaway(giveaway: Giveaway, deleteFromDatabase: Boolean, forceDelete: Boolean = false) {
-        logger.info { "Canceling giveaway ${giveaway.id.value}, deleteFromDatabase = $deleteFromDatabase, forceDelete = $forceDelete"}
+        logger.info { "Cancelling giveaway ${giveaway.id.value}, deleteFromDatabase = $deleteFromDatabase, forceDelete = $forceDelete"}
 
         giveawayTasks[giveaway.id.value]?.cancel()
         giveawayTasks.remove(giveaway.id.value)

@@ -14,6 +14,7 @@ setup:
   startGiveaway: "Iniciar Sorteio"
   giveawayCreated: "Sorteio iniciado! {messageUrl}"
   giveawayCreatedCreateTemplateIfYouWantToSaveItLater: "Se você pretende fazer outro sorteio no futuro, você pode salvar este sorteio como um template! Assim, no seu próximo sorteio, você pode recarregar as configurações que você criou para este sorteio."
+  giveawayCreatedHowToEdit: "Se precisar, você pode corrigir informações do seu sorteio usando {giveawayEditCommand}."
   giveawayNamePlaceholder: "Felicidade Eterna"
   giveawayDescriptionPlaceholder: "Uma pessoa sortuda irá ganhar felicidade eterna! ...e várias Lorittinhas de pelúcia como presente"
   giveawayName: "Nome do Sorteio"
@@ -131,3 +132,16 @@ end:
   options:
     messageUrl:
       text: "O link da mensagem do sorteio"
+
+edit:
+  label: "editar"
+  description: "Edita um sorteio ativo"
+
+  options:
+    messageUrl:
+      text: "O link da mensagem do sorteio"
+
+  saveChanges: "Salvar Alterações"
+  giveawayUpdated: "Sorteio atualizado com sucesso! {messageUrl}"
+  giveawayAlreadyFinished: "Este sorteio já foi finalizado! Você não pode editar um sorteio que já acabou."
+  giveawayMessageDeleted: "Pelo visto a mensagem do sorteio foi deletada enquanto você estava atualizando ela!"
