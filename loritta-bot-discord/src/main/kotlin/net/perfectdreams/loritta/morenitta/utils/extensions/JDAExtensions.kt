@@ -27,6 +27,7 @@ import net.perfectdreams.loritta.common.emotes.UnicodeEmote
 import net.perfectdreams.loritta.i18n.I18nKeys
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
+import net.perfectdreams.loritta.morenitta.utils.DiscordCDNUtils
 import net.perfectdreams.loritta.morenitta.utils.ImageFormat
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import net.perfectdreams.loritta.morenitta.utils.stripNewLines
@@ -412,15 +413,7 @@ fun User.getEffectiveAvatarUrl(format: ImageFormat) = getEffectiveAvatarUrl(form
  * @see getEffectiveAvatarUrlInFormat
  */
 fun User.getEffectiveAvatarUrl(format: ImageFormat, imageSize: Int): String {
-    val extension = format.extension
-
-    return if (avatarId != null) {
-        "https://cdn.discordapp.com/avatars/$id/$avatarId.${extension}?size=$imageSize"
-    } else {
-        val avatarId = idLong % 5
-        // This only exists in png AND doesn't have any other sizes
-        "https://cdn.discordapp.com/embed/avatars/$avatarId.png"
-    }
+    return DiscordCDNUtils.getEffectiveAvatarUrl(this.idLong, this.avatarId, format, imageSize)
 }
 
 /**

@@ -10,6 +10,7 @@ import io.ktor.server.response.respondText
 import net.dv8tion.jda.api.entities.User.UserFlag
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.morenitta.utils.DiscordCDNUtils
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
 import net.perfectdreams.loritta.morenitta.profile.profiles.AnimatedProfileCreator
@@ -46,22 +47,7 @@ class UserProfilePreviewDashboardRoute(website: LorittaDashboardWebServer) : Req
         // Disabled because Loritta loads the avatar URL from the user identification cache
         // This causes issues when loading the "profile" page when the user changed the avatar recently
         // So for now we are going to always load Discord's default avatar
-        /* val avatarUrl = if (userIdentification.avatar != null) {
-            val extension = if (userIdentification.avatar.startsWith("a_")) { // Avatares animados no Discord começam com "_a"
-                "gif"
-            } else { "png" }
-
-            "https://cdn.discordapp.com/avatars/${userId}/${userIdentification.avatar}.${extension}?size=256"
-        } else {
-            val avatarId = userId % 5
-
-            "https://cdn.discordapp.com/embed/avatars/$avatarId.png?size=256"
-        } */
-        val avatarUrl = run {
-            val avatarId = userId % 5
-
-            "https://cdn.discordapp.com/embed/avatars/$avatarId.png?size=256"
-        }
+        val avatarUrl = DiscordCDNUtils.getDefaultAvatarUrl(userId)
 
         val backgroundImage = if (backgroundTypeName == null) {
             BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB)

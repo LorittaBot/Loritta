@@ -14,6 +14,7 @@ import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.discordchatmessagerenderer.savedmessage.*
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.DiscordCDNUtils
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaSlashCommandExecutor
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
@@ -101,18 +102,7 @@ class VerifyMessageCommand(val m: LorittaBot) : SlashCommandDeclarationWrapper {
 
                         field("${Emotes.LoriId} ID do Discord", "`${json.author.id}`", true)
 
-                        val userAvatarId = json.author.avatarId
-                        val avatarUrl = if (userAvatarId != null) {
-                            val extension = if (userAvatarId.startsWith("a_")) { // Avatares animados no Discord começam com "a_"
-                                "gif"
-                            } else { "png" }
-
-                            "https://cdn.discordapp.com/avatars/${json.author.id}/${userAvatarId}.${extension}?size=256"
-                        } else {
-                            val avatarId = (json.author.id shr 22) % 6
-
-                            "https://cdn.discordapp.com/embed/avatars/$avatarId.png"
-                        }
+                        val avatarUrl = DiscordCDNUtils.getEffectiveAvatarUrl(json.author.id, json.author.avatarId, null, 256)
 
                         field("${Emotes.LoriLabel} Tag do Discord", "`@${json.author.name}`", true)
 

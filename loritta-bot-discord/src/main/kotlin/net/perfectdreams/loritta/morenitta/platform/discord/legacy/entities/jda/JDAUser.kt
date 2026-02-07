@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.jda
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.DiscordUser
+import net.perfectdreams.loritta.morenitta.utils.DiscordCDNUtils
 import net.perfectdreams.loritta.morenitta.utils.ImageFormat
 import net.perfectdreams.loritta.morenitta.utils.extensions.getEffectiveAvatarUrl
 
@@ -37,14 +38,6 @@ open class JDAUser(@JsonIgnore val handle: net.dv8tion.jda.api.entities.User) : 
      * @see getEffectiveAvatarUrlInFormat
      */
     fun getEffectiveAvatarUrl(format: ImageFormat, imageSize: Int): String {
-        val extension = format.extension
-
-        return if (avatar != null) {
-            "https://cdn.discordapp.com/avatars/$id/$avatar.${extension}?size=$imageSize"
-        } else {
-            val avatarId = id % 5
-            // This only exists in png AND doesn't have any other sizes
-            "https://cdn.discordapp.com/embed/avatars/$avatarId.png"
-        }
+        return DiscordCDNUtils.getEffectiveAvatarUrl(this.id, this.avatar, format, imageSize)
     }
 }

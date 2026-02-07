@@ -5,23 +5,12 @@ import kotlinx.html.code
 import kotlinx.html.div
 import kotlinx.html.img
 import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
+import net.perfectdreams.loritta.morenitta.utils.DiscordCDNUtils
 
 fun FlowContent.inlineNullableUserDisplay(userId: Long, cachedUserInfo: CachedUserInfo?) {
     div(classes = "inline-user-display") {
         if (cachedUserInfo != null) {
-            // TODO - htmx-adventures: Move this somewhere else
-            val userAvatarId = cachedUserInfo.avatarId
-            val avatarUrl = if (userAvatarId != null) {
-                val extension = if (userAvatarId.startsWith("a_")) { // Avatares animados no Discord começam com "_a"
-                    "gif"
-                } else { "png" }
-
-                "https://cdn.discordapp.com/avatars/$userId/${userAvatarId}.${extension}?size=24"
-            } else {
-                val avatarId = (userId shr 22) % 6
-
-                "https://cdn.discordapp.com/embed/avatars/$avatarId.png"
-            }
+            val avatarUrl = DiscordCDNUtils.getEffectiveAvatarUrl(userId, cachedUserInfo.avatarId, null, 24)
 
             img(src = avatarUrl) {
                 width = "24"

@@ -8,27 +8,13 @@ class CachedUserInfo(
 	val avatarId: String?
 ) {
 	val avatarUrl: String?
-		get() {
-			return if (avatarId != null) {
-				val extension = if (avatarId.startsWith("a_")) { // Avatares animados no Discord começam com "_a"
-					"gif"
-				} else { "png" }
-
-				"https://cdn.discordapp.com/avatars/${id}/${avatarId}.${extension}"
-			} else null
-		}
+		get() = this.avatarId?.let { DiscordCDNUtils.getAvatarUrl(this.id, this.avatarId, null, null) }
 
 	val defaultAvatarUrl: String
-		get() {
-			val avatarId = id % 5
-
-			return "https://cdn.discordapp.com/embed/avatars/$avatarId.png"
-		}
+		get() = DiscordCDNUtils.getDefaultAvatarUrl(this.id)
 
 	val effectiveAvatarUrl: String
-		get() {
-			return avatarUrl ?: defaultAvatarUrl
-		}
+		get() = DiscordCDNUtils.getEffectiveAvatarUrl(this.id, this.avatarId, null, null)
 
 	/**
 	 * Gets the effective avatar URL in the specified [format]
@@ -38,19 +24,7 @@ class CachedUserInfo(
 	fun getEffectiveAvatarUrl(format: ImageFormat) = getEffectiveAvatarUrl(format, 128)
 
 	/**
-	 * Gets the effective avatar URL in the specified [format] and [ímageSize]
-	 *
-	 * @see getEffectiveAvatarUrlInFormat
+	 * Gets the effective avatar URL in the specified [format] and [imageSize]
 	 */
-	fun getEffectiveAvatarUrl(format: ImageFormat, imageSize: Int): String {
-		val extension = format.extension
-
-		return if (avatarId != null) {
-			"https://cdn.discordapp.com/avatars/$id/$avatarId.${extension}?size=$imageSize"
-		} else {
-			val avatarId = id % 5
-			// This only exists in png AND doesn't have any other sizes
-			"https://cdn.discordapp.com/embed/avatars/$avatarId.png"
-		}
-	}
+	fun getEffectiveAvatarUrl(format: ImageFormat, imageSize: Int) = DiscordCDNUtils.getEffectiveAvatarUrl(this.id, this.avatarId, format, imageSize)
 }
