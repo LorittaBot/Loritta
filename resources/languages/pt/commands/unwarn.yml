@@ -1,0 +1,12 @@
+label: "unwarn"
+description: "Remove avisos de um usuário do seu servidor"
+
+options:
+  user:
+    text: "O usuário que você deseja remover os avisos"
+  warnId:
+    text: "O número do aviso ou \"all\" para remover todos (padrão: o último)"
+
+noWarnsFound: "O usuário não possui nenhum aviso para você remover! Psiu, sabia que você pode ver a lista de avisos de um usuário com {warnListCommand}?"
+notEnoughWarns: "O usuário tem menos que **{warnIndex}** avisos! Psiu, sabia que você pode ver a lista de avisos de um usuário com {warnListCommand}?"
+warnsRemoved: "Prontinho, o usuário teve {warnsCount,plural, one {um aviso removido} other {# avisos removidos}}! Que tal ele ler as regras do servidor antes que ele tenha que ser punido de novo?"
