@@ -2,7 +2,7 @@ FROM eclipse-temurin:25-jdk-noble
 ARG NODE_MAJOR=18
 
 # Install required dependencies
-RUN apt-get update && apt-get install -y ca-certificates curl gnupg libwebp
+RUN apt-get update && apt-get install -y ca-certificates curl gnupg libwebp7 libwebpdemux2
 RUN curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
 RUN echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_18.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
 RUN apt-get update && apt-get install nodejs -y
@@ -18,3 +18,4 @@ RUN apt-get update && apt-get install -y ffmpeg gifsicle unzip libnss3 libnspr4 
 # A path can be provided via the "setExecutablePath" option
 # See: https://github.com/microsoft/playwright/blob/main/packages/playwright-core/browsers.json
 RUN mkdir -p /root/.cache/ms-playwright/firefox-1454/ && cd /root/.cache/ms-playwright/firefox-1454/ && curl -L -o "firefox-ubuntu-22.04.zip" "https://playwright.azureedge.net/builds/firefox/1454/firefox-ubuntu-22.04.zip" && unzip firefox-ubuntu-22.04.zip
+RUN ln -s /usr/lib/x86_64-linux-gnu/libwebp.so.7 /usr/lib/x86_64-linux-gnu/libwebp.so && ln -s /usr/lib/x86_64-linux-gnu/libwebpdemux.so.2 /usr/lib/x86_64-linux-gnu/libwebpdemux.so
