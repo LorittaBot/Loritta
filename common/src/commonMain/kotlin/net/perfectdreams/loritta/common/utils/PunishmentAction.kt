@@ -6,5 +6,6 @@ enum class PunishmentAction {
     MUTE,
     WARN,
     UNBAN,
-    UNMUTE
+    UNMUTE,
+    UNWARN
 }

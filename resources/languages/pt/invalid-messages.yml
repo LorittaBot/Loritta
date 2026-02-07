@@ -14,6 +14,7 @@ invalidMessages:
   memberModerationUnban: "membro desbanido na seção de Moderação"
   memberModerationUnmute: "membro dessilenciado na seção de Moderação"
   memberModerationWarn: "membro avisado na seção de Moderação"
+  memberModerationUnwarn: "membro desavisado na seção de Moderação"
   userExperienceLevelUp: "membro subiu de nível na seção de Níveis por Experiência"
   inviteBlocked: "convite bloqueado na seção de Bloqueador de Convites"
   youTubeNotification: "notificação de vídeo do YouTube"

@@ -247,6 +247,8 @@ class PunishmentLogGuildDashboardRoute(website: LorittaDashboardWebServer) : Req
                                                                             PunishmentAction.WARN -> DashboardI18nKeysData.PunishmentLog.ActionTitles.Warn
                                                                             PunishmentAction.UNBAN -> DashboardI18nKeysData.PunishmentLog.ActionTitles.Unban
                                                                             PunishmentAction.UNMUTE -> DashboardI18nKeysData.PunishmentLog.ActionTitles.Unmute
+                                                                            PunishmentAction.UNWARN -> DashboardI18nKeysData.PunishmentLog.ActionTitles.Unwarn
+
                                                                         }
                                                                         text(i18nContext.get(actionTitle))
                                                                     },

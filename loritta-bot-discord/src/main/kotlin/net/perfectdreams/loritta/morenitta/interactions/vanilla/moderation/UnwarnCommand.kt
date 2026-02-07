@@ -7,19 +7,17 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.Warns
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.ModerationLogAction
+import net.perfectdreams.loritta.common.utils.PunishmentAction
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.AdminUtils
 import net.perfectdreams.loritta.morenitta.dao.Warn
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
-import net.perfectdreams.loritta.morenitta.interactions.commands.LegacyMessageCommandContext
-import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaLegacyMessageCommandExecutor
-import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaSlashCommandExecutor
-import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
-import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandDeclarationWrapper
+import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
-import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
+import net.perfectdreams.loritta.morenitta.utils.MessageUtils
+import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNull
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
@@ -29,6 +27,7 @@ import java.util.*
 class UnwarnCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     companion object {
         val I18N_PREFIX = I18nKeysData.Commands.Command.Unwarn
+        private val LOCALE_PREFIX = "commands.command"
     }
 
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.MODERATION, UUID.fromString("d7c1a5e3-4b2f-4e8a-9f6d-3a1b5c7e9d2f")) {
@@ -78,6 +77,15 @@ class UnwarnCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
             val warnIdArg = args[options.warnId]
 
+            val settings = AdminUtils.retrieveModerationInfo(loritta, context.config)
+
+            val punishLogMessage = AdminUtils.getPunishmentForMessage(
+                loritta,
+                settings,
+                context.guild,
+                PunishmentAction.UNWARN
+            )
+
             if (warnIdArg == "all") {
                 val removedWarnsCount = loritta.newSuspendedTransaction {
                     val count = Warns.deleteWhere { (Warns.guildId eq context.guild.idLong) and (Warns.userId eq user.idLong) }
@@ -94,6 +102,25 @@ class UnwarnCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     }
 
                     count
+                }
+
+                if (settings.sendPunishmentToPunishLog && settings.punishLogChannelId != null && punishLogMessage != null) {
+                    val textChannel = context.guild.getGuildMessageChannelById(settings.punishLogChannelId)
+
+                    if (textChannel != null && textChannel.canTalk()) {
+                        val message = MessageUtils.generateMessageOrFallbackIfInvalid(
+                            context.i18nContext,
+                            punishLogMessage,
+                            listOf(user, context.guild),
+                            context.guild,
+                            mutableMapOf(
+                                "duration" to context.locale["$LOCALE_PREFIX.mute.forever"]
+                            ) + AdminUtils.getStaffCustomTokens(context.user) + AdminUtils.getPunishmentCustomTokens(context.locale, context.i18nContext.get(I18nKeysData.Commands.Category.Moderation.ReasonNotGiven), "$LOCALE_PREFIX.unwarn"),
+                            generationErrorMessageI18nKey = I18nKeysData.InvalidMessages.MemberModerationUnwarn
+                        )
+
+                        textChannel.sendMessage(message).queue()
+                    }
                 }
 
                 context.reply(false) {
@@ -144,6 +171,25 @@ class UnwarnCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     null,
                     null
                 )
+            }
+
+            if (settings.sendPunishmentToPunishLog && settings.punishLogChannelId != null && punishLogMessage != null) {
+                val textChannel = context.guild.getGuildMessageChannelById(settings.punishLogChannelId)
+
+                if (textChannel != null && textChannel.canTalk()) {
+                    val message = MessageUtils.generateMessageOrFallbackIfInvalid(
+                        context.i18nContext,
+                        punishLogMessage,
+                        listOf(user, context.guild),
+                        context.guild,
+                        mutableMapOf(
+                            "duration" to context.locale["$LOCALE_PREFIX.mute.forever"]
+                        ) + AdminUtils.getStaffCustomTokens(context.user) + AdminUtils.getPunishmentCustomTokens(context.locale, context.i18nContext.get(I18nKeysData.Commands.Category.Moderation.ReasonNotGiven), "$LOCALE_PREFIX.unwarn"),
+                        generationErrorMessageI18nKey = I18nKeysData.InvalidMessages.MemberModerationUnwarn
+                    )
+
+                    textChannel.sendMessage(message).queue()
+                }
             }
 
             context.reply(false) {

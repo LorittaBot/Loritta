@@ -24,6 +24,7 @@ website:
         warn: "Aviso"
         unban: "Desbanimento"
         unmute: "Dessilenciamento"
+        unwarn: "Desavisado"
       placeholders:
         examplePunishmentReason: "You're gonna have a bad time"
         examplePunishmentType: "Banimento"
