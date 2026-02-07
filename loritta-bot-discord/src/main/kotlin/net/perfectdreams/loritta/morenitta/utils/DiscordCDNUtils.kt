@@ -13,7 +13,7 @@ object DiscordCDNUtils {
      */
     fun getEffectiveAvatarUrl(userId: Long, avatarId: String?, format: ImageFormat?, imageSize: Int?): String {
         return if (avatarId != null) {
-            getEffectiveAvatarUrl(userId, avatarId, format, imageSize)
+            getAvatarUrl(userId, avatarId, format, imageSize)
         } else {
             getDefaultAvatarUrl(userId)
         }
