@@ -112,6 +112,8 @@ dependencies {
     // EtherealGambi client
     implementation("net.perfectdreams.etherealgambi:client:1.0.4")
 
+    implementation("net.perfectdreams.libwebpffm:libwebp-ffm:0.0.1")
+
     // Used for logs - MojangStyleFileAppenderAndRollover
     implementation("com.github.luben:zstd-jni:1.5.5-6")
 

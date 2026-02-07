@@ -106,7 +106,39 @@ class SimpleImageInfo {
 			mimeType = "image/bmp"
 		} else {
 			val c4 = `is`.read()
-			if (c1 == 'M'.toInt() && c2 == 'M'.toInt() && c3 == 0 && c4 == 42 || c1 == 'I'.toInt() && c2 == 'I'.toInt() && c3 == 42 && c4 == 0) { //TIFF
+			if (c1 == 'R'.code && c2 == 'I'.code && c3 == 'F'.code && c4 == 'F'.code) {
+				// Image in RIFF format
+				val fileSize = `is`.readNBytes(4)
+				val header = `is`.readNBytes(4)
+				if (header[0].toInt() == 'W'.code && header[1].toInt() == 'E'.code && header[2].toInt() == 'B'.code && header[3].toInt() == 'P'.code) {
+					mimeType = "image/webp"
+					val chunkFourCC = `is`.readNBytes(4)
+					val chunkSize = readInt(`is`, 4, false) // little-endian, not used
+					val fourCC = String(chunkFourCC.map { it.toInt().toChar() }.toCharArray())
+					when (fourCC) {
+						"VP8 " -> {
+							// Lossy format
+							`is`.skip(3) // frame tag
+							`is`.skip(3) // signature 0x9D 0x01 0x2A
+							width = readInt(`is`, 2, false) and 0x3FFF
+							height = readInt(`is`, 2, false) and 0x3FFF
+						}
+						"VP8L" -> {
+							// Lossless format
+							`is`.skip(1) // signature 0x2F
+							val bits = readInt(`is`, 4, false)
+							width = (bits and 0x3FFF) + 1
+							height = ((bits shr 14) and 0x3FFF) + 1
+						}
+						"VP8X" -> {
+							// Extended format
+							`is`.skip(4) // flags
+							width = readInt(`is`, 3, false) + 1
+							height = readInt(`is`, 3, false) + 1
+						}
+					}
+				}
+			} else if (c1 == 'M'.toInt() && c2 == 'M'.toInt() && c3 == 0 && c4 == 42 || c1 == 'I'.toInt() && c2 == 'I'.toInt() && c3 == 42 && c4 == 0) { //TIFF
 				val bigEndian = c1 == 'M'.toInt()
 				var ifd = 0
 				val entries: Int
