@@ -3,7 +3,11 @@ package net.perfectdreams.loritta.morenitta.utils
 import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.entities.channel.Channel
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
+import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordRegexes
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.InterpolationType
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.getResizedInstance
@@ -12,6 +16,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.BlacklistedGuilds
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.dao.Profile
+import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
 import org.jetbrains.exposed.sql.selectAll
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
@@ -287,5 +292,38 @@ object LorittaUtils {
 	 */
 	fun generateErrorId(loritta: LorittaBot): String {
 		return "cluster${loritta.lorittaCluster.id}_${UUID.randomUUID().toString().replace("-", "")}"
+	}
+
+	/**
+	 * Generates a random error ID for message creations
+	 */
+	fun generateLorittaMessageEventErrorId(
+		loritta: LorittaBot,
+		event: LorittaMessageEvent
+	) = generateErrorId(loritta, event.author, event.channel, event.guild)
+
+	/**
+	 * Generates a random error ID for interactions
+	 */
+	fun generateInteractionErrorId(
+		loritta: LorittaBot,
+		event: GenericInteractionCreateEvent
+	) = generateErrorId(loritta, event.user, event.channel, event.guild)
+
+	private fun generateErrorId(
+		loritta: LorittaBot,
+		user: User,
+		channel: Channel?,
+		guild: Guild?
+	): String {
+		return buildString {
+			append("cluster${loritta.lorittaCluster.id}")
+			append("_u${user.idLong}")
+			if (channel != null)
+				append("_c${channel.idLong}")
+			if (guild != null)
+				append("_g${guild.idLong}")
+			append("_${UUID.randomUUID().toString().replace("-", "")}")
+		}
 	}
 }

@@ -39,7 +39,6 @@ import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
-import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.MiscellaneousConfig
 import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.*
@@ -658,7 +657,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         } catch (e: CommandException) {
             context?.reply(e.ephemeral, e.builder)
         } catch (e: Exception) {
-            val errorId = LorittaUtils.generateErrorId(loritta)
+            val errorId = LorittaUtils.generateLorittaMessageEventErrorId(loritta, event)
             logger.warn(e) { "Something went wrong while executing command ${executor::class.simpleName}! Error ID: $errorId" }
 
             stacktrace = e.stackTraceToString()
