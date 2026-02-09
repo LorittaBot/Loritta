@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DonationKeys
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
@@ -34,82 +35,91 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.selectAll
 
 abstract class RequiresGuildAuthDashboardLocalizedRoute(website: LorittaDashboardWebServer, originalGuildPath: String) : RequiresUserAuthDashboardLocalizedRoute(website, "/guilds/{guildId}$originalGuildPath") {
+    companion object {
+        private val logger by HarmonyLoggerFactory.logger {}
+    }
+
     override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: LorittaUserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
         val guildId = call.parameters.getOrFail("guildId").toLong()
 
-        val guild = website.loritta.lorittaShards.getGuildById(guildId)
+        try {
+            val guild = website.loritta.lorittaShards.getGuildById(guildId)
 
-        if (guild == null) {
-            if (call.request.header("Bliss-Request") == "true") {
-                call.respondHtmlFragment(status = HttpStatusCode.NotFound) {
-                    blissShowModal(
-                        createEmbeddedModal(
-                            "Adicionar a Loritta",
-                            EmbeddedModal.Size.MEDIUM,
-                            true,
-                            {
-                                text("Adicione a Loritta no servidor!")
-                            },
-                            listOf(
+            if (guild == null) {
+                if (call.request.header("Bliss-Request") == "true") {
+                    call.respondHtmlFragment(status = HttpStatusCode.NotFound) {
+                        blissShowModal(
+                            createEmbeddedModal(
+                                "Adicionar a Loritta",
+                                EmbeddedModal.Size.MEDIUM,
+                                true,
                                 {
-                                    defaultModalCloseButton(i18nContext)
+                                    text("Adicione a Loritta no servidor!")
                                 },
-                                {
-                                    discordButtonLink(
-                                        ButtonStyle.PRIMARY,
-                                        href = net.perfectdreams.loritta.morenitta.utils.LorittaDiscordOAuth2AddBotURL(
-                                            website.loritta,
-                                            guildId,
-                                            state = AuthenticationStateUtils.createStateAsBase64(
-                                                AuthenticationState(
-                                                    source = "dashboard",
-                                                    medium = "button",
-                                                    content = "add_loritta_to_server_modal",
-                                                    campaign = null,
-                                                    httpReferrer = call.request.header(HttpHeaders.Referrer),
-                                                ),
-                                                website.loritta
-                                            )
-                                        ).toString()
-                                    ) {
-                                        text("Adicionar")
+                                listOf(
+                                    {
+                                        defaultModalCloseButton(i18nContext)
+                                    },
+                                    {
+                                        discordButtonLink(
+                                            ButtonStyle.PRIMARY,
+                                            href = net.perfectdreams.loritta.morenitta.utils.LorittaDiscordOAuth2AddBotURL(
+                                                website.loritta,
+                                                guildId,
+                                                state = AuthenticationStateUtils.createStateAsBase64(
+                                                    AuthenticationState(
+                                                        source = "dashboard",
+                                                        medium = "button",
+                                                        content = "add_loritta_to_server_modal",
+                                                        campaign = null,
+                                                        httpReferrer = call.request.header(HttpHeaders.Referrer),
+                                                    ),
+                                                    website.loritta
+                                                )
+                                            ).toString()
+                                        ) {
+                                            text("Adicionar")
+                                        }
                                     }
-                                }
+                                )
                             )
                         )
-                    )
-                }
-            } else {
-                call.respondText("Unknown Guild!")
-            }
-            return
-        }
-
-        val member = try {
-            guild.retrieveMember(UserSnowflake.fromId(session.userId)).await()
-        } catch (e: ErrorResponseException) {
-            onUnauthenticatedGuildRequest(call, i18nContext, session, theme)
-            return
-        }
-
-        val guildPremiumPlan = website.loritta.transaction {
-            val guildPremiumKeys = website.loritta.transaction {
-                DonationKeys.selectAll()
-                    .where {
-                        DonationKeys.activeIn eq guild.idLong and (DonationKeys.expiresAt greaterEq System.currentTimeMillis())
                     }
-                    .toList()
+                } else {
+                    call.respondText("Unknown Guild!")
+                }
+                return
             }
 
-            val plan = ServerPremiumPlans.getPlanFromValue(guildPremiumKeys.sumOf { it[DonationKeys.value] })
+            val member = try {
+                guild.retrieveMember(UserSnowflake.fromId(session.userId)).await()
+            } catch (e: ErrorResponseException) {
+                onUnauthenticatedGuildRequest(call, i18nContext, session, theme)
+                return
+            }
 
-            plan
-        }
+            val guildPremiumPlan = website.loritta.transaction {
+                val guildPremiumKeys = website.loritta.transaction {
+                    DonationKeys.selectAll()
+                        .where {
+                            DonationKeys.activeIn eq guild.idLong and (DonationKeys.expiresAt greaterEq System.currentTimeMillis())
+                        }
+                        .toList()
+                }
 
-        if (member.isOwner || member.hasPermission(Permission.ADMINISTRATOR) || member.hasPermission(Permission.MANAGE_SERVER)) {
-            onAuthenticatedGuildRequest(call, i18nContext, session, userPremiumPlan, theme, shimejiSettings, guild, guildPremiumPlan, member)
-        } else {
-            onUnauthenticatedGuildRequest(call, i18nContext, session, theme)
+                val plan = ServerPremiumPlans.getPlanFromValue(guildPremiumKeys.sumOf { it[DonationKeys.value] })
+
+                plan
+            }
+
+            if (member.isOwner || member.hasPermission(Permission.ADMINISTRATOR) || member.hasPermission(Permission.MANAGE_SERVER)) {
+                onAuthenticatedGuildRequest(call, i18nContext, session, userPremiumPlan, theme, shimejiSettings, guild, guildPremiumPlan, member)
+            } else {
+                onUnauthenticatedGuildRequest(call, i18nContext, session, theme)
+            }
+        } catch (e: Exception) {
+            logger.warn(e) { "Something went wrong while trying to process user ${session.userId} dashboard request! Guild ID: ${guildId}" }
+            throw e
         }
     }
 
