@@ -10,6 +10,7 @@ import kotlinx.html.head
 import kotlinx.html.meta
 import kotlinx.html.p
 import kotlinx.html.title
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserPocketLorittaSettings
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserWebsiteSettings
@@ -31,6 +32,10 @@ import net.perfectdreams.loritta.shimeji.ActivityLevel
 import org.jetbrains.exposed.sql.selectAll
 
 abstract class RequiresUserAuthDashboardLocalizedRoute(website: LorittaDashboardWebServer, originalPath: String) : DashboardLocalizedRoute(website, originalPath) {
+    companion object {
+        private val logger by HarmonyLoggerFactory.logger {}
+    }
+
     override suspend fun onLocalizedRequest(call: ApplicationCall, i18nContext: I18nContext) {
         val session = website.getSession(call)
 
@@ -38,31 +43,36 @@ abstract class RequiresUserAuthDashboardLocalizedRoute(website: LorittaDashboard
             return onUnauthenticatedRequest(call, i18nContext)
         }
 
-        val (userPremiumPlan, theme, settings) = website.loritta.transaction {
-            val userPremiumPlan = UserPremiumPlans.getPlanFromValue(website.loritta._getActiveMoneyFromDonations(session.userId))
+        try {
+            val (userPremiumPlan, theme, settings) = website.loritta.transaction {
+                val userPremiumPlan = UserPremiumPlans.getPlanFromValue(website.loritta._getActiveMoneyFromDonations(session.userId))
 
-            val theme = UserWebsiteSettings.selectAll().where {
-                UserWebsiteSettings.id eq session.userId
-            }.firstOrNull()?.get(UserWebsiteSettings.dashboardColorThemePreference) ?: ColorTheme.SYNC_WITH_SYSTEM
+                val theme = UserWebsiteSettings.selectAll().where {
+                    UserWebsiteSettings.id eq session.userId
+                }.firstOrNull()?.get(UserWebsiteSettings.dashboardColorThemePreference) ?: ColorTheme.SYNC_WITH_SYSTEM
 
-            val settings = UserPocketLorittaSettings.selectAll()
-                .where {
-                    UserPocketLorittaSettings.id eq session.userId
-                }
-                .firstOrNull()
-                .let {
-                    LorittaShimejiSettings(
-                        it?.get(UserPocketLorittaSettings.lorittaCount) ?: 0,
-                        it?.get(UserPocketLorittaSettings.pantufaCount) ?: 0,
-                        it?.get(UserPocketLorittaSettings.gabrielaCount) ?: 0,
-                        it?.get(UserPocketLorittaSettings.activityLevel) ?: ActivityLevel.MEDIUM
-                    )
-                }
+                val settings = UserPocketLorittaSettings.selectAll()
+                    .where {
+                        UserPocketLorittaSettings.id eq session.userId
+                    }
+                    .firstOrNull()
+                    .let {
+                        LorittaShimejiSettings(
+                            it?.get(UserPocketLorittaSettings.lorittaCount) ?: 0,
+                            it?.get(UserPocketLorittaSettings.pantufaCount) ?: 0,
+                            it?.get(UserPocketLorittaSettings.gabrielaCount) ?: 0,
+                            it?.get(UserPocketLorittaSettings.activityLevel) ?: ActivityLevel.MEDIUM
+                        )
+                    }
 
-            Triple(userPremiumPlan, theme, settings)
+                Triple(userPremiumPlan, theme, settings)
+            }
+
+            return onAuthenticatedRequest(call, i18nContext, session, userPremiumPlan, theme, settings)
+        } catch (e: Exception) {
+            logger.warn(e) { "Something went wrong while trying to process user ${session.userId} dashboard request!" }
+            throw e
         }
-
-        return onAuthenticatedRequest(call, i18nContext, session, userPremiumPlan, theme, settings)
     }
 
     abstract suspend fun onAuthenticatedRequest(
