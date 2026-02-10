@@ -113,7 +113,7 @@ class LoriDevelopersDocsRoute(loritta: LorittaBot) : LocalizedRoute(loritta, "/d
                     loritta.getLegacyLocaleById(locale.id),
                     session,
                     if (session != null) {
-                        UserPremiumPlans.getPlanFromValue(loritta.getActiveMoneyFromDonations(session.userId))
+                        loritta.getUserPremiumPlan(session.userId)
                     } else UserPremiumPlans.Free,
                     dashboardColorThemePreference,
                     sidebarCategories,
@@ -251,7 +251,7 @@ class LoriDevelopersDocsRoute(loritta: LorittaBot) : LocalizedRoute(loritta, "/d
                 loritta.getLegacyLocaleById(locale.id),
                 session,
                 if (session != null) {
-                    UserPremiumPlans.getPlanFromValue(loritta.getActiveMoneyFromDonations(session.userId))
+                    loritta.getUserPremiumPlan(session.userId)
                 } else UserPremiumPlans.Free,
                 dashboardColorThemePreference,
                 sidebarCategories,

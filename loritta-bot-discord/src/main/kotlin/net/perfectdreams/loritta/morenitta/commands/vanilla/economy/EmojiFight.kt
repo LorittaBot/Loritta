@@ -388,7 +388,7 @@ class EmojiFight(
 
             val randomEmoji = loritta.newSuspendedTransaction {
                 val emojiFightEmoji = loritta._getLorittaProfile(user.idLong)?.settings?.emojiFightEmoji
-                val donationPlan = UserPremiumPlans.getPlanFromValue(loritta._getActiveMoneyFromDonations(user.idLong))
+                val donationPlan = loritta.getUserPremiumPlan(user.idLong)
 
                 if (donationPlan.customEmojisInEmojiFight && emojiFightEmoji != null) {
                     emojiFightEmoji
@@ -457,9 +457,7 @@ class EmojiFight(
             }
 
             if (entryPrice != null) {
-                val selfActiveDonations = loritta._getActiveMoneyFromDonations(winner.key.idLong)
-
-                val selfPlan = UserPremiumPlans.getPlanFromValue(selfActiveDonations)
+                val selfPlan = loritta.getUserPremiumPlan(winner.key.idLong)
 
                 val winnerProfile = userProfiles[winner.key]!!
                 val taxPercentage = (1.0.toBigDecimal() - SonhosUtils.getSpecialTotalCoinFlipReward(context.guildOrNull, selfPlan.totalCoinFlipReward).value.toBigDecimal()).toDouble() // Avoid rounding errors

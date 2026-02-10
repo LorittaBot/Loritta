@@ -512,11 +512,11 @@ class LoriServerListConfigCommand(loritta: LorittaBot) : AbstractCommand(loritta
 			if (arg0 == "inspect_donations" && arg1 != null) {
 				val id = arg1.toLong()
 
-				val moneyFromDonations = context.loritta.getActiveMoneyFromDonations(id)
+				val moneyFromDonations = context.loritta.getUserPremiumPlan(id)
 
 				context.reply(
 					LorittaReply(
-						"<@${id}> possui **R$ ${moneyFromDonations}** ativos"
+						"<@${id}> possui o plano **${moneyFromDonations}** ativo"
 					)
 				)
 				return

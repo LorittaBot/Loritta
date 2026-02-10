@@ -55,7 +55,7 @@ class PostRequestSonhosRoute(m: LorittaBot) : LoriPublicAPIGuildRoute(
 
         val request = Json.decodeFromString<RequestSonhosRequest>(call.receiveText())
         if (request.senderId != tokenInfo.creatorId) {
-            val premium = UserPremiumPlans.getPlanFromValue(m.getActiveMoneyFromDonations(tokenInfo.creatorId))
+            val premium = m.getUserPremiumPlan(tokenInfo.creatorId)
             if (!premium.sonhosAPIAccess) {
                 call.respondJson(
                     Json.encodeToString(
@@ -245,7 +245,7 @@ class PostRequestSonhosRoute(m: LorittaBot) : LoriPublicAPIGuildRoute(
         // Load the server config because we need the i18nContext
         val serverConfig = m.getOrCreateServerConfig(guild.idLong)
         val i18nContext = m.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
-        val userPremiumPlan = UserPremiumPlans.getPlanFromValue(m.getActiveMoneyFromDonations(senderSnowflake.idLong))
+        val userPremiumPlan = m.getUserPremiumPlan(senderSnowflake.idLong)
 
         val hasTax = userPremiumPlan.thirdPartySonhosTransferTax != 0.0
         val tax = (request.quantity * userPremiumPlan.thirdPartySonhosTransferTax).toLong()

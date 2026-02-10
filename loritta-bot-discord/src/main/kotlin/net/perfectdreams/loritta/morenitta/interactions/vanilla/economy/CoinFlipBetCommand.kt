@@ -93,11 +93,8 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
             if (VacationModeUtils.checkIfUserIsOnVacation(context, invitedUser, false))
                 return
 
-            val selfActiveDonations = loritta.getActiveMoneyFromDonations(context.user.idLong)
-            val otherActiveDonations = loritta.getActiveMoneyFromDonations(invitedUser.idLong)
-
-            val selfPlan = UserPremiumPlans.getPlanFromValue(selfActiveDonations)
-            val otherPlan = UserPremiumPlans.getPlanFromValue(otherActiveDonations)
+            val selfPlan = loritta.getUserPremiumPlan(context.user.idLong)
+            val otherPlan = loritta.getUserPremiumPlan(invitedUser.idLong)
 
             val selfUserProfile = context.lorittaUser.profile
 
