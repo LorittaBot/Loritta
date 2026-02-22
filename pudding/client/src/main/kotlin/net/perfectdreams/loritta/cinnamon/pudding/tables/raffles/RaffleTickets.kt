@@ -7,5 +7,5 @@ object RaffleTickets : LongIdTable() {
     val userId = long("user").index()
     val raffle = reference("raffle", Raffles).index()
     val boughtAt = timestampWithTimeZone("bought_at")
-    val boughtTickets = long("bought_tickets")
+    val boughtTickets = long("bought_tickets").default(1)
 }
