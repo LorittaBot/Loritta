@@ -223,9 +223,11 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 				// Skip cooldown if the user is not a Loritta supervisor...
 				if (!context.user.isLorittaSupervisor(context.loritta.lorittaShards)) {
 					var commandCooldown = command.cooldown
-					val plan = loritta.getUserPremiumPlan(ev.author.idLong)
+					val donatorPaid = loritta.getActiveMoneyFromDonations(ev.author.idLong)
 					val guildId = ev.guild?.idLong
 					val guildPaid = guildId?.let { serverConfig.getActiveDonationKeysValue(loritta) } ?: 0.0
+
+					val plan = UserPremiumPlans.getPlanFromValue(donatorPaid)
 
 					if (plan.lessCooldown) {
 						commandCooldown /= 2

@@ -45,7 +45,7 @@ abstract class RequiresUserAuthDashboardLocalizedRoute(website: LorittaDashboard
 
         try {
             val (userPremiumPlan, theme, settings) = website.loritta.transaction {
-                val userPremiumPlan = website.loritta.getUserPremiumPlan(session.userId)
+                val userPremiumPlan = UserPremiumPlans.getPlanFromValue(website.loritta._getActiveMoneyFromDonations(session.userId))
 
                 val theme = UserWebsiteSettings.selectAll().where {
                     UserWebsiteSettings.id eq session.userId

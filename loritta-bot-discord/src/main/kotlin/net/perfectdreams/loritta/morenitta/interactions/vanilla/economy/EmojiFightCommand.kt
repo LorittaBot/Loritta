@@ -299,7 +299,9 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
         override val options = Options()
 
         override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
-            val canUseCustomEmojis = loritta.getUserPremiumPlan(context.user.idLong).customEmojisInEmojiFight
+            val canUseCustomEmojis = loritta.newSuspendedTransaction {
+                UserPremiumPlans.getPlanFromValue(loritta._getActiveMoneyFromDonations(context.user.idLong)).customEmojisInEmojiFight
+            }
 
             if (!canUseCustomEmojis) {
                 context.fail(true) {

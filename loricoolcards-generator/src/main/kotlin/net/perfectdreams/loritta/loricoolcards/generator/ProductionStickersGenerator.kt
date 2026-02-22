@@ -22,6 +22,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.services.fromRow
 import net.perfectdreams.loritta.cinnamon.pudding.tables.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsEvents
 import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsFinishedAlbumUsers
+import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentReason
 import net.perfectdreams.loritta.common.locale.LorittaLanguageManager
 import net.perfectdreams.loritta.common.loricoolcards.CardRarity
 import net.perfectdreams.loritta.common.utils.MediaTypeUtils
@@ -29,13 +30,13 @@ import net.perfectdreams.loritta.common.utils.StoragePaths
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.loricoolcards.generator.utils.config.LoriCoolCardsGeneratorProductionStickersConfig
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.dao.Payment
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.loricoolcards.LoriCoolCardsManager
 import net.perfectdreams.loritta.morenitta.loricoolcards.StickerMetadata
 import net.perfectdreams.loritta.morenitta.profile.ProfileDesignManager
 import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
 import net.perfectdreams.loritta.morenitta.profile.badges.*
-import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.GraphicsFonts
 import net.perfectdreams.loritta.morenitta.utils.ImageFormat
 import net.perfectdreams.loritta.morenitta.utils.extensions.getEffectiveAvatarUrl
@@ -50,7 +51,7 @@ import org.jetbrains.exposed.sql.selectAll
 import java.awt.image.BufferedImage
 import java.io.File
 import java.net.URL
-import java.time.OffsetDateTime
+import kotlin.math.ceil
 import java.util.*
 import java.util.concurrent.Executors
 import javax.imageio.ImageIO
@@ -74,7 +75,7 @@ suspend fun main() {
 }
 
 suspend fun generateCards(config: LoriCoolCardsGeneratorProductionStickersConfig) {
-    val folderName = "production_v18_befopti"
+    val folderName = "production_v17_befopti"
     val http = HttpClient {}
 
     println("Max memory: ${Runtime.getRuntime().maxMemory()}")
@@ -481,7 +482,8 @@ suspend fun getUserProfileBackgroundUrl(
 
     if (background.id == Background.CUSTOM_BACKGROUND_ID) {
         // Custom background
-        val plan = getUserPremiumPlan(pudding, userId)
+        val donationValue = getActiveMoneyFromDonations(pudding, userId)
+        val plan = UserPremiumPlans.getPlanFromValue(donationValue)
 
         if (plan.customBackground) {
             val dssNamespace = dreamStorageService.getCachedNamespaceOrRetrieve()
@@ -538,21 +540,19 @@ private fun getEtherealGambiBackgroundUrl(etherealGambiServiceUrl: String, backg
     return etherealGambiServiceUrl.removeSuffix("/") + "/" + background.file + ".$extension"
 }
 
-suspend fun getUserPremiumPlan(pudding: Pudding, userId: Long): UserPremiumPlans {
-    val now = OffsetDateTime.now(Constants.LORITTA_TIMEZONE)
+suspend fun getActiveMoneyFromDonations(pudding: Pudding, userId: Long): Double {
+    return pudding.transaction { _getActiveMoneyFromDonations(userId) }
+}
 
-    val userPremiumKeysSum = pudding.transaction {
-        UserPremiumKeys.selectAll()
-            .where {
-                UserPremiumKeys.expiresAt greaterEq now and (UserPremiumKeys.userId eq userId)
-            }
-            .toList()
-            .sumOf {
-                it[UserPremiumKeys.credits]
-            }
+fun _getActiveMoneyFromDonations(userId: Long): Double {
+    return Payment.find {
+        (Payments.expiresAt greaterEq System.currentTimeMillis()) and
+                (Payments.reason eq PaymentReason.DONATION) and
+                (Payments.userId eq userId)
+    }.sumByDouble {
+        // This is a weird workaround that fixes users complaining that 19.99 + 19.99 != 40 (it equals to 39.38()
+        ceil(it.money.toDouble())
     }
-
-    return UserPremiumPlans.getPlanFromValue(userPremiumKeysSum.toDouble())
 }
 
 data class HardcodedBadge(

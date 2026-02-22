@@ -102,7 +102,8 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
                             winnerTicketId = winnerTicket[RaffleTickets.id].value
 
                             // Okay, so we found out who won the raffle
-                            val plan = m.getUserPremiumPlan(winnerId)
+                            val currentActiveDonations = m.getActiveMoneyFromDonations(winnerId)
+                            val plan = UserPremiumPlans.getPlanFromValue(currentActiveDonations)
 
                             val moneyWithoutTaxes = totalTickets * 250
                             paidOutPrize = moneyWithoutTaxes.toLong()

@@ -56,7 +56,7 @@ class PostTransferSonhosRoute(m: LorittaBot) : LoriPublicAPIGuildRoute(
 
         val request = Json.decodeFromString<TransferSonhosRequest>(call.receiveText())
         if (request.receiverId != tokenInfo.creatorId) {
-            val premium = m.getUserPremiumPlan(tokenInfo.creatorId)
+            val premium = UserPremiumPlans.getPlanFromValue(m.getActiveMoneyFromDonations(tokenInfo.creatorId))
             if (!premium.sonhosAPIAccess) {
                 call.respondJson(
                     Json.encodeToString(

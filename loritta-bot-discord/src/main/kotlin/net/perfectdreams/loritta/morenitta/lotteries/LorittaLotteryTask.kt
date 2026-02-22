@@ -109,7 +109,8 @@ class LorittaLotteryTask(val m: LorittaBot) : RunnableCoroutine {
                                         val payoutForUserTicketsWithoutTaxes = (tickets.size * payoutForEachTicket)
 
                                         // Okay, so now we need to figure out if the user is taxable or not
-                                        val plan =  m.getUserPremiumPlan(userId)
+                                        val currentActiveDonations = m.getActiveMoneyFromDonations(userId)
+                                        val plan = UserPremiumPlans.getPlanFromValue(currentActiveDonations)
 
                                         val payoutForUserTicketsWithTaxes = (payoutForUserTicketsWithoutTaxes * plan.totalLotteryReward).toLong()
 

@@ -715,7 +715,8 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 
 		if (background.id == Background.CUSTOM_BACKGROUND_ID) {
 			// Custom background
-			val plan = loritta.getUserPremiumPlan(userId)
+			val donationValue = loritta.getActiveMoneyFromDonations(userId)
+			val plan = UserPremiumPlans.getPlanFromValue(donationValue)
 
 			if (plan.customBackground) {
 				val dssNamespace = loritta.dreamStorageService.getCachedNamespaceOrRetrieve()

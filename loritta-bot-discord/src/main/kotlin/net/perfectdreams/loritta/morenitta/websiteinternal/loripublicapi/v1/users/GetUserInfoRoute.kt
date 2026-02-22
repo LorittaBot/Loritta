@@ -50,7 +50,7 @@ class GetUserInfoRoute(m: LorittaBot) : LoriPublicAPIRoute(
 
             val bannedState = m.pudding.users.getUserBannedState(UserId(userId))
 
-            val plan = m.getUserPremiumPlan(tokenInfo.creatorId)
+            val plan = UserPremiumPlans.getPlanFromValue(m.getActiveMoneyFromDonations(userId))
 
             return@transaction Result.Success(profile, bannedState, plan)
         }

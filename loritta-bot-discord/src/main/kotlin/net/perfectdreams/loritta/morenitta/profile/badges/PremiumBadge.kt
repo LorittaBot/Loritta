@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.morenitta.profile.badges
 
 import net.perfectdreams.loritta.common.emojis.LorittaEmojis
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.profile.Badge
@@ -19,6 +18,6 @@ class PremiumBadge(val loritta: LorittaBot) : Badge.LorittaBadge(
 	200
 ) {
 	override suspend fun checkIfUserDeservesBadge(user: ProfileUserInfoData, profile: Profile, mutualGuilds: Set<Long>): Boolean {
-		return loritta.getUserPremiumPlan(user.id) !is UserPremiumPlans.Free
+		return loritta.getActiveMoneyFromDonations(user.id.toLong()) != 0.0
 	}
 }

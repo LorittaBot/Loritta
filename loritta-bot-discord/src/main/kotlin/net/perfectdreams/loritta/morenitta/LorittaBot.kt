@@ -75,12 +75,10 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedPrivateChannels
 import net.perfectdreams.loritta.cinnamon.pudding.tables.FanArtsExtravaganza
 import net.perfectdreams.loritta.cinnamon.pudding.tables.GatewayActivities
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Payments
-import net.perfectdreams.loritta.cinnamon.pudding.tables.UserPremiumKeys
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentReason
 import net.perfectdreams.loritta.common.locale.LanguageManager
 import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.common.utils.Emotes
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
 import net.perfectdreams.loritta.morenitta.analytics.LorittaMetrics
 import net.perfectdreams.loritta.morenitta.analytics.MagicStats
@@ -1066,18 +1064,18 @@ class LorittaBot(
         }
     }
 
-    suspend fun getUserPremiumPlan(userId: Long): UserPremiumPlans {
-        return transaction {
-            val now = OffsetDateTime.now(Constants.LORITTA_TIMEZONE)
+    suspend fun getActiveMoneyFromDonations(userId: Long): Double {
+        return transaction { _getActiveMoneyFromDonations(userId) }
+    }
 
-            val allKeys = UserPremiumKeys.selectAll()
-                .where {
-                    UserPremiumKeys.userId eq userId and (UserPremiumKeys.expiresAt.greaterEq(now))
-                }
-                .toList()
-
-            val credits = allKeys.sumOf { it[UserPremiumKeys.credits] }
-            return@transaction UserPremiumPlans.getPlanFromValue(credits.toDouble())
+    fun _getActiveMoneyFromDonations(userId: Long): Double {
+        return Payment.find {
+            (Payments.expiresAt greaterEq System.currentTimeMillis()) and
+                    (Payments.reason eq PaymentReason.DONATION) and
+                    (Payments.userId eq userId)
+        }.sumByDouble {
+            // This is a weird workaround that fixes users complaining that 19.99 + 19.99 != 40 (it equals to 39.38()
+            ceil(it.money.toDouble())
         }
     }
 
