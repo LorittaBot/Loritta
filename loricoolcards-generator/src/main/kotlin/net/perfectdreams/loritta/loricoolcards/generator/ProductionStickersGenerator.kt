@@ -26,7 +26,7 @@ import net.perfectdreams.loritta.common.locale.LorittaLanguageManager
 import net.perfectdreams.loritta.common.loricoolcards.CardRarity
 import net.perfectdreams.loritta.common.utils.MediaTypeUtils
 import net.perfectdreams.loritta.common.utils.StoragePaths
-import net.perfectdreams.loritta.common.utils.UserPremiumPlan
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.loricoolcards.generator.utils.config.LoriCoolCardsGeneratorProductionStickersConfig
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.Profile
@@ -538,7 +538,7 @@ private fun getEtherealGambiBackgroundUrl(etherealGambiServiceUrl: String, backg
     return etherealGambiServiceUrl.removeSuffix("/") + "/" + background.file + ".$extension"
 }
 
-suspend fun getUserPremiumPlan(pudding: Pudding, userId: Long): UserPremiumPlan {
+suspend fun getUserPremiumPlan(pudding: Pudding, userId: Long): UserPremiumPlans {
     val now = OffsetDateTime.now(Constants.LORITTA_TIMEZONE)
 
     val userPremiumKeysSum = pudding.transaction {
@@ -552,7 +552,7 @@ suspend fun getUserPremiumPlan(pudding: Pudding, userId: Long): UserPremiumPlan 
             }
     }
 
-    return UserPremiumPlan.getPlanFromValue(userPremiumKeysSum.toDouble())
+    return UserPremiumPlans.getPlanFromValue(userPremiumKeysSum.toDouble())
 }
 
 data class HardcodedBadge(
