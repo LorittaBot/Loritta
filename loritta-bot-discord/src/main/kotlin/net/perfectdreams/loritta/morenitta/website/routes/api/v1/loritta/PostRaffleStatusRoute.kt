@@ -20,9 +20,10 @@ import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.serializable.SonhosPaymentReason
 import net.perfectdreams.loritta.serializable.StoredRaffleTicketsTransaction
 import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.statements.jdbc.JdbcConnectionImpl
-import java.sql.Timestamp
+import org.jetbrains.exposed.sql.sum
 import java.time.Instant
 
 
@@ -60,9 +61,10 @@ class PostRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRout
 				}
 
 				// Get how many tickets the user has in the current raffle
-				val currentUserTicketQuantity = RaffleTickets.selectAll().where {
+				val userTicketsSum = RaffleTickets.boughtTickets.sum()
+				val currentUserTicketQuantity = RaffleTickets.select(userTicketsSum).where {
 					RaffleTickets.raffle eq currentRaffle[Raffles.id] and (RaffleTickets.userId eq userId)
-				}.count()
+				}.first()[userTicketsSum] ?: 0L
 
 				val maxTicketsByUserPerRoundForThisRaffleType = currentRaffle[Raffles.raffleType].maxTicketsByUserPerRound.toLong()
 
@@ -100,52 +102,15 @@ class PostRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRout
 					)
 
 					val now = Instant.now()
-					val sqlTimestampOfNow = Timestamp.from(now)
 
-					// This is even a BETTER optimization: This... is to go... even further beyond! https://youtu.be/8TGalu36BHA
-					// Because we are always inserting the same data over and over, we can go even further beyond!
-					// Instead of using batch inserts and inserting the same data, we can use generate_series!
-					val jdbcConnection = (this.connection as JdbcConnectionImpl).connection
-
-					// The generate_series mean that $quantity values will be inserted into the database!
-					// Yes, we need to use SELECT instead of VALUES
-					val insertSQL = "INSERT INTO ${RaffleTickets.tableName} (\"${RaffleTickets.userId.name}\", \"${RaffleTickets.raffle.name}\", \"${RaffleTickets.boughtAt.name}\") SELECT ?, ?, ? FROM generate_series(1, $quantity)"
-
-					val preparedStatement = jdbcConnection.prepareStatement(insertSQL)
-					preparedStatement.setLong(1, userId)
-					preparedStatement.setLong(2, currentRaffle[Raffles.id].value)
-					preparedStatement.setTimestamp(3, sqlTimestampOfNow)
-
-					// Execute the statement
-					preparedStatement.execute()
-
-					// This is an optimization: batchInsert ends up using a LOT of memory because it keeps everything in the "data" ArrayList
-					// For this, this is unviable, because if someone buys a lot of tickets (800k+), Loritta crashes and burns (uses 500MB+ memory!) trying to process it
-					// As a workaround, we will fully skip the batchInsert and manually insert the data via JDBC
-					// val jdbcConnection = (this.connection as JdbcConnectionImpl).connection
-
-					// val insertSQL = "INSERT INTO ${RaffleTickets.tableName} (\"${RaffleTickets.userId.name}\", \"${RaffleTickets.raffle.name}\", \"${RaffleTickets.boughtAt.name}\") VALUES (?, ?, ?)"
-					// val preparedStatement = jdbcConnection.prepareStatement(insertSQL)
-
-					// repeat(quantity) {
-					// 	  // Add batch data
-					// 	  preparedStatement.setLong(1, userId)
-					// 	  preparedStatement.setLong(2, currentRaffle[Raffles.id].value)
-					// 	  preparedStatement.setTimestamp(3, sqlTimestampOfNow)
-					// 	  preparedStatement.addBatch()
-					// }
-
-					// Execute the batch insert
-					// preparedStatement.executeBatch()
-
-					// By using shouldReturnGeneratedValues, the database won't need to synchronize on each insert
-					// this increases insert performance A LOT and, because we don't need the IDs, it is very useful to make
-					// tickets purchases be VERY fast
-					// RaffleTickets.batchInsert(0 until quantity, shouldReturnGeneratedValues = false) {
-					// 	  this[RaffleTickets.userId] = userId
-					// 	  this[RaffleTickets.raffle] = currentRaffle[Raffles.id]
-					// 	  this[RaffleTickets.boughtAt] = now
-					// }
+					// Instead of inserting N rows (one per ticket), we insert a single row with boughtTickets = quantity.
+					// This drastically reduces disk usage (e.g., 1 row instead of 800k+ rows for a single purchase).
+					RaffleTickets.insert {
+						it[RaffleTickets.userId] = userId
+						it[RaffleTickets.raffle] = currentRaffle[Raffles.id]
+						it[RaffleTickets.boughtAt] = now
+						it[RaffleTickets.boughtTickets] = quantity.toLong()
+					}
 
 					logger.info { "$userId bought $quantity tickets for ${requiredCount}! (Before they had ${lorittaProfile.money + requiredCount}) sonhos!)" }
 

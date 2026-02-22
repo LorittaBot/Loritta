@@ -204,9 +204,9 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 ) { context ->
                     val hook = context.deferChannelMessage(true)
 
-                    val raffleTicketsCount = RaffleTickets.userId.count()
+                    val raffleTicketsCount = RaffleTickets.boughtTickets.sum()
                     val participants = loritta.transaction {
-                        RaffleTickets.select(RaffleTickets.userId, raffleTicketsCount).where { 
+                        RaffleTickets.select(RaffleTickets.userId, raffleTicketsCount).where {
                             RaffleTickets.raffle eq raffleId
                         }.groupBy(RaffleTickets.userId)
                             .toList()
@@ -216,14 +216,14 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                         context.chunkedReply(true) {
                             content = "# ${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriCard} ${context.i18nContext.get(I18N_PREFIX.Status.Participants.RaffleParticipants)}\n"
 
-                            val totalTickets = participants.sumOf { it[raffleTicketsCount] }
+                            val totalTickets = participants.sumOf { it[raffleTicketsCount] ?: 0L }
 
                             // Sort by order
                             for (participant in participants.sortedByDescending {
-                                it[raffleTicketsCount]
+                                it[raffleTicketsCount] ?: 0L
                             }) {
                                 val participantId = participant[RaffleTickets.userId]
-                                val ticketCount = participant[raffleTicketsCount]
+                                val ticketCount = participant[raffleTicketsCount] ?: 0L
                                 HarmonyLoggerFactory.logger {}.value.info { "RaffleCommand#retrieveUserInfoById - UserId: $participantId" }
                                 val userInfo = loritta.lorittaShards.retrieveUserInfoById(participantId)
                                 val hasInviteOnName = userInfo?.name?.let { DiscordInviteUtils.hasInvite(it) }

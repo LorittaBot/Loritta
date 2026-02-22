@@ -15,6 +15,7 @@ import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.countDistinct
 import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.sum
 
 class GetRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/loritta/raffle") {
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
@@ -35,9 +36,10 @@ class GetRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRoute
 					.limit(1)
 					.firstOrNull()
 
-				val currentTickets = RaffleTickets.selectAll().where {
+				val ticketsSum = RaffleTickets.boughtTickets.sum()
+				val currentTickets = RaffleTickets.select(ticketsSum).where {
 					RaffleTickets.raffle eq currentRaffle[Raffles.id]
-				}.count()
+				}.first()[ticketsSum] ?: 0L
 
 				val countUserDistinct = RaffleTickets.userId.countDistinct()
 				val totalUsersInTheRaffle =
