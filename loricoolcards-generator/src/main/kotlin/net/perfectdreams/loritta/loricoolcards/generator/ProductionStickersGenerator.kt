@@ -22,15 +22,13 @@ import net.perfectdreams.loritta.cinnamon.pudding.services.fromRow
 import net.perfectdreams.loritta.cinnamon.pudding.tables.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsEvents
 import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsFinishedAlbumUsers
-import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentReason
 import net.perfectdreams.loritta.common.locale.LorittaLanguageManager
 import net.perfectdreams.loritta.common.loricoolcards.CardRarity
 import net.perfectdreams.loritta.common.utils.MediaTypeUtils
 import net.perfectdreams.loritta.common.utils.StoragePaths
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.common.utils.UserPremiumPlan
 import net.perfectdreams.loritta.loricoolcards.generator.utils.config.LoriCoolCardsGeneratorProductionStickersConfig
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.dao.Payment
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.loricoolcards.LoriCoolCardsManager
 import net.perfectdreams.loritta.morenitta.loricoolcards.StickerMetadata
@@ -46,19 +44,16 @@ import net.perfectdreams.loritta.serializable.Background
 import net.perfectdreams.loritta.serializable.BackgroundStorageType
 import net.perfectdreams.loritta.serializable.BackgroundVariation
 import org.jetbrains.exposed.sql.SortOrder
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.innerJoin
 import org.jetbrains.exposed.sql.selectAll
 import java.awt.image.BufferedImage
 import java.io.File
 import java.net.URL
-import java.time.Instant
 import java.time.OffsetDateTime
 import java.util.*
 import java.util.concurrent.Executors
 import javax.imageio.ImageIO
-import kotlin.math.ceil
 
 suspend fun main() {
     // Speeds up image loading/writing/etc
@@ -543,7 +538,7 @@ private fun getEtherealGambiBackgroundUrl(etherealGambiServiceUrl: String, backg
     return etherealGambiServiceUrl.removeSuffix("/") + "/" + background.file + ".$extension"
 }
 
-suspend fun getUserPremiumPlan(pudding: Pudding, userId: Long): UserPremiumPlans {
+suspend fun getUserPremiumPlan(pudding: Pudding, userId: Long): UserPremiumPlan {
     val now = OffsetDateTime.now(Constants.LORITTA_TIMEZONE)
 
     val userPremiumKeysSum = pudding.transaction {
@@ -557,7 +552,7 @@ suspend fun getUserPremiumPlan(pudding: Pudding, userId: Long): UserPremiumPlans
             }
     }
 
-    return UserPremiumPlans.getPlanFromValue(userPremiumKeysSum.toDouble())
+    return UserPremiumPlan.getPlanFromValue(userPremiumKeysSum.toDouble())
 }
 
 data class HardcodedBadge(

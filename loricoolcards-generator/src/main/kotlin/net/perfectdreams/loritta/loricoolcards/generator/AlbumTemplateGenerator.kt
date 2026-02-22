@@ -13,7 +13,7 @@ data class TemplatingSlots(
 
 fun main() {
     // val pagePrefix = "/prototype/v10/"
-    val pagePrefix = "/production/v16/"
+    val pagePrefix = "/production/v18/"
 
     val stickersToBePlaced = (1..510).toMutableList()
 
@@ -449,11 +449,11 @@ fun main() {
         StickerAlbumTemplate(
             stickerPackImageUrl = "https://stuff.loritta.website/loricoolcards/production/v1/buying-booster-pack.gif",
             unknownStickerImageUrl = "https://stuff.loritta.website/loricoolcards/production/v1/sticker-unknownsticker-animated.gif",
-            sonhosPrice = 15_000,
-            sonhosReward = 1_000_000,
+            sonhosPrice = 23_000,
+            sonhosReward = 2_000_000,
             stickersInPack = 5,
             boosterPacksOnDailyReward = 6,
-            boosterPacksPurchaseAvailableAfter = Instant.parse("2026-01-01T22:00:00+00"),
+            boosterPacksPurchaseAvailableAfter = Instant.parse("2026-02-01T22:00:00+00"),
             stickerProbabilityWeights = mapOf(
                 CardRarity.COMMON to 1.0,
                 CardRarity.UNCOMMON to 1.0,
@@ -470,10 +470,10 @@ fun main() {
     )
 
     File("album.sql")
-        .writeText("INSERT INTO loricoolcardsevents (event_name, starts_at, ends_at, template) VALUES ('Top 500 Mais Rápidos (Ato 2: Temporada 2)', '2026-12-01T03:00:00+00', '2026-02-01 03:00:00+00', '$resultAsJson');")
-    if (false) {
+        .writeText("INSERT INTO loricoolcardsevents (event_name, starts_at, ends_at, template) VALUES ('Top 500 Mais Rápidos (Ato 2: Temporada 3)', '2026-02-01T03:00:00+00', '2026-03-01 03:00:00+00', '$resultAsJson');")
+    if (true) {
         println(
-            "UPDATE loricoolcardsevents SET template = '${resultAsJson}' WHERE id = 30;"
+            "UPDATE loricoolcardsevents SET template = '${resultAsJson}' WHERE id = 32;"
         )
     }
 }
