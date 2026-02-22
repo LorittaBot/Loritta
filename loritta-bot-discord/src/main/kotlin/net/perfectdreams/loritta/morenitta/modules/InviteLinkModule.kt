@@ -4,6 +4,7 @@ import com.github.benmanes.caffeine.cache.Caffeine
 import dev.minn.jda.ktx.messages.MessageCreate
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.MessageEmbed
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
 import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.entities.Message
@@ -50,6 +51,12 @@ class InviteLinkModule(val loritta: LorittaBot) : MessageReceivedModule {
 
 		if (inviteBlockerConfig.whitelistedChannels.contains(event.channel.idLong))
 			return false
+
+		// If this is a thread channel, check if the parent channel is whitelisted
+		val channel = event.channel
+		if (channel is ThreadChannel)
+			if (inviteBlockerConfig.whitelistedChannels.contains(channel.parentChannel.idLong))
+				return false
 
 		if (lorittaUser.hasPermission(LorittaPermission.ALLOW_INVITES))
 			return false
