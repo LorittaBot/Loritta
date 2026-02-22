@@ -829,11 +829,15 @@ class LorittaBot(
     fun initPostgreSql() {
         logger.info { "Starting PostgreSQL related things..." }
 
-        logger.info { "Creating any missing tables and columns in PostgreSQL..." }
-        runBlocking {
-            pudding.createMissingTablesAndColumns { true }
+        if (isMainInstance) {
+            logger.info { "Creating any missing tables and columns in PostgreSQL..." }
+            runBlocking {
+                pudding.createMissingTablesAndColumns { true }
+            }
+            logger.info { "Created all missing tables and columns!" }
+        } else {
+            logger.info { "Skipping schema updates because we aren't the main cluster..." }
         }
-        logger.info { "Created all missing tables and columns!" }
 
         logger.info { "Updating Loritta trinkets..." }
         TrinketsStuff.updateTrinkets(pudding)
