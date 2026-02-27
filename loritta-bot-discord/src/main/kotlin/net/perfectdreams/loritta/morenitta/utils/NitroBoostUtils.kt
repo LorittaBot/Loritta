@@ -14,6 +14,7 @@ import java.time.OffsetDateTime
 import java.time.ZoneOffset
 
 object NitroBoostUtils {
+	private const val NITRO_BOOST_KEY_VALUE = 13
 	private val logger by HarmonyLoggerFactory.logger {}
 
 	suspend fun onBoostActivate(loritta: LorittaBot, member: Member) {
@@ -25,7 +26,7 @@ object NitroBoostUtils {
 			// Gerar key de doação (UserPremiumKeys)
 			UserPremiumKeys.insert {
 				it[UserPremiumKeys.userId] = member.idLong
-				it[UserPremiumKeys.value] = 13
+				it[UserPremiumKeys.value] = NITRO_BOOST_KEY_VALUE
 				// We don't use MAX because PostgreSQL hates it >:(
 				it[UserPremiumKeys.expiresAt] = OffsetDateTime.of(9999, 12, 31, 23, 59, 59, 0, ZoneOffset.UTC)
 				it[UserPremiumKeys.metadata] = jsonObject(
@@ -57,7 +58,7 @@ object NitroBoostUtils {
 		loritta.newSuspendedTransaction {
 			// Find the UserPremiumKey for this boost
 			val boostKey = UserPremiumKeys.selectAll().where {
-				(UserPremiumKeys.userId eq member.idLong) and (UserPremiumKeys.value eq 13)
+				(UserPremiumKeys.userId eq member.idLong) and (UserPremiumKeys.value eq NITRO_BOOST_KEY_VALUE)
 			}.toList().firstOrNull {
 				val metadata = it[UserPremiumKeys.metadata]?.let { JsonParser.parseString(it) }
 				metadata != null && metadata.obj["guildId"].nullLong == guild.idLong
