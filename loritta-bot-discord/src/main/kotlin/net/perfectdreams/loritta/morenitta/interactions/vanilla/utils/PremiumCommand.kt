@@ -2,7 +2,9 @@ package net.perfectdreams.loritta.morenitta.interactions.vanilla.utils
 
 import net.dv8tion.jda.api.interactions.IntegrationType
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
+import net.perfectdreams.loritta.cinnamon.pudding.tables.DonationKeys
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Payments
+import net.perfectdreams.loritta.cinnamon.pudding.tables.UserPremiumKeys
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentReason
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.i18n.I18nKeysData
@@ -11,8 +13,11 @@ import net.perfectdreams.loritta.morenitta.dao.Payment
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
+import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.selectAll
+import java.time.OffsetDateTime
 import java.util.*
 
 class PremiumCommand(val m: LorittaBot) : SlashCommandDeclarationWrapper {
@@ -31,15 +36,18 @@ class PremiumCommand(val m: LorittaBot) : SlashCommandDeclarationWrapper {
     class PremiumExecutor(val m: LorittaBot) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             context.deferChannelMessage(true)
-            val payments = m.transaction {
-                Payment.find {
-                    (Payments.expiresAt greaterEq System.currentTimeMillis()) and
-                            (Payments.reason eq PaymentReason.DONATION) and
-                            (Payments.userId eq context.user.idLong)
-                }.toList()
+
+            val premiumKeys = m.transaction {
+                val now = OffsetDateTime.now(Constants.LORITTA_TIMEZONE)
+
+                UserPremiumKeys.selectAll()
+                    .where {
+                        UserPremiumKeys.expiresAt greaterEq now and (UserPremiumKeys.userId eq context.user.idLong)
+                    }
+                    .toList()
             }
 
-            if (payments.isEmpty()) {
+            if (premiumKeys.isEmpty()) {
                 context.reply(true) {
                     styled(context.i18nContext.get(I18N_PREFIX.YouDontHaveLorittaPremium))
                 }
@@ -47,11 +55,11 @@ class PremiumCommand(val m: LorittaBot) : SlashCommandDeclarationWrapper {
             }
 
             context.reply(true) {
-                for (payment in payments) {
-                    if (payment.expiresAt == Long.MAX_VALUE) {
-                        styled(context.i18nContext.get(I18N_PREFIX.PaymentPermanent(payment.money)))
+                for (payment in premiumKeys) {
+                    if (payment[UserPremiumKeys.expiresAt].year >= 9999) {
+                        styled(context.i18nContext.get(I18N_PREFIX.PaymentPermanent(payment[UserPremiumKeys.value])))
                     } else {
-                        styled(context.i18nContext.get(I18N_PREFIX.PaymentTemporary(payment.money, DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(payment.expiresAt!!))))
+                        styled(context.i18nContext.get(I18N_PREFIX.PaymentTemporary(payment[UserPremiumKeys.value], DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(payment[UserPremiumKeys.expiresAt]))))
                     }
                 }
             }
