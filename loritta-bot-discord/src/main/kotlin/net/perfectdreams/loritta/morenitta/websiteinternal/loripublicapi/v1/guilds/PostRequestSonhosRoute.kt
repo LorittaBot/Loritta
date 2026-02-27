@@ -16,7 +16,6 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ThirdPartySonhosTransferRequests
 import net.perfectdreams.loritta.common.utils.TokenType
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.SonhosPayExecutor
@@ -55,7 +54,7 @@ class PostRequestSonhosRoute(m: LorittaBot) : LoriPublicAPIGuildRoute(
 
         val request = Json.decodeFromString<RequestSonhosRequest>(call.receiveText())
         if (request.senderId != tokenInfo.creatorId) {
-            val premium = UserPremiumPlans.getPlanFromValue(m.getActiveMoneyFromDonations(tokenInfo.creatorId))
+            val premium = m.getUserPremiumPlan(tokenInfo.creatorId)
             if (!premium.sonhosAPIAccess) {
                 call.respondJson(
                     Json.encodeToString(
@@ -245,7 +244,7 @@ class PostRequestSonhosRoute(m: LorittaBot) : LoriPublicAPIGuildRoute(
         // Load the server config because we need the i18nContext
         val serverConfig = m.getOrCreateServerConfig(guild.idLong)
         val i18nContext = m.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
-        val userPremiumPlan = UserPremiumPlans.getPlanFromValue(m.getActiveMoneyFromDonations(senderSnowflake.idLong))
+        val userPremiumPlan = m.getUserPremiumPlan(senderSnowflake.idLong)
 
         val hasTax = userPremiumPlan.thirdPartySonhosTransferTax != 0.0
         val tax = (request.quantity * userPremiumPlan.thirdPartySonhosTransferTax).toLong()

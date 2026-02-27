@@ -11,5 +11,6 @@ enum class UserDashboardSection {
     REPUTATIONS,
     API_KEYS,
     TRINKETS_SHOP,
-    SONHOS_SHOP
+    SONHOS_SHOP,
+    USER_PREMIUM_KEYS
 }

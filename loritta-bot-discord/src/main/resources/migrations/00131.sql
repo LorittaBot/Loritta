@@ -1,0 +1,1 @@
+ALTER TABLE donation_keys ALTER COLUMN value TYPE INTEGER USING value::INTEGER;

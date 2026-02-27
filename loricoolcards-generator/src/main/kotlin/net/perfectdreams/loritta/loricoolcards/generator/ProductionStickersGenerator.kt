@@ -27,7 +27,7 @@ import net.perfectdreams.loritta.common.locale.LorittaLanguageManager
 import net.perfectdreams.loritta.common.loricoolcards.CardRarity
 import net.perfectdreams.loritta.common.utils.MediaTypeUtils
 import net.perfectdreams.loritta.common.utils.StoragePaths
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.common.utils.UserPremiumPlan
 import net.perfectdreams.loritta.loricoolcards.generator.utils.config.LoriCoolCardsGeneratorProductionStickersConfig
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.Payment
@@ -51,7 +51,6 @@ import org.jetbrains.exposed.sql.selectAll
 import java.awt.image.BufferedImage
 import java.io.File
 import java.net.URL
-import kotlin.math.ceil
 import java.util.*
 import java.util.concurrent.Executors
 import javax.imageio.ImageIO
@@ -483,7 +482,7 @@ suspend fun getUserProfileBackgroundUrl(
     if (background.id == Background.CUSTOM_BACKGROUND_ID) {
         // Custom background
         val donationValue = getActiveMoneyFromDonations(pudding, userId)
-        val plan = UserPremiumPlans.getPlanFromValue(donationValue)
+        val plan = UserPremiumPlan.getPlanFromValue(donationValue)
 
         if (plan.customBackground) {
             val dssNamespace = dreamStorageService.getCachedNamespaceOrRetrieve()
@@ -540,18 +539,17 @@ private fun getEtherealGambiBackgroundUrl(etherealGambiServiceUrl: String, backg
     return etherealGambiServiceUrl.removeSuffix("/") + "/" + background.file + ".$extension"
 }
 
-suspend fun getActiveMoneyFromDonations(pudding: Pudding, userId: Long): Double {
+suspend fun getActiveMoneyFromDonations(pudding: Pudding, userId: Long): Int {
     return pudding.transaction { _getActiveMoneyFromDonations(userId) }
 }
 
-fun _getActiveMoneyFromDonations(userId: Long): Double {
+fun _getActiveMoneyFromDonations(userId: Long): Int {
     return Payment.find {
         (Payments.expiresAt greaterEq System.currentTimeMillis()) and
                 (Payments.reason eq PaymentReason.DONATION) and
                 (Payments.userId eq userId)
-    }.sumByDouble {
-        // This is a weird workaround that fixes users complaining that 19.99 + 19.99 != 40 (it equals to 39.38()
-        ceil(it.money.toDouble())
+    }.sumOf {
+        it.money.toInt()
     }
 }
 

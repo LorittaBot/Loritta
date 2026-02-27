@@ -97,7 +97,7 @@ fun FlowContent.discordMessageEditor(
                         ),
                         "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guilds/${guild.idLong}/test-message",
                         target,
-                        SVGIcons.CheckFat.html.toString(),
+                        SVGIcons.Check.html.toString(),
                         SVGIcons.EyeDropper.html.toString(),
                         SVGIcons.CaretDown.html.toString(),
                     )

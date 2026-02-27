@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactions
 import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.selectFirstOrNull
 import net.perfectdreams.loritta.common.achievements.AchievementType
 import net.perfectdreams.loritta.common.utils.TransactionType
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.common.utils.UserPremiumPlan
 import net.perfectdreams.loritta.serializable.StoredCoinFlipBetGlobalTransaction
 import net.perfectdreams.loritta.serializable.UserId
 import org.jetbrains.exposed.sql.*
@@ -269,8 +269,8 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                     val selfActiveDonations = pudding.payments.getActiveMoneyFromDonations(userId)
                     val otherUserActiveDonations = pudding.payments.getActiveMoneyFromDonations(otherUserId)
 
-                    val selfUserPremiumPlan = UserPremiumPlans.getPlanFromValue(selfActiveDonations)
-                    val otherUserPremiumPlan = UserPremiumPlans.getPlanFromValue(otherUserActiveDonations)
+                    val selfUserPremiumPlan = UserPremiumPlan.getPlanFromValue(selfActiveDonations)
+                    val otherUserPremiumPlan = UserPremiumPlan.getPlanFromValue(otherUserActiveDonations)
 
                     val premiumUsers = mutableListOf<UserId>()
                     if (!selfUserPremiumPlan.isCoinFlipBetRewardTaxed)

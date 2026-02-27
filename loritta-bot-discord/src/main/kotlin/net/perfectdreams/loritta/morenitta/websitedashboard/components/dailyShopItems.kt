@@ -225,7 +225,7 @@ fun FlowContent.dailyShopItems(
 
                 div(classes = "item-user-information") {
                     if (bought) {
-                        svgIcon(SVGIcons.CheckFat)
+                        svgIcon(SVGIcons.Check)
                         span {
                             text(locale["website.dailyShop.itemAlreadyBought"])
                         }

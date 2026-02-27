@@ -19,7 +19,7 @@ data class ProfileSectionsResponse(
 
     @Serializable
     data class DonationsWrapper(
-        val value: Double
+        val value: Int
     )
 
     @Serializable

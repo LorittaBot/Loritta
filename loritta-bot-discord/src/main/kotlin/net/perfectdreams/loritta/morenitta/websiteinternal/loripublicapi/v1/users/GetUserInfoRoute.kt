@@ -7,11 +7,10 @@ import io.ktor.server.util.*
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.LongAsStringSerializer
-import kotlinx.serialization.encodeToString
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
 import net.perfectdreams.loritta.common.utils.Gender
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.common.utils.UserPremiumPlan
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.LoriPublicAPI
@@ -50,7 +49,7 @@ class GetUserInfoRoute(m: LorittaBot) : LoriPublicAPIRoute(
 
             val bannedState = m.pudding.users.getUserBannedState(UserId(userId))
 
-            val plan = UserPremiumPlans.getPlanFromValue(m.getActiveMoneyFromDonations(userId))
+            val plan = m.getUserPremiumPlan(userId)
 
             return@transaction Result.Success(profile, bannedState, plan)
         }
@@ -117,7 +116,7 @@ class GetUserInfoRoute(m: LorittaBot) : LoriPublicAPIRoute(
     }
 
     private sealed class Result {
-        data class Success(val profile: ResultRow, val state: UserBannedState?, val plan: UserPremiumPlans) : Result()
+        data class Success(val profile: ResultRow, val state: UserBannedState?, val plan: UserPremiumPlan) : Result()
         data object NotFound : Result()
     }
 }

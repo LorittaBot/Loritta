@@ -46,7 +46,6 @@ import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.requests.RestConfig
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.api.utils.ChunkingFilter
-import net.dv8tion.jda.api.utils.Compression
 import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.dv8tion.jda.internal.JDAImpl
@@ -74,11 +73,11 @@ import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedPrivateChannels
 import net.perfectdreams.loritta.cinnamon.pudding.tables.FanArtsExtravaganza
 import net.perfectdreams.loritta.cinnamon.pudding.tables.GatewayActivities
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Payments
-import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentReason
+import net.perfectdreams.loritta.cinnamon.pudding.tables.UserPremiumKeys
 import net.perfectdreams.loritta.common.locale.LanguageManager
 import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.common.utils.UserPremiumPlan
 import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
 import net.perfectdreams.loritta.morenitta.analytics.LorittaMetrics
 import net.perfectdreams.loritta.morenitta.analytics.MagicStats
@@ -89,7 +88,6 @@ import net.perfectdreams.loritta.morenitta.christmas2022event.listeners.Reaction
 import net.perfectdreams.loritta.morenitta.commands.CommandManager
 import net.perfectdreams.loritta.morenitta.dailies.DailyReminderTask
 import net.perfectdreams.loritta.morenitta.dailies.ProcessSubmittedDailyRemindersTask
-import net.perfectdreams.loritta.morenitta.dao.Payment
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.easter2023event.listeners.Easter2023ReactionListener
@@ -109,7 +107,6 @@ import net.perfectdreams.loritta.morenitta.platform.discord.utils.BucketedContro
 import net.perfectdreams.loritta.morenitta.platform.discord.utils.JVMLorittaAssets
 import net.perfectdreams.loritta.morenitta.profile.ProfileDesignManager
 import net.perfectdreams.loritta.morenitta.raffles.LorittaRaffleTask
-import net.perfectdreams.loritta.morenitta.rpc.LorittaRPC
 import net.perfectdreams.loritta.morenitta.scheduledtasks.TaskManager
 import net.perfectdreams.loritta.morenitta.threads.RemindersThread
 import net.perfectdreams.loritta.morenitta.twitch.TwitchAPI
@@ -154,7 +151,6 @@ import kotlin.io.path.extension
 import kotlin.io.path.listDirectoryEntries
 import kotlin.io.path.nameWithoutExtension
 import kotlin.io.path.readText
-import kotlin.math.ceil
 import kotlin.reflect.KClass
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
@@ -202,7 +198,7 @@ class LorittaBot(
         // We multiply by 8 because... uuuh, sometimes threads get stuck due to dumb stuff that we need to fix.
         val MESSAGE_EXECUTOR_THREADS = Runtime.getRuntime().availableProcessors() * 8
 
-        const val SCHEMA_VERSION = 130 // Bump this every time any table is added/updated!
+        const val SCHEMA_VERSION = 131 // Bump this every time any table is added/updated!
     }
 
     // This needs to be created BEFORE the commands is registered because this is used in the Musical Chairs init
@@ -554,7 +550,6 @@ class LorittaBot(
         }
         logger.info { "Starting Pudding tasks..." }
         pudding.startPuddingTasks()
-        GlobalScope.launch(block = NitroBoostUtils.createBoostTask(this, config.loritta.donatorsOstentation))
 
         logger.info { "Starting Blackjack Refund task..." }
         blackjackManager.startRefundBlackjacksTask()
@@ -1068,19 +1063,19 @@ class LorittaBot(
         }
     }
 
-    suspend fun getActiveMoneyFromDonations(userId: Long): Double {
-        return transaction { _getActiveMoneyFromDonations(userId) }
-    }
+    suspend fun getUserPremiumPlan(userId: Long): UserPremiumPlan {
+        val credits = transaction {
+            val now = OffsetDateTime.now(Constants.LORITTA_TIMEZONE)
 
-    fun _getActiveMoneyFromDonations(userId: Long): Double {
-        return Payment.find {
-            (Payments.expiresAt greaterEq System.currentTimeMillis()) and
-                    (Payments.reason eq PaymentReason.DONATION) and
-                    (Payments.userId eq userId)
-        }.sumByDouble {
-            // This is a weird workaround that fixes users complaining that 19.99 + 19.99 != 40 (it equals to 39.38()
-            ceil(it.money.toDouble())
+            UserPremiumKeys.selectAll()
+                .where {
+                    UserPremiumKeys.userId eq userId and (UserPremiumKeys.expiresAt greaterEq now)
+                }
+                .toList()
+                .sumOf { it[UserPremiumKeys.value] }
         }
+
+        return UserPremiumPlan.getPlanFromValue(credits)
     }
 
     /**

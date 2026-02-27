@@ -15,7 +15,7 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BlacklistedGuilds
 import net.perfectdreams.loritta.common.utils.Emotes
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.common.utils.UserPremiumPlan
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
@@ -34,7 +34,7 @@ class AddedLorittaGuildDashboardRoute(website: LorittaDashboardWebServer) : Requ
         call: ApplicationCall,
         i18nContext: I18nContext,
         session: LorittaUserSession,
-        userPremiumPlan: UserPremiumPlans,
+        userPremiumPlan: UserPremiumPlan,
         theme: ColorTheme,
         shimejiSettings: LorittaShimejiSettings
     ) {

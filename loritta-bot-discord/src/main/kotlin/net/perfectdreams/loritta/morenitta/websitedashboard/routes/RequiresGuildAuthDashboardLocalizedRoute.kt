@@ -14,8 +14,8 @@ import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DonationKeys
-import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.common.utils.ServerPremiumPlan
+import net.perfectdreams.loritta.common.utils.UserPremiumPlan
 import net.perfectdreams.luna.modals.EmbeddedModal
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
@@ -39,7 +39,7 @@ abstract class RequiresGuildAuthDashboardLocalizedRoute(website: LorittaDashboar
         private val logger by HarmonyLoggerFactory.logger {}
     }
 
-    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: LorittaUserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
+    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: LorittaUserSession, userPremiumPlan: UserPremiumPlan, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
         val guildId = call.parameters.getOrFail("guildId").toLong()
 
         try {
@@ -107,7 +107,7 @@ abstract class RequiresGuildAuthDashboardLocalizedRoute(website: LorittaDashboar
                         .toList()
                 }
 
-                val plan = ServerPremiumPlans.getPlanFromValue(guildPremiumKeys.sumOf { it[DonationKeys.value] })
+                val plan = ServerPremiumPlan.getPlanFromValue(guildPremiumKeys.sumOf { it[DonationKeys.value] })
 
                 plan
             }
@@ -127,11 +127,11 @@ abstract class RequiresGuildAuthDashboardLocalizedRoute(website: LorittaDashboar
         call: ApplicationCall,
         i18nContext: I18nContext,
         session: LorittaUserSession,
-        userPremiumPlan: UserPremiumPlans,
+        userPremiumPlan: UserPremiumPlan,
         theme: ColorTheme,
         shimejiSettings: LorittaShimejiSettings,
         guild: Guild,
-        guildPremiumPlan: ServerPremiumPlans,
+        guildPremiumPlan: ServerPremiumPlan,
         member: Member
     )
 

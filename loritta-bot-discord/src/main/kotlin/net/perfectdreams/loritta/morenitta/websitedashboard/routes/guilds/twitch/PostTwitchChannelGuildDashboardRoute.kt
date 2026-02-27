@@ -11,9 +11,9 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DonationKeys
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.PremiumTrackTwitchAccounts
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.TrackedTwitchAccounts
-import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
+import net.perfectdreams.loritta.common.utils.ServerPremiumPlan
 import net.perfectdreams.loritta.common.utils.TrackedChangeType
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.common.utils.UserPremiumPlan
 import net.perfectdreams.luna.toasts.EmbeddedToast
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.dao.DonationKey
@@ -29,7 +29,6 @@ import net.perfectdreams.loritta.serializable.config.TwitchAccountTrackState
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import org.jetbrains.exposed.sql.*
 import java.time.Instant
-import kotlin.math.ceil
 
 class PostTwitchChannelGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/twitch") {
     @Serializable
@@ -40,7 +39,7 @@ class PostTwitchChannelGuildDashboardRoute(website: LorittaDashboardWebServer) :
         val message: String
     )
 
-    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: LorittaUserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlans, member: Member) {
+    override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: LorittaUserSession, userPremiumPlan: UserPremiumPlan, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlan, member: Member) {
         val request = Json.decodeFromString<CreateTwitchChannelTrackRequest>(call.receiveText())
 
         // This is the route that adds a NEW instance to the configuration
@@ -95,7 +94,6 @@ class PostTwitchChannelGuildDashboardRoute(website: LorittaDashboardWebServer) :
             val valueOfTheDonationKeysEnabledOnThisGuild = DonationKey.find { DonationKeys.activeIn eq guild.idLong and (DonationKeys.expiresAt greaterEq System.currentTimeMillis()) }
                 .toList()
                 .sumOf { it.value }
-                .let { ceil(it) }
 
             val premiumTracksCount = PremiumTrackTwitchAccounts.selectAll().where {
                 PremiumTrackTwitchAccounts.guildId eq guild.idLong
@@ -143,7 +141,7 @@ class PostTwitchChannelGuildDashboardRoute(website: LorittaDashboardWebServer) :
 
     sealed class AddGuildTwitchChannelResult {
         @Serializable
-        class Success(val trackId: Long, val state: TwitchAccountTrackState, val valueOfTheDonationKeysEnabledOnThisGuild: Double, val premiumTracksCount: Long) : AddGuildTwitchChannelResult()
+        class Success(val trackId: Long, val state: TwitchAccountTrackState, val valueOfTheDonationKeysEnabledOnThisGuild: Int, val premiumTracksCount: Long) : AddGuildTwitchChannelResult()
 
         @Serializable
         data object TooManyPremiumTracks : AddGuildTwitchChannelResult()

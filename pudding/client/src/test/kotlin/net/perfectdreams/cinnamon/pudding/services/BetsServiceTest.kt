@@ -11,10 +11,9 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.simpletransactions.Simp
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentGateway
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentReason
 import net.perfectdreams.loritta.common.utils.TransactionType
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.common.utils.UserPremiumPlan
 import net.perfectdreams.loritta.serializable.UserId
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.update
 import org.junit.jupiter.api.Test
@@ -81,7 +80,7 @@ class BetsServiceTest {
                 // Also validate the matchmaking result
                 val matchmakingResult = CoinFlipBetGlobalMatchmakingResults.selectAll().limit(1).first()
                 require(matchmakingResult[CoinFlipBetGlobalMatchmakingResults.quantityAfterTax] == 95L) { "Quantity After Tax should be 95 due to taxes but it is ${matchmakingResult[CoinFlipBetMatchmakingResults.quantityAfterTax]}!" }
-                require(matchmakingResult[CoinFlipBetGlobalMatchmakingResults.taxPercentage] == UserPremiumPlans.Free.coinFlipRewardTax) { "Tax percentage should be ${UserPremiumPlans.Free.coinFlipRewardTax} but it is ${matchmakingResult[CoinFlipBetMatchmakingResults.taxPercentage]}!" }
+                require(matchmakingResult[CoinFlipBetGlobalMatchmakingResults.taxPercentage] == UserPremiumPlan.Free.coinFlipRewardTax) { "Tax percentage should be ${UserPremiumPlan.Free.coinFlipRewardTax} but it is ${matchmakingResult[CoinFlipBetMatchmakingResults.taxPercentage]}!" }
             }
         }
     }
@@ -112,7 +111,7 @@ class BetsServiceTest {
                     it[Payments.paidAt] = System.currentTimeMillis()
                     it[Payments.expiresAt] = Long.MAX_VALUE
                     it[Payments.gateway] = PaymentGateway.PERFECTPAYMENTS
-                    it[Payments.money] = UserPremiumPlans.Complete.cost.toBigDecimal()
+                    it[Payments.money] = UserPremiumPlan.Complete.cost.toBigDecimal()
                     it[Payments.reason] = PaymentReason.DONATION
                 }
 
@@ -122,7 +121,7 @@ class BetsServiceTest {
                     it[Payments.paidAt] = System.currentTimeMillis()
                     it[Payments.expiresAt] = Long.MAX_VALUE
                     it[Payments.gateway] = PaymentGateway.PERFECTPAYMENTS
-                    it[Payments.money] = UserPremiumPlans.Complete.cost.toBigDecimal()
+                    it[Payments.money] = UserPremiumPlan.Complete.cost.toBigDecimal()
                     it[Payments.reason] = PaymentReason.DONATION
                 }
             }

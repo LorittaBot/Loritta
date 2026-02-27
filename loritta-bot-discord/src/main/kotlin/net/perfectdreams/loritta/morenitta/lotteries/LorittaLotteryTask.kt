@@ -11,13 +11,11 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.lotteries.LotteryTicket
 import net.perfectdreams.loritta.cinnamon.pudding.tables.lotteries.LotteryTickets
 import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
 import net.perfectdreams.loritta.common.utils.TransactionType
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.lottery.LotteryUtils
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.serializable.StoredLotteryRewardTransaction
-import net.perfectdreams.loritta.serializable.StoredLotteryTicketsTransaction
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.plus
 import org.jetbrains.exposed.sql.and
@@ -109,8 +107,7 @@ class LorittaLotteryTask(val m: LorittaBot) : RunnableCoroutine {
                                         val payoutForUserTicketsWithoutTaxes = (tickets.size * payoutForEachTicket)
 
                                         // Okay, so now we need to figure out if the user is taxable or not
-                                        val currentActiveDonations = m.getActiveMoneyFromDonations(userId)
-                                        val plan = UserPremiumPlans.getPlanFromValue(currentActiveDonations)
+                                        val plan = m.getUserPremiumPlan(userId)
 
                                         val payoutForUserTicketsWithTaxes = (payoutForUserTicketsWithoutTaxes * plan.totalLotteryReward).toLong()
 

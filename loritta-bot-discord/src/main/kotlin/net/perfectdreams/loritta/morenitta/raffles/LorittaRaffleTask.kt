@@ -13,7 +13,6 @@ import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactions
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.RaffleType
 import net.perfectdreams.loritta.common.utils.TransactionType
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.Constants
@@ -102,9 +101,7 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
                             winnerTicketId = winnerTicket[RaffleTickets.id].value
 
                             // Okay, so we found out who won the raffle
-                            val currentActiveDonations = m.getActiveMoneyFromDonations(winnerId)
-                            val plan = UserPremiumPlans.getPlanFromValue(currentActiveDonations)
-
+                            val plan = m.getUserPremiumPlan(winnerId)
                             val moneyWithoutTaxes = totalTickets * 250
                             paidOutPrize = moneyWithoutTaxes.toLong()
 

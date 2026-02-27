@@ -5,7 +5,6 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import kotlinx.html.b
-import kotlinx.html.div
 import kotlinx.html.h1
 import kotlinx.html.hr
 import kotlinx.html.p
@@ -18,13 +17,11 @@ import net.dv8tion.jda.api.entities.Member
 import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordInviteUtils
-import net.perfectdreams.loritta.cinnamon.pudding.tables.BanAppeals
 import net.perfectdreams.loritta.cinnamon.pudding.tables.LorittaPartners
 import net.perfectdreams.loritta.cinnamon.pudding.tables.PartnerApplications
-import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.common.utils.ServerPremiumPlan
+import net.perfectdreams.loritta.common.utils.UserPremiumPlan
 import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.morenitta.banappeals.BanAppealsUtils.createAppealReceivedMessage
 import net.perfectdreams.loritta.morenitta.lorittapartners.PartnerApplicationsUtils
 import net.perfectdreams.loritta.morenitta.lorittapartners.PartnerApplicationsUtils.createApplicationReceivedMessage
 import net.perfectdreams.loritta.morenitta.rpc.LorittaRPC
@@ -43,7 +40,6 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.heroText
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.heroWrapper
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.simpleHeroImage
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.banappeals.PostBanAppealsRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissShowToast
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissSoundEffect
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.createEmbeddedToast
@@ -75,11 +71,11 @@ class PostLorittaPartnersFormRoute(website: LorittaDashboardWebServer) : Require
         call: ApplicationCall,
         i18nContext: I18nContext,
         session: LorittaUserSession,
-        userPremiumPlan: UserPremiumPlans,
+        userPremiumPlan: UserPremiumPlan,
         theme: ColorTheme,
         shimejiSettings: LorittaShimejiSettings,
         guild: Guild,
-        guildPremiumPlan: ServerPremiumPlans,
+        guildPremiumPlan: ServerPremiumPlan,
         member: Member
     ) {
         try {

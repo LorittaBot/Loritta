@@ -6,7 +6,6 @@ import kotlinx.html.hr
 import kotlinx.html.id
 import kotlinx.html.ins
 import kotlinx.html.style
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 
 fun FlowContent.rightSidebarContentAndSaveBarWrapper(
     shouldDisplayAds: Boolean,

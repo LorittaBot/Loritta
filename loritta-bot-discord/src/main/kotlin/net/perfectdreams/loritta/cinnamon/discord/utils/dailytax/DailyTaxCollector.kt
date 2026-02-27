@@ -15,7 +15,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactions
 import net.perfectdreams.loritta.common.utils.DailyTaxThresholds
 import net.perfectdreams.loritta.common.utils.TokenType
 import net.perfectdreams.loritta.common.utils.TransactionType
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.common.utils.UserPremiumPlan
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.serializable.StoredDailyTaxSonhosTransaction
 import org.jetbrains.exposed.sql.*
@@ -46,7 +46,7 @@ class DailyTaxCollector(val m: LorittaBot) : RunnableCoroutine {
             // Now our precious premium users
             val moneySum = Payments.money.sum()
 
-            val cheapestPlanWithoutDailyInactivityTaxCost = UserPremiumPlans.getPlansThatDoNotHaveDailyInactivityTax()
+            val cheapestPlanWithoutDailyInactivityTaxCost = UserPremiumPlan.getPlansThatDoNotHaveDailyInactivityTax()
                 .minOf { it.cost }
 
             val usersToBeIgnored = Payments.select(Payments.userId, moneySum).where { 

@@ -36,7 +36,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.M
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.ModerationPunishmentMessagesConfig
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.WarnActions
 import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.selectFirstOrNull
-import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
+import net.perfectdreams.loritta.common.utils.ServerPremiumPlan
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.MuteCommand
 import net.perfectdreams.loritta.morenitta.dao.Mute
@@ -104,7 +104,7 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 				memberCounterConfig != null && guild.selfMember.hasPermission(channel, Permission.MANAGE_CHANNEL) && memberCounterConfig.topic.contains("{counter}")
 			}
 
-			val channelsThatWillBeChecked = validChannels.take(ServerPremiumPlans.getPlanFromValue(activeDonationValues).memberCounterCount)
+			val channelsThatWillBeChecked = validChannels.take(ServerPremiumPlan.getPlanFromValue(activeDonationValues).memberCounterCount)
 
 			for (textChannel in channelsThatWillBeChecked)
 				GlobalScope.launch(loritta.coroutineDispatcher) {

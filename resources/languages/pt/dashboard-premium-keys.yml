@@ -11,3 +11,79 @@ website:
         title: "Suas Keys"
         keys: "{effectsCount,plural, =0 {# chaves} one {# chave} other {# chaves}}"
       activatedOnAnotherServer: "Ativada em outro Servidor"
+
+      # Shared plan names
+      planNames:
+        free: "Grátis"
+        basic: "Básico"
+        complete: "Completo"
+        unknown: "Desconhecido"
+
+      # Billing/purchase UI (premiumPurchasePage.kt shared components)
+      billing:
+        monthly: "Mensal"
+        annual: "Anual "
+        xDiscount: "-{discount}%"
+        perMonth: "/mensal"
+        formattedPrice: "R$ {price, number, #,##0.00}"
+        buyButton: "Comprar (R$ {price, number, #,##0.00})"
+        savingsMessageBefore: "Você economiza "
+        savingsMessageAfter: " no plano anual!"
+        recommended: "Recomendado"
+        featureColumnHeader: "Recurso"
+
+      # User Premium page
+      userPremium:
+        pageTitle: "Premium Pessoal"
+        currentPlan: "Seu plano atual: "
+        features:
+          noAdsOnDashboard: "Sem anúncios no painel da Loritta"
+          customProfileBackground: "Faça seu PRÓPRIO background para o \"+perfil\""
+          customEmojisInAboutMe: "Emojis customizados no Sobre Mim do seu \"+perfil\""
+          customEmojisInEmojiFight: "Emojis customizados no Emoji Fight"
+          noDailyInactivityTax: "Sem taxa de inatividade do daily"
+          maxDailyDreams: "Sonhos máximos que você pode conseguir no daily"
+          loriReputationRetribution: "Chance da Lori te dar uma reputação ao você dar uma reputação para outro usuário"
+          coinFlipTax: "Taxa do coin flip"
+          thirdPartyTransferTax: "Taxa de transferência em bots que usam a API da Loritta"
+          loraffaTax: "Taxa da Lorifa"
+          lotterittaTax: "Taxa da Loteritta"
+        values:
+          noTax: "Sem taxa"
+
+      # Server Premium page
+      serverPremium:
+        pageTitle: "Premium para Servidores"
+        currentPlan: "Plano atual do servidor: "
+        features:
+          youtubeAndTwitchChannels: "Canais do YouTube/Twitch/Bluesky"
+          premiumTwitchTracking: "Acompanhamentos Premium de Contas da Twitch"
+          memberCounterChannels: "Canais com contadores de membros"
+          exclusiveBadge: "Badge EXCLUSIVA no \"+perfil\" para os membros do seu servidor"
+          maxLevelUpRoles: "Máximo de cargos de Level Up"
+          dailyMultiplier: "Multiplicador de dailies de sonhos para membros do seu servidor"
+          dropGuildInfo: "Informações do seu Servidor nas transações de drops"
+          taxFreeFridays: "Sextas sem taxa"
+          taxFreeSaturdays: "Sábados sem taxa"
+
+      # Key management (guildPremiumKeysAndPremiumInfoPlan.kt)
+      keyManagement:
+        currentServerPlan: "Plano Atual do Servidor"
+        keyLabel: "Key (R$ {keyValue, number, #,##0.00})"
+        expiresIn: "Expirará em {expirationDate}"
+        deactivateButton: "Desativar"
+        activateButton: "Ativar"
+
+      # Buy route handlers
+      buy:
+        invalidPlan: "Plano inválido!"
+        duration:
+          xDays: "({days,plural, one {# dia} other {# dias}})"
+          annual: "(Anual)"
+        paymentDescription:
+          userPremium: "Loritta Premium ({planName} {durationDescription}) - {username} ({userId})"
+          serverPremium: "Premium para Servidores ({planName} {durationDescription}) - {username} ({userId})"
+        planNameForPayment:
+          recommended: "Recomendado"
+          complete: "Completo"
+          premium: "Premium"

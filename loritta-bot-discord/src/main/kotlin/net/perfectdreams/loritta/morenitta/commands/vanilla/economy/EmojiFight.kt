@@ -22,7 +22,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.*
 import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.TransactionType
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.common.utils.UserPremiumPlan
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
@@ -68,7 +68,7 @@ class EmojiFight(
     suspend fun start() {
         if (entryPrice != null) {
             // This always checks the FREE REWARD since other FREE REWARD users may join the emoji fight
-            val tax = (entryPrice * (1.0 - UserPremiumPlans.Free.totalCoinFlipReward)).toLong()
+            val tax = (entryPrice * (1.0 - UserPremiumPlan.Free.totalCoinFlipReward)).toLong()
 
             if (tax == 0L) {
                 context.reply(false) {
@@ -388,7 +388,7 @@ class EmojiFight(
 
             val randomEmoji = loritta.newSuspendedTransaction {
                 val emojiFightEmoji = loritta._getLorittaProfile(user.idLong)?.settings?.emojiFightEmoji
-                val donationPlan = UserPremiumPlans.getPlanFromValue(loritta._getActiveMoneyFromDonations(user.idLong))
+                val donationPlan = loritta.getUserPremiumPlan(user.idLong)
 
                 if (donationPlan.customEmojisInEmojiFight && emojiFightEmoji != null) {
                     emojiFightEmoji
@@ -457,9 +457,7 @@ class EmojiFight(
             }
 
             if (entryPrice != null) {
-                val selfActiveDonations = loritta._getActiveMoneyFromDonations(winner.key.idLong)
-
-                val selfPlan = UserPremiumPlans.getPlanFromValue(selfActiveDonations)
+                val selfPlan = loritta.getUserPremiumPlan(winner.key.idLong)
 
                 val winnerProfile = userProfiles[winner.key]!!
                 val taxPercentage = (1.0.toBigDecimal() - SonhosUtils.getSpecialTotalCoinFlipReward(context.guildOrNull, selfPlan.totalCoinFlipReward).value.toBigDecimal()).toDouble() // Avoid rounding errors

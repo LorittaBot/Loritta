@@ -1,0 +1,179 @@
+// Hidden radio inputs for billing toggle
+.billing-toggle-radio {
+    display: none;
+}
+
+// Billing toggle pill wrapper
+.premium-billing-toggle-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1.5em;
+}
+
+.premium-billing-toggle {
+    display: inline-flex;
+    align-items: center;
+    background: var(--card-background-color);
+    border: 1px solid var(--card-border-color);
+    border-radius: 999px;
+    padding: 4px;
+
+    .billing-option {
+        padding: 0.5em 1.5em;
+        border-radius: 999px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: background 0.2s, color 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4em;
+        user-select: none;
+    }
+
+    .billing-discount-badge {
+        background: #298546;
+        color: white;
+        font-size: 0.75em;
+        font-weight: bold;
+        padding: 0.15em 0.5em;
+        border-radius: 999px;
+    }
+}
+
+// Toggle highlight rules
+#billing-monthly:checked ~ .premium-billing-toggle-wrapper .billing-option[for="billing-monthly"] {
+    background: var(--loritta-blue);
+    color: white;
+}
+
+#billing-annual:checked ~ .premium-billing-toggle-wrapper .billing-option[for="billing-annual"] {
+    background: var(--loritta-blue);
+    color: white;
+
+    .billing-discount-badge {
+        background: white;
+        color: var(--loritta-blue);
+    }
+}
+
+// Content switching: default is monthly shown, annual hidden
+.premium-plans-wrapper .billing-annual-content {
+    display: none;
+}
+
+#billing-annual:checked ~ .premium-plans-wrapper .billing-monthly-content {
+    display: none;
+}
+
+#billing-annual:checked ~ .premium-plans-wrapper .billing-annual-content {
+    display: block;
+}
+
+.premium-plans-wrapper {
+    display: flex;
+    gap: 1.5em;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 2em;
+
+    .premium-plan-card {
+        display: flex;
+        flex-direction: column;
+        text-align: left;
+        padding: 1.5em;
+        flex: 1;
+        min-width: 250px;
+        max-width: 350px;
+        position: relative;
+
+        background-color: var(--card-background-color);
+        border: 1px solid var(--card-border-color);
+        border-top-color: var(--card-border-highlight-color);
+        border-radius: var(--nice-border-radius);
+
+        &.highlighted {
+            border: 2px solid #f0a030;
+        }
+
+        .premium-plan-popular-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #f0a030;
+            color: #1a1a2e;
+            font-size: 0.75em;
+            font-weight: bold;
+            padding: 0.25em 0.75em;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .premium-plan-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5em;
+            margin-bottom: 0.75em;
+
+            .premium-plan-name {
+                margin: 0;
+                font-size: 1.25em;
+            }
+
+            .premium-plan-best-value-tag {
+                background: rgba(240, 160, 48, 0.2);
+                color: #f0a030;
+                font-size: 0.75em;
+                font-weight: bold;
+                padding: 0.2em 0.5em;
+                border-radius: 4px;
+            }
+        }
+
+        .premium-plan-price {
+            margin-bottom: 0.5em;
+
+            .premium-plan-price-value {
+                font-size: 1.75em;
+                font-weight: bold;
+                color: var(--loritta-blue);
+            }
+
+            .premium-plan-price-period {
+                font-size: 0.9em;
+                opacity: 0.7;
+            }
+        }
+
+        .premium-plan-price-comparison {
+            font-size: 0.85em;
+            opacity: 0.7;
+            margin: 0 0 1em 0;
+
+            .premium-plan-original-price {
+                text-decoration: line-through;
+            }
+        }
+
+        .premium-plan-features {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 1.25em 0;
+
+            li {
+                padding: 0.3em 0;
+
+                .premium-plan-feature-check {
+                    color: #43b581;
+                    margin-right: 0.5em;
+                }
+            }
+        }
+
+        // Push billing content (price + button) to the bottom of the card
+        .billing-monthly-content,
+        .billing-annual-content {
+            margin-top: auto;
+        }
+    }
+}

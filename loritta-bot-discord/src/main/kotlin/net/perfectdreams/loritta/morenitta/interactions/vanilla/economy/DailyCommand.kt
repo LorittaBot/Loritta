@@ -1,7 +1,5 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy
 
-import dev.minn.jda.ktx.interactions.components.Container
-import dev.minn.jda.ktx.interactions.components.TextDisplay
 import kotlinx.datetime.*
 import kotlinx.datetime.TimeZone
 import net.dv8tion.jda.api.interactions.IntegrationType
@@ -16,7 +14,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.WebsiteDiscountCoupons
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.DailyTaxThresholds
 import net.perfectdreams.loritta.common.utils.GACampaigns
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.common.utils.UserPremiumPlan
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
@@ -33,7 +31,6 @@ import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.selectAll
 import java.time.OffsetDateTime
-import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.util.*
@@ -171,7 +168,7 @@ class DailyCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 // Check if the user is in a daily tax bracket and, if yes, tell to the user about it
                 if (currentUserThreshold != null) {
                     val activeUserPayments = context.loritta.pudding.payments.getActiveMoneyFromDonations(UserId(context.user.idLong))
-                    val activeUserPremiumPlan = UserPremiumPlans.getPlanFromValue(activeUserPayments)
+                    val activeUserPremiumPlan = UserPremiumPlan.getPlanFromValue(activeUserPayments)
 
                     if (activeUserPremiumPlan.hasDailyInactivityTax) {
                         if (userLastDailyReward != null) {

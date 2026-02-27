@@ -5,7 +5,7 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.common.utils.UserPremiumPlan
 import net.perfectdreams.loritta.common.website.Ads
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -32,7 +32,7 @@ abstract class LoriDevelopersDocsDashboardView(
     path: String,
     internal val legacyBaseLocale: LegacyBaseLocale,
     internal val userIdentification: UserSession?,
-    internal val userPremiumPlan: UserPremiumPlans,
+    internal val userPremiumPlan: UserPremiumPlan,
     internal val colorTheme: ColorTheme,
     private val sidebarCategories: List<SidebarCategory>,
 ) : BaseView(

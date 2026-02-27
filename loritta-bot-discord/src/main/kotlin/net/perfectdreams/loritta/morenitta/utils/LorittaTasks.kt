@@ -12,14 +12,9 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 class LorittaTasks(val loritta: LorittaBot) {
-	lateinit var DAILY_TAX_TASK: DailyTaxTask
-
 	fun startTasks() {
-		DAILY_TAX_TASK = DailyTaxTask(loritta)
-
 		scheduleWithFixedDelay(SponsorsSyncTask(loritta), 0L, 1L, TimeUnit.MINUTES)
 		scheduleWithFixedDelay(InternalAnalyticSender(loritta), 0L, 15L, TimeUnit.SECONDS)
-		scheduleWithFixedDelay(DAILY_TAX_TASK, 0L, 15L, TimeUnit.SECONDS)
 		scheduleWithFixedDelay(DeleteOldStoredMessagesTask(loritta), 0L, 1L, TimeUnit.HOURS)
 
 		if (loritta.isMainInstance) {

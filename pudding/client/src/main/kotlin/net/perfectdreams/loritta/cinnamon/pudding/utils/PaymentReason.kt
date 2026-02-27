@@ -6,5 +6,7 @@ enum class PaymentReason {
     GUILD_ITEM,
     SPONSORED,
     SONHOS_BUNDLE,
-    ITEM_BUNDLE
+    ITEM_BUNDLE,
+    USER_PREMIUM_KEY,
+    SERVER_PREMIUM_KEY
 }

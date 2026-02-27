@@ -6,7 +6,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.DonationKeys
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.AlwaysTrackTwitchAccounts
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.AuthorizedTwitchAccounts
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.PremiumTrackTwitchAccounts
-import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
+import net.perfectdreams.loritta.common.utils.ServerPremiumPlan
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.DonationKey
 import net.perfectdreams.loritta.serializable.config.TwitchAccountTrackState
@@ -15,7 +15,6 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
 import java.time.Duration
 import java.time.Instant
-import kotlin.math.ceil
 
 object TwitchWebUtils {
     suspend fun getCachedUsersInfoById(loritta: LorittaBot, vararg ids: Long): List<net.perfectdreams.switchtwitch.data.TwitchUser> {
@@ -133,9 +132,8 @@ object TwitchWebUtils {
             val valueOfTheDonationKeysEnabledOnThisGuild = DonationKey.find { DonationKeys.activeIn eq guildId and (DonationKeys.expiresAt greaterEq System.currentTimeMillis()) }
                 .toList()
                 .sumOf { it.value }
-                .let { ceil(it) }
 
-            val plan = ServerPremiumPlans.getPlanFromValue(valueOfTheDonationKeysEnabledOnThisGuild)
+            val plan = ServerPremiumPlan.getPlanFromValue(valueOfTheDonationKeysEnabledOnThisGuild)
 
             if (plan.maxUnauthorizedTwitchChannels != 0) {
                 // If the plan has a maxUnauthorizedTwitchChannels != 0, now we need to get ALL premium tracks of the guild...

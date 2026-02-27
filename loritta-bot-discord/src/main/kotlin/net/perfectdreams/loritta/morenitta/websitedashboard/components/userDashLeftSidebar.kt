@@ -9,7 +9,7 @@ import kotlinx.html.p
 import kotlinx.html.select
 import kotlinx.html.style
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.common.utils.UserPremiumPlan
 import net.perfectdreams.luna.modals.EmbeddedModal
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -22,7 +22,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.utils.openModalOnCli
 fun FlowContent.userDashLeftSidebarEntries(
     lorittaBot: LorittaBot,
     i18nContext: I18nContext,
-    userPremiumPlans: UserPremiumPlans,
+    userPremiumPlan: UserPremiumPlan,
     selectedUserSection: UserDashboardSection
 ) {
     a(classes = "entry loritta-logo", href = lorittaBot.config.loritta.website.url.removeSuffix("/") + "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/") {
@@ -32,6 +32,7 @@ fun FlowContent.userDashLeftSidebarEntries(
     leftSidebarHr()
 
     aDashboardSidebarEntry(i18nContext, "/", i18nContext.get(DashboardI18nKeysData.ChooseAServer.YourServers), SVGIcons.House, selectedUserSection == UserDashboardSection.CHOOSE_YOUR_SERVER, false)
+    aDashboardSidebarEntry(i18nContext, "/premium", i18nContext.get(DashboardI18nKeysData.PremiumKeys.UserPremium.PageTitle), SVGIcons.CrownSimple, selectedUserSection == UserDashboardSection.USER_PREMIUM_KEYS, false)
     aDashboardSidebarEntry(i18nContext, "/user-app", i18nContext.get(DashboardI18nKeysData.PocketLoritta.Title), SVGIcons.DiamondsFour, selectedUserSection == UserDashboardSection.POCKET_LORITTA, false)
 
     a(classes = "entry section-entry", href = "https://sparklypower.net/?utm_source=loritta&utm_medium=loritta-dashboard&utm_campaign=sparklylori&utm_content=user-profile-sidebar") {

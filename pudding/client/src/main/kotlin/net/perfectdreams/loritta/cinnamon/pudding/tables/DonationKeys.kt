@@ -7,7 +7,7 @@ import org.jetbrains.exposed.dao.id.LongIdTable
 object DonationKeys : LongIdTable() {
 	val activeIn = optReference("active_in", ServerConfigs).index()
 	val userId = long("user").index()
-	val value = double("value")
+	val value = integer("value")
 	val expiresAt = long("expires_at")
 	val metadata = jsonb("metadata").nullable()
 }

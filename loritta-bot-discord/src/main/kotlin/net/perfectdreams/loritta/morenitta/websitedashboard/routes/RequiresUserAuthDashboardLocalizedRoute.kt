@@ -15,7 +15,7 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserPocketLorittaSettings
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserWebsiteSettings
 import net.perfectdreams.loritta.common.utils.LorittaColors
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.common.utils.UserPremiumPlan
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.LorittaDiscordOAuth2AuthorizeScopeURL
@@ -45,7 +45,7 @@ abstract class RequiresUserAuthDashboardLocalizedRoute(website: LorittaDashboard
 
         try {
             val (userPremiumPlan, theme, settings) = website.loritta.transaction {
-                val userPremiumPlan = UserPremiumPlans.getPlanFromValue(website.loritta._getActiveMoneyFromDonations(session.userId))
+                val userPremiumPlan = website.loritta.getUserPremiumPlan(session.userId)
 
                 val theme = UserWebsiteSettings.selectAll().where {
                     UserWebsiteSettings.id eq session.userId
@@ -79,7 +79,7 @@ abstract class RequiresUserAuthDashboardLocalizedRoute(website: LorittaDashboard
         call: ApplicationCall,
         i18nContext: I18nContext,
         session: LorittaUserSession,
-        userPremiumPlan: UserPremiumPlans,
+        userPremiumPlan: UserPremiumPlan,
         theme: ColorTheme,
         shimejiSettings: LorittaShimejiSettings
     )

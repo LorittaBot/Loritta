@@ -16,7 +16,7 @@ import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.banappeals.BanAppealResult
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BanAppeals
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.common.utils.UserPremiumPlan
 import net.perfectdreams.luna.toasts.EmbeddedToast
 import net.perfectdreams.loritta.morenitta.banappeals.BanAppealsUtils
 import net.perfectdreams.loritta.morenitta.banappeals.BanAppealsUtils.createAppealReceivedMessage
@@ -74,7 +74,7 @@ class PostBanAppealsRoute(website: LorittaDashboardWebServer) : RequiresUserAuth
         )
     }
 
-    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: LorittaUserSession, userPremiumPlan: UserPremiumPlans, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
+    override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: LorittaUserSession, userPremiumPlan: UserPremiumPlan, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
         try {
             val request = Json.decodeFromString<BanAppealRequest>(call.receiveText())
             if (request.whatDidYouDo.length !in 1..BanAppealsUtils.FIELD_CHARACTER_LIMIT || request.whyDidYouBreakThem.length !in 1..BanAppealsUtils.FIELD_CHARACTER_LIMIT || request.whyShouldYouBeUnbanned.length !in 1..BanAppealsUtils.FIELD_CHARACTER_LIMIT || request.additionalComments.length !in 0..BanAppealsUtils.FIELD_CHARACTER_LIMIT) {

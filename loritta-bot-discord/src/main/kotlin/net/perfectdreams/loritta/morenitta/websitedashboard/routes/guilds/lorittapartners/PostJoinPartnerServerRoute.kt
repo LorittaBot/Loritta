@@ -10,8 +10,8 @@ import net.dv8tion.jda.api.entities.Member
 import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.LorittaPartners
-import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.common.utils.ServerPremiumPlan
+import net.perfectdreams.loritta.common.utils.UserPremiumPlan
 import net.perfectdreams.loritta.morenitta.rpc.LorittaRPC
 import net.perfectdreams.loritta.morenitta.rpc.execute
 import net.perfectdreams.loritta.morenitta.rpc.payloads.CreatePartnerInviteRequest
@@ -40,11 +40,11 @@ class PostJoinPartnerServerRoute(website: LorittaDashboardWebServer) : RequiresG
         call: ApplicationCall,
         i18nContext: I18nContext,
         session: LorittaUserSession,
-        userPremiumPlan: UserPremiumPlans,
+        userPremiumPlan: UserPremiumPlan,
         theme: ColorTheme,
         shimejiSettings: LorittaShimejiSettings,
         guild: Guild,
-        guildPremiumPlan: ServerPremiumPlans,
+        guildPremiumPlan: ServerPremiumPlan,
         member: Member
     ) {
         // Verify the guild is an approved partner

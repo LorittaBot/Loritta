@@ -7,18 +7,15 @@ import io.ktor.server.request.*
 import io.ktor.server.util.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.LongAsStringSerializer
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.UserSnowflake
-import net.dv8tion.jda.api.utils.TimeFormat
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ThirdPartySonhosTransferRequests
 import net.perfectdreams.loritta.common.utils.TokenType
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.SonhosPayExecutor
@@ -56,7 +53,7 @@ class PostTransferSonhosRoute(m: LorittaBot) : LoriPublicAPIGuildRoute(
 
         val request = Json.decodeFromString<TransferSonhosRequest>(call.receiveText())
         if (request.receiverId != tokenInfo.creatorId) {
-            val premium = UserPremiumPlans.getPlanFromValue(m.getActiveMoneyFromDonations(tokenInfo.creatorId))
+            val premium = m.getUserPremiumPlan(tokenInfo.creatorId)
             if (!premium.sonhosAPIAccess) {
                 call.respondJson(
                     Json.encodeToString(

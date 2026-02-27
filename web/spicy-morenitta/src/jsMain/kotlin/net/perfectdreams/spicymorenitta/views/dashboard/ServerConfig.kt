@@ -1,7 +1,7 @@
 package net.perfectdreams.spicymorenitta.views.dashboard
 
 import kotlinx.serialization.Serializable
-import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
+import net.perfectdreams.loritta.common.utils.ServerPremiumPlan
 import utils.LoriColor
 
 object ServerConfig {
@@ -55,7 +55,7 @@ object ServerConfig {
 	@Serializable
 	class DonationKey(
 			val id: Long,
-			val value: Double,
+			val value: Int,
 			val user: SelfMember? = null,
 			val expiresAt: Long,
 			val activeIn: MiniGuild? = null
@@ -278,5 +278,5 @@ object ServerConfig {
 	)
 }
 
-fun Collection<ServerConfig.DonationKey>.getValue() = this.sumByDouble { it.value }
-fun Collection<ServerConfig.DonationKey>.getPlan() = ServerPremiumPlans.getPlanFromValue(this.getValue())
+fun Collection<ServerConfig.DonationKey>.getValue() = this.sumOf { it.value }
+fun Collection<ServerConfig.DonationKey>.getPlan() = ServerPremiumPlan.getPlanFromValue(this.getValue())

@@ -16,7 +16,7 @@ import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedDiscordUserIdentifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserWebsiteSessions
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.common.utils.UserPremiumPlan
 import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -189,6 +189,10 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.sonhosshop.Po
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.sonhosshop.PostSonhosShopApplyCouponUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.shipeffects.ShipEffectsUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.sonhosshop.SonhosShopUserDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.userpremiumkeys.PostBuyUserPremiumKeyUserDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.userpremiumkeys.UserPremiumKeysUserDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.serverpremiumkeys.PostBuyServerPremiumKeyGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.serverpremiumkeys.ServerPremiumKeysGuildDashboardRoute
 import org.apache.commons.codec.digest.DigestUtils
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
@@ -269,6 +273,8 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
         SonhosShopUserDashboardRoute(this),
         PostSonhosShopApplyCouponUserDashboardRoute(this),
         PostSonhosShopBuyUserDashboardRoute(this),
+        UserPremiumKeysUserDashboardRoute(this),
+        PostBuyUserPremiumKeyUserDashboardRoute(this),
         PostServerListUserDashboardRoute(this),
         PostFavoriteGuildUserDashboardRoute(this),
         PostUnfavoriteGuildUserDashboardRoute(this),
@@ -335,6 +341,10 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
 
         // Overview
         OverviewConfigurationGuildDashboardRoute(this),
+
+        // Server Premium Keys
+        ServerPremiumKeysGuildDashboardRoute(this),
+        PostBuyServerPremiumKeyGuildDashboardRoute(this),
 
         // Command Channels
         CommandChannelsConfigurationGuildDashboardRoute(this),
@@ -802,7 +812,7 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
         }
     }
 
-    fun shouldDisplayAds(call: ApplicationCall, userPremiumPlan: UserPremiumPlans, overrideAdsResult: Boolean?): Boolean {
+    fun shouldDisplayAds(call: ApplicationCall, userPremiumPlan: UserPremiumPlan, overrideAdsResult: Boolean?): Boolean {
         if (overrideAdsResult != null)
             return overrideAdsResult
 

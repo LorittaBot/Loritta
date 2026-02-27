@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.lorittapartners
 
 import io.ktor.server.application.*
-import kotlinx.html.b
 import kotlinx.html.div
 import kotlinx.html.h1
 import kotlinx.html.h2
@@ -14,14 +13,11 @@ import net.dv8tion.jda.api.entities.Member
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.LorittaPartners
 import net.perfectdreams.loritta.cinnamon.pudding.tables.PartnerApplications
-import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
-import net.perfectdreams.loritta.i18n.I18nKeys
+import net.perfectdreams.loritta.common.utils.ServerPremiumPlan
+import net.perfectdreams.loritta.common.utils.UserPremiumPlan
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.lorittapartners.PartnerApplicationsUtils
 import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls
-import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls.handleI18nString
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.GuildDashboardSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
@@ -47,11 +43,11 @@ class LorittaPartnersOverviewRoute(website: LorittaDashboardWebServer) : Require
         call: ApplicationCall,
         i18nContext: I18nContext,
         session: LorittaUserSession,
-        userPremiumPlan: UserPremiumPlans,
+        userPremiumPlan: UserPremiumPlan,
         theme: ColorTheme,
         shimejiSettings: LorittaShimejiSettings,
         guild: Guild,
-        guildPremiumPlan: ServerPremiumPlans,
+        guildPremiumPlan: ServerPremiumPlan,
         member: Member
     ) {
         // Check if guild has any existing application

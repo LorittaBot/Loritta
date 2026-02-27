@@ -84,7 +84,7 @@ class SpicyMorenitta : Logging {
 		UpdateNavbarSizePostRender("/blog", false, false),
 		UpdateNavbarSizePostRender("/guidelines", false, false),
 		CommandsRoute(this),
-		DonateRoute(this),
+
 		DailyRoute(this),
 		BackgroundsListDashboardRoute(this),
 		AllBackgroundsListDashboardRoute(this),

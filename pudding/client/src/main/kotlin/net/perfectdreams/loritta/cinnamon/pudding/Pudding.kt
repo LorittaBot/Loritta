@@ -419,7 +419,8 @@ class Pudding(
             AuditLogEntries,
             PartnerApplications,
             LorittaPartners,
-            LorittaPartnersServerInvites
+            LorittaPartnersServerInvites,
+            UserPremiumKeys
         )
 
         if (schemas.isNotEmpty()) {

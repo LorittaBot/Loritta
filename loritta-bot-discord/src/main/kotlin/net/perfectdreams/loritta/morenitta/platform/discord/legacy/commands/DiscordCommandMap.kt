@@ -13,7 +13,6 @@ import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.locale.LocaleStringData
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.LorittaPermission
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.api.commands.*
@@ -21,8 +20,6 @@ import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.Renam
 import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.RenameEmojiCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.economy.*
 import net.perfectdreams.loritta.morenitta.commands.vanilla.`fun`.GiveawayCommand
-import net.perfectdreams.loritta.morenitta.commands.vanilla.`fun`.GiveawayEndCommand
-import net.perfectdreams.loritta.morenitta.commands.vanilla.`fun`.GiveawayRerollCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.images.AsciiCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.images.CocieloChavesCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.images.EmojiMashupCommand
@@ -223,15 +220,9 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 				// Skip cooldown if the user is not a Loritta supervisor...
 				if (!context.user.isLorittaSupervisor(context.loritta.lorittaShards)) {
 					var commandCooldown = command.cooldown
-					val donatorPaid = loritta.getActiveMoneyFromDonations(ev.author.idLong)
+					val plan = loritta.getUserPremiumPlan(ev.author.idLong)
 					val guildId = ev.guild?.idLong
-					val guildPaid = guildId?.let { serverConfig.getActiveDonationKeysValue(loritta) } ?: 0.0
-
-					val plan = UserPremiumPlans.getPlanFromValue(donatorPaid)
-
-					if (plan.lessCooldown) {
-						commandCooldown /= 2
-					}
+					val guildPaid = guildId?.let { serverConfig.getActiveDonationKeysValue(loritta) } ?: 0
 
 					val (cooldownStatus, cooldownTriggeredAt, cooldown) = loritta.commandCooldownManager.checkCooldown(
 						ev,

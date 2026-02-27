@@ -22,7 +22,7 @@ import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.GACampaigns
 import net.perfectdreams.loritta.common.utils.TransactionType
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.common.utils.UserPremiumPlan
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.Profile
@@ -93,11 +93,8 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
             if (VacationModeUtils.checkIfUserIsOnVacation(context, invitedUser, false))
                 return
 
-            val selfActiveDonations = loritta.getActiveMoneyFromDonations(context.user.idLong)
-            val otherActiveDonations = loritta.getActiveMoneyFromDonations(invitedUser.idLong)
-
-            val selfPlan = UserPremiumPlans.getPlanFromValue(selfActiveDonations)
-            val otherPlan = UserPremiumPlans.getPlanFromValue(otherActiveDonations)
+            val selfPlan = loritta.getUserPremiumPlan(context.user.idLong)
+            val otherPlan = loritta.getUserPremiumPlan(invitedUser.idLong)
 
             val selfUserProfile = context.lorittaUser.profile
 
@@ -125,11 +122,11 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                     1.0
                 )
             } else {
-                val specialTotalRewardChange = loritta.transaction { SonhosUtils.getSpecialTotalCoinFlipReward(context.guildOrNull, UserPremiumPlans.Free.totalCoinFlipReward) }
+                val specialTotalRewardChange = loritta.transaction { SonhosUtils.getSpecialTotalCoinFlipReward(context.guildOrNull, UserPremiumPlan.Free.totalCoinFlipReward) }
 
                 taxResult = when (specialTotalRewardChange) {
                     is SonhosUtils.SpecialTotalCoinFlipReward.NoChange -> {
-                        CoinFlipTaxResult.Default(UserPremiumPlans.Free.totalCoinFlipReward)
+                        CoinFlipTaxResult.Default(UserPremiumPlan.Free.totalCoinFlipReward)
                     }
 
                     is SonhosUtils.SpecialTotalCoinFlipReward.PremiumCommunityOverride -> {

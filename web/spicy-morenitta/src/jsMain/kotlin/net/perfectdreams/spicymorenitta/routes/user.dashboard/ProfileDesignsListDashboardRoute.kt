@@ -24,7 +24,7 @@ import kotlinx.html.js.onClickFunction
 import kotlinx.html.p
 import kotlinx.html.style
 import kotlinx.serialization.json.JSON
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.common.utils.UserPremiumPlan
 import net.perfectdreams.loritta.serializable.ProfileDesign
 import net.perfectdreams.loritta.serializable.ProfileSectionsResponse
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
@@ -162,7 +162,7 @@ class ProfileDesignsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSize
                                 id = "select-active-background-file-input"
 
                                 onClickFunction = {
-                                    val plan = UserPremiumPlans.getPlanFromValue(donationsWrapper.value)
+                                    val plan = UserPremiumPlan.getPlanFromValue(donationsWrapper.value)
 
                                     if (!plan.customBackground) {
                                         it.preventDefault()

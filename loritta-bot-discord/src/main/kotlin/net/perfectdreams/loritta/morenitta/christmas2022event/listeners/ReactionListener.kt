@@ -114,7 +114,7 @@ class ReactionListener(val m: LorittaBot) : ListenerAdapter() {
                         is LorittaChristmas2022Event.EventReward.PremiumKeyReward -> {
                             DonationKeys.insert {
                                 it[DonationKeys.userId] = event.userIdLong
-                                it[value] = 100.0
+                                it[value] = 100
                                 it[expiresAt] = System.currentTimeMillis() + (Constants.DONATION_ACTIVE_MILLIS * 3)
                                 it[metadata] = jsonObject("type" to "LorittaChristmas2022Event").toString()
                             }

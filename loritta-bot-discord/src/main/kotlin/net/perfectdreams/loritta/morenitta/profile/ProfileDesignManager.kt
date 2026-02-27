@@ -26,9 +26,9 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.HiddenUserBadges
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.MediaTypeUtils
-import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
+import net.perfectdreams.loritta.common.utils.ServerPremiumPlan
 import net.perfectdreams.loritta.common.utils.StoragePaths
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.common.utils.UserPremiumPlan
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.Profile
@@ -229,7 +229,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 
 		val equippedBadge = badgesData.firstOrNull { it.id == profileSettings.activeBadge }
 
-		val premiumPlan = UserPremiumPlans.getPlanFromValue(loritta.pudding.payments.getActiveMoneyFromDonations(UserId(userProfile.id.value)))
+		val premiumPlan = UserPremiumPlan.getPlanFromValue(loritta.pudding.payments.getActiveMoneyFromDonations(UserId(userProfile.id.value)))
 
 		val allowedDiscordEmojis = if (premiumPlan.customEmojisInAboutMe)
 			null // Null = All emojis are allowed
@@ -488,7 +488,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 				val donationKeysValue = config.getActiveDonationKeysValueNested()
 				val badgeFile = config.donationConfig?.customBadgeFile
 				val badgeMediaType = config.donationConfig?.customBadgePreferredMediaType
-				if (ServerPremiumPlans.getPlanFromValue(donationKeysValue).hasCustomBadge && badgeFile != null && badgeMediaType != null) {
+				if (ServerPremiumPlan.getPlanFromValue(donationKeysValue).hasCustomBadge && badgeFile != null && badgeMediaType != null) {
 					guildBadges.add(
 						Badge.GuildBadge(
 							loritta,
@@ -715,8 +715,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 
 		if (background.id == Background.CUSTOM_BACKGROUND_ID) {
 			// Custom background
-			val donationValue = loritta.getActiveMoneyFromDonations(userId)
-			val plan = UserPremiumPlans.getPlanFromValue(donationValue)
+			val plan = loritta.getUserPremiumPlan(userId)
 
 			if (plan.customBackground) {
 				val dssNamespace = loritta.dreamStorageService.getCachedNamespaceOrRetrieve()

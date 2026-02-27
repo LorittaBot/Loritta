@@ -67,7 +67,7 @@ object DefaultRoutes {
 		GetMutualGuildsRoute(loritta),
 		GetSelfInfoRoute(loritta),
 		GetUserReputationsRoute(loritta),
-		PostDonationPaymentRoute(loritta),
+
 		PostSearchUsersRoute(loritta),
 		PostUserReputationsRoute(loritta),
 		GetBackgroundRoute(loritta),

@@ -18,7 +18,7 @@ fun FlowContent.prefixPreview(
         session.getEffectiveAvatarUrl(),
         false,
         false,
-        SVGIcons.CheckFat.html.toString()
+        SVGIcons.Check.html.toString()
     ) {
         transformedDiscordText("${prefix}ping", listOf(), listOf(), listOf())
     }
@@ -30,7 +30,7 @@ fun FlowContent.prefixPreview(
         lorittaUser.effectiveAvatarUrl,
         true,
         true,
-        SVGIcons.CheckFat.html.toString()
+        SVGIcons.Check.html.toString()
     ) {
         transformedDiscordText("\uD83C\uDFD3 **|** **Pong!**", listOf(), listOf(), listOf())
     }

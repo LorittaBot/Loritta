@@ -12,12 +12,14 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Payments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosBundles
+import net.perfectdreams.loritta.cinnamon.pudding.tables.UserPremiumKeys
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentReason
 import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.cinnamon.pudding.tables.DonationKeys
 import net.perfectdreams.loritta.morenitta.dao.DonationKey
 import net.perfectdreams.loritta.morenitta.dao.Payment
 import net.perfectdreams.loritta.morenitta.utils.Constants
@@ -29,8 +31,10 @@ import net.perfectdreams.sequins.ktor.BaseRoute
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.update
 import java.awt.Color
 import java.time.Instant
+import java.time.OffsetDateTime
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicLong
@@ -252,45 +256,69 @@ class PostPerfectPaymentsCallbackRoute(val loritta: LorittaBot) : BaseRoute("/ap
 					call.respondJson(jsonObject())
 					return
 				}
-			}
 
-			// Criação de nova key:
-			// LORI-DONATE-MP-InternalTransactionId
-			// Renovação de uma key
-			// LORI-DONATE-MP-RENEW-KEY-KeyId-InternalTransactionId
-			val isKeyRenewal = metadata != null && metadata.obj["renewKey"].nullLong != null
+				if (bundleType == "userPremiumKey") {
+					val planValue = metadataAsObj["planValue"].int
+					val durationYears = metadataAsObj["durationYears"]?.asInt
+					val durationDays = metadataAsObj["durationDays"]?.asInt
 
-			loritta.newSuspendedTransaction {
-				internalPayment.expiresAt = System.currentTimeMillis() + Constants.DONATION_ACTIVE_MILLIS
+					val expiresAt = when {
+						durationYears != null -> OffsetDateTime.now(Constants.LORITTA_TIMEZONE).plusYears(durationYears.toLong())
+						durationDays != null -> OffsetDateTime.now(Constants.LORITTA_TIMEZONE).plusDays(durationDays.toLong())
+						else -> OffsetDateTime.now(Constants.LORITTA_TIMEZONE).plusDays(30)
+					}
 
-				if (internalPayment.reason == PaymentReason.DONATION) {
-					if (isKeyRenewal) {
-						val donationKeyId = metadata!!.obj["renewKey"].long
-						logger.info { "Renewing key $donationKeyId with value ${internalPayment.money.toDouble()} for ${internalPayment.userId}" }
-						val donationKey = DonationKey.findById(donationKeyId)
+					logger.info { "Creating UserPremiumKey with planValue $planValue, durationYears $durationYears, durationDays $durationDays for user ${internalPayment.userId}" }
 
-						if (donationKey == null) {
-							logger.warn { "Key renewal for key $donationKeyId for ${internalPayment.userId} failed! Key doesn't exist! Bug?" }
-							return@newSuspendedTransaction
+					loritta.newSuspendedTransaction {
+						UserPremiumKeys.insert {
+							it[UserPremiumKeys.userId] = internalPayment.userId
+							it[UserPremiumKeys.value] = planValue
+							it[UserPremiumKeys.expiresAt] = expiresAt
+						}
+					}
+
+					sendPaymentApprovedDirectMessage(loritta, internalPayment.userId, loritta.localeManager.getLocaleById("default"), "${loritta.config.loritta.website.url}/br/support")
+
+					call.respondJson(jsonObject())
+					return
+				}
+
+				if (bundleType == "serverPremiumKey") {
+					val planValue = metadataAsObj["planValue"].int
+					val durationYears = metadataAsObj["durationYears"]?.asInt
+					val durationDays = metadataAsObj["durationDays"]?.asInt
+					val guildId = metadataAsObj["guildId"]?.asLong
+
+					val expiresAtMillis = when {
+						durationYears != null -> OffsetDateTime.now(Constants.LORITTA_TIMEZONE).plusYears(durationYears.toLong()).toInstant().toEpochMilli() + 2 * 86_400_000L
+						durationDays != null -> durationDays.toLong() * 86_400_000L + 2 * 86_400_000L + System.currentTimeMillis()
+						else -> 30L * 86_400_000L + 2 * 86_400_000L + System.currentTimeMillis()
+					}
+
+					logger.info { "Creating DonationKey (server premium) with planValue $planValue, durationYears $durationYears, durationDays $durationDays for user ${internalPayment.userId}, guildId $guildId" }
+
+					loritta.newSuspendedTransaction {
+						val donationKey = DonationKey.new {
+							this.userId = internalPayment.userId
+							this.expiresAt = expiresAtMillis
+							this.value = planValue
 						}
 
-						donationKey.expiresAt += 2_764_800_000 // 32 dias
-						internalPayment.expiresAt = donationKey.expiresAt // Fixes bug where key renewals breaks user features due to the difference in the expiration date
-					} else {
-						if (internalPayment.money > 9.99.toBigDecimal()) {
-							logger.info { "Creating donation key with value ${internalPayment.money.toDouble()} for ${internalPayment.userId}" }
-
-							DonationKey.new {
-								this.userId = internalPayment.userId
-								this.expiresAt = System.currentTimeMillis() + 2_764_800_000 // 32 dias
-								this.value = internalPayment.money.toDouble()
+						if (guildId != null) {
+							val serverConfig = loritta.getOrCreateServerConfig(guildId)
+							DonationKeys.update({ DonationKeys.id eq donationKey.id }) {
+								it[DonationKeys.activeIn] = serverConfig.id
 							}
 						}
 					}
+
+					sendPaymentApprovedDirectMessage(loritta, internalPayment.userId, loritta.localeManager.getLocaleById("default"), "${loritta.config.loritta.website.url}/br/support")
+
+					call.respondJson(jsonObject())
+					return
 				}
 			}
-
-			sendPaymentApprovedDirectMessage(loritta, internalPayment.userId, loritta.localeManager.getLocaleById("default"), "${loritta.config.loritta.website.url}support")
 		}
 
 		call.respondJson(jsonObject())

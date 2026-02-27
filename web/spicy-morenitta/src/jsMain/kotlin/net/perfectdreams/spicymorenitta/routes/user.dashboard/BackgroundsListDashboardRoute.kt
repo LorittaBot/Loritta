@@ -25,7 +25,7 @@ import kotlinx.html.p
 import kotlinx.html.style
 import kotlinx.serialization.json.JSON
 import net.perfectdreams.loritta.common.utils.Rarity
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.common.utils.UserPremiumPlan
 import net.perfectdreams.loritta.serializable.*
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
@@ -191,7 +191,7 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
                                 id = "select-active-background-file-input"
 
                                 onClickFunction = {
-                                    val plan = UserPremiumPlans.getPlanFromValue(donationsWrapper.value)
+                                    val plan = UserPremiumPlan.getPlanFromValue(donationsWrapper.value)
 
                                     if (!plan.customBackground) {
                                         it.preventDefault()
@@ -228,7 +228,7 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
                                     if (!activateBackgroundButtonElement.hasClass("button-discord-disabled")) {
                                         activeBackground?.let { activeBackground ->
                                             if (activeBackground.id == "custom") {
-                                                val plan = UserPremiumPlans.getPlanFromValue(donationsWrapper.value)
+                                                val plan = UserPremiumPlan.getPlanFromValue(donationsWrapper.value)
 
                                                 if (!plan.customBackground) {
                                                     Stuff.showPremiumFeatureModal {

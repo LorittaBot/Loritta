@@ -23,7 +23,6 @@ import java.math.BigDecimal
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
-import kotlin.math.ceil
 import kotlin.reflect.KMutableProperty1
 
 class ServerConfig(id: EntityID<Long>) : Entity<Long>(id) {
@@ -96,8 +95,7 @@ class ServerConfig(id: EntityID<Long>) : Entity<Long>(id) {
 	}
 
 	suspend fun getActiveDonationKeysValue(loritta: LorittaBot) = getActiveDonationKeys(loritta).sumOf {
-		// This is a weird workaround that fixes users complaining that 19.99 + 19.99 != 40 (it equals to 39.38()
-		ceil(it.value)
+		it.value
 	}
 
 	fun getActiveDonationKeysNested() = DonationKey.find { DonationKeys.activeIn eq this@ServerConfig.id and (DonationKeys.expiresAt greaterEq System.currentTimeMillis()) }

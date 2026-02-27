@@ -12,7 +12,6 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightParticipants
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.GACampaigns
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.vanilla.economy.EmojiFight
@@ -300,7 +299,7 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
 
         override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             val canUseCustomEmojis = loritta.newSuspendedTransaction {
-                UserPremiumPlans.getPlanFromValue(loritta._getActiveMoneyFromDonations(context.user.idLong)).customEmojisInEmojiFight
+                loritta.getUserPremiumPlan(context.user.idLong).customEmojisInEmojiFight
             }
 
             if (!canUseCustomEmojis) {

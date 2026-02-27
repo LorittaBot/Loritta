@@ -8,7 +8,7 @@ import kotlinx.serialization.json.put
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.TransactionType
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.common.utils.UserPremiumPlan
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
@@ -34,7 +34,7 @@ class LoriEndpointDevelopersDocsView(
     path: String,
     legacyBaseLocale: LegacyBaseLocale,
     userIdentification: UserSession?,
-    userPremiumPlan: UserPremiumPlans,
+    userPremiumPlan: UserPremiumPlan,
     colorTheme: ColorTheme,
     sidebarCategories: List<LoriDevelopersDocsView.SidebarCategory>,
     private val endpointId: String,

@@ -8,7 +8,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.Raffles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.DropsConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.simpletransactions.SimpleSonhosTransactionsLog
-import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
+import net.perfectdreams.loritta.common.utils.ServerPremiumPlan
 import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.serializable.*
 import net.perfectdreams.loritta.serializable.SonhosTransaction
@@ -16,7 +16,6 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.greaterEq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.lessEq
 import java.time.Instant
-import kotlin.math.ceil
 import kotlin.reflect.KClass
 import kotlin.reflect.full.primaryConstructor
 import kotlin.time.Duration.Companion.days
@@ -393,13 +392,12 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
                                 val value = DonationKeys.selectAll().where { DonationKeys.activeIn eq dropsConfig[DropsConfigs.id] and (DonationKeys.expiresAt greaterEq System.currentTimeMillis()) }
                                     .toList()
                                     .sumOf {
-                                        // This is a weird workaround that fixes users complaining that 19.99 + 19.99 != 40 (it equals to 39.38()
-                                        ceil(it[DonationKeys.value])
+                                        it[DonationKeys.value]
                                     }
 
-                                ServerPremiumPlans.getPlanFromValue(value)
+                                ServerPremiumPlan.getPlanFromValue(value)
                             } else {
-                                ServerPremiumPlans.Free
+                                ServerPremiumPlan.Free
                             }
 
                             val showGuildInformationOnTransactions = dropsConfig?.get(DropsConfigs.showGuildInformationOnTransactions)
@@ -434,13 +432,12 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
                                 val value = DonationKeys.selectAll().where { DonationKeys.activeIn eq dropsConfig[DropsConfigs.id] and (DonationKeys.expiresAt greaterEq System.currentTimeMillis()) }
                                     .toList()
                                     .sumOf {
-                                        // This is a weird workaround that fixes users complaining that 19.99 + 19.99 != 40 (it equals to 39.38()
-                                        ceil(it[DonationKeys.value])
+                                        it[DonationKeys.value]
                                     }
 
-                                ServerPremiumPlans.getPlanFromValue(value)
+                                ServerPremiumPlan.getPlanFromValue(value)
                             } else {
-                                ServerPremiumPlans.Free
+                                ServerPremiumPlan.Free
                             }
 
                             val showGuildInformationOnTransactions = dropsConfig?.get(DropsConfigs.showGuildInformationOnTransactions)

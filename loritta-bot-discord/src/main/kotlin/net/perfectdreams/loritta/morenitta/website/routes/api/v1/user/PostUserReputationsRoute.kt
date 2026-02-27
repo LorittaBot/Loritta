@@ -20,7 +20,6 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Reputations
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.LorittaPermission
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.dao.Reputation
@@ -212,8 +211,8 @@ class PostUserReputationsRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRou
 
 			giveReputation(userIdentification.id.toLong(), ip, userIdentification.email!!, receiver.toLong(), content)
 
-			val donatorPaid = loritta.getActiveMoneyFromDonations(userIdentification.id.toLong())
-			var randomChance = UserPremiumPlans.getPlanFromValue(donatorPaid).loriReputationRetribution
+			val plan = loritta.getUserPremiumPlan(userIdentification.id)
+			val randomChance = plan.loriReputationRetribution
 
 			if (chance(randomChance)) { // Lori é fofis e retribuiu reputações :eu_te_moido:
 				GlobalScope.launch(loritta.coroutineDispatcher) {

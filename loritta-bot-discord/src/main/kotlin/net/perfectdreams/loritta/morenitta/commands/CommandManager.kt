@@ -15,7 +15,6 @@ import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.locale.LocaleStringData
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.LorittaPermission
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.nashorn.NashornCommand
@@ -226,15 +225,10 @@ class CommandManager(val loritta: LorittaBot) {
 				// Skip cooldown if the user is not a Loritta supervisor...
 				if (!context.userHandle.isLorittaSupervisor(context.loritta.lorittaShards)) {
 					var commandCooldown = command.cooldown
-					val donatorPaid = loritta.getActiveMoneyFromDonations(ev.author.idLong)
 					val guildId = ev.guild?.idLong
-					val guildPaid = guildId?.let { serverConfig.getActiveDonationKeysValue(loritta) } ?: 0.0
+					val guildPaid = guildId?.let { serverConfig.getActiveDonationKeysValue(loritta) } ?: 0
 
-					val plan = UserPremiumPlans.getPlanFromValue(donatorPaid)
-
-					if (plan.lessCooldown) {
-						commandCooldown /= 2
-					}
+					val plan = loritta.getUserPremiumPlan(ev.author.idLong)
 
 					val (cooldownStatus, cooldownTriggeredAt, cooldown) = loritta.commandCooldownManager.checkCooldown(
 						ev,

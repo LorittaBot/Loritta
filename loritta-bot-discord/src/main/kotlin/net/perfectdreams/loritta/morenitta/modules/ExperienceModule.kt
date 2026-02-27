@@ -15,7 +15,6 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.R
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.NotificationType
-import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.common.utils.placeholders.Placeholders
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -96,12 +95,6 @@ class ExperienceModule(val loritta: LorittaBot) : MessageReceivedModule {
 					val gainedXp = Math.min(35, LorittaBot.RANDOM.nextInt(Math.max(1, nonRepeatedCharsMessage.length / 7), (Math.max(2, nonRepeatedCharsMessage.length / 4))))
 
 					var globalGainedXp = gainedXp
-
-					val donatorPaid = loritta.getActiveMoneyFromDonations(event.author.idLong)
-					if (donatorPaid != 0.0) {
-						val plan = ServerPremiumPlans.getPlanFromValue(donatorPaid)
-						globalGainedXp = (globalGainedXp * plan.globalXpMultiplier).toInt()
-					}
 
 					newProfileXp = currentXp + globalGainedXp
 					lastMessageSentHash = event.message.contentStripped.hashCode()

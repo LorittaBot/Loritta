@@ -5,7 +5,6 @@ import kotlinx.html.article
 import kotlinx.html.b
 import kotlinx.html.button
 import kotlinx.html.div
-import kotlinx.html.h2
 import kotlinx.html.i
 import kotlinx.html.img
 import kotlinx.html.span
@@ -18,7 +17,6 @@ import net.perfectdreams.loritta.dashboard.renderer.discordMessageAttachments
 import net.perfectdreams.loritta.dashboard.renderer.discordMessageBlock
 import net.perfectdreams.loritta.dashboard.renderer.discordMessageReaction
 import net.perfectdreams.loritta.dashboard.renderer.discordMessageReactions
-import net.perfectdreams.loritta.dashboard.renderer.discordMessageSidebar
 import net.perfectdreams.loritta.i18n.I18nKeys
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.modules.StarboardModule
@@ -51,7 +49,7 @@ fun FlowContent.starboardStorytime(
                         "https://stuff.loritta.website/dj-arth.png",
                         false,
                         false,
-                        SVGIcons.CheckFat.html.toString()
+                        SVGIcons.Check.html.toString()
                     ) {
                         discordMessageAccessories {
                             discordMessageAttachments(listOf("https://stuff.loritta.website/commands/terminator_anime.png"))
@@ -106,7 +104,7 @@ fun FlowContent.starboardStorytime(
                         lorittaUser.effectiveAvatarUrl,
                         lorittaUser.isBot,
                         true,
-                        SVGIcons.CheckFat.html.toString()
+                        SVGIcons.Check.html.toString()
                     ) {
                         div {
                             svgIcon(SVGIcons.Star) {

@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BotVotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BotVotesUserAvailableNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
+import net.perfectdreams.loritta.cinnamon.pudding.tables.UserPremiumKeys
 import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.LegacyWebsiteVoteSource
@@ -23,6 +24,7 @@ import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.update
 import java.time.Instant
+import java.time.OffsetDateTime
 import java.util.concurrent.TimeUnit
 
 object WebsiteVoteUtils {
@@ -103,10 +105,10 @@ object WebsiteVoteUtils {
 			if (voteCount % 60 == 0L) {
 				// Can give reward!
 				loritta.newSuspendedTransaction {
-					DonationKey.new {
-						this.userId = userId
-						this.expiresAt = System.currentTimeMillis() + Constants.ONE_MONTH_IN_MILLISECONDS
-						this.value = 199.99
+					UserPremiumKeys.insert {
+						it[UserPremiumKeys.userId] = userId
+						it[UserPremiumKeys.value] = 25
+						it[UserPremiumKeys.expiresAt] = OffsetDateTime.now(Constants.LORITTA_TIMEZONE).plusDays(30)
 					}
 				}
 
@@ -117,7 +119,7 @@ object WebsiteVoteUtils {
 								.setColor(Constants.LORITTA_AQUA)
 								.setThumbnail("https://stuff.loritta.website/loritta-gifts-itsgabi.png")
 								.setTitle("Obrigada por votar, e aqui está um presentinho para você... \uD83D\uDC9D")
-								.setDescription("Obrigada por votar em mim, cada voto me ajuda a crescer! ${Emotes.LORI_SMILE}\n\nVocê agora tem $voteCount votos e, como recompensa, você ganhou **$SONHOS_AMOUNT sonhos e uma key premium que você pode ativar nas configurações do seu servidor no meu painel**! ${Emotes.LORI_OWO}\n\nOstente as novidades, você merece por ter me ajudado tanto! ${Emotes.LORI_TEMMIE}\n\nContinue votando e sendo uma pessoa incrível! ${Emotes.LORI_HAPPY}")
+								.setDescription("Obrigada por votar em mim, cada voto me ajuda a crescer! ${Emotes.LORI_SMILE}\n\nVocê agora tem $voteCount votos e, como recompensa, você ganhou **$SONHOS_AMOUNT sonhos e as vantagens premium da Loritta do plano básico**! ${Emotes.LORI_OWO}\n\nOstente as novidades, você merece por ter me ajudado tanto! ${Emotes.LORI_TEMMIE}\n\nContinue votando e sendo uma pessoa incrível! ${Emotes.LORI_HAPPY}")
 								.build()
 						).await()
 					} catch (e: Exception) {

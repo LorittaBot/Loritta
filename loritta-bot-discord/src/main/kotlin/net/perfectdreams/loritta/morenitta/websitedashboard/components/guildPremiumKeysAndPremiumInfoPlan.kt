@@ -10,7 +10,7 @@ import kotlinx.html.style
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DonationKeys
-import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
+import net.perfectdreams.loritta.common.utils.ServerPremiumPlan
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
@@ -21,22 +21,21 @@ fun FlowContent.guildPremiumKeysAndPremiumInfoPlan(
     i18nContext: I18nContext,
     guild: Guild,
     session: UserSession,
-    plan: ServerPremiumPlans,
+    plan: ServerPremiumPlan,
     guildPremiumKeys: List<ResultRow>,
     userPremiumKeys: List<ResultRow>
 ) {
     val now = System.currentTimeMillis()
 
     h2 {
-        text("Plano Atual do Servidor")
+        text(i18nContext.get(DashboardI18nKeysData.PremiumKeys.KeyManagement.CurrentServerPlan))
     }
 
     b {
         when (plan) {
-            ServerPremiumPlans.Complete -> text("Completo")
-            ServerPremiumPlans.Essential -> text("Essencial")
-            ServerPremiumPlans.Recommended -> text("Recomendado")
-            ServerPremiumPlans.Free -> text("Grátis")
+            ServerPremiumPlan.Complete -> text(i18nContext.get(DashboardI18nKeysData.PremiumKeys.PlanNames.Complete))
+            ServerPremiumPlan.Basic -> text(i18nContext.get(DashboardI18nKeysData.PremiumKeys.PlanNames.Basic))
+            ServerPremiumPlan.Free -> text(i18nContext.get(DashboardI18nKeysData.PremiumKeys.PlanNames.Free))
         }
     }
 
@@ -137,7 +136,7 @@ fun FlowContent.guildPremiumKeyCard(
             div {
                 style = "display: flex; flex-direction: column;"
                 b {
-                    text("Key (R$ ${key[DonationKeys.value]})")
+                    text(i18nContext.get(DashboardI18nKeysData.PremiumKeys.KeyManagement.KeyLabel(key[DonationKeys.value])))
 
                     if (!enabledOnThisGuild && key[DonationKeys.activeIn] != null) {
                         text(" ")
@@ -148,7 +147,7 @@ fun FlowContent.guildPremiumKeyCard(
                 }
 
                 div {
-                    text("Expirará em ${DateUtils.formatDateDiff(i18nContext, now, key[DonationKeys.expiresAt])}")
+                    text(i18nContext.get(DashboardI18nKeysData.PremiumKeys.KeyManagement.ExpiresIn(DateUtils.formatDateDiff(i18nContext, now, key[DonationKeys.expiresAt]))))
                 }
             }
         }
@@ -162,7 +161,7 @@ fun FlowContent.guildPremiumKeyCard(
                     attributes["bliss-swap:200"] = "body (innerHTML) -> #section-config (innerHTML)"
                     attributes["bliss-indicator"] = "this"
 
-                    text("Desativar")
+                    text(i18nContext.get(DashboardI18nKeysData.PremiumKeys.KeyManagement.DeactivateButton))
                 }
             } else {
                 discordButton(ButtonStyle.PRIMARY) {
@@ -170,7 +169,7 @@ fun FlowContent.guildPremiumKeyCard(
                     attributes["bliss-swap:200"] = "body (innerHTML) -> #section-config (innerHTML)"
                     attributes["bliss-indicator"] = "this"
 
-                    text("Ativar")
+                    text(i18nContext.get(DashboardI18nKeysData.PremiumKeys.KeyManagement.ActivateButton))
                 }
             }
         }

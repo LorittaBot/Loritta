@@ -33,6 +33,7 @@ enum class GuildDashboardSection {
     LORITTA_DROPS,
     LORITTA_TAX_FREE_DAYS,
     PREMIUM_KEYS,
+    SERVER_PREMIUM_KEYS,
     DAILY_MULTIPLIER,
     CUSTOM_BADGE
 }

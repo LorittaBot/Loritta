@@ -24,9 +24,8 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.DonationConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
-import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
+import net.perfectdreams.loritta.common.utils.ServerPremiumPlan
 import net.perfectdreams.loritta.common.utils.TransactionType
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.common.utils.daily.DailyGuildMissingRequirement
 import net.perfectdreams.loritta.common.utils.daily.DailyRewardQuestions
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -38,7 +37,6 @@ import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.rpc.processors.LorittaRpcProcessor
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.trueIp
 import net.perfectdreams.loritta.morenitta.websitedashboard.discord.DiscordOAuth2Guild
-import net.perfectdreams.loritta.morenitta.websitedashboard.routes.DiscordLoginUserDashboardRoute
 import net.perfectdreams.loritta.serializable.SonhosPaymentReason
 import net.perfectdreams.loritta.serializable.StoredDailyRewardSonhosTransaction
 import net.perfectdreams.loritta.serializable.requests.GetDailyRewardRequest
@@ -46,7 +44,6 @@ import net.perfectdreams.loritta.serializable.responses.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import java.time.Instant
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import java.util.*
@@ -137,9 +134,8 @@ class GetDailyRewardProcessor(val m: LorittaWebsite) : LorittaRpcProcessor {
                                         else -> 1.1
                                     }
 
-                                    val donatorPaid = loritta.getActiveMoneyFromDonations(userIdentification.id.toLong())
-                                    val plan = UserPremiumPlans.getPlanFromValue(donatorPaid)
-
+                                    val plan = loritta.getUserPremiumPlan(userIdentification.id)
+                                
                                     multiplier += plan.dailyMultiplier
 
                                     var dailyPayout = LorittaBot.RANDOM.nextInt(1800 /* Math.max(555, 555 * (multiplier - 1)) */, ((1800 * multiplier) + 1).toInt()) // 555 (lower bound) -> 555 * sites de votação do PerfectDreams
@@ -192,7 +188,7 @@ class GetDailyRewardProcessor(val m: LorittaWebsite) : LorittaRpcProcessor {
                                         // So if the user has multiple servers that has the best donation key, Loritta will use the Guild ID priority from the URL!
                                         // The value is sorted with a negative sign on front of it, while the priority is sorted by != because we want descending order!
                                         val sortedServers = serverConfigs.map {
-                                            Pair(it, ServerPremiumPlans.getPlanFromValue(it.getActiveDonationKeysValueNested()))
+                                            Pair(it, ServerPremiumPlan.getPlanFromValue(it.getActiveDonationKeysValueNested()))
                                         }.filter {
                                             it.second.dailyMultiplier > 1.0
                                         }.sortedWith(compareBy({ -it.second.dailyMultiplier }, { it.first.guildId != dailyMultiplierGuildIdPriority }))
@@ -232,7 +228,7 @@ class GetDailyRewardProcessor(val m: LorittaWebsite) : LorittaRpcProcessor {
                                         if (bestServer != null) {
                                             val donationConfig = bestServer.donationConfig
                                             val donationKey = bestServer.getActiveDonationKeysNested().firstOrNull()
-                                            val totalDonationValue = ServerPremiumPlans.getPlanFromValue(bestServer.getActiveDonationKeysValueNested())
+                                            val totalDonationValue = ServerPremiumPlan.getPlanFromValue(bestServer.getActiveDonationKeysValueNested())
 
                                             if (donationConfig != null && donationKey != null) {
                                                 multipliedBy = totalDonationValue.dailyMultiplier

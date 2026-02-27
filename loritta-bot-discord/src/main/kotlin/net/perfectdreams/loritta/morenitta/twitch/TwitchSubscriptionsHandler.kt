@@ -17,7 +17,6 @@ import net.perfectdreams.switchtwitch.data.SubscriptionCreateRequest
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
-import kotlin.math.ceil
 
 /**
  * Handles Twitch webhook subscriptions creation
@@ -144,9 +143,8 @@ class TwitchSubscriptionsHandler(val m: LorittaBot) {
                                 DonationKey.find { DonationKeys.activeIn eq guildId and (DonationKeys.expiresAt greaterEq System.currentTimeMillis()) }
                                     .toList()
                                     .sumOf { it.value }
-                                    .let { ceil(it) }
 
-                            if (valueOfTheDonationKeysEnabledOnThisGuild >= 40.0)
+                            if (valueOfTheDonationKeysEnabledOnThisGuild >= 40)
                                 return@newSuspendedTransaction TwitchAccountTrackState.PREMIUM_TRACK_USER
                         }
 

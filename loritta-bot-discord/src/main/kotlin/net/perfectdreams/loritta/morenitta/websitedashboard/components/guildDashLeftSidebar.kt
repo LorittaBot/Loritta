@@ -8,7 +8,7 @@ import kotlinx.html.img
 import kotlinx.html.style
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.common.utils.UserPremiumPlan
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.DashboardI18nKeysData
 import net.perfectdreams.loritta.morenitta.websitedashboard.GuildDashboardSection
@@ -18,7 +18,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.utils.calculateGuild
 fun FlowContent.guildDashLeftSidebarEntries(
     i18nContext: I18nContext,
     guild: Guild,
-    userPremiumPlans: UserPremiumPlans,
+    userPremiumPlan: UserPremiumPlan,
     selectedGuildSection: GuildDashboardSection
 ) {
     div(classes = "guild-icon-wrapper") {
@@ -55,6 +55,7 @@ fun FlowContent.guildDashLeftSidebarEntries(
     leftSidebarHr()
 
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/overview", i18nContext.get(DashboardI18nKeysData.Overview.Title), SVGIcons.SquaresFour, selectedGuildSection == GuildDashboardSection.OVERVIEW, false)
+    aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/premium", i18nContext.get(DashboardI18nKeysData.PremiumKeys.ServerPremium.PageTitle), SVGIcons.CrownSimple, selectedGuildSection == GuildDashboardSection.SERVER_PREMIUM_KEYS, false)
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/audit-log", i18nContext.get(DashboardI18nKeysData.AuditLog.Title), SVGIcons.Binoculars, selectedGuildSection == GuildDashboardSection.AUDIT_LOG, true)
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/loritta-partners", i18nContext.get(DashboardI18nKeysData.LorittaPartners.Title), SVGIcons.Heart, selectedGuildSection == GuildDashboardSection.LORITTA_PARTNERS, true)
 

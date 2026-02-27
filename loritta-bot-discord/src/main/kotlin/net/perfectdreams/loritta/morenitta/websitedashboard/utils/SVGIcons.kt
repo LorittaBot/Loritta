@@ -29,7 +29,7 @@ object SVGIcons : SVGIconManager(SVGIcons::class) {
     val ShoppingBag = register("shopping-bag", "/svg_icons/phosphor/fill/shopping-bag.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
     val Asterisk = register("asterisk", "/svg_icons/phosphor/fill/asterisk.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
     val List = register("list", "/svg_icons/phosphor/bold/list.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
-    val CheckFat = register("check-fat", "/svg_icons/phosphor/bold/check-fat.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
+    val Check = register("check", "/svg_icons/phosphor/bold/check.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
     val CaretDown = register("caret-down", "/svg_icons/phosphor/bold/caret-down.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
     val CaretUp = register("caret-up", "/svg_icons/phosphor/bold/caret-up.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
     val CaretLeft = register("caret-left", "/svg_icons/phosphor/bold/caret-left.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
@@ -54,6 +54,8 @@ object SVGIcons : SVGIconManager(SVGIcons::class) {
     val CalendarStar = register("calendar-star", "/svg_icons/phosphor/fill/calendar-star.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
     val Fire = register("fire", "/svg_icons/phosphor/fill/fire-simple.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
     val Binoculars = register("fire", "/svg_icons/phosphor/fill/binoculars.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
+    val X = register("x", "/svg_icons/phosphor/bold/x.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
+    val CrownSimple = register("crown_simple", "/svg_icons/phosphor/fill/crown-simple.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
 
     val SlashCommand = register("slash-command", "/svg_icons/discord/slash-command.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
     val TextChannel = register("text-channel", "/svg_icons/discord/text-channel.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
