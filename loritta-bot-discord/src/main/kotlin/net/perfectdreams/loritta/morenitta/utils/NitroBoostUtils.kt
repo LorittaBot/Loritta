@@ -11,6 +11,7 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import org.jetbrains.exposed.sql.*
 import java.time.OffsetDateTime
+import java.time.ZoneOffset
 
 object NitroBoostUtils {
 	private val logger by HarmonyLoggerFactory.logger {}
@@ -25,7 +26,8 @@ object NitroBoostUtils {
 			UserPremiumKeys.insert {
 				it[UserPremiumKeys.userId] = member.idLong
 				it[UserPremiumKeys.value] = 13
-				it[UserPremiumKeys.expiresAt] = OffsetDateTime.MAX
+				// We don't use MAX because PostgreSQL hates it >:(
+				it[UserPremiumKeys.expiresAt] = OffsetDateTime.of(9999, 12, 31, 23, 59, 59, 0, ZoneOffset.UTC)
 				it[UserPremiumKeys.metadata] = jsonObject(
 					"guildId" to member.guild.idLong
 				).toString()
