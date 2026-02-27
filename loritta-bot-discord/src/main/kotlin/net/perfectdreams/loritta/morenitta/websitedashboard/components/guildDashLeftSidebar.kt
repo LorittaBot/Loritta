@@ -56,7 +56,7 @@ fun FlowContent.guildDashLeftSidebarEntries(
 
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/overview", i18nContext.get(DashboardI18nKeysData.Overview.Title), SVGIcons.SquaresFour, selectedGuildSection == GuildDashboardSection.OVERVIEW, false)
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/premium", i18nContext.get(DashboardI18nKeysData.PremiumKeys.ServerPremium.PageTitle), SVGIcons.CrownSimple, selectedGuildSection == GuildDashboardSection.SERVER_PREMIUM_KEYS, false)
-    aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/audit-log", i18nContext.get(DashboardI18nKeysData.AuditLog.Title), SVGIcons.Binoculars, selectedGuildSection == GuildDashboardSection.AUDIT_LOG, true)
+    aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/audit-log", i18nContext.get(DashboardI18nKeysData.AuditLog.Title), SVGIcons.Binoculars, selectedGuildSection == GuildDashboardSection.AUDIT_LOG, false)
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/loritta-partners", i18nContext.get(DashboardI18nKeysData.LorittaPartners.Title), SVGIcons.Heart, selectedGuildSection == GuildDashboardSection.LORITTA_PARTNERS, true)
 
     leftSidebarHr()
@@ -143,7 +143,7 @@ fun FlowContent.guildDashLeftSidebarEntries(
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/premium-keys", i18nContext.get(DashboardI18nKeysData.PremiumKeys.Title), SVGIcons.Key, selectedGuildSection == GuildDashboardSection.PREMIUM_KEYS,  false)
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/badge", i18nContext.get(DashboardI18nKeysData.Badge.Title), SVGIcons.Seal, selectedGuildSection == GuildDashboardSection.CUSTOM_BADGE,  false)
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/daily-multiplier", i18nContext.get(DashboardI18nKeysData.DailyMultiplier.Title), SVGIcons.ShootingStar, selectedGuildSection == GuildDashboardSection.DAILY_MULTIPLIER,  false)
-    aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/drops", i18nContext.get(DashboardI18nKeysData.Drops.Title), SVGIcons.Fire, selectedGuildSection == GuildDashboardSection.LORITTA_DROPS,  true)
+    aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/drops", i18nContext.get(DashboardI18nKeysData.Drops.Title), SVGIcons.Fire, selectedGuildSection == GuildDashboardSection.LORITTA_DROPS,  false)
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/tax-box", i18nContext.get(DashboardI18nKeysData.TaxBox.Title), SVGIcons.BoxStar, selectedGuildSection == GuildDashboardSection.LORITTA_TAX_BOX,  true)
-    aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/tax-free-days", i18nContext.get(DashboardI18nKeysData.TaxFreeDays.Title), SVGIcons.CalendarStar, selectedGuildSection == GuildDashboardSection.LORITTA_TAX_FREE_DAYS,  true)
+    aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/tax-free-days", i18nContext.get(DashboardI18nKeysData.TaxFreeDays.Title), SVGIcons.CalendarStar, selectedGuildSection == GuildDashboardSection.LORITTA_TAX_FREE_DAYS,  false)
 }
