@@ -1,0 +1,10 @@
+website:
+  dashboard:
+    taxBox:
+      title: "Caixinha de Taxas"
+      description:
+      - "Receba sonhos por engajar os membros do seu servidor! Administradores do servidor podem sacar os sonhos acumulados a qualquer momento usando o comando {caixinhaCommand}."
+
+      enabled:
+        toggle: "Ativar Caixinha de Taxas"
+        description: "Se ativado, 50% das taxas das apostas de {coinFlipBetCommand} e {emojiFightBetCommand} no seu servidor irão para a caixinha de taxas."

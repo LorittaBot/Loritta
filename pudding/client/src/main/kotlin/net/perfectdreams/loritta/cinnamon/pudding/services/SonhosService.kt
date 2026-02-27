@@ -464,6 +464,8 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
                             )
                         }
 
+                        is StoredTaxBoxWithdrawTransaction -> createUsingReflection(TaxBoxWithdrawTransaction::class, stored.guildId)
+
                         is StoredVacationModeLeaveTransaction -> createUsingReflection(VacationModeLeaveTransaction::class)
                         is StoredLotteryRewardTransaction -> createUsingReflection(LotteryRewardTransaction::class, stored.lotteryId, stored.taxed, stored.payoutWithoutTax)
                         is StoredLotteryTicketsTransaction -> createUsingReflection(LotteryTicketsTransaction::class, stored.lotteryId, stored.ticketId)

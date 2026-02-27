@@ -347,6 +347,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         register(MinesCommand(loritta))
         register(LotteryCommand(loritta))
         register(GuessNumberCommand(loritta))
+        register(TaxBoxCommand(loritta))
 
         // ===[ MINECRAFT ]===
         register(MinecraftCommand(loritta))

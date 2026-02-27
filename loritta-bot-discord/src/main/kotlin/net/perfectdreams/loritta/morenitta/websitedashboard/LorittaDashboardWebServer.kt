@@ -133,6 +133,8 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.resetx
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.starboard.PutStarboardGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.starboard.PostStarboardStorytimeGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.starboard.StarboardGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.taxbox.PutTaxBoxGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.taxbox.TaxBoxGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.taxfreedays.PutTaxFreeDaysGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.taxfreedays.TaxFreeDaysGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.twitch.AddTwitchChannelGuildDashboardRoute
@@ -507,6 +509,10 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
         PostDropsInviteGuildDashboardRoute(this),
         PostAddChannelBomDiaECiaGuildDashboardRoute(this),
         PostRemoveChannelBomDiaECiaGuildDashboardRoute(this),
+
+        // Tax Box
+        TaxBoxGuildDashboardRoute(this),
+        PutTaxBoxGuildDashboardRoute(this),
 
         // Tax Free Days
         TaxFreeDaysGuildDashboardRoute(this),

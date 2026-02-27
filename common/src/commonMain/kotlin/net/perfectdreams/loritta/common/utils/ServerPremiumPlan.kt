@@ -14,6 +14,7 @@ interface ServerPremiumPlan {
     val showDropGuildInfoOnTransactions: Boolean
     val taxFreeFridays: Boolean
     val taxFreeSaturdays: Boolean
+	val taxBox: Boolean
 
 	companion object {
 		fun getPlanFromValue(value: Int) = when {
@@ -37,7 +38,8 @@ interface ServerPremiumPlan {
         override val showDropGuildInfoOnTransactions = false
         override val taxFreeFridays = false
         override val taxFreeSaturdays = false
-    }
+		override val taxBox = false
+	}
 
 	object Basic : ServerPremiumPlan {
 		override val cost = 35.0
@@ -53,6 +55,7 @@ interface ServerPremiumPlan {
         override val showDropGuildInfoOnTransactions = false
         override val taxFreeFridays = false
         override val taxFreeSaturdays = false
+		override val taxBox = false
 	}
 
 	object Complete : ServerPremiumPlan {
@@ -69,5 +72,6 @@ interface ServerPremiumPlan {
         override val showDropGuildInfoOnTransactions = true
         override val taxFreeFridays = true
         override val taxFreeSaturdays = true
+		override val taxBox = true
 	}
 }

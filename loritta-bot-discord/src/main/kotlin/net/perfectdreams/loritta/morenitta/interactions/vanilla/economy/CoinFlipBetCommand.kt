@@ -16,6 +16,8 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.AprilFoolsCoinFlipBugs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetMatchmakingResults
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Payments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.WebsiteDiscountCoupons
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.TaxBoxes
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.TaxBoxConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
 import net.perfectdreams.loritta.common.achievements.AchievementType
 import net.perfectdreams.loritta.common.commands.CommandCategory
@@ -40,6 +42,8 @@ import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.upsert
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.plus
 import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDateTime
@@ -441,6 +445,9 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                                 number,
                                                 StoredCoinFlipBetTransaction(mmResult.value)
                                             )
+
+                                            val guildId = context.guildOrNull?.idLong
+                                            TaxBoxUtils.processServerTaxIfNeeded(tax, guildId)
 
                                             if (AprilFools.isAprilFools()) {
                                                 aprilFoolsWinnerBugMessage = AprilFoolsCoinFlipBugs.selectAll().where {

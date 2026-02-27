@@ -19,6 +19,8 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendActive
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendCouponSonhosBundleUpsellInformationIfNotNull
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendUserHaventGotDailyTodayOrUpsellSonhosBundles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.*
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.TaxBoxes
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.TaxBoxConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.TransactionType
@@ -35,11 +37,14 @@ import net.perfectdreams.loritta.serializable.SonhosPaymentReason
 import net.perfectdreams.loritta.serializable.StoredEmojiFightBetSonhosTransaction
 import net.perfectdreams.loritta.serializable.UserId
 import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.plus
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.upsert
 import java.time.Instant
 import java.time.LocalDateTime
+import java.time.OffsetDateTime
 import java.util.concurrent.ConcurrentHashMap
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes as CinnamonEmotes
 
@@ -477,6 +482,9 @@ class EmojiFight(
                     }
                     it[EmojiFightMatchmakingResults.match] = emojiFightMatch
                 }
+
+                val guildId = context.guildOrNull?.idLong
+                TaxBoxUtils.processServerTaxIfNeeded(tax, guildId)
 
                 winnerProfile.addSonhosNested(realAfterTaxesPrize)
                 PaymentUtils.addToTransactionLogNested(

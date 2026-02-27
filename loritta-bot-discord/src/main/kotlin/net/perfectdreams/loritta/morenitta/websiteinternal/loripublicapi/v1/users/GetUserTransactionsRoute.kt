@@ -605,6 +605,14 @@ class GetUserTransactionsRoute(m: LorittaBot) : LoriPublicAPIRoute(
                     transaction.lotteryId,
                     transaction.ticketId
                 )
+                is net.perfectdreams.loritta.serializable.TaxBoxWithdrawTransaction -> TaxBoxWithdrawTransaction(
+                    transaction.id,
+                    transaction.transactionType,
+                    transaction.timestamp,
+                    transaction.user,
+                    transaction.sonhos,
+                    transaction.guildId
+                )
             }
         }
     }
@@ -1252,6 +1260,17 @@ class GetUserTransactionsRoute(m: LorittaBot) : LoriPublicAPIRoute(
         val sonhos: Long,
         val lotteryId: Long,
         val ticketId: Long
+    ) : SonhosTransaction()
+
+    @Serializable
+    data class TaxBoxWithdrawTransaction(
+        override val id: Long,
+        override val transactionType: TransactionType,
+        override val timestamp: kotlinx.datetime.Instant,
+        @Serializable(UserIdAsStringSerializer::class)
+        override val user: UserId,
+        val sonhos: Long,
+        val guildId: Long
     ) : SonhosTransaction()
 
     @Serializable

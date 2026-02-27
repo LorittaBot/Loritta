@@ -332,6 +332,7 @@ suspend fun main() {
                     is StoredMinesRefundTransaction -> TODO()
                     is StoredLotteryRewardTransaction -> TODO()
                     is StoredLotteryTicketsTransaction -> TODO()
+                    is StoredTaxBoxWithdrawTransaction -> TODO()
                 }
             }
     }

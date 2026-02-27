@@ -309,4 +309,12 @@ object SimpleSonhosTransactionTransformers {
             )
         }
     }
+
+    val TaxBoxWithdrawTransactionTransformer = SimpleSonhosTransactionTransformer<TaxBoxWithdrawTransaction>(true) { _, _, i18nContext, cachedUserInfo, cachedUserInfos, transaction ->
+        append(
+            i18nContext.get(
+                SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.TaxBoxWithdraw.Withdraw(quantity = transaction.sonhos)
+            )
+        )
+    }
 }
