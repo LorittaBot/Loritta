@@ -63,8 +63,9 @@ website:
           maxLevelUpRoles: "Máximo de cargos de Level Up"
           dailyMultiplier: "Multiplicador de dailies de sonhos para membros do seu servidor"
           dropGuildInfo: "Informações do seu Servidor nas transações de drops"
-          taxFreeFridays: "Sextas sem taxa"
-          taxFreeSaturdays: "Sábados sem taxa"
+          taxFreeFridays: "Sextas sem Taxas"
+          taxFreeSaturdays: "Sábados sem Taxas"
+          taxBox: "Caixinha de Taxas"
 
       # Key management (guildPremiumKeysAndPremiumInfoPlan.kt)
       keyManagement:
