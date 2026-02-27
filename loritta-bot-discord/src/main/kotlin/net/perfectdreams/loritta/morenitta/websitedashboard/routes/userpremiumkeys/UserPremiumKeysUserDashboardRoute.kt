@@ -21,6 +21,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.userDashL
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresUserAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.serializable.ColorTheme
+import kotlin.math.floor
 
 class UserPremiumKeysUserDashboardRoute(website: LorittaDashboardWebServer) : RequiresUserAuthDashboardLocalizedRoute(website, "/premium") {
     data class PlanColumn(
@@ -30,6 +31,11 @@ class UserPremiumKeysUserDashboardRoute(website: LorittaDashboardWebServer) : Re
         val monthlyPriceCents: Long,
         val highlight: Boolean
     )
+
+    private fun formatPercentage(pctValue: Double): String {
+        val rounded = Math.round(pctValue * 10) / 10.0
+        return if (rounded == floor(rounded)) "${rounded.toInt()}%" else "$rounded%"
+    }
 
     override suspend fun onAuthenticatedRequest(call: ApplicationCall, i18nContext: I18nContext, session: LorittaUserSession, userPremiumPlan: UserPremiumPlan, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings) {
         val plans = listOf(
@@ -122,20 +128,20 @@ class UserPremiumKeysUserDashboardRoute(website: LorittaDashboardWebServer) : Re
                                 premiumFeatureRow(i18nContext.get(DashboardI18nKeysData.PremiumKeys.UserPremium.Features.NoDailyInactivityTax), tablePlans, { it.highlight }) { !it.plan.hasDailyInactivityTax }
 
                                 premiumValueRow(i18nContext.get(DashboardI18nKeysData.PremiumKeys.UserPremium.Features.MaxDailyDreams), tablePlans, { it.highlight }) { "${it.plan.maxDreamsInDaily}" }
-                                premiumValueRow(i18nContext.get(DashboardI18nKeysData.PremiumKeys.UserPremium.Features.LoriReputationRetribution), tablePlans, { it.highlight }) { "${it.plan.loriReputationRetribution}%" }
+                                premiumValueRow(i18nContext.get(DashboardI18nKeysData.PremiumKeys.UserPremium.Features.LoriReputationRetribution), tablePlans, { it.highlight }) { formatPercentage(it.plan.loriReputationRetribution) }
                                 premiumValueRow(i18nContext.get(DashboardI18nKeysData.PremiumKeys.UserPremium.Features.CoinFlipTax), tablePlans, { it.highlight }) {
-                                    if (it.plan.coinFlipRewardTax == 0.0) noTax else "${(it.plan.coinFlipRewardTax * 100).toInt()}%"
+                                    if (it.plan.coinFlipRewardTax == 0.0) noTax else formatPercentage(it.plan.coinFlipRewardTax * 100)
                                 }
                                 premiumValueRow(i18nContext.get(DashboardI18nKeysData.PremiumKeys.UserPremium.Features.ThirdPartyTransferTax), tablePlans, { it.highlight }) {
-                                    if (it.plan.thirdPartySonhosTransferTax == 0.0) noTax else "${(it.plan.thirdPartySonhosTransferTax * 100).toInt()}%"
+                                    if (it.plan.thirdPartySonhosTransferTax == 0.0) noTax else formatPercentage(it.plan.thirdPartySonhosTransferTax * 100)
                                 }
                                 premiumValueRow(i18nContext.get(DashboardI18nKeysData.PremiumKeys.UserPremium.Features.LoraffaTax), tablePlans, { it.highlight }) {
                                     val tax = 1.0 - it.plan.totalLoraffleReward
-                                    if (tax == 0.0) noTax else "${(tax * 100).toInt()}%"
+                                    if (tax == 0.0) noTax else formatPercentage(tax * 100)
                                 }
                                 premiumValueRow(i18nContext.get(DashboardI18nKeysData.PremiumKeys.UserPremium.Features.LotterittaTax), tablePlans, { it.highlight }) {
                                     val tax = 1.0 - it.plan.totalLotteryReward
-                                    if (tax == 0.0) noTax else "${(tax * 100).toInt()}%"
+                                    if (tax == 0.0) noTax else formatPercentage(tax * 100)
                                 }
                             }
                         }
