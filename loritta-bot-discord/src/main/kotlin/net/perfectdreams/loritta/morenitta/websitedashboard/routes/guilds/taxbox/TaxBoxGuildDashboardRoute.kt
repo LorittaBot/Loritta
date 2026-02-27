@@ -126,6 +126,20 @@ class TaxBoxGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGu
                                                                     }
                                                                 }
                                                             }
+                                                            "minesPlayCommand" -> {
+                                                                TextReplaceControls.ComposableFunctionResult {
+                                                                    span(classes = "discord-mention") {
+                                                                        text("/" + i18nContext.get(I18nKeysData.Commands.Command.Mines.Label) + " " + i18nContext.get(I18nKeysData.Commands.Command.Mines.Play.Label))
+                                                                    }
+                                                                }
+                                                            }
+                                                            "blackjackPlayCommand" -> {
+                                                                TextReplaceControls.ComposableFunctionResult {
+                                                                    span(classes = "discord-mention") {
+                                                                        text("/" + i18nContext.get(I18nKeysData.Commands.Command.Blackjack.Label) + " " + i18nContext.get(I18nKeysData.Commands.Command.Blackjack.Play.Label))
+                                                                    }
+                                                                }
+                                                            }
                                                             else -> TextReplaceControls.AppendControlAsIsResult
                                                         }
                                                     }

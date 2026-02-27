@@ -13,6 +13,17 @@ import java.time.OffsetDateTime
 object TaxBoxUtils {
     const val SERVER_TAX_CUT = 0.5
 
+    /**
+     * Processes the server's share of the house edge for games with implicit (invisible) taxes, like Mines and Blackjack.
+     *
+     * This calculates the theoretical house profit from [bet] using the [houseEdge] rate, then delegates to
+     * [processServerTaxIfNeeded] which applies the [SERVER_TAX_CUT] and credits the server's TaxBox.
+     */
+    fun processServerHouseEdgeTaxIfNeeded(bet: Long, houseEdge: Double, guildId: Long?) {
+        val implicitTax = (bet * houseEdge).toLong()
+        processServerTaxIfNeeded(implicitTax, guildId)
+    }
+
     fun processServerTaxIfNeeded(tax: Long?, guildId: Long?) {
         // This NEEDS to be within a transaction!
         if (tax == null || guildId == null)

@@ -108,7 +108,7 @@ class TaxBoxCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     this.section(Thumbnail("https://stuff.loritta.website/loritta-sonhos-glasses-yafyr.gif")) {
                         this.text(
                             buildString {
-                                appendLine("## ${context.i18nContext.get(I18N_PREFIX.Title)}")
+                                appendLine("## \uD83D\uDCE6 ${context.i18nContext.get(I18N_PREFIX.Title)}")
 
                                 if (data.balance > 0) {
                                     appendLine(context.i18nContext.get(I18N_PREFIX.Balance(data.balance)))
@@ -118,7 +118,7 @@ class TaxBoxCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
                                 appendLine()
 
-                                appendLine("-# " + context.i18nContext.get(I18N_PREFIX.Explanation(loritta.commandMentions.coinflipBet, loritta.commandMentions.emojiFightStart)))
+                                appendLine("-# " + context.i18nContext.get(I18N_PREFIX.Explanation(loritta.commandMentions.emojiFightStart, loritta.commandMentions.coinflipBet, loritta.commandMentions.minesPlay, loritta.commandMentions.blackjackPlay)))
                             }
                         )
                     }

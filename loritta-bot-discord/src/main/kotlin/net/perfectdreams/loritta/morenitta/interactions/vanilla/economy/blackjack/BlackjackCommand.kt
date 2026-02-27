@@ -47,6 +47,7 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.blackjac
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.blackjack.BlackjackUtils.createBlackjackTutorialMessage
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.NumberUtils
+import net.perfectdreams.loritta.morenitta.utils.TaxBoxUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.serializable.StoredBlackjackDoubleDownTransaction
 import net.perfectdreams.loritta.serializable.StoredBlackjackInsurancePayoutTransaction
@@ -1279,6 +1280,16 @@ class BlackjackCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper
                             }
                         }
                     }
+
+                    // Process the server's share of the house edge for the TaxBox
+                    var totalWagered = 0L
+                    for (hand in blackjack.playerHands) {
+                        totalWagered += matchBet
+                        if (hand.wasDoubledDown) {
+                            totalWagered += matchBet
+                        }
+                    }
+                    TaxBoxUtils.processServerHouseEdgeTaxIfNeeded(totalWagered, BlackjackUtils.HOUSE_EDGE, context.guildId)
 
                     // Mark this match as finished!
                     finishBlackjack(matchId, payout, handsStatus.size, winningHands, tiedHands, losingHands, blackjack.paidInsurance, false, autoStand, blackjack.dealerHand, blackjack.playerHands)

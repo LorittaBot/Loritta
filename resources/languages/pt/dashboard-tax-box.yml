@@ -7,4 +7,4 @@ website:
 
       enabled:
         toggle: "Ativar Caixinha de Taxas"
-        description: "Se ativado, 50% das taxas das apostas de {coinFlipBetCommand} e {emojiFightBetCommand} no seu servidor irão para a caixinha de taxas."
+        description: "Se ativado, 50% das taxas dos comandos {coinFlipBetCommand} e {emojiFightBetCommand} e 50% da margem da casa dos jogos {minesPlayCommand} e {blackjackPlayCommand} no seu servidor irão para a caixinha de taxas."

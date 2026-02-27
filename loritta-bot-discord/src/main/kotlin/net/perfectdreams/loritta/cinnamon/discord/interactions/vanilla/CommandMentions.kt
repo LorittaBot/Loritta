@@ -22,6 +22,8 @@ CommandMentions(private val registeredCommands: List<DiscordCommand>) {
     val coinflipBet = commandMention("coinflipbet")
     val coinflipBetGlobal = commandMention("coinflipbetglobal")
     val emojiFightStart = commandMention("emojifight iniciar")
+    val minesPlay = commandMention("mines jogar")
+    val blackjackPlay = commandMention("blackjack jogar")
 
     val webhookSendSimple = commandMention("webhook enviar simples")
     val webhookSendRepost = commandMention("webhook enviar repostar")

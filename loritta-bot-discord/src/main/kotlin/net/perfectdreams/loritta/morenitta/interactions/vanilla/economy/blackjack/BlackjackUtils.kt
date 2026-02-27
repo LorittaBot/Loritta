@@ -11,6 +11,7 @@ import net.perfectdreams.loritta.morenitta.blackjack.Hand
 import kotlin.time.Duration.Companion.minutes
 
 object BlackjackUtils {
+    const val HOUSE_EDGE = 0.015
     /**
      * The delay between dealer actions
      */
