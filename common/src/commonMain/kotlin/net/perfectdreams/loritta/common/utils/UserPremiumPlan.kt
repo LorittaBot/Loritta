@@ -48,8 +48,8 @@ interface UserPremiumPlan {
 		// O "multiplier" apenas soma o valor do multiplicador final, então pode ser 0.0
 		override val dailyMultiplier = 0.0
 		override val totalLotteryReward = 0.98
-		override val totalLoraffleReward = 0.97
-		override val totalCoinFlipReward = 0.97
+		override val totalLoraffleReward = 0.975
+		override val totalCoinFlipReward = 0.975
 		override val thirdPartySonhosTransferTax = 0.10
 		override val customBackground = false
 		override val hasDailyInactivityTax = true
@@ -63,9 +63,9 @@ interface UserPremiumPlan {
 		override val cost = 24.99
 		override val loriReputationRetribution = 10.0
 		override val dailyMultiplier = 2.0
-		override val totalLoraffleReward = 0.985
+		override val totalLoraffleReward = 0.99
 		override val totalLotteryReward = 0.99
-		override val totalCoinFlipReward = 0.985
+		override val totalCoinFlipReward = 0.99
 		override val thirdPartySonhosTransferTax = 0.05
 		override val customBackground = false
 		override val hasDailyInactivityTax = true
