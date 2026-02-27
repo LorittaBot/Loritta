@@ -28,14 +28,14 @@ import net.perfectdreams.loritta.serializable.ColorTheme
 class PostBuyServerPremiumKeyGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/premium/buy") {
     companion object {
         private val ALLOWED_PLAN_VALUES = mapOf(
-            34.99 to 3499L,
-            59.99 to 5999L
+            35 to 3499L,
+            60 to 5999L
         )
     }
 
     @Serializable
     data class BuyServerPremiumKeyRequest(
-        val planValue: Double,
+        val planValue: Int,
         val durationDays: Int? = null,
         val durationYears: Int? = null
     )
@@ -72,8 +72,8 @@ class PostBuyServerPremiumKeyGuildDashboardRoute(website: LorittaDashboardWebSer
         }
 
         val planName = when (request.planValue) {
-            34.99 -> i18nContext.get(DashboardI18nKeysData.PremiumKeys.Buy.PlanNameForPayment.Recommended)
-            59.99 -> i18nContext.get(DashboardI18nKeysData.PremiumKeys.Buy.PlanNameForPayment.Complete)
+            35 -> i18nContext.get(DashboardI18nKeysData.PremiumKeys.Buy.PlanNameForPayment.Recommended)
+            60 -> i18nContext.get(DashboardI18nKeysData.PremiumKeys.Buy.PlanNameForPayment.Complete)
             else -> i18nContext.get(DashboardI18nKeysData.PremiumKeys.Buy.PlanNameForPayment.Premium)
         }
 

@@ -265,7 +265,7 @@ class PostPerfectPaymentsCallbackRoute(val loritta: LorittaBot) : BaseRoute("/ap
 					val expiresAt = when {
 						durationYears != null -> OffsetDateTime.now(Constants.LORITTA_TIMEZONE).plusYears(durationYears.toLong())
 						durationDays != null -> OffsetDateTime.now(Constants.LORITTA_TIMEZONE).plusDays(durationDays.toLong())
-						else -> OffsetDateTime.now(Constants.LORITTA_TIMEZONE).plusDays(30)
+						else -> error("Missing durationYears or durationDays for the user key!")
 					}
 
 					logger.info { "Creating UserPremiumKey with planValue $planValue, durationYears $durationYears, durationDays $durationDays for user ${internalPayment.userId}" }
@@ -293,7 +293,7 @@ class PostPerfectPaymentsCallbackRoute(val loritta: LorittaBot) : BaseRoute("/ap
 					val expiresAtMillis = when {
 						durationYears != null -> OffsetDateTime.now(Constants.LORITTA_TIMEZONE).plusYears(durationYears.toLong()).toInstant().toEpochMilli() + 2 * 86_400_000L
 						durationDays != null -> durationDays.toLong() * 86_400_000L + 2 * 86_400_000L + System.currentTimeMillis()
-						else -> 30L * 86_400_000L + 2 * 86_400_000L + System.currentTimeMillis()
+						else -> error("Missing durationYears or durationDays for the server key!")
 					}
 
 					logger.info { "Creating DonationKey (server premium) with planValue $planValue, durationYears $durationYears, durationDays $durationDays for user ${internalPayment.userId}, guildId $guildId" }
