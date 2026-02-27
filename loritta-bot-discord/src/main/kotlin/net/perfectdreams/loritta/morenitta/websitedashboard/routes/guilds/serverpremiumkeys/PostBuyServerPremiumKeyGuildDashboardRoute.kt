@@ -82,7 +82,7 @@ class PostBuyServerPremiumKeyGuildDashboardRoute(website: LorittaDashboardWebSer
         val paymentUrl = website.loritta.perfectPaymentsClient.createPayment(
             website.loritta,
             session.userId,
-            i18nContext.get(DashboardI18nKeysData.PremiumKeys.Buy.PaymentDescription.ServerPremium(planName, durationDescription, whoDonated, session.userId)),
+            i18nContext.get(DashboardI18nKeysData.PremiumKeys.Buy.PaymentDescription.ServerPremium(planName, durationDescription, whoDonated, session.userId.toString())),
             totalAmountInCents,
             totalAmountInCents,
             PaymentReason.SERVER_PREMIUM_KEY,
