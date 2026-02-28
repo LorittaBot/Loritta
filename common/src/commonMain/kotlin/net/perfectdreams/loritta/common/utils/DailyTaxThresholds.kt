@@ -7,22 +7,22 @@ object DailyTaxThresholds {
     val THRESHOLDS = listOf(
         DailyTaxThreshold(
             3,
+            1_000_000_000L,
+            0.75
+        ),
+        DailyTaxThreshold(
+            7,
             100_000_000L,
             0.5
         ),
         DailyTaxThreshold(
-            7,
-            10_000_000L,
-            0.25
-        ),
-        DailyTaxThreshold(
             14,
-            1_000_000L,
+            50_000_000L,
             0.1
         ),
         DailyTaxThreshold(
             30,
-            100_000L,
+            10_000_000L,
             0.05
         )
     ).sortedByDescending { it.minimumSonhosForTrigger }
