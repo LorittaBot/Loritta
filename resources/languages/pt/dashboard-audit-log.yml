@@ -42,7 +42,6 @@ website:
         changedQuirkyMode: "{user} alterou as configurações do modo tosco"
         changedReactionEvents: "{user} alterou as configurações dos eventos de reações da Loritta"
         changedStarboard: "{user} alterou as configurações do starboard"
-        changedTaxBox: "{user} alterou as configurações da caixinha de taxas"
         changedTaxFreeDays: "{user} alterou as configurações dos dias sem taxa"
         changedWarnActions: "{user} alterou as configurações das punições de avisos"
         changedJoinLeaveMessages: "{user} alterou as configurações das mensagens de entrada e saída"

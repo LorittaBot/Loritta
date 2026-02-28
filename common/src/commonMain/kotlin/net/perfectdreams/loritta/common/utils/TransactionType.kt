@@ -163,12 +163,6 @@ enum class TransactionType(
         Emotes.Newspaper.toLorittaEmojiReference(),
         true
     ),
-    TAX_BOX_WITHDRAW(
-        I18nKeysData.Commands.Command.Transactions.Types.TaxBoxWithdraw.Title,
-        I18nKeysData.Commands.Command.Transactions.Types.TaxBoxWithdraw.Description,
-        Emotes.Package.toLorittaEmojiReference(),
-        true
-    ),
     VACATION_MODE(
         I18nKeysData.Commands.Command.Transactions.Types.VacationMode.Title,
         I18nKeysData.Commands.Command.Transactions.Types.VacationMode.Description,

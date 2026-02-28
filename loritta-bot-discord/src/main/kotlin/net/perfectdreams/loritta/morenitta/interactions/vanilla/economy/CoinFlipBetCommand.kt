@@ -16,8 +16,6 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.AprilFoolsCoinFlipBugs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetMatchmakingResults
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Payments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.WebsiteDiscountCoupons
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.TaxBoxes
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.TaxBoxConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
 import net.perfectdreams.loritta.common.achievements.AchievementType
 import net.perfectdreams.loritta.common.commands.CommandCategory
@@ -445,9 +443,6 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                                 number,
                                                 StoredCoinFlipBetTransaction(mmResult.value)
                                             )
-
-                                            val guildId = context.guildOrNull?.idLong
-                                            TaxBoxUtils.processServerTaxIfNeeded(tax, guildId)
 
                                             if (AprilFools.isAprilFools()) {
                                                 aprilFoolsWinnerBugMessage = AprilFoolsCoinFlipBugs.selectAll().where {

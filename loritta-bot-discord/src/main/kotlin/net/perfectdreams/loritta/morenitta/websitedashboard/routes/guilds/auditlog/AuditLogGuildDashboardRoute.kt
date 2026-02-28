@@ -194,7 +194,6 @@ class AuditLogGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                                                                     TrackedChangeType.CHANGED_QUIRKY_MODE -> i18nContext.get(DashboardI18nKeysData.AuditLog.Types.ChangedQuirkyMode(userInfo?.name ?: "???"))
                                                                     TrackedChangeType.CHANGED_REACTION_EVENTS -> i18nContext.get(DashboardI18nKeysData.AuditLog.Types.ChangedReactionEvents(userInfo?.name ?: "???"))
                                                                     TrackedChangeType.CHANGED_STARBOARD -> i18nContext.get(DashboardI18nKeysData.AuditLog.Types.ChangedStarboard(userInfo?.name ?: "???"))
-                                                                    TrackedChangeType.CHANGED_TAX_BOX -> i18nContext.get(DashboardI18nKeysData.AuditLog.Types.ChangedTaxBox(userInfo?.name ?: "???"))
                                                                     TrackedChangeType.CHANGED_TAX_FREE_DAYS -> i18nContext.get(DashboardI18nKeysData.AuditLog.Types.ChangedTaxFreeDays(userInfo?.name ?: "???"))
                                                                     TrackedChangeType.CHANGED_WARN_ACTIONS -> i18nContext.get(DashboardI18nKeysData.AuditLog.Types.ChangedWarnActions(userInfo?.name ?: "???"))
                                                                     TrackedChangeType.CHANGED_JOIN_LEAVE_MESSAGES -> i18nContext.get(DashboardI18nKeysData.AuditLog.Types.ChangedJoinLeaveMessages(userInfo?.name ?: "???"))

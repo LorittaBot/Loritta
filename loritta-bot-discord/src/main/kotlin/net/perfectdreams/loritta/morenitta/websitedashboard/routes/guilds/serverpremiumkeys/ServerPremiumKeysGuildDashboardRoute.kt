@@ -123,7 +123,6 @@ class ServerPremiumKeysGuildDashboardRoute(website: LorittaDashboardWebServer) :
                                 premiumValueRow(i18nContext.get(DashboardI18nKeysData.PremiumKeys.ServerPremium.Features.MaxLevelUpRoles), tablePlans, { it.highlight }) { "${it.plan.maxLevelUpRoles}" }
                                 premiumValueRow(i18nContext.get(DashboardI18nKeysData.PremiumKeys.ServerPremium.Features.DailyMultiplier), tablePlans, { it.highlight }) { "${it.plan.dailyMultiplier}x" }
                                 premiumFeatureRow(i18nContext.get(DashboardI18nKeysData.PremiumKeys.ServerPremium.Features.DropGuildInfo), tablePlans, { it.highlight }) { it.plan.showDropGuildInfoOnTransactions }
-                                premiumFeatureRow(i18nContext.get(DashboardI18nKeysData.PremiumKeys.ServerPremium.Features.TaxBox), tablePlans, { it.highlight }) { it.plan.taxBox }
                                 premiumFeatureRow(i18nContext.get(DashboardI18nKeysData.PremiumKeys.ServerPremium.Features.TaxFreeFridays), tablePlans, { it.highlight }) { it.plan.taxFreeFridays }
                                 premiumFeatureRow(i18nContext.get(DashboardI18nKeysData.PremiumKeys.ServerPremium.Features.TaxFreeSaturdays), tablePlans, { it.highlight }) { it.plan.taxFreeSaturdays }
                             }

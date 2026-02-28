@@ -420,9 +420,7 @@ class Pudding(
             PartnerApplications,
             LorittaPartners,
             LorittaPartnersServerInvites,
-            UserPremiumKeys,
-            TaxBoxConfigs,
-            TaxBoxes
+            UserPremiumKeys
         )
 
         if (schemas.isNotEmpty()) {

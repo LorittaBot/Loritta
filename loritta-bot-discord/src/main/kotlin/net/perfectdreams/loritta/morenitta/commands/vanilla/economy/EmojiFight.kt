@@ -19,8 +19,6 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendActive
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendCouponSonhosBundleUpsellInformationIfNotNull
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendUserHaventGotDailyTodayOrUpsellSonhosBundles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.*
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.TaxBoxes
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.TaxBoxConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.TransactionType
@@ -482,9 +480,6 @@ class EmojiFight(
                     }
                     it[EmojiFightMatchmakingResults.match] = emojiFightMatch
                 }
-
-                val guildId = context.guildOrNull?.idLong
-                TaxBoxUtils.processServerTaxIfNeeded(tax, guildId)
 
                 winnerProfile.addSonhosNested(realAfterTaxesPrize)
                 PaymentUtils.addToTransactionLogNested(

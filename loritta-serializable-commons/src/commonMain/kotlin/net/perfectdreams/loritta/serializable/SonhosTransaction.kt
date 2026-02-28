@@ -603,13 +603,3 @@ data class LotteryTicketsTransaction(
     val lotteryId: Long,
     val ticketId: Long
 ) : SonhosTransaction()
-
-@Serializable
-data class TaxBoxWithdrawTransaction(
-    override val id: Long,
-    override val transactionType: TransactionType,
-    override val timestamp: Instant,
-    override val user: UserId,
-    val sonhos: Long,
-    val guildId: Long
-) : SonhosTransaction()

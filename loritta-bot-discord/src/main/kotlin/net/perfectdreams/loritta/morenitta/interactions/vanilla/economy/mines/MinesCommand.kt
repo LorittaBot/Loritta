@@ -34,7 +34,6 @@ import net.perfectdreams.loritta.morenitta.mines.MinesPlayfield
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.NumberUtils
-import net.perfectdreams.loritta.morenitta.utils.TaxBoxUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import net.perfectdreams.loritta.serializable.StoredMinesJoinedTransaction
 import net.perfectdreams.loritta.serializable.StoredMinesPayoutTransaction
@@ -324,8 +323,6 @@ class MinesCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                                                 StoredMinesPayoutTransaction(matchId.matchId)
                                             )
 
-                                            TaxBoxUtils.processServerHouseEdgeTaxIfNeeded(matchBet, MinesUtils.HOUSE_EDGE, context.guildId)
-
                                             finishMines(matchId, payoutValue, minesPlayfield.getPickedCount(), false, MinesResult.PAYOUT, minesPlayfield.tiles, minesPlayfield.pickedTiles, null, null)
                                         } else {
                                             finishMines(matchId, null, minesPlayfield.getPickedCount(), false, MinesResult.PAYOUT, minesPlayfield.tiles, minesPlayfield.pickedTiles, null, null)
@@ -370,10 +367,6 @@ class MinesCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                             }
                             MinesPlayfield.PickResult.Mine -> {
                                 loritta.transaction {
-                                    if (matchBet != null) {
-                                        TaxBoxUtils.processServerHouseEdgeTaxIfNeeded(matchBet, MinesUtils.HOUSE_EDGE, context.guildId)
-                                    }
-
                                     finishMines(matchId, null, minesPlayfield.getPickedCount(), false, MinesResult.CLICKED_ON_A_MINE, minesPlayfield.tiles, minesPlayfield.pickedTiles, playfieldX, playfieldY)
                                 }
 
@@ -400,8 +393,6 @@ class MinesCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                                                 payoutValue,
                                                 StoredMinesPayoutTransaction(matchId.matchId)
                                             )
-
-                                            TaxBoxUtils.processServerHouseEdgeTaxIfNeeded(matchBet, MinesUtils.HOUSE_EDGE, context.guildId)
 
                                             finishMines(matchId, payoutValue, minesPlayfield.getPickedCount(), false, MinesResult.PAYOUT, minesPlayfield.tiles, minesPlayfield.pickedTiles, playfieldX, playfieldY)
                                         } else {
@@ -522,8 +513,6 @@ class MinesCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                                                     payoutValue,
                                                     StoredMinesPayoutTransaction(matchId.matchId)
                                                 )
-
-                                                TaxBoxUtils.processServerHouseEdgeTaxIfNeeded(matchBet, MinesUtils.HOUSE_EDGE, context.guildId)
 
                                                 finishMines(matchId, payoutValue, pickedCount, true, MinesResult.PAYOUT, minesPlayfield.tiles, minesPlayfield.pickedTiles, null, null)
                                             } else {

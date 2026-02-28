@@ -65,7 +65,6 @@ website:
           dropGuildInfo: "Informações do seu Servidor nas transações de drops"
           taxFreeFridays: "Sextas sem Taxas"
           taxFreeSaturdays: "Sábados sem Taxas"
-          taxBox: "Caixinha de Taxas"
 
       # Key management (guildPremiumKeysAndPremiumInfoPlan.kt)
       keyManagement:

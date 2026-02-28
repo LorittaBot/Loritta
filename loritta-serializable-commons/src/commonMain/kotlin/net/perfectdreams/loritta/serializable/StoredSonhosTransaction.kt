@@ -250,6 +250,3 @@ data class StoredLotteryRewardTransaction(
 
 @Serializable
 data class StoredLotteryTicketsTransaction(val lotteryId: Long, val ticketId: Long) : StoredSonhosTransaction()
-
-@Serializable
-data class StoredTaxBoxWithdrawTransaction(val guildId: Long) : StoredSonhosTransaction()

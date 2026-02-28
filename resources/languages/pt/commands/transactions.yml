@@ -192,10 +192,6 @@ types:
     title: "Reputações"
     description: "Transações relacionadas as reputações da Loritta"
     reputationDeleted: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para remover uma reputação enviada"
-  taxBoxWithdraw:
-    title: "Caixinha de Taxas do Servidor"
-    description: "Transações relacionadas a saques da caixinha de taxas do servidor"
-    withdraw: "Sacou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} da caixinha de taxas do servidor"
   vacationMode:
     title: "Modo Férias"
     description: "Transações relacionadas ao sistema de férias da Loritta"
