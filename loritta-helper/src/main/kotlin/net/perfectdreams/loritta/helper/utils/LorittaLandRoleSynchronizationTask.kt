@@ -5,7 +5,6 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.dv8tion.jda.api.JDA
@@ -16,17 +15,15 @@ import net.dv8tion.jda.api.managers.RoleManager
 import net.dv8tion.jda.api.requests.ErrorResponse
 import net.perfectdreams.galleryofdreams.common.data.DiscordSocialConnection
 import net.perfectdreams.galleryofdreams.common.data.api.GalleryOfDreamsDataResponse
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Payments
-import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentReason
+import net.perfectdreams.loritta.cinnamon.pudding.tables.UserPremiumKeys
 import net.perfectdreams.loritta.helper.LorittaHelper
-import net.perfectdreams.loritta.helper.dao.Payment
 import net.perfectdreams.loritta.helper.utils.buttonroles.LorittaCommunityRoleButtons
 import net.perfectdreams.loritta.helper.utils.extensions.await
-import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.time.OffsetDateTime
 import java.util.*
 import java.util.concurrent.TimeUnit
-import kotlin.math.ceil
 
 class LorittaLandRoleSynchronizationTask(val m: LorittaHelper, val jda: JDA) : Runnable {
     companion object {
@@ -122,58 +119,51 @@ class LorittaLandRoleSynchronizationTask(val m: LorittaHelper, val jda: JDA) : R
         // Apply donators roles
         logger.info { "Applying donator roles in the community server..." }
 
-        val payments = transaction(m.databases.lorittaDatabase) {
-            Payment.find {
-                (Payments.reason eq PaymentReason.DONATION) and (Payments.paidAt.isNotNull())
-            }.toMutableList()
+        val userDonationKeys = transaction(m.databases.lorittaDatabase) {
+            val now = OffsetDateTime.now(Constants.TIME_ZONE_ID)
+
+            UserPremiumKeys.selectAll()
+                .where {
+                    UserPremiumKeys.expiresAt greaterEq now
+                }
+                .toList()
         }
 
-        val donatorsPlusQuantity = mutableMapOf<Long, Double>()
-        val donatorsPlusFirstDate = mutableMapOf<Long, Long>()
-        val inactiveDonators = mutableSetOf<Long>()
+        val donatorsPlusQuantity = mutableMapOf<Long, Int>()
 
-        val donatorRole = communityGuild.getRoleById(community.roles.donator)
-        val superDonatorRole = communityGuild.getRoleById(community.roles.superDonator)
-        val megaDonatorRole = communityGuild.getRoleById(community.roles.megaDonator)
+        val basicPlanRole = communityGuild.getRoleById(community.roles.basicPlan)
+        val completePlanRole = communityGuild.getRoleById(community.roles.completePlan)
         val advertisementRole = communityGuild.getRoleById(community.roles.advertisement)
 
-        for (payment in payments) {
-            if ((payment.expiresAt ?: 0) >= System.currentTimeMillis()) {
-                donatorsPlusQuantity[payment.userId] = payment.money.toDouble() + donatorsPlusQuantity.getOrDefault(payment.userId, 0.0)
-                if (!donatorsPlusFirstDate.containsKey(payment.userId)) {
-                    donatorsPlusFirstDate[payment.userId] = payment.paidAt ?: 0L
-                }
-            } else {
-                inactiveDonators.add(payment.userId)
-            }
+        for (donationKey in userDonationKeys) {
+            donatorsPlusQuantity[donationKey[UserPremiumKeys.userId]] = donationKey[UserPremiumKeys.value] + donatorsPlusQuantity.getOrDefault(donationKey[UserPremiumKeys.userId], 0)
         }
 
         for (member in communityGuild.members) {
             val roles = member.roles.toMutableSet()
 
             if (donatorsPlusQuantity.containsKey(member.user.idLong)) {
-                // Loritta also ceil the result
-                val donated = ceil(donatorsPlusQuantity[member.user.idLong] ?: 0.0)
+                val donated = donatorsPlusQuantity[member.user.idLong]!! // Should NEVER be null here
 
-                if (!roles.contains(donatorRole))
-                    roles.add(donatorRole)
+                if (!roles.contains(basicPlanRole))
+                    roles.add(basicPlanRole)
 
-                if (donated >= 99.99) {
-                    if (!roles.contains(megaDonatorRole))
-                        roles.add(megaDonatorRole)
+                if (donated >= 35) {
+                    if (!roles.contains(completePlanRole))
+                        roles.add(completePlanRole)
                 } else {
-                    if (roles.contains(megaDonatorRole))
-                        roles.remove(megaDonatorRole)
+                    if (roles.contains(completePlanRole))
+                        roles.remove(completePlanRole)
                 }
 
-                if (donated >= 39.99) {
-                    if (!roles.contains(superDonatorRole))
-                        roles.add(superDonatorRole)
+                if (donated >= 25) {
+                    if (!roles.contains(basicPlanRole))
+                        roles.add(basicPlanRole)
                     if (!roles.contains(advertisementRole))
                         roles.add(advertisementRole)
                 } else {
-                    if (roles.contains(superDonatorRole))
-                        roles.remove(superDonatorRole)
+                    if (roles.contains(basicPlanRole))
+                        roles.remove(basicPlanRole)
                     if (roles.contains(advertisementRole))
                         roles.remove(advertisementRole)
                 }
@@ -190,14 +180,11 @@ class LorittaLandRoleSynchronizationTask(val m: LorittaHelper, val jda: JDA) : R
                 if (roles.contains(advertisementRole))
                     roles.remove(advertisementRole)
 
-                if (roles.contains(donatorRole))
-                    roles.remove(donatorRole)
+                if (roles.contains(basicPlanRole))
+                    roles.remove(basicPlanRole)
 
-                if (roles.contains(superDonatorRole))
-                    roles.remove(superDonatorRole)
-
-                if (roles.contains(megaDonatorRole))
-                    roles.remove(megaDonatorRole)
+                if (roles.contains(completePlanRole))
+                    roles.remove(completePlanRole)
             }
 
             if (!(roles.containsAll(member.roles) && member.roles.containsAll(roles))) {// Novos cargos foram adicionados

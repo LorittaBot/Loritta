@@ -107,9 +107,8 @@ data class LorittaHelperConfig(
             data class CommunityRolesConfig(
                 val support: Long,
                 val loriBodyguards: Long,
-                val donator: Long,
-                val superDonator: Long,
-                val megaDonator: Long,
+                val basicPlan: Long,
+                val completePlan: Long,
                 val advertisement: Long,
                 val firstFanArtManager: Long,
                 val level10: Long,
