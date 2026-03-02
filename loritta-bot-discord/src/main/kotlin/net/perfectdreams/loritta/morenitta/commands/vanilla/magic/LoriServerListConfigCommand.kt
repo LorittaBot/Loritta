@@ -33,6 +33,7 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.javatime.date
 import java.time.Instant
 import java.time.LocalDate
+import java.time.OffsetDateTime
 import kotlin.system.exitProcess
 
 class LoriServerListConfigCommand(loritta: LorittaBot) : AbstractCommand(loritta, "lslc", category = net.perfectdreams.loritta.common.commands.CommandCategory.MAGIC) {
@@ -166,7 +167,26 @@ class LoriServerListConfigCommand(loritta: LorittaBot) : AbstractCommand(loritta
 				return
 			}
 
-			if (arg0 == "generate_key" && arg1 != null && arg2 != null) {
+			if (arg0 == "generate_user_key" && arg1 != null && arg2 != null) {
+				val duration = TimeUtils.convertToMillisDurationRelative(context.args.drop(3).joinToString(" "))
+
+				loritta.pudding.transaction {
+					UserPremiumKeys.insert {
+						it[UserPremiumKeys.userId] = arg1.toLong()
+						it[UserPremiumKeys.value] = arg2.toInt()
+						it[UserPremiumKeys.expiresAt] = OffsetDateTime.now(Constants.LORITTA_TIMEZONE).plus(duration)
+					}
+				}
+
+				context.reply(
+					LorittaReply(
+						"Key criada com sucesso!"
+					)
+				)
+				return
+			}
+
+			if (arg0 == "generate_server_key" && arg1 != null && arg2 != null) {
 				loritta.pudding.transaction {
 					DonationKey.new {
 						this.userId = arg1.toLong()
