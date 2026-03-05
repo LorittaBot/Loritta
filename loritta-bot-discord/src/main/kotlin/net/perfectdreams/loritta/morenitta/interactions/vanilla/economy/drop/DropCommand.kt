@@ -702,7 +702,7 @@ class DropCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             val channel = channel("channel", I18N_PREFIX.Choice.Options.Channel.Text)
             val duration = string("duration", I18N_PREFIX.Choice.Options.Duration.Text)
             val choices = string("choices", I18N_PREFIX.Choice.Options.Choices.Text)
-            val result = string("result", I18N_PREFIX.Choice.Options.Result.Text)
+            val result = optionalString("result", I18N_PREFIX.Choice.Options.Result.Text)
             val drops = optionalLong("drops", I18N_PREFIX.Choice.Options.Drops.Text)
             val maxParticipants = optionalLong("max_participants", I18N_PREFIX.Choice.Options.MaxParticipants.Text)
             val lorittaAdmin = optionalBoolean("loritta_admin", I18N_PREFIX.Choice.Options.LorittaAdmin.Text)
@@ -774,7 +774,10 @@ class DropCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 return
             }
 
-            val correctChoice = args[options.result].trim()
+            // You may be wondering: Why don't we just use ".random(...)"?
+            // Well, because Kotlin's ".random(...)" does not support SecureRandom, only the Kotlin random
+            // Which is weird, because ".shuffled(...)" DOES support Java random (and, because of that, it supports SecureRandom)
+            val correctChoice = (args[options.result] ?: parsedChoices[loritta.random.nextInt(parsedChoices.size)]).trim()
 
             if (correctChoice !in parsedChoices) {
                 context.reply(true) {
