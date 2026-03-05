@@ -409,6 +409,8 @@ class Pudding(
             DropsConfigs,
             DropCalls,
             DropCallsParticipants,
+            DropChatChoices,
+            DropChatChoiceParticipants,
             BomDiaECiaConfigs,
             TaxFreeDaysConfigs,
             MinesSinglePlayerMatches,

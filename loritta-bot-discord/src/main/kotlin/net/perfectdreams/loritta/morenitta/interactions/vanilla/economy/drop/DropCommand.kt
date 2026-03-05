@@ -119,6 +119,18 @@ class DropCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
         subcommand(I18N_PREFIX.Call.Label, I18N_PREFIX.Call.Description, UUID.fromString("5448e529-b350-4e2a-922c-e11a271a44fd")) {
             executor = StartDropCallExecutor(loritta)
         }
+
+        subcommand(I18N_PREFIX.Choice.Label, I18N_PREFIX.Choice.Description, UUID.fromString("a3c1e7d4-8f52-4b91-9e6a-2d7f0c5b3a18")) {
+            executor = StartDropChatChoiceExecutor(loritta)
+        }
+
+        subcommand(I18N_PREFIX.EvenOdd.Label, I18N_PREFIX.EvenOdd.Description, UUID.fromString("b4d2f8e5-9a63-4c02-ae7b-3e8f1d6c4b29")) {
+            executor = StartDropEvenOddExecutor(loritta)
+        }
+
+        subcommand(I18N_PREFIX.Jankenpon.Label, I18N_PREFIX.Jankenpon.Description, UUID.fromString("c5e3a9f6-0b74-4d13-bf8c-4f9a2e7d5c30")) {
+            executor = StartDropJankenponExecutor(loritta)
+        }
     }
 
     class StartDropChatExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
@@ -680,6 +692,813 @@ class DropCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 options.maxWinners to maxWinners,
                 options.channel to channel,
                 options.voiceChannel to voiceChannel,
+                options.duration to duration
+            )
+        }
+    }
+
+    class StartDropChatChoiceExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {        class Options : ApplicationCommandOptions() {
+            val sonhos = string("sonhos", I18N_PREFIX.Choice.Options.Sonhos.Text)
+            val channel = channel("channel", I18N_PREFIX.Choice.Options.Channel.Text)
+            val duration = string("duration", I18N_PREFIX.Choice.Options.Duration.Text)
+            val choices = string("choices", I18N_PREFIX.Choice.Options.Choices.Text)
+            val result = string("result", I18N_PREFIX.Choice.Options.Result.Text)
+            val drops = optionalLong("drops", I18N_PREFIX.Choice.Options.Drops.Text)
+            val maxParticipants = optionalLong("max_participants", I18N_PREFIX.Choice.Options.MaxParticipants.Text)
+            val lorittaAdmin = optionalBoolean("loritta_admin", I18N_PREFIX.Choice.Options.LorittaAdmin.Text)
+        }
+
+        override val options = Options()
+
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            val chargeCreatorSonhos = checkChargeCreatorSonhos(context, args[options.lorittaAdmin] ?: false) ?: return
+
+            val selfUserProfile = context.lorittaUser.profile
+
+            val channel = args[options.channel]
+            val sonhosInput = args[options.sonhos]
+            val lorittaAsMember = context.guild.selfMember
+            val drops = args[options.drops]?.toInt() ?: 1
+
+            val sonhos = validateSonhos(
+                context,
+                NumberUtils.convertShortenedNumberOrUserSonhosSpecificToLong(
+                    sonhosInput,
+                    selfUserProfile.money
+                ),
+                DropChatChoice.MAX_SONHOS_PER_PARTICIPANT
+            ) ?: return
+
+            val duration = TimeUtils.convertToMillisDurationRelative(args[options.duration])
+
+            if (duration > Duration.ofMinutes(5)) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.DropTooLong),
+                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error
+                    )
+                }
+                return
+            }
+
+            if (Duration.ofSeconds(1) > duration) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.Chat.DropTooShort),
+                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error
+                    )
+                }
+                return
+            }
+
+            val choicesInput = args[options.choices]
+            val parsedChoices = choicesInput.split(",").map { it.trim() }.filter { it.isNotEmpty() }
+
+            if (parsedChoices.size !in DropChatChoice.MIN_CHOICES..DropChatChoice.MAX_CHOICES) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.Choice.InvalidChoicesCount(DropChatChoice.MIN_CHOICES, DropChatChoice.MAX_CHOICES)),
+                        Constants.ERROR
+                    )
+                }
+                return
+            }
+
+            if (parsedChoices.size != parsedChoices.distinct().size) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.Choice.DuplicateChoices),
+                        Constants.ERROR
+                    )
+                }
+                return
+            }
+
+            val correctChoice = args[options.result].trim()
+
+            if (correctChoice !in parsedChoices) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.Choice.ResultNotInChoices),
+                        Constants.ERROR
+                    )
+                }
+                return
+            }
+
+            val participants = args[options.maxParticipants]?.toInt()
+
+            if (channel !is GuildMessageChannel) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.ChannelIsNotMessageChannel(channel.asMention)),
+                        Constants.ERROR
+                    )
+                }
+                return
+            }
+
+            if (!channel.canTalk()) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.LorittaCantSpeakOnChannel(channel.asMention)),
+                        Constants.ERROR
+                    )
+                }
+                return
+            }
+
+            if (!channel.canTalk(context.member)) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.UserCantSpeakOnChannel(channel.asMention)),
+                        Constants.ERROR
+                    )
+                }
+                return
+            }
+
+            if (!lorittaAsMember.hasPermission(channel, Permission.MESSAGE_EMBED_LINKS)) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.LorittaDoesNotHavePermissionToSendEmbeds(channel.asMention)),
+                        Constants.ERROR
+                    )
+                }
+                return
+            }
+
+            if (!lorittaAsMember.hasPermission(channel, Permission.MESSAGE_HISTORY)) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.LorittaDoesNotHavePermissionToViewChannelHistory(channel.asMention)),
+                        Constants.ERROR
+                    )
+                }
+                return
+            }
+
+            if (participants != null && participants !in 1..100_000) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.Chat.InvalidParticipantsCount(1, 100_000)),
+                        Constants.ERROR
+                    )
+                }
+                return
+            }
+
+            if (drops !in 1..5) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.InvalidMultiDropCount(1, 5)),
+                        Constants.ERROR
+                    )
+                }
+                return
+            }
+
+            val worstCaseWinners = minOf(participants ?: DropChatChoice.MAX_WINNERS, DropChatChoice.MAX_WINNERS)
+            if (chargeCreatorSonhos && (worstCaseWinners * sonhos * drops) > selfUserProfile.money) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(SonhosUtils.insufficientSonhos(selfUserProfile.money, worstCaseWinners.toLong() * sonhos)),
+                        Constants.ERROR
+                    )
+                }
+                return
+            }
+
+            when (val result = SonhosPayExecutor.checkIfAccountIsOldEnoughToSendSonhos(context.user)) {
+                SonhosPayExecutor.Companion.OtherAccountOldEnoughResult.Success -> {}
+                is SonhosPayExecutor.Companion.OtherAccountOldEnoughResult.NotOldEnough -> {
+                    context.reply(true) {
+                        styled(
+                            context.i18nContext.get(
+                                I18N_PREFIX.SelfAccountIsTooNewToCreateADrop(
+                                    TimeFormat.DATE_TIME_LONG.format(result.allowedAfterTimestamp.toJavaInstant()),
+                                    TimeFormat.RELATIVE.format(result.allowedAfterTimestamp.toJavaInstant())
+                                )
+                            ),
+                            Constants.ERROR
+                        )
+                    }
+                    return
+                }
+            }
+
+            when (SonhosPayExecutor.checkIfAccountGotDailyAtLeastOnce(loritta, context.member)) {
+                SonhosPayExecutor.Companion.AccountGotDailyAtLeastOnceResult.Success -> {}
+                SonhosPayExecutor.Companion.AccountGotDailyAtLeastOnceResult.HaventGotDailyOnce -> {
+                    context.reply(true) {
+                        styled(
+                            context.i18nContext.get(
+                                SonhosCommand.PAY_I18N_PREFIX.SelfAccountNeedsToGetDaily(loritta.commandMentions.daily)
+                            ),
+                            net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob
+                        )
+                    }
+                    return
+                }
+            }
+
+            if (VacationModeUtils.checkIfWeAreOnVacation(context, true))
+                return
+
+            context.deferChannelMessage(true)
+
+            val dropMessages = mutableListOf<Message>()
+            repeat(drops) {
+                val drop = DropChatChoice(
+                    loritta,
+                    context.guild,
+                    context.user,
+                    channel,
+                    sonhos,
+                    participants,
+                    duration,
+                    context.i18nContext,
+                    chargeCreatorSonhos,
+                    parsedChoices,
+                    correctChoice
+                )
+
+                val message = channel.sendMessage(
+                    MessageCreate {
+                        with(drop) {
+                            createDropMessage()
+                        }
+                    }
+                ).await()
+
+                drop.originalDropMessage = message
+                drop.startDropAutoFinishTask()
+
+                dropMessages.add(message)
+            }
+
+            if (dropMessages.size == 1) {
+                val message = dropMessages[0]
+
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.Chat.DropCreated(message.jumpUrl)),
+                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHappyJumping
+                    )
+                }
+            } else {
+                context.reply(true) {
+                    for ((index, message) in dropMessages.withIndex()) {
+                        styled(
+                            context.i18nContext.get(I18N_PREFIX.Chat.DropCreatedCount(index + 1, message.jumpUrl)),
+                            net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHappyJumping
+                        )
+                    }
+                }
+            }
+        }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?>? {
+            // drop escolha <sonhos> <choices> <result> <#channel> <duration>
+            val sonhos = args.getOrNull(0)
+            val choicesInput = args.getOrNull(1)
+            val result = args.getOrNull(2)
+            val channelId = args.getOrNull(3)?.removePrefix("<#")?.removeSuffix(">")?.toLongOrNull()
+            val duration = args.drop(4).joinToString(" ")
+
+            if (sonhos == null || choicesInput == null || result == null || channelId == null || duration.isBlank()) {
+                context.explain()
+                return null
+            }
+
+            val channel = context.guild.getGuildMessageChannelById(channelId)
+
+            if (channel == null) {
+                context.explain()
+                return null
+            }
+
+            return mapOf(
+                options.sonhos to sonhos,
+                options.choices to choicesInput,
+                options.result to result,
+                options.channel to channel,
+                options.duration to duration
+            )
+        }
+    }
+
+    class StartDropEvenOddExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        class Options : ApplicationCommandOptions() {
+            val sonhos = string("sonhos", I18N_PREFIX.EvenOdd.Options.Sonhos.Text)
+            val channel = channel("channel", I18N_PREFIX.EvenOdd.Options.Channel.Text)
+            val duration = string("duration", I18N_PREFIX.EvenOdd.Options.Duration.Text)
+            val number = long("number", I18N_PREFIX.EvenOdd.Options.Number.Text)
+            val drops = optionalLong("drops", I18N_PREFIX.EvenOdd.Options.Drops.Text)
+            val maxParticipants = optionalLong("max_participants", I18N_PREFIX.EvenOdd.Options.MaxParticipants.Text)
+            val lorittaAdmin = optionalBoolean("loritta_admin", I18N_PREFIX.EvenOdd.Options.LorittaAdmin.Text)
+        }
+
+        override val options = Options()
+
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            val chargeCreatorSonhos = checkChargeCreatorSonhos(context, args[options.lorittaAdmin] ?: false) ?: return
+
+            val selfUserProfile = context.lorittaUser.profile
+
+            val channel = args[options.channel]
+            val sonhosInput = args[options.sonhos]
+            val lorittaAsMember = context.guild.selfMember
+            val drops = args[options.drops]?.toInt() ?: 1
+            val number = args[options.number]
+
+            val sonhos = validateSonhos(
+                context,
+                NumberUtils.convertShortenedNumberOrUserSonhosSpecificToLong(
+                    sonhosInput,
+                    selfUserProfile.money
+                ),
+                DropChatChoice.MAX_SONHOS_PER_PARTICIPANT
+            ) ?: return
+
+            val duration = TimeUtils.convertToMillisDurationRelative(args[options.duration])
+
+            if (duration > Duration.ofMinutes(5)) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.DropTooLong),
+                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error
+                    )
+                }
+                return
+            }
+
+            if (Duration.ofSeconds(1) > duration) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.Chat.DropTooShort),
+                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error
+                    )
+                }
+                return
+            }
+
+            val participants = args[options.maxParticipants]?.toInt()
+
+            if (channel !is GuildMessageChannel) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.ChannelIsNotMessageChannel(channel.asMention)),
+                        Constants.ERROR
+                    )
+                }
+                return
+            }
+
+            if (!channel.canTalk()) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.LorittaCantSpeakOnChannel(channel.asMention)),
+                        Constants.ERROR
+                    )
+                }
+                return
+            }
+
+            if (!channel.canTalk(context.member)) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.UserCantSpeakOnChannel(channel.asMention)),
+                        Constants.ERROR
+                    )
+                }
+                return
+            }
+
+            if (!lorittaAsMember.hasPermission(channel, Permission.MESSAGE_EMBED_LINKS)) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.LorittaDoesNotHavePermissionToSendEmbeds(channel.asMention)),
+                        Constants.ERROR
+                    )
+                }
+                return
+            }
+
+            if (!lorittaAsMember.hasPermission(channel, Permission.MESSAGE_HISTORY)) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.LorittaDoesNotHavePermissionToViewChannelHistory(channel.asMention)),
+                        Constants.ERROR
+                    )
+                }
+                return
+            }
+
+            if (participants != null && participants !in 1..100_000) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.Chat.InvalidParticipantsCount(1, 100_000)),
+                        Constants.ERROR
+                    )
+                }
+                return
+            }
+
+            if (drops !in 1..5) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.InvalidMultiDropCount(1, 5)),
+                        Constants.ERROR
+                    )
+                }
+                return
+            }
+
+            val choices = listOf("Par", "Ímpar")
+            val correctChoice = if (number % 2 == 0L) "Par" else "Ímpar"
+
+            val worstCaseWinners = minOf(participants ?: DropChatChoice.MAX_WINNERS, DropChatChoice.MAX_WINNERS)
+            if (chargeCreatorSonhos && (worstCaseWinners * sonhos * drops) > selfUserProfile.money) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(SonhosUtils.insufficientSonhos(selfUserProfile.money, worstCaseWinners.toLong() * sonhos)),
+                        Constants.ERROR
+                    )
+                }
+                return
+            }
+
+            when (val result = SonhosPayExecutor.checkIfAccountIsOldEnoughToSendSonhos(context.user)) {
+                SonhosPayExecutor.Companion.OtherAccountOldEnoughResult.Success -> {}
+                is SonhosPayExecutor.Companion.OtherAccountOldEnoughResult.NotOldEnough -> {
+                    context.reply(true) {
+                        styled(
+                            context.i18nContext.get(
+                                I18N_PREFIX.SelfAccountIsTooNewToCreateADrop(
+                                    TimeFormat.DATE_TIME_LONG.format(result.allowedAfterTimestamp.toJavaInstant()),
+                                    TimeFormat.RELATIVE.format(result.allowedAfterTimestamp.toJavaInstant())
+                                )
+                            ),
+                            Constants.ERROR
+                        )
+                    }
+                    return
+                }
+            }
+
+            if (VacationModeUtils.checkIfWeAreOnVacation(context, true))
+                return
+
+            context.deferChannelMessage(true)
+
+            val dropMessages = mutableListOf<Message>()
+            repeat(drops) {
+                val drop = DropChatChoice(
+                    loritta,
+                    context.guild,
+                    context.user,
+                    channel,
+                    sonhos,
+                    participants,
+                    duration,
+                    context.i18nContext,
+                    chargeCreatorSonhos,
+                    choices,
+                    correctChoice,
+                    DropChatChoiceVariant.EvenOdd(number)
+                )
+
+                val message = channel.sendMessage(
+                    MessageCreate {
+                        with(drop) {
+                            createDropMessage()
+                        }
+                    }
+                ).await()
+
+                drop.originalDropMessage = message
+                drop.startDropAutoFinishTask()
+
+                dropMessages.add(message)
+            }
+
+            if (dropMessages.size == 1) {
+                val message = dropMessages[0]
+
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.Chat.DropCreated(message.jumpUrl)),
+                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHappyJumping
+                    )
+                }
+            } else {
+                context.reply(true) {
+                    for ((index, message) in dropMessages.withIndex()) {
+                        styled(
+                            context.i18nContext.get(I18N_PREFIX.Chat.DropCreatedCount(index + 1, message.jumpUrl)),
+                            net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHappyJumping
+                        )
+                    }
+                }
+            }
+        }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?>? {
+            // drop parimpar <sonhos> <number> <#channel> <duration>
+            val sonhos = args.getOrNull(0)
+            val number = args.getOrNull(1)?.toLongOrNull()
+            val channelId = args.getOrNull(2)?.removePrefix("<#")?.removeSuffix(">")?.toLongOrNull()
+            val duration = args.drop(3).joinToString(" ")
+
+            if (sonhos == null || number == null || channelId == null || duration.isBlank()) {
+                context.explain()
+                return null
+            }
+
+            val channel = context.guild.getGuildMessageChannelById(channelId)
+
+            if (channel == null) {
+                context.explain()
+                return null
+            }
+
+            return mapOf(
+                options.sonhos to sonhos,
+                options.number to number,
+                options.channel to channel,
+                options.duration to duration
+            )
+        }
+    }
+
+    class StartDropJankenponExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        class Options : ApplicationCommandOptions() {
+            val sonhos = string("sonhos", I18N_PREFIX.Jankenpon.Options.Sonhos.Text)
+            val channel = channel("channel", I18N_PREFIX.Jankenpon.Options.Channel.Text)
+            val duration = string("duration", I18N_PREFIX.Jankenpon.Options.Duration.Text)
+            val creatorChoice = string("creator_choice", I18N_PREFIX.Jankenpon.Options.CreatorChoice.Text) {
+                choice("Pedra", "Pedra")
+                choice("Papel", "Papel")
+                choice("Tesoura", "Tesoura")
+            }
+            val drops = optionalLong("drops", I18N_PREFIX.Jankenpon.Options.Drops.Text)
+            val maxParticipants = optionalLong("max_participants", I18N_PREFIX.Jankenpon.Options.MaxParticipants.Text)
+            val lorittaAdmin = optionalBoolean("loritta_admin", I18N_PREFIX.Jankenpon.Options.LorittaAdmin.Text)
+        }
+
+        override val options = Options()
+
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            val chargeCreatorSonhos = checkChargeCreatorSonhos(context, args[options.lorittaAdmin] ?: false) ?: return
+
+            val selfUserProfile = context.lorittaUser.profile
+
+            val channel = args[options.channel]
+            val sonhosInput = args[options.sonhos]
+            val lorittaAsMember = context.guild.selfMember
+            val drops = args[options.drops]?.toInt() ?: 1
+            val creatorChoice = args[options.creatorChoice]
+
+            val sonhos = validateSonhos(
+                context,
+                NumberUtils.convertShortenedNumberOrUserSonhosSpecificToLong(
+                    sonhosInput,
+                    selfUserProfile.money
+                ),
+                DropChatChoice.MAX_SONHOS_PER_PARTICIPANT
+            ) ?: return
+
+            val duration = TimeUtils.convertToMillisDurationRelative(args[options.duration])
+
+            if (duration > Duration.ofMinutes(5)) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.DropTooLong),
+                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error
+                    )
+                }
+                return
+            }
+
+            if (Duration.ofSeconds(1) > duration) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.Chat.DropTooShort),
+                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error
+                    )
+                }
+                return
+            }
+
+            val participants = args[options.maxParticipants]?.toInt()
+
+            if (channel !is GuildMessageChannel) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.ChannelIsNotMessageChannel(channel.asMention)),
+                        Constants.ERROR
+                    )
+                }
+                return
+            }
+
+            if (!channel.canTalk()) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.LorittaCantSpeakOnChannel(channel.asMention)),
+                        Constants.ERROR
+                    )
+                }
+                return
+            }
+
+            if (!channel.canTalk(context.member)) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.UserCantSpeakOnChannel(channel.asMention)),
+                        Constants.ERROR
+                    )
+                }
+                return
+            }
+
+            if (!lorittaAsMember.hasPermission(channel, Permission.MESSAGE_EMBED_LINKS)) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.LorittaDoesNotHavePermissionToSendEmbeds(channel.asMention)),
+                        Constants.ERROR
+                    )
+                }
+                return
+            }
+
+            if (!lorittaAsMember.hasPermission(channel, Permission.MESSAGE_HISTORY)) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.LorittaDoesNotHavePermissionToViewChannelHistory(channel.asMention)),
+                        Constants.ERROR
+                    )
+                }
+                return
+            }
+
+            if (participants != null && participants !in 1..100_000) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.Chat.InvalidParticipantsCount(1, 100_000)),
+                        Constants.ERROR
+                    )
+                }
+                return
+            }
+
+            if (drops !in 1..5) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.InvalidMultiDropCount(1, 5)),
+                        Constants.ERROR
+                    )
+                }
+                return
+            }
+
+            val choices = listOf("Pedra", "Papel", "Tesoura")
+            val correctChoice = when (creatorChoice) {
+                "Pedra" -> "Papel"
+                "Papel" -> "Tesoura"
+                "Tesoura" -> "Pedra"
+                else -> error("Invalid creator choice: $creatorChoice")
+            }
+
+            val worstCaseWinners = minOf(participants ?: DropChatChoice.MAX_WINNERS, DropChatChoice.MAX_WINNERS)
+            if (chargeCreatorSonhos && (worstCaseWinners * sonhos * drops) > selfUserProfile.money) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(SonhosUtils.insufficientSonhos(selfUserProfile.money, worstCaseWinners.toLong() * sonhos)),
+                        Constants.ERROR
+                    )
+                }
+                return
+            }
+
+            when (val result = SonhosPayExecutor.checkIfAccountIsOldEnoughToSendSonhos(context.user)) {
+                SonhosPayExecutor.Companion.OtherAccountOldEnoughResult.Success -> {}
+                is SonhosPayExecutor.Companion.OtherAccountOldEnoughResult.NotOldEnough -> {
+                    context.reply(true) {
+                        styled(
+                            context.i18nContext.get(
+                                I18N_PREFIX.SelfAccountIsTooNewToCreateADrop(
+                                    TimeFormat.DATE_TIME_LONG.format(result.allowedAfterTimestamp.toJavaInstant()),
+                                    TimeFormat.RELATIVE.format(result.allowedAfterTimestamp.toJavaInstant())
+                                )
+                            ),
+                            Constants.ERROR
+                        )
+                    }
+                    return
+                }
+            }
+
+            if (VacationModeUtils.checkIfWeAreOnVacation(context, true))
+                return
+
+            context.deferChannelMessage(true)
+
+            val dropMessages = mutableListOf<Message>()
+            repeat(drops) {
+                val drop = DropChatChoice(
+                    loritta,
+                    context.guild,
+                    context.user,
+                    channel,
+                    sonhos,
+                    participants,
+                    duration,
+                    context.i18nContext,
+                    chargeCreatorSonhos,
+                    choices,
+                    correctChoice,
+                    DropChatChoiceVariant.Jankenpon(creatorChoice)
+                )
+
+                val message = channel.sendMessage(
+                    MessageCreate {
+                        with(drop) {
+                            createDropMessage()
+                        }
+                    }
+                ).await()
+
+                drop.originalDropMessage = message
+                drop.startDropAutoFinishTask()
+
+                dropMessages.add(message)
+            }
+
+            if (dropMessages.size == 1) {
+                val message = dropMessages[0]
+
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.Chat.DropCreated(message.jumpUrl)),
+                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHappyJumping
+                    )
+                }
+            } else {
+                context.reply(true) {
+                    for ((index, message) in dropMessages.withIndex()) {
+                        styled(
+                            context.i18nContext.get(I18N_PREFIX.Chat.DropCreatedCount(index + 1, message.jumpUrl)),
+                            net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHappyJumping
+                        )
+                    }
+                }
+            }
+        }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?>? {
+            // drop jankenpon <sonhos> <pedra|papel|tesoura> <#channel> <duration>
+            val sonhos = args.getOrNull(0)
+            val creatorChoiceInput = args.getOrNull(1)?.lowercase()
+            val channelId = args.getOrNull(2)?.removePrefix("<#")?.removeSuffix(">")?.toLongOrNull()
+            val duration = args.drop(3).joinToString(" ")
+
+            if (sonhos == null || creatorChoiceInput == null || channelId == null || duration.isBlank()) {
+                context.explain()
+                return null
+            }
+
+            val creatorChoice = when (creatorChoiceInput) {
+                "pedra" -> "Pedra"
+                "papel" -> "Papel"
+                "tesoura" -> "Tesoura"
+                else -> {
+                    context.explain()
+                    return null
+                }
+            }
+
+            val channel = context.guild.getGuildMessageChannelById(channelId)
+
+            if (channel == null) {
+                context.explain()
+                return null
+            }
+
+            return mapOf(
+                options.sonhos to sonhos,
+                options.creatorChoice to creatorChoice,
+                options.channel to channel,
                 options.duration to duration
             )
         }

@@ -126,7 +126,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
                 }
                 .toList()
 
-            val dropsGuildIds = (storedTransactions.filterIsInstance<StoredDropChatTransaction>().map { it.guildId } + storedTransactions.filterIsInstance<StoredDropCallTransaction>().map { it.guildId }).toSet()
+            val dropsGuildIds = (storedTransactions.filterIsInstance<StoredDropChatTransaction>().map { it.guildId } + storedTransactions.filterIsInstance<StoredDropCallTransaction>().map { it.guildId } + storedTransactions.filterIsInstance<StoredDropChatChoiceTransaction>().map { it.guildId }).toSet()
 
             val dropsConfigs = DropsConfigs.selectAll()
                 .where {
@@ -445,6 +445,45 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
                             val guildInviteCode = dropsConfig?.get(DropsConfigs.guildInviteCode)
 
                             DropCallTransaction(
+                                it[SimpleSonhosTransactionsLog.id].value,
+                                it[SimpleSonhosTransactionsLog.type],
+                                it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
+                                UserId(it[SimpleSonhosTransactionsLog.user].value),
+                                it[SimpleSonhosTransactionsLog.sonhos],
+                                stored.dropId,
+                                stored.charged,
+                                stored.givenById,
+                                stored.receivedById,
+                                stored.guildId,
+                                if (showGuildInformationOnTransactions == true && guildName != null && plan.showDropGuildInfoOnTransactions) {
+                                    DropGuildInfo(
+                                        guildName,
+                                        guildInviteCode
+                                    )
+                                } else null
+                            )
+                        }
+
+                        is StoredDropChatChoiceTransaction -> {
+                            val dropsConfig = dropsConfigs.firstOrNull { it[DropsConfigs.id].value == stored.guildId }
+
+                            val plan = if (dropsConfig != null) {
+                                val value = DonationKeys.selectAll().where { DonationKeys.activeIn eq dropsConfig[DropsConfigs.id] and (DonationKeys.expiresAt greaterEq System.currentTimeMillis()) }
+                                    .toList()
+                                    .sumOf {
+                                        it[DonationKeys.value]
+                                    }
+
+                                ServerPremiumPlan.getPlanFromValue(value)
+                            } else {
+                                ServerPremiumPlan.Free
+                            }
+
+                            val showGuildInformationOnTransactions = dropsConfig?.get(DropsConfigs.showGuildInformationOnTransactions)
+                            val guildName = dropsConfig?.get(DropsConfigs.guildName)
+                            val guildInviteCode = dropsConfig?.get(DropsConfigs.guildInviteCode)
+
+                            DropChatChoiceTransaction(
                                 it[SimpleSonhosTransactionsLog.id].value,
                                 it[SimpleSonhosTransactionsLog.type],
                                 it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),

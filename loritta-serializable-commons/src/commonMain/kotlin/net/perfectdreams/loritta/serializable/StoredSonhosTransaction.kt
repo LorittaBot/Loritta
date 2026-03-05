@@ -232,6 +232,15 @@ data class StoredDropCallTransaction(
 ) : StoredSonhosTransaction()
 
 @Serializable
+data class StoredDropChatChoiceTransaction(
+    val dropId: Long,
+    val charged: Boolean,
+    val givenById: Long?,
+    val receivedById: Long,
+    val guildId: Long
+) : StoredSonhosTransaction()
+
+@Serializable
 data class StoredMinesJoinedTransaction(val matchId: Long) : StoredSonhosTransaction()
 
 @Serializable

@@ -70,6 +70,97 @@ chat:
     lorittaAdmin:
       text: "Se ativado, os sonhos não serão cobrados do usuário que criou o drop"
 
+choice:
+  label: "escolha"
+  description: "Inicia um drop de sonhos com escolhas no chat"
+
+  sonhosDrop: "Drop de Sonhos com Escolha!"
+  sonhosDropHasEnded: "Drop de Sonhos com Escolha acabou!"
+  makeYourChoice: "Escolha uma das opções abaixo para participar!"
+  correctChoiceWas: "A resposta correta era **{correctChoice}**!"
+  noOneChoseCorrectly: "Ninguém escolheu a resposta correta..."
+  noSonhosDistributedNoCorrectChoice: "Nenhum sonho foi distribuído pois ninguém escolheu a resposta correta..."
+  invalidChoicesCount: "Você precisa fornecer entre {minChoices} e {maxChoices} escolhas separadas por vírgula!"
+  resultNotInChoices: "A resposta correta precisa ser uma das escolhas fornecidas!"
+  duplicateChoices: "Você não pode fornecer escolhas duplicadas!"
+  participate: "{choiceLabel} ({participantsCount})"
+  usersWonSonhos: "{userMentions} {winnersCount,plural, one {ganhou} other {ganharam}} {sonhosEmoji} **{sonhos,plural, =0 {# Sonhos} one {# Sonho} other {# Sonhos}}**{winnersCount,plural, one {} other { cada}}!"
+
+  joinDrop:
+    thisDropHasEnded: "Este drop acabou!"
+    youAlreadyParticipatingOnThisDrop: "Você já está participando deste drop!"
+    youAreNowParticipating: "Você escolheu **{choice}** e agora está participando do drop, boa sorte!"
+    youCannotParticipateInYourOwnDrop: "Você não pode participar do seu próprio drop!"
+
+  options:
+    sonhos:
+      text: "Quantos sonhos serão dados para cada usuário"
+    channel:
+      text: "O canal onde a mensagem do drop será enviada"
+    duration:
+      text: "A duração do drop"
+    choices:
+      text: "As escolhas separadas por vírgula (ex: Loritta, Pantufa, Gabriela)"
+    result:
+      text: "A resposta correta (precisa ser uma das escolhas)"
+    drops:
+      text: "Quantos drops serão spawnados ao mesmo tempo"
+    maxParticipants:
+      text: "Quantidade máxima de pessoas que poderão participar do drop"
+    lorittaAdmin:
+      text: "Se ativado, os sonhos não serão cobrados do usuário que criou o drop"
+
+evenOdd:
+  label: "parimpar"
+  description: "Inicia um drop de sonhos de Par ou Ímpar no chat"
+
+  sonhosDrop: "Drop de Sonhos - Par ou Ímpar!"
+  sonhosDropHasEnded: "Drop de Sonhos - Par ou Ímpar acabou!"
+  makeYourChoice: "O número que {userMention} escolheu é par ou ímpar? Escolha para participar!"
+  theNumberIs: "**O número é: {number}**"
+  correctChoiceWas: "O número **{number}** é **{correctChoice}**!"
+
+  options:
+    sonhos:
+      text: "Quantos sonhos serão dados para cada usuário"
+    channel:
+      text: "O canal onde a mensagem do drop será enviada"
+    duration:
+      text: "A duração do drop"
+    number:
+      text: "O número que os participantes devem adivinhar se é par ou ímpar"
+    drops:
+      text: "Quantos drops serão spawnados ao mesmo tempo"
+    maxParticipants:
+      text: "Quantidade máxima de pessoas que poderão participar do drop"
+    lorittaAdmin:
+      text: "Se ativado, os sonhos não serão cobrados do usuário que criou o drop"
+
+jankenpon:
+  label: "jankenpon"
+  description: "Inicia um drop de sonhos de Pedra, Papel e Tesoura no chat"
+
+  sonhosDrop: "Drop de Sonhos - Jankenpon!"
+  sonhosDropHasEnded: "Drop de Sonhos - Jankenpon acabou!"
+  makeYourChoice: "Pedra, papel ou tesoura? Escolha qual vencerá da escolha de {userMention}!"
+  correctChoiceWas: "{userMention} tinha escolhido **{creatorChoice}**, quem escolheu **{correctChoice}** ganhou!"
+
+  options:
+    sonhos:
+      text: "Quantos sonhos serão dados para cada usuário"
+    channel:
+      text: "O canal onde a mensagem do drop será enviada"
+    duration:
+      text: "A duração do drop"
+    creatorChoice:
+      text: "Sua jogada secreta (quem escolher o que ganha desta jogada vence)"
+    drops:
+      text: "Quantos drops serão spawnados ao mesmo tempo"
+    maxParticipants:
+      text: "Quantidade máxima de pessoas que poderão participar do drop"
+    lorittaAdmin:
+      text: "Se ativado, os sonhos não serão cobrados do usuário que criou o drop"
+
 call:
   label: "call"
   description: "Inicia um drop de sonhos em uma call"

@@ -346,6 +346,7 @@ class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandE
                         // ===[ DROP ]===
                         is DropChatTransaction -> SimpleSonhosTransactionTransformers.DropChatTransformer
                         is DropCallTransaction -> SimpleSonhosTransactionTransformers.DropCallTransformer
+                        is DropChatChoiceTransaction -> SimpleSonhosTransactionTransformers.DropChatChoiceTransformer
 
                         // ===[ MINES ]===
                         is MinesJoinedTransaction -> SimpleSonhosTransactionTransformers.MinesJoinedTransactionTransformer

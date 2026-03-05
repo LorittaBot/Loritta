@@ -94,6 +94,13 @@ types:
     callReceivedWithGuildInformationAdmin: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} no drop de sonhos na call do servidor {guildName} (`{guildId}`)"
     callSent: "Enviou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para {receivedUserPreview} no drop de sonhos na call do servidor `{guildId}`"
     callSentWithGuildInformation: "Enviou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para {receivedUserPreview} no drop de sonhos na call do servidor {guildName} (`{guildId}`)"
+
+    choiceReceived: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} de {giverUserPreview} no drop de sonhos com escolha do servidor `{guildId}`"
+    choiceReceivedWithGuildInformation: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} de {giverUserPreview} no drop de sonhos com escolha do servidor {guildName} (`{guildId}`)"
+    choiceReceivedAdmin: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} no drop de sonhos com escolha do servidor `{guildId}`"
+    choiceReceivedWithGuildInformationAdmin: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} no drop de sonhos com escolha do servidor {guildName} (`{guildId}`)"
+    choiceSent: "Enviou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para {receivedUserPreview} no drop de sonhos com escolha do servidor `{guildId}`"
+    choiceSentWithGuildInformation: "Enviou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para {receivedUserPreview} no drop de sonhos com escolha do servidor {guildName} (`{guildId}`)"
   mines:
     title: "Apostas no Mines"
     description: "Transações relacionadas a apostas no Mines"
