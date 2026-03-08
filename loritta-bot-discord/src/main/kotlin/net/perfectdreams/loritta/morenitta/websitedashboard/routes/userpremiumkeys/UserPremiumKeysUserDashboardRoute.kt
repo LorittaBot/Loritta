@@ -102,7 +102,7 @@ class UserPremiumKeysUserDashboardRoute(website: LorittaDashboardWebServer) : Re
 
                         premiumPlanCards(
                             i18nContext,
-                            plans.map { PremiumPlanColumn(it.name, it.planValue.toDouble(), it.monthlyPriceCents, it.highlight) },
+                            plans.map { PremiumPlanColumn(it.name, it.planValue, it.monthlyPriceCents, it.highlight) },
                             "/$localePath/premium/buy"
                         )
                     }
@@ -115,7 +115,7 @@ class UserPremiumKeysUserDashboardRoute(website: LorittaDashboardWebServer) : Re
 
                             premiumFeatureTableHead(
                                 i18nContext,
-                                tablePlans.map { PremiumPlanColumn(it.name, it.planValue.toDouble(), it.monthlyPriceCents, it.highlight) }
+                                tablePlans.map { PremiumPlanColumn(it.name, it.planValue, it.monthlyPriceCents, it.highlight) }
                             )
 
                             val noTax = i18nContext.get(DashboardI18nKeysData.PremiumKeys.UserPremium.Values.NoTax)

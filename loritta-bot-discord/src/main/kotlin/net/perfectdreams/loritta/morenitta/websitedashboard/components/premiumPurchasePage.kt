@@ -7,7 +7,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.utils.SVGIcons
 
 data class PremiumPlanColumn(
     val name: String,
-    val planValue: Double,
+    val planValue: Int,
     val monthlyPriceCents: Long,
     val highlight: Boolean
 )

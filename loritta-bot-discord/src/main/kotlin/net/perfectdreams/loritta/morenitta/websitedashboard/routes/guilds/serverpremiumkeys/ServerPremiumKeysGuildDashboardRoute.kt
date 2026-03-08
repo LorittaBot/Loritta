@@ -29,21 +29,21 @@ class ServerPremiumKeysGuildDashboardRoute(website: LorittaDashboardWebServer) :
     data class PlanColumn(
         val name: String,
         val plan: ServerPremiumPlan,
-        val planValue: Double,
+        val planValue: Int,
         val monthlyPriceCents: Long,
         val highlight: Boolean
     )
 
     override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: LorittaUserSession, userPremiumPlan: UserPremiumPlan, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlan, member: Member) {
         val plans = listOf(
-            PlanColumn(i18nContext.get(DashboardI18nKeysData.PremiumKeys.PlanNames.Basic), ServerPremiumPlan.Basic, 34.99, 3499L, false),
-            PlanColumn(i18nContext.get(DashboardI18nKeysData.PremiumKeys.PlanNames.Complete), ServerPremiumPlan.Complete, 59.99, 5999L, true)
+            PlanColumn(i18nContext.get(DashboardI18nKeysData.PremiumKeys.PlanNames.Basic), ServerPremiumPlan.Basic, 35, 3499L, false),
+            PlanColumn(i18nContext.get(DashboardI18nKeysData.PremiumKeys.PlanNames.Complete), ServerPremiumPlan.Complete, 60, 5999L, true)
         )
 
         val tablePlans = listOf(
-            PlanColumn(i18nContext.get(DashboardI18nKeysData.PremiumKeys.PlanNames.Free), ServerPremiumPlan.Free, 0.0, 0L, false),
-            PlanColumn(i18nContext.get(DashboardI18nKeysData.PremiumKeys.PlanNames.Basic), ServerPremiumPlan.Basic, 34.99, 3499L, false),
-            PlanColumn(i18nContext.get(DashboardI18nKeysData.PremiumKeys.PlanNames.Complete), ServerPremiumPlan.Complete, 59.99, 5999L, true)
+            PlanColumn(i18nContext.get(DashboardI18nKeysData.PremiumKeys.PlanNames.Free), ServerPremiumPlan.Free, 0, 0L, false),
+            PlanColumn(i18nContext.get(DashboardI18nKeysData.PremiumKeys.PlanNames.Basic), ServerPremiumPlan.Basic, 35, 3499L, false),
+            PlanColumn(i18nContext.get(DashboardI18nKeysData.PremiumKeys.PlanNames.Complete), ServerPremiumPlan.Complete, 60, 5999L, true)
         )
 
         val localePath = i18nContext.get(net.perfectdreams.loritta.i18n.I18nKeysData.Website.LocalePathId)
