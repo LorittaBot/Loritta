@@ -130,7 +130,7 @@ class DropCall(
                     is SonhosPayExecutor.Companion.OtherAccountOldEnoughResult.NotOldEnough -> continue
                 }
 
-                if (AccountUtils.getUserTodayDailyReward(loritta, winner.idLong) != null)
+                if (AccountUtils.getUserTodayDailyReward(loritta, winner.idLong) == null)
                     continue
 
                 // Are we on vacation?
