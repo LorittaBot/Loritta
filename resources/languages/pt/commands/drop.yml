@@ -10,7 +10,7 @@ youCannotStartAAdminDrop: "Você não pode iniciar um drop deste tipo, pois voc�
 selfAccountIsTooNewToCreateADrop: "Espere aí, a sua conta é muito nova! Antes de poder fazer um drop, você precisa aguardar até {time} ({timeRelative}) antes de começar a fazer drops de sonhos."
 selfAccountNeedsToGetDailyToCreateADrop: "Parece que você nunca pegou uma recompensa diária, você só pode fazer um drop de sonhos após pegar a sua recompensa diária pelo ou menos uma vez na sua vida. Que tal pegar agora? {dailyCommand}"
 selfAccountIsTooNewToJoinADrop: "Espere aí, a sua conta é muito nova! Antes de poder entrar neste drop, você precisa aguardar até {time} ({timeRelative}) antes de poder entrar em drops de sonhos."
-selfAccountNeedsToGetDailyToJoinADrop: "Parece que você nunca pegou uma recompensa diária, você só pode entrar em um drop de sonhos após pegar a sua recompensa diária pelo ou menos uma vez na sua vida. Que tal pegar agora? {dailyCommand}"
+selfAccountNeedsToGetDailyToJoinADrop: "Você não pegou a sua recompensa diária de hoje! Você só pode entrar em um drop de sonhos após pegar a sua recompensa diária. Que tal pegar agora? {dailyCommand}"
 tooManySonhos: "Você não pode criar um drop que dá mais de {sonhosEmoji} {sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} por participante!"
 dropTooLong: "A duração do drop é longa demais! Um drop deve durar, no máximo, cinco minutos."
 totalSonhosDistributed: "No total, {sonhosEmoji} **{sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** de {creatorMention} foram distribuídos!"

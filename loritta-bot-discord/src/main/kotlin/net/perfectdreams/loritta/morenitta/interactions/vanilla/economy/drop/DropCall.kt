@@ -26,6 +26,7 @@ import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.SonhosPayExecutor
+import net.perfectdreams.loritta.morenitta.utils.AccountUtils
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.serializable.StoredDropCallTransaction
@@ -129,10 +130,8 @@ class DropCall(
                     is SonhosPayExecutor.Companion.OtherAccountOldEnoughResult.NotOldEnough -> continue
                 }
 
-                when (SonhosPayExecutor.checkIfAccountGotDailyAtLeastOnce(loritta, winner)) {
-                    SonhosPayExecutor.Companion.AccountGotDailyAtLeastOnceResult.Success -> {}
-                    SonhosPayExecutor.Companion.AccountGotDailyAtLeastOnceResult.HaventGotDailyOnce -> continue
-                }
+                if (AccountUtils.getUserTodayDailyReward(loritta, winner.idLong) != null)
+                    continue
 
                 // Are we on vacation?
                 val lorittaProfile = loritta.getOrCreateLorittaProfile(winner.idLong)

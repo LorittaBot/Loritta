@@ -33,6 +33,7 @@ import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.SonhosPayExecutor
+import net.perfectdreams.loritta.morenitta.utils.AccountUtils
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.VacationModeUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
@@ -99,12 +100,8 @@ class DropChatChoice(
                     }
                 }
 
-                when (SonhosPayExecutor.checkIfAccountGotDailyAtLeastOnce(loritta, context.member)) {
-                    SonhosPayExecutor.Companion.AccountGotDailyAtLeastOnceResult.Success -> {}
-                    SonhosPayExecutor.Companion.AccountGotDailyAtLeastOnceResult.HaventGotDailyOnce -> {
-                        return@withLock DropJoinResult.SelfAccountNeedsToGetDailyToJoinADrop
-                    }
-                }
+                if (AccountUtils.getUserTodayDailyReward(loritta, context.user.idLong) == null)
+                    return@withLock DropJoinResult.SelfAccountNeedsToGetDailyToJoinADrop
 
                 val vacationUntil = context.lorittaUser.profile.vacationUntil
                 if (vacationUntil != null && vacationUntil > Instant.now()) {
