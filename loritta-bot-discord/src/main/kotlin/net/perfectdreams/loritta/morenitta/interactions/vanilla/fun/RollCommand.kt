@@ -171,15 +171,8 @@ class RollCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
         override suspend fun convertToInteractionsArguments(
             context: LegacyMessageCommandContext,
             args: List<String>
-        ): Map<OptionReference<*>, Any?>? {
-            if (context.args.isEmpty()) {
-                context.explain()
-                return null
-            }
-
-            return mapOf(
-                options.dices to context.args.joinToString(" ")
-            )
+        ): Map<OptionReference<*>, Any?> {
+            return mapOf(options.dices to context.args.joinToString(" ").ifBlank { null })
         }
     }
 }
