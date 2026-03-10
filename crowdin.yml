@@ -1,6 +1,0 @@
-files:
-  - source: /resources/languages/pt/*.yml
-    translation: /resources/languages/%locale%/%original_file_name%
-    ignore: [ "/resources/languages/pt/translators.yml", "/resources/languages/pt/language.yml" ]
-  - source: /resources/languages/pt/commands/*.yml
-    translation: /resources/languages/%locale%/commands/%original_file_name%
