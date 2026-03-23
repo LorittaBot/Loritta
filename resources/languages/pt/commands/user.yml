@@ -45,6 +45,7 @@ info:
   infoAboutTheApplication: "Informações sobre o Aplicativo"
   interestingTidbits: "Curiosidades Interessantes"
   user:
+    badges: "Insígnias"
     discordId: "ID do Discord"
     discordTag: "Tag do Discord"
     accountCreationDate: "Data de Criação da Conta"

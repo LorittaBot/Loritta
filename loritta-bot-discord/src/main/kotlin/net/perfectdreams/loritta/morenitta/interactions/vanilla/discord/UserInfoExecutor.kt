@@ -80,7 +80,7 @@ object UserInfoExecutor {
         return {
             embed {
                 author(context.i18nContext.get(UserCommand.I18N_PREFIX.Info.InfoAboutTheUser))
-                title = buildString {
+                val badges = buildString {
                     if (user.isBot) {
                         append(
                             when {
@@ -99,11 +99,19 @@ object UserInfoExecutor {
                     }
 
                     append(" ")
-
+                }
+                title = buildString {
                     append(user.globalName ?: user.name)
                 }
                 url = "https://discord.com/users/${user.id}"
 
+                if (badges.isNotEmpty()) {
+                    field(
+                        "${Emotes.LoriSmile} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.User.Badges)}",
+                        badges,
+                        true
+                    )
+                }
                 field(
                     "${Emotes.LoriId} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.User.DiscordId)}",
                     "`${user.id}`",
