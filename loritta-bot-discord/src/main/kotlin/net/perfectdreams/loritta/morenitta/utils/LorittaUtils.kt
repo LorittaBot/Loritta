@@ -293,37 +293,4 @@ object LorittaUtils {
 	fun generateErrorId(loritta: LorittaBot): String {
 		return "cluster${loritta.lorittaCluster.id}_${UUID.randomUUID().toString().replace("-", "")}"
 	}
-
-	/**
-	 * Generates a random error ID for message creations
-	 */
-	fun generateLorittaMessageEventErrorId(
-		loritta: LorittaBot,
-		event: LorittaMessageEvent
-	) = generateErrorId(loritta, event.author, event.channel, event.guild)
-
-	/**
-	 * Generates a random error ID for interactions
-	 */
-	fun generateInteractionErrorId(
-		loritta: LorittaBot,
-		event: GenericInteractionCreateEvent
-	) = generateErrorId(loritta, event.user, event.channel, event.guild)
-
-	private fun generateErrorId(
-		loritta: LorittaBot,
-		user: User,
-		channel: Channel?,
-		guild: Guild?
-	): String {
-		return buildString {
-			append("cluster${loritta.lorittaCluster.id}")
-			append("_u${user.idLong}")
-			if (channel != null)
-				append("_c${channel.idLong}")
-			if (guild != null)
-				append("_g${guild.idLong}")
-			append("_${UUID.randomUUID().toString().replace("-", "")}")
-		}
-	}
 }

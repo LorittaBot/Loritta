@@ -657,7 +657,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         } catch (e: CommandException) {
             context?.reply(e.ephemeral, e.builder)
         } catch (e: Exception) {
-            val errorId = LorittaUtils.generateLorittaMessageEventErrorId(loritta, event)
+            val errorId = LorittaUtils.generateErrorId(loritta)
             logger.warn(e) { "Something went wrong while executing command ${executor::class.simpleName}! Error ID: $errorId" }
 
             stacktrace = e.stackTraceToString()
