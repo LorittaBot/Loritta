@@ -51,9 +51,16 @@ class DropCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             748917809995841666L // Padaria
         )
 
+        val ALLOWED_ROLES = setOf(
+            351473717194522647L // Guarda-Costas
+        )
+
         suspend fun checkChargeCreatorSonhos(context: UnleashedContext, isLorittaAdminOption: Boolean): Boolean? {
             if (!isLorittaAdminOption)
                 return true
+
+            if (context.member.roles.any { it.idLong in ALLOWED_ROLES })
+                return false
 
             // Because the command is restricted to only users with message manage, we don't actually NEED to check the roles too (hooray)
             val isInAdminGuild = context.guildId in ALLOWED_LORITTA_ADMIN_GUILDS
