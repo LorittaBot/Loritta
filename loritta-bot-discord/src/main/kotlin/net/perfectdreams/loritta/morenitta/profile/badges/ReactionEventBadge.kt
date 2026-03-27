@@ -12,6 +12,7 @@ import net.perfectdreams.loritta.morenitta.profile.ProfileDesignManager
 import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
 import net.perfectdreams.loritta.morenitta.reactionevents.ReactionEvent
 import net.perfectdreams.loritta.morenitta.reactionevents.events.Anniversary2025ReactionEvent
+import net.perfectdreams.loritta.morenitta.reactionevents.events.Anniversary2026ReactionEvent
 import net.perfectdreams.loritta.morenitta.reactionevents.events.Christmas2024ReactionEvent
 import net.perfectdreams.loritta.morenitta.reactionevents.events.Christmas2025ReactionEvent
 import net.perfectdreams.loritta.morenitta.reactionevents.events.Halloween2024ReactionEvent
@@ -143,6 +144,32 @@ sealed class ReactionEventBadge(
         Halloween2025ReactionEvent,
         300
     )
+
+	class Anniversary2026ReactionEventBadge(pudding: Pudding) : ReactionEventBadge(
+		pudding,
+		UUID.fromString("a1b2c3d4-e5f6-7890-abcd-ef1234567890"),
+		ProfileDesignManager.I18N_BADGES_PREFIX.Anniversary2026.Title,
+		ProfileDesignManager.I18N_BADGES_PREFIX.Anniversary2026.TitlePlural,
+		ProfileDesignManager.I18N_BADGES_PREFIX.Anniversary2026.Description,
+		"anniversary2026.png",
+		LorittaEmojis.Anniversary2026ReactionEvent,
+		100,
+		Anniversary2026ReactionEvent,
+		10
+	)
+
+	class Anniversary2026ReactionEventSuperBadge(pudding: Pudding) : ReactionEventBadge(
+		pudding,
+		UUID.fromString("b2c3d4e5-f6a7-8901-bcde-f12345678901"),
+		ProfileDesignManager.I18N_BADGES_PREFIX.SuperAnniversary2026.Title,
+		ProfileDesignManager.I18N_BADGES_PREFIX.SuperAnniversary2026.TitlePlural,
+		ProfileDesignManager.I18N_BADGES_PREFIX.SuperAnniversary2026.Description,
+		"anniversary2026_super.png",
+		LorittaEmojis.Anniversary2026ReactionEventSuper,
+		100,
+		Anniversary2026ReactionEvent,
+		300
+	)
 
     class Christmas2025ReactionEventBadge(pudding: Pudding) : ReactionEventBadge(
         pudding,

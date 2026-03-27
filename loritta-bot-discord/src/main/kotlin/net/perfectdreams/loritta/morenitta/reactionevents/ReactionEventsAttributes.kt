@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.morenitta.reactionevents
 
 import net.perfectdreams.loritta.morenitta.reactionevents.events.Anniversary2025ReactionEvent
+import net.perfectdreams.loritta.morenitta.reactionevents.events.Anniversary2026ReactionEvent
 import net.perfectdreams.loritta.morenitta.reactionevents.events.Christmas2024ReactionEvent
 import net.perfectdreams.loritta.morenitta.reactionevents.events.Christmas2025ReactionEvent
 import net.perfectdreams.loritta.morenitta.reactionevents.events.Halloween2024ReactionEvent
@@ -17,6 +18,7 @@ object ReactionEventsAttributes {
         register(Anniversary2025ReactionEvent)
         register(Halloween2025ReactionEvent)
         register(Christmas2025ReactionEvent)
+        register(Anniversary2026ReactionEvent)
     }
 
     private fun register(event: ReactionEvent) {

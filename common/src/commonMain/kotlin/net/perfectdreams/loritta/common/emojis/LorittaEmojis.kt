@@ -128,6 +128,8 @@ object LorittaEmojis {
     val Christmas2024ReactionEventSuper = applicationEmoji("christmas2024_super", "/badges/")
     val Anniversary2025ReactionEvent = applicationEmoji("anniversary2025", "/badges/")
     val Anniversary2025ReactionEventSuper = applicationEmoji("anniversary2025_super", "/badges/")
+    val Anniversary2026ReactionEvent = applicationEmoji("anniversary2026", "/badges/")
+    val Anniversary2026ReactionEventSuper = applicationEmoji("anniversary2026_super", "/badges/")
     val SparklyMember = applicationEmoji("sparkly_member", "/badges/")
     val SparklyStaff = applicationEmoji("sparkly_staff", "/badges/")
     val StickerFan = applicationEmoji("sticker_fan", "/badges/")
