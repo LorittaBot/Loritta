@@ -126,7 +126,7 @@ object Anniversary2026ReactionEvent : ReactionEvent() {
         ReactionEventReward.BadgeReward(300, false),
     )
 
-    override fun createEventTitle(i18nContext: I18nContext) = i18nContext.get(I18nKeysData.ReactionEvents.Event.Anniversary2025.EventName)
+    override fun createEventTitle(i18nContext: I18nContext) = i18nContext.get(I18nKeysData.ReactionEvents.Event.Anniversary2026.EventName)
 
     override fun createJoinMessage(context: UnleashedContext): InlineMessage<*>.() -> (Unit) = {
         val items = reactionSets.joinToString("") {
@@ -205,41 +205,41 @@ object Anniversary2026ReactionEvent : ReactionEvent() {
         i18nContext: I18nContext,
         sonhos: Long,
         craftedCount: Int
-    ) = i18nContext.get(I18nKeysData.Commands.Command.Transactions.Types.Events.Anniversary2025(sonhos, craftedCount))
+    ) = i18nContext.get(I18nKeysData.Commands.Command.Transactions.Types.Events.Anniversary2026(sonhos, craftedCount))
 
     override fun createCraftItemButtonMessage(i18nContext: I18nContext) = TextAndEmoji(
-        i18nContext.get(I18nKeysData.ReactionEvents.Event.Anniversary2025.CraftItem),
+        i18nContext.get(I18nKeysData.ReactionEvents.Event.Anniversary2026.CraftItem),
         gift
     )
 
     override fun createCraftMultipleItemsButtonMessage(i18nContext: I18nContext) = TextAndEmoji(
-        i18nContext.get(I18nKeysData.ReactionEvents.Event.Anniversary2025.CraftItemMultiple),
+        i18nContext.get(I18nKeysData.ReactionEvents.Event.Anniversary2026.CraftItemMultiple),
         gift
     )
 
-    override fun createHowManyCraftedItemsYouHaveMessage(i18nContext: I18nContext, craftedCount: Long, commandMention: String) = i18nContext.get(I18nKeysData.ReactionEvents.Event.Anniversary2025.CurrentlyYouHave(craftedCount, commandMention))
+    override fun createHowManyCraftedItemsYouHaveMessage(i18nContext: I18nContext, craftedCount: Long, commandMention: String) = i18nContext.get(I18nKeysData.ReactionEvents.Event.Anniversary2026.CurrentlyYouHave(craftedCount, commandMention))
 
-    override fun createItemsInYourInventoryMessage(i18nContext: I18nContext) = i18nContext.get(I18nKeysData.ReactionEvents.Event.Anniversary2025.ItemsInYourInventory)
+    override fun createItemsInYourInventoryMessage(i18nContext: I18nContext) = i18nContext.get(I18nKeysData.ReactionEvents.Event.Anniversary2026.ItemsInYourInventory)
 
-    override fun createYourNextCraftIngredientsAreMessage(i18nContext: I18nContext) = i18nContext.get(I18nKeysData.ReactionEvents.Event.Anniversary2025.YourNextCraftIngredientsAre)
+    override fun createYourNextCraftIngredientsAreMessage(i18nContext: I18nContext) = i18nContext.get(I18nKeysData.ReactionEvents.Event.Anniversary2026.YourNextCraftIngredientsAre)
 
-    override fun createYouDontHaveEnoughItemsMessage(i18nContext: I18nContext) = i18nContext.get(I18nKeysData.ReactionEvents.Event.Anniversary2025.YouDontHaveEnoughItems)
+    override fun createYouDontHaveEnoughItemsMessage(i18nContext: I18nContext) = i18nContext.get(I18nKeysData.ReactionEvents.Event.Anniversary2026.YouDontHaveEnoughItems)
 
     override fun createYouCraftedItemsMessage(i18nContext: I18nContext, quantity: Int, combo: Int): TextAndEmoji {
         return if (combo >= 3) {
             TextAndEmoji(
-                i18nContext.get(I18nKeysData.ReactionEvents.Event.Anniversary2025.YouCraftedItemsCombo(quantity, combo)),
+                i18nContext.get(I18nKeysData.ReactionEvents.Event.Anniversary2026.YouCraftedItemsCombo(quantity, combo)),
                 LorittaEmojiReference.UnicodeEmoji("\uD83D\uDD25"),
             )
         } else {
             TextAndEmoji(
-                i18nContext.get(I18nKeysData.ReactionEvents.Event.Anniversary2025.YouCraftedItems(quantity)),
+                i18nContext.get(I18nKeysData.ReactionEvents.Event.Anniversary2026.YouCraftedItems(quantity)),
                 gift
             )
         }
     }
 
-    override fun createShortCraftedItemMessage(i18nContext: I18nContext, quantity: Int) = i18nContext.get(I18nKeysData.ReactionEvents.Event.Anniversary2025.ShortCraftedItem(quantity))
+    override fun createShortCraftedItemMessage(i18nContext: I18nContext, quantity: Int) = i18nContext.get(I18nKeysData.ReactionEvents.Event.Anniversary2026.ShortCraftedItem(quantity))
 
-    override fun createCraftedXItemsMessage(loritta: LorittaBot, i18nContext: I18nContext, quantity: Long, commandMention: String) = i18nContext.get(I18nKeysData.ReactionEvents.Event.Anniversary2025.YouCraftedXItems(quantity, loritta.emojiManager.get(gift).toJDA().formatted, commandMention))
+    override fun createCraftedXItemsMessage(loritta: LorittaBot, i18nContext: I18nContext, quantity: Long, commandMention: String) = i18nContext.get(I18nKeysData.ReactionEvents.Event.Anniversary2026.YouCraftedXItems(quantity, loritta.emojiManager.get(gift).toJDA().formatted, commandMention))
 }
