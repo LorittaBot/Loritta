@@ -15,6 +15,8 @@ import net.perfectdreams.loritta.common.utils.RaffleType
 import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.RaffleCommand
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.RaffleCommand.BuyRaffleTicketStatus
+import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIAuthenticationRoute
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.serializable.SonhosPaymentReason
@@ -25,6 +27,8 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.sum
 import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZonedDateTime
 
 
 class PostRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/loritta/raffle") {
@@ -47,6 +51,12 @@ class PostRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRout
 		// This way, we don't block all transactions, while still letting other transactions work
 		val response = loritta.raffleResultsMutex.withLock {
 			loritta.transaction {
+				val now = ZonedDateTime.now(Constants.LORITTA_TIMEZONE)
+				val disabledForMaintenance = ZonedDateTime.of(2026, 4, 8, 0, 0, 0, 0, Constants.LORITTA_TIMEZONE)
+
+				if (disabledForMaintenance >= now)
+					return@transaction jsonObject("status" to BuyRaffleTicketStatus.DISABLED.toString())
+
 				// The "invokedAt" is used to only get raffles triggered WHEN the user used the command
 				// This way it avoids issues when Loritta took too long to receive this request, which would cause Loritta to get the new raffle instead of the "current-now-old" raffle.
 				val currentRaffle = Raffles.selectAll().where {

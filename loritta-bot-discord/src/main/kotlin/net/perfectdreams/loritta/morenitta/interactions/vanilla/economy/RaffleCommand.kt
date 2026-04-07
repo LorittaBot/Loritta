@@ -456,6 +456,16 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
             val status = BuyRaffleTicketStatus.valueOf(json["status"].string)
 
+            if (status == BuyRaffleTicketStatus.DISABLED) {
+                context.reply(false) {
+                    styled(
+                        "A rifa está desativada... Tente novamente mais tarde!",
+                        Constants.ERROR
+                    )
+                }
+                return
+            }
+
             if (status == BuyRaffleTicketStatus.THRESHOLD_EXCEEDED) {
                 context.reply(false) {
                     styled(
@@ -746,6 +756,7 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
         THRESHOLD_EXCEEDED,
         TOO_MANY_TICKETS,
         NOT_ENOUGH_MONEY,
-        STALE_RAFFLE_DATA
+        STALE_RAFFLE_DATA,
+        DISABLED
     }
 }
