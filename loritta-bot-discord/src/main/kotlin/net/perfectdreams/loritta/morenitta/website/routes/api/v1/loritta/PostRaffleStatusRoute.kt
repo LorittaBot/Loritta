@@ -51,12 +51,6 @@ class PostRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRout
 		// This way, we don't block all transactions, while still letting other transactions work
 		val response = loritta.raffleResultsMutex.withLock {
 			loritta.transaction {
-				val now = ZonedDateTime.now(Constants.LORITTA_TIMEZONE)
-				val disabledForMaintenance = ZonedDateTime.of(2026, 4, 8, 0, 0, 0, 0, Constants.LORITTA_TIMEZONE)
-
-				if (now >= disabledForMaintenance)
-					return@transaction jsonObject("status" to BuyRaffleTicketStatus.DISABLED.toString())
-
 				// The "invokedAt" is used to only get raffles triggered WHEN the user used the command
 				// This way it avoids issues when Loritta took too long to receive this request, which would cause Loritta to get the new raffle instead of the "current-now-old" raffle.
 				val currentRaffle = Raffles.selectAll().where {
