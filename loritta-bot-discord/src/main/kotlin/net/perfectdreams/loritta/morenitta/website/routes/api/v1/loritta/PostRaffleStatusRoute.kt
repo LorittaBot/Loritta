@@ -54,7 +54,7 @@ class PostRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRout
 				val now = ZonedDateTime.now(Constants.LORITTA_TIMEZONE)
 				val disabledForMaintenance = ZonedDateTime.of(2026, 4, 8, 0, 0, 0, 0, Constants.LORITTA_TIMEZONE)
 
-				if (disabledForMaintenance >= now)
+				if (now >= disabledForMaintenance)
 					return@transaction jsonObject("status" to BuyRaffleTicketStatus.DISABLED.toString())
 
 				// The "invokedAt" is used to only get raffles triggered WHEN the user used the command
