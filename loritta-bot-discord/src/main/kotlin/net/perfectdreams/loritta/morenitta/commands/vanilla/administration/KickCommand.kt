@@ -13,6 +13,7 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.MessageUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
+import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNull
 
 class KickCommand {
 	companion object {
@@ -57,7 +58,18 @@ class KickCommand {
 						)
 
 						message?.let {
-							textChannel.sendMessage(it).queue()
+							runBlocking {
+								val punisherMember = guild.retrieveMemberOrNull(punisher)
+								val linkedMessageImages = if (punisherMember != null)
+									AdminUtils.renderLinkedMessagesFromReason(loritta, guild, punisherMember, reason)
+								else emptyList()
+
+								val sendAction = textChannel.sendMessage(it)
+								if (linkedMessageImages.isNotEmpty()) {
+									sendAction.addFiles(linkedMessageImages)
+								}
+								sendAction.queue()
+							}
 						}
 					}
 				}

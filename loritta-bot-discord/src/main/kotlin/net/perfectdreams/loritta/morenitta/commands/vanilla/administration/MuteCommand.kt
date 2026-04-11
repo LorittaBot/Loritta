@@ -115,7 +115,13 @@ class MuteCommand {
 							I18nKeysData.InvalidMessages.MemberModerationMute
 						)
 
-						textChannel.sendMessage(message).queue()
+						val linkedMessageImages = AdminUtils.renderLinkedMessagesFromReason(context.loritta, context.guild, context.member, reason)
+
+						val sendAction = textChannel.sendMessage(message)
+						if (linkedMessageImages.isNotEmpty()) {
+							sendAction.addFiles(linkedMessageImages)
+						}
+						sendAction.queue()
 					}
 				}
 			}

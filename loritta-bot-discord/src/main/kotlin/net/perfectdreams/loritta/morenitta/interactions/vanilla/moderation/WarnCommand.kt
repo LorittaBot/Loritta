@@ -128,7 +128,13 @@ class WarnCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                                     generationErrorMessageI18nKey = I18nKeysData.InvalidMessages.MemberModerationWarn
                                 )
 
-                                textChannel.sendMessage(message).queue()
+                                val linkedMessageImages = AdminUtils.renderLinkedMessagesFromReason(context.loritta, context.guild, context.member, reason)
+
+                                val sendAction = textChannel.sendMessage(message)
+                                if (linkedMessageImages.isNotEmpty()) {
+                                    sendAction.addFiles(linkedMessageImages)
+                                }
+                                sendAction.queue()
                             }
                         }
                     }

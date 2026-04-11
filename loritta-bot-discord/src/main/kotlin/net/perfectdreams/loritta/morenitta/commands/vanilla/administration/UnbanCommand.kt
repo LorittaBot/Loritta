@@ -11,6 +11,7 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.MessageUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
+import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNull
 
 class UnbanCommand {
 	companion object {
@@ -43,7 +44,18 @@ class UnbanCommand {
 							generationErrorMessageI18nKey = I18nKeysData.InvalidMessages.MemberModerationUnban
 						)
 
-						textChannel.sendMessage(message).queue()
+						runBlocking {
+							val punisherMember = guild.retrieveMemberOrNull(punisher)
+							val linkedMessageImages = if (punisherMember != null)
+								AdminUtils.renderLinkedMessagesFromReason(loritta, guild, punisherMember, reason)
+							else emptyList()
+
+							val sendAction = textChannel.sendMessage(message)
+							if (linkedMessageImages.isNotEmpty()) {
+								sendAction.addFiles(linkedMessageImages)
+							}
+							sendAction.queue()
+						}
 					}
 				}
 			}

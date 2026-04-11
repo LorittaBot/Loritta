@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.utils.FileUpload
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.ModerationPunishmentMessagesConfig
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.WarnActions
@@ -24,11 +25,15 @@ import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.LegacyMessageCommandContext
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.BanCommand
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.messageverify.LoriMessageDataUtils
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.jda.JDAUser
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
+import net.perfectdreams.loritta.morenitta.utils.extensions.await
+import net.perfectdreams.loritta.morenitta.utils.extensions.await
+import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import net.perfectdreams.loritta.morenitta.utils.substringIfNeeded
 import org.jetbrains.exposed.sql.and
@@ -38,6 +43,7 @@ import java.time.Instant
 
 object AdminUtils {
 	private val LOCALE_PREFIX = "commands.category.moderation"
+	val DISCORD_MESSAGE_LINK_REGEX = Regex("""https?://(?:(?:ptb|canary)\.)?discord\.com/channels/(\d+)/(\d+)/(\d+)""")
 	val PUNISHMENT_EXAMPLES_KEY = LocaleKeyData("$LOCALE_PREFIX.punishmentExamples")
 	val ROLE_TOO_LOW_KEY = LocaleKeyData("$LOCALE_PREFIX.roleTooLow")
 	val ROLE_TOO_LOW_HOW_TO_FIX_KEY = LocaleKeyData("$LOCALE_PREFIX.roleTooLowHowToFix")
@@ -88,6 +94,44 @@ object AdminUtils {
 		}
 
 		return warnActions
+	}
+
+	/**
+	 * Parses Discord message links from the [reason] string, fetches the linked messages from the [guild],
+	 * renders them as signed images, and returns them as [FileUpload]s ready to be attached to messages.
+	 *
+	 * Only messages from the same [guild] are processed. Messages that are inaccessible or already deleted are skipped.
+	 */
+	suspend fun renderLinkedMessagesFromReason(loritta: LorittaBot, guild: Guild, requester: Member, reason: String): List<FileUpload> {
+		val fileUploads = mutableListOf<FileUpload>()
+		val discordMessageLinks = DISCORD_MESSAGE_LINK_REGEX.findAll(reason)
+
+		for (match in discordMessageLinks) {
+			val linkGuildId = match.groupValues[1].toLongOrNull() ?: continue
+			val linkChannelId = match.groupValues[2].toLongOrNull() ?: continue
+			val linkMessageId = match.groupValues[3].toLongOrNull() ?: continue
+
+			// Only process messages from the same guild
+			if (linkGuildId != guild.idLong) continue
+
+			try {
+				val channel = guild.getGuildMessageChannelById(linkChannelId) ?: continue
+
+				// Could the user be able to access it?
+				if (!requester.hasPermission(channel, Permission.VIEW_CHANNEL))
+					continue
+
+				val linkedMessage = channel.retrieveMessageById(linkMessageId).await()
+				val savedMessage = LoriMessageDataUtils.convertMessageToSavedMessage(linkedMessage)
+				val renderedImage = LoriMessageDataUtils.createSignedRenderedSavedMessage(loritta, savedMessage, true)
+				val fileName = LoriMessageDataUtils.createFileNameForSavedMessageImage(savedMessage)
+				fileUploads.add(FileUpload.fromData(renderedImage, fileName))
+			} catch (e: Exception) {
+				// Message might not be accessible or already deleted, skip
+			}
+		}
+
+		return fileUploads
 	}
 
 	@Deprecated("Please use InteraKTions Unleashed")
