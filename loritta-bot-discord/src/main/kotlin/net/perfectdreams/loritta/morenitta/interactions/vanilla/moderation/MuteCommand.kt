@@ -57,11 +57,17 @@ class MuteCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
             val skipConfirmation = optionalBoolean("skip_confirmation", CATEGORY_I18N_PREFIX.Options.SkipConfirmation.Text)
             val isSilent = optionalBoolean("is_silent", CATEGORY_I18N_PREFIX.Options.IsSilent.Text)
+            val saveMessages = optionalString("save_messages", CATEGORY_I18N_PREFIX.Options.SaveMessages.Text) {
+                choice(CATEGORY_I18N_PREFIX.Options.SaveMessages.Save1, SaveMessagesState.DISABLED.name)
+                choice(CATEGORY_I18N_PREFIX.Options.SaveMessages.Save2, SaveMessagesState.SAVE_AND_SEND_DM.name)
+                choice(CATEGORY_I18N_PREFIX.Options.SaveMessages.Save3, SaveMessagesState.SAVE_AND_SEND_DM_AND_REPLACE.name)
+            }
         }
 
         override val options = Options()
 
         override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            val saveMessageState = args[options.saveMessages]?.let { SaveMessagesState.valueOf(it) } ?: SaveMessagesState.DISABLED
             val (users, rawReason) = AdminUtils.checkAndRetrieveAllValidUsersFromString(context, args[options.users]) ?: return
 
             for (user in users) {
@@ -85,10 +91,13 @@ class MuteCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
             suspend fun handlePreMute(timeAsDurationMillis: Long?) {
                 val muteCallback: suspend (UnleashedContext, Boolean) -> (Unit) = { context, isSilent ->
+                    val punisher = context.member
+                    val modifiedReason = AdminUtils.renderLinkedMessagesFromReasonAndSendToUser(loritta, context, saveMessageState, punisher, reason, users)
+
                     var success = 0
 
                     for (user in users) {
-                        val result = muteUser(context, settings, timeAsDurationMillis, context.locale, user, reason, isSilent)
+                        val result = muteUser(context, settings, timeAsDurationMillis, context.locale, user, modifiedReason, isSilent)
 
                         if (!result)
                             continue
@@ -97,7 +106,7 @@ class MuteCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     }
 
                     if (success != 0)
-                        AdminUtils.sendSuccessfullyPunishedMessage(context, reason)
+                        AdminUtils.sendSuccessfullyPunishedMessage(context, modifiedReason)
                 }
 
                 if (skipConfirmation) {

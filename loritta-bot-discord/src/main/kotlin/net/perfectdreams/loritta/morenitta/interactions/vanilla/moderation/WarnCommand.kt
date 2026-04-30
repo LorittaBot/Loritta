@@ -65,11 +65,17 @@ class WarnCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
             val skipConfirmation = optionalBoolean("skip_confirmation", CATEGORY_I18N_PREFIX.Options.SkipConfirmation.Text)
             val isSilent = optionalBoolean("is_silent", CATEGORY_I18N_PREFIX.Options.IsSilent.Text)
+            val saveMessages = optionalString("save_messages", CATEGORY_I18N_PREFIX.Options.SaveMessages.Text) {
+                choice(CATEGORY_I18N_PREFIX.Options.SaveMessages.Save1, SaveMessagesState.DISABLED.name)
+                choice(CATEGORY_I18N_PREFIX.Options.SaveMessages.Save2, SaveMessagesState.SAVE_AND_SEND_DM.name)
+                choice(CATEGORY_I18N_PREFIX.Options.SaveMessages.Save3, SaveMessagesState.SAVE_AND_SEND_DM_AND_REPLACE.name)
+            }
         }
 
         override val options = Options()
 
         override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            val saveMessageState = args[options.saveMessages]?.let { SaveMessagesState.valueOf(it) } ?: SaveMessagesState.DISABLED
             val (users, rawReason) = AdminUtils.checkAndRetrieveAllValidUsersFromString(context, args[options.users]) ?: return
 
             for (user in users) {
@@ -93,12 +99,15 @@ class WarnCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             val punishmentActions = AdminUtils.retrieveWarnPunishmentActions(loritta, context.config)
 
             val warnCallback: (suspend (UnleashedContext, Boolean) -> Unit) = { context, isSilent ->
+                val punisher = context.member
+                val modifiedReason = AdminUtils.renderLinkedMessagesFromReasonAndSendToUser(loritta, context, saveMessageState, punisher, reason, users)
+                
                 for (user in users) {
                     val member = context.guild.retrieveMemberOrNull(user)
                     if (!isSilent) {
                         if (settings.sendPunishmentViaDm && context.guild.isMember(user)) {
                             try {
-                                val embed = AdminUtils.createPunishmentMessageSentViaDirectMessage(context.guild, context.locale, context.user, context.locale["commands.command.warn.punishAction"], reason)
+                                val embed = AdminUtils.createPunishmentMessageSentViaDirectMessage(context.guild, context.locale, context.user, context.locale["commands.command.warn.punishAction"], modifiedReason)
 
                                 loritta.getOrRetrievePrivateChannelForUser(user).sendMessageEmbeds(embed).queue()
                             } catch (e: Exception) {
@@ -124,17 +133,11 @@ class WarnCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                                     context.guild,
                                     mutableMapOf(
                                         "duration" to context.locale["$LOCALE_PREFIX.mute.forever"]
-                                    ) + AdminUtils.getStaffCustomTokens(context.user) + AdminUtils.getPunishmentCustomTokens(context.locale, reason, "$LOCALE_PREFIX.warn"),
+                                    ) + AdminUtils.getStaffCustomTokens(context.user) + AdminUtils.getPunishmentCustomTokens(context.locale, modifiedReason, "$LOCALE_PREFIX.warn"),
                                     generationErrorMessageI18nKey = I18nKeysData.InvalidMessages.MemberModerationWarn
                                 )
 
-                                val linkedMessageImages = AdminUtils.renderLinkedMessagesFromReason(context.loritta, context.guild, context.member, reason)
-
-                                val sendAction = textChannel.sendMessage(message)
-                                if (linkedMessageImages.isNotEmpty()) {
-                                    sendAction.addFiles(linkedMessageImages)
-                                }
-                                sendAction.queue()
+                                textChannel.sendMessage(message).queue()
                             }
                         }
                     }
@@ -149,13 +152,13 @@ class WarnCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
                     loop@ for (punishment in punishments) {
                         when {
-                            punishment.punishmentAction == PunishmentAction.BAN -> BanCommand.ban(loritta, context.i18nContext, settings, context.guild, context.user, context.locale, user, reason, isSilent, 0)
-                            member != null && punishment.punishmentAction == PunishmentAction.KICK -> KickCommand.kick(loritta, context.guild, context.i18nContext, context.user, settings, context.locale, user, reason, isSilent)
+                            punishment.punishmentAction == PunishmentAction.BAN -> BanCommand.ban(loritta, context.i18nContext, settings, context.guild, context.user, context.locale, user, modifiedReason, isSilent, 0)
+                            member != null && punishment.punishmentAction == PunishmentAction.KICK -> KickCommand.kick(loritta, context.guild, context.i18nContext, context.user, settings, context.locale, user, modifiedReason, isSilent)
                             member != null && punishment.punishmentAction == PunishmentAction.MUTE -> {
                                 val metadata = punishment.metadata ?: continue@loop
                                 val obj = JsonParser.parseString(metadata).obj
                                 val time = obj["time"].nullString?.let { TimeUtils.convertToMillisRelativeToNow(it) }
-                                MuteCommand.muteUser(context, settings, time, context.locale, user, reason, isSilent)
+                                MuteCommand.muteUser(context, settings, time, context.locale, user, modifiedReason, isSilent)
                             }
                         }
                     }
@@ -166,7 +169,7 @@ class WarnCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                             this.userId = user.idLong
                             this.receivedAt = System.currentTimeMillis()
                             this.punishedById = context.user.idLong
-                            this.content = reason
+                            this.content = modifiedReason
                         }
 
                         // Log the punishment to the moderation logs
@@ -175,13 +178,13 @@ class WarnCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                             user.idLong,
                             context.user.idLong,
                             ModerationLogAction.WARN,
-                            reason,
+                            modifiedReason,
                             null
                         )
                     }
                 }
 
-                AdminUtils.sendSuccessfullyPunishedMessage(context, reason)
+                AdminUtils.sendSuccessfullyPunishedMessage(context, modifiedReason)
             }
 
             if (skipConfirmation) {

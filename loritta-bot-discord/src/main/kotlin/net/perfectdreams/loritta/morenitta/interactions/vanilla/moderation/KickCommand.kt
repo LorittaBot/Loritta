@@ -51,11 +51,17 @@ class KickCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
             val skipConfirmation = optionalBoolean("skip_confirmation", CATEGORY_I18N_PREFIX.Options.SkipConfirmation.Text)
             val isSilent = optionalBoolean("is_silent", CATEGORY_I18N_PREFIX.Options.IsSilent.Text)
+            val saveMessages = optionalString("save_messages", CATEGORY_I18N_PREFIX.Options.SaveMessages.Text) {
+                choice(CATEGORY_I18N_PREFIX.Options.SaveMessages.Save1, SaveMessagesState.DISABLED.name)
+                choice(CATEGORY_I18N_PREFIX.Options.SaveMessages.Save2, SaveMessagesState.SAVE_AND_SEND_DM.name)
+                choice(CATEGORY_I18N_PREFIX.Options.SaveMessages.Save3, SaveMessagesState.SAVE_AND_SEND_DM_AND_REPLACE.name)
+            }
         }
 
         override val options = Options()
 
         override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            val saveMessageState = args[options.saveMessages]?.let { SaveMessagesState.valueOf(it) } ?: SaveMessagesState.DISABLED
             val (users, rawReason) = AdminUtils.checkAndRetrieveAllValidUsersFromString(context, args[options.users]) ?: return
 
             for (user in users) {
@@ -78,10 +84,13 @@ class KickCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             val settings = AdminUtils.retrieveModerationInfo(loritta, context.config)
 
             val kickCallback: suspend (UnleashedContext, Boolean) -> (Unit) = { context, isSilent ->
-                for (user in users)
-                    KickCommand.kick(loritta, context.guild, context.i18nContext, context.user, settings, context.locale, user, reason, isSilent)
+                val punisher = context.member
+                val modifiedReason = AdminUtils.renderLinkedMessagesFromReasonAndSendToUser(loritta, context, saveMessageState, punisher, reason, users)
 
-                AdminUtils.sendSuccessfullyPunishedMessage(context, reason)
+                for (user in users)
+                    KickCommand.kick(loritta, context.guild, context.i18nContext, context.user, settings, context.locale, user, modifiedReason, isSilent)
+
+                AdminUtils.sendSuccessfullyPunishedMessage(context, modifiedReason)
             }
 
             if (skipConfirmation) {

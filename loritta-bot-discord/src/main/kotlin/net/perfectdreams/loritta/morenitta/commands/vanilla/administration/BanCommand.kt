@@ -59,18 +59,7 @@ class BanCommand {
 							generationErrorMessageI18nKey = I18nKeysData.InvalidMessages.MemberModerationBan
 						)
 
-						runBlocking {
-							val punisherMember = guild.retrieveMemberOrNull(punisher)
-							val linkedMessageImages = if (punisherMember != null)
-								AdminUtils.renderLinkedMessagesFromReason(loritta, guild, punisherMember, reason)
-							else emptyList()
-
-							val sendAction = textChannel.sendMessage(message)
-							if (linkedMessageImages.isNotEmpty()) {
-								sendAction.addFiles(linkedMessageImages)
-							}
-							sendAction.queue()
-						}
+						textChannel.sendMessage(message).queue()
 					}
 				}
 			}

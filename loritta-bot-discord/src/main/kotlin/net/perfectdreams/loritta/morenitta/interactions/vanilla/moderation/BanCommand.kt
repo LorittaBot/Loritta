@@ -1,7 +1,9 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation
 
+import dev.minn.jda.ktx.messages.MessageCreate
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -16,6 +18,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandDec
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
+import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNull
 import java.util.*
 
@@ -52,11 +55,17 @@ class BanCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             val deleteDays = optionalLong("delete_days", CATEGORY_I18N_PREFIX.Options.DeleteDays.Text)
             val skipConfirmation = optionalBoolean("skip_confirmation", CATEGORY_I18N_PREFIX.Options.SkipConfirmation.Text)
             val isSilent = optionalBoolean("is_silent", CATEGORY_I18N_PREFIX.Options.IsSilent.Text)
+            val saveMessages = optionalString("save_messages", CATEGORY_I18N_PREFIX.Options.SaveMessages.Text) {
+                choice(CATEGORY_I18N_PREFIX.Options.SaveMessages.Save1, SaveMessagesState.DISABLED.name)
+                choice(CATEGORY_I18N_PREFIX.Options.SaveMessages.Save2, SaveMessagesState.SAVE_AND_SEND_DM.name)
+                choice(CATEGORY_I18N_PREFIX.Options.SaveMessages.Save3, SaveMessagesState.SAVE_AND_SEND_DM_AND_REPLACE.name)
+            }
         }
 
         override val options = Options()
 
         override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            val saveMessageState = args[options.saveMessages]?.let { SaveMessagesState.valueOf(it) } ?: SaveMessagesState.DISABLED
             val (users, rawReason) = AdminUtils.checkAndRetrieveAllValidUsersFromString(context, args[options.users]) ?: return
 
             for (user in users) {
@@ -80,10 +89,13 @@ class BanCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             val settings = AdminUtils.retrieveModerationInfo(loritta, context.config)
 
             val banCallback: suspend (UnleashedContext, Boolean) -> (Unit) = { context, isSilent ->
-                for (user in users)
-                    ban(loritta, context.i18nContext, settings, context.guild, context.user, context.locale, user, reason, isSilent, deleteDays.coerceIn(0..7))
+                val punisher = context.member
+                val modifiedReason = AdminUtils.renderLinkedMessagesFromReasonAndSendToUser(loritta, context, saveMessageState, punisher, reason, users)
 
-                AdminUtils.sendSuccessfullyPunishedMessage(context, reason)
+                for (user in users)
+                    ban(loritta, context.i18nContext, settings, context.guild, punisher.user, context.locale, user, modifiedReason, isSilent, deleteDays.coerceIn(0..7))
+
+                AdminUtils.sendSuccessfullyPunishedMessage(context, modifiedReason)
             }
 
             if (skipConfirmation) {

@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.administration
 
+import dev.minn.jda.ktx.messages.MessageCreate
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.*
@@ -24,6 +25,7 @@ import net.perfectdreams.loritta.morenitta.interactions.InteractionMessage
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.LegacyMessageCommandContext
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.BanCommand
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.SaveMessagesState
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.messageverify.LoriMessageDataUtils
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
@@ -31,7 +33,6 @@ import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.jda.
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
@@ -96,17 +97,71 @@ object AdminUtils {
 		return warnActions
 	}
 
+	suspend fun renderLinkedMessagesFromReasonAndSendToUser(
+		loritta: LorittaBot,
+		context: UnleashedContext,
+		saveMessageState: SaveMessagesState,
+		punisher: Member,
+		reason: String,
+		users: List<User>
+	): String {
+		var modifiedReason = reason
+
+		if (saveMessageState == SaveMessagesState.SAVE_AND_SEND_DM || saveMessageState == SaveMessagesState.SAVE_AND_SEND_DM_AND_REPLACE) {
+			val renderedLinks = renderLinkedMessagesFromReason(
+				loritta,
+				context.guild,
+				punisher,
+				reason
+			)
+
+			for (renderedLink in renderedLinks) {
+				// Send to the user's DMs
+				try {
+					val sentMessage = loritta.getOrRetrievePrivateChannelForUser(punisher.user)
+						.sendMessage(
+							MessageCreate {
+								styled(
+									context.i18nContext.get(I18nKeysData.Commands.Category.Moderation.SavedMessageInDirectMessage.YouReceivedThisForPunishing(users.joinToString(", ") { it.asMention }, context.guild.name)),
+									net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriBanHammer
+								)
+								styled(
+									context.i18nContext.get(I18nKeysData.Commands.Category.Moderation.SavedMessageInDirectMessage.MessageLink(renderedLink.key)),
+									net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriReading
+								)
+
+								files += renderedLink.value
+							}
+						).await()
+
+					if (saveMessageState == SaveMessagesState.SAVE_AND_SEND_DM_AND_REPLACE) {
+						modifiedReason = modifiedReason.replace(renderedLink.key, sentMessage.attachments.first().url)
+					}
+				} catch (e: Exception) {
+					// Won't be able to send anyway, so bail
+					break
+				}
+			}
+		}
+
+		return modifiedReason
+	}
+
 	/**
-	 * Parses Discord message links from the [reason] string, fetches the linked messages from the [guild],
-	 * renders them as signed images, and returns them as [FileUpload]s ready to be attached to messages.
+	 * Parses Discord message links from the [reason] string, fetches the linked messages from the [guild], renders them as signed images,
+	 * and returns them as a map of messageLink to [FileUpload] ready to be attached to messages.
 	 *
 	 * Only messages from the same [guild] are processed. Messages that are inaccessible or already deleted are skipped.
 	 */
-	suspend fun renderLinkedMessagesFromReason(loritta: LorittaBot, guild: Guild, requester: Member, reason: String): List<FileUpload> {
-		val fileUploads = mutableListOf<FileUpload>()
+	suspend fun renderLinkedMessagesFromReason(loritta: LorittaBot, guild: Guild, requester: Member, reason: String): Map<String, FileUpload> {
+		val fileUploads = mutableMapOf<String, FileUpload>()
 		val discordMessageLinks = DISCORD_MESSAGE_LINK_REGEX.findAll(reason)
 
 		for (match in discordMessageLinks) {
+			// The user may have submitted the same link more than one, so bail if it is the same link
+			if (fileUploads.containsKey(match.value))
+				continue
+
 			val linkGuildId = match.groupValues[1].toLongOrNull() ?: continue
 			val linkChannelId = match.groupValues[2].toLongOrNull() ?: continue
 			val linkMessageId = match.groupValues[3].toLongOrNull() ?: continue
@@ -125,7 +180,7 @@ object AdminUtils {
 				val savedMessage = LoriMessageDataUtils.convertMessageToSavedMessage(linkedMessage)
 				val renderedImage = LoriMessageDataUtils.createSignedRenderedSavedMessage(loritta, savedMessage, true)
 				val fileName = LoriMessageDataUtils.createFileNameForSavedMessageImage(savedMessage)
-				fileUploads.add(FileUpload.fromData(renderedImage, fileName))
+				fileUploads[match.value] = FileUpload.fromData(renderedImage, fileName)
 			} catch (e: Exception) {
 				// Message might not be accessible or already deleted, skip
 			}

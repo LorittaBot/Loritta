@@ -57,20 +57,7 @@ class KickCommand {
 							generationErrorMessageI18nKey = I18nKeysData.InvalidMessages.MemberModerationKick
 						)
 
-						message?.let {
-							runBlocking {
-								val punisherMember = guild.retrieveMemberOrNull(punisher)
-								val linkedMessageImages = if (punisherMember != null)
-									AdminUtils.renderLinkedMessagesFromReason(loritta, guild, punisherMember, reason)
-								else emptyList()
-
-								val sendAction = textChannel.sendMessage(it)
-								if (linkedMessageImages.isNotEmpty()) {
-									sendAction.addFiles(linkedMessageImages)
-								}
-								sendAction.queue()
-							}
-						}
+						textChannel.sendMessage(message).queue()
 					}
 				}
 			}

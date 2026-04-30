@@ -137,6 +137,14 @@ commands:
           text: "Se ativo, a punição será silenciosa, ou seja, eu não enviarei avisos no privado e no servidor"
         deleteDays:
           text: "Quantos dias irei procurar no histórico de mensagens do usuário para que elas sejam deletadas"
+        saveMessages:
+          text: "Escolhe se as mensagens serão salvas no motivo do ban"
+          save1: "Não salvar mensagens"
+          save2: "Salvar e enviar no meu privado"
+          save3: "Salvar, enviar no privado e substituir"
+      savedMessageInDirectMessage:
+        youReceivedThisForPunishing: "Você recebeu esta mensagem por ter punido {users} em **{guildName}**"
+        messageLink: "**Link da Mensagem:** {messageUrl}"
     utils:
       name: "Utilitários"
       description:
