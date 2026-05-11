@@ -37,6 +37,7 @@ import net.perfectdreams.loritta.morenitta.loricoolcards.StickerMetadata
 import net.perfectdreams.loritta.morenitta.profile.ProfileDesignManager
 import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
 import net.perfectdreams.loritta.morenitta.profile.badges.*
+import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.GraphicsFonts
 import net.perfectdreams.loritta.morenitta.utils.ImageFormat
 import net.perfectdreams.loritta.morenitta.utils.extensions.getEffectiveAvatarUrl
@@ -74,7 +75,7 @@ suspend fun main() {
 }
 
 suspend fun generateCards(config: LoriCoolCardsGeneratorProductionStickersConfig) {
-    val folderName = "production_v17_befopti"
+    val folderName = "production_v21_befopti"
     val http = HttpClient {}
 
     println("Max memory: ${Runtime.getRuntime().maxMemory()}")
@@ -152,7 +153,9 @@ suspend fun generateCards(config: LoriCoolCardsGeneratorProductionStickersConfig
         ReactionEventBadge.Halloween2025ReactionEventBadge(pudding),
         ReactionEventBadge.Halloween2025ReactionEventSuperBadge(pudding),
         ReactionEventBadge.Christmas2025ReactionEventBadge(pudding),
-        ReactionEventBadge.Christmas2025ReactionEventSuperBadge(pudding)
+        ReactionEventBadge.Christmas2025ReactionEventSuperBadge(pudding),
+        ReactionEventBadge.Anniversary2026ReactionEventBadge(pudding),
+        ReactionEventBadge.Anniversary2026ReactionEventSuperBadge(pudding)
     )
 
     // Badges that requires a "Loritta" instance, so, to avoid changing the badges too much, we just pretend that the badge is valid and carry on with our lives
@@ -378,7 +381,7 @@ suspend fun generateCards(config: LoriCoolCardsGeneratorProductionStickersConfig
                                 CardRarity.COMMON
                             } else error("Whoops $index"),
                             user.name.lowercase(),
-                            ImageIO.read(URL(userAvatarUrl)),
+                            try { ImageIO.read(URL(userAvatarUrl)) } catch (e: Exception) { Constants.DEFAULT_DISCORD_BLUE_AVATAR },
                             ImageIO.read(URL(activeBackgroundUrl)),
                             badgeTitle,
                             badgeImage
