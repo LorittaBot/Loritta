@@ -1,11 +1,13 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.drop
 
+import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DropChatChoices
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
+import java.util.Random
 
 sealed interface DropChatChoiceVariant {
     fun getDropTitle(i18nContext: I18nContext): String
@@ -15,6 +17,9 @@ sealed interface DropChatChoiceVariant {
     fun getExtraContextText(i18nContext: I18nContext): String?
     fun getChoiceEmoji(choice: String): Emoji?
     val variantType: DropChatChoices.DropChatChoiceVariantType
+    val hideVoteCountWhileRunning: Boolean get() = false
+
+    fun resolveCorrectChoice(currentCorrectChoice: String, participantChoices: Map<User, String>, random: Random): String = currentCorrectChoice
 
     data object Generic : DropChatChoiceVariant {
         override fun getDropTitle(i18nContext: I18nContext) = i18nContext.get(I18nKeysData.Commands.Command.Drop.Choice.SonhosDrop)
@@ -49,5 +54,26 @@ sealed interface DropChatChoiceVariant {
             else -> null
         }
         override val variantType = DropChatChoices.DropChatChoiceVariantType.JANKENPON
+    }
+
+    data object MostVotes : DropChatChoiceVariant {
+        override fun getDropTitle(i18nContext: I18nContext) = i18nContext.get(I18nKeysData.Commands.Command.Drop.MostVotes.SonhosDrop)
+        override fun getDropEndedTitle(i18nContext: I18nContext) = i18nContext.get(I18nKeysData.Commands.Command.Drop.MostVotes.SonhosDropHasEnded)
+        override fun getInstructionText(i18nContext: I18nContext, creatorMention: String) = i18nContext.get(I18nKeysData.Commands.Command.Drop.MostVotes.MakeYourChoice)
+        override fun getCorrectChoiceRevealText(i18nContext: I18nContext, correctChoice: String, creatorMention: String) = i18nContext.get(I18nKeysData.Commands.Command.Drop.MostVotes.CorrectChoiceWas(correctChoice))
+        override fun getExtraContextText(i18nContext: I18nContext): String? = null
+        override fun getChoiceEmoji(choice: String): Emoji? = null
+        override val variantType = DropChatChoices.DropChatChoiceVariantType.MOST_VOTES
+        override val hideVoteCountWhileRunning: Boolean = true
+
+        override fun resolveCorrectChoice(currentCorrectChoice: String, participantChoices: Map<User, String>, random: Random): String {
+            if (participantChoices.isEmpty())
+                return currentCorrectChoice
+
+            val voteCounts = participantChoices.values.groupingBy { it }.eachCount()
+            val maxVotes = voteCounts.values.max()
+            val topChoices = voteCounts.filter { it.value == maxVotes }.keys
+            return topChoices.shuffled(random).first()
+        }
     }
 }

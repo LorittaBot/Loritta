@@ -161,6 +161,31 @@ jankenpon:
     lorittaAdmin:
       text: "Se ativado, os sonhos não serão cobrados do usuário que criou o drop"
 
+mostVotes:
+  label: "maisvotada"
+  description: "Inicia um drop de sonhos onde a escolha mais votada vence"
+
+  sonhosDrop: "Drop de Sonhos - Mais Votada!"
+  sonhosDropHasEnded: "Drop de Sonhos - Mais Votada acabou!"
+  makeYourChoice: "Vote em uma das opções abaixo! Quem votar na opção mais votada ganha!"
+  correctChoiceWas: "A opção mais votada foi **{correctChoice}**!"
+
+  options:
+    sonhos:
+      text: "Quantos sonhos serão dados para cada usuário"
+    channel:
+      text: "O canal onde a mensagem do drop será enviada"
+    duration:
+      text: "A duração do drop"
+    choices:
+      text: "As escolhas separadas por vírgula (ex: Loritta, Pantufa, Gabriela)"
+    drops:
+      text: "Quantos drops serão spawnados ao mesmo tempo"
+    maxParticipants:
+      text: "Quantidade máxima de pessoas que poderão participar do drop"
+    lorittaAdmin:
+      text: "Se ativado, os sonhos não serão cobrados do usuário que criou o drop"
+
 call:
   label: "call"
   description: "Inicia um drop de sonhos em uma call"

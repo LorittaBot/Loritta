@@ -59,9 +59,12 @@ class DropChatChoice(
     val i18nContext: I18nContext,
     val chargeCreatorSonhos: Boolean,
     val choices: List<String>,
-    val correctChoice: String,
+    correctChoice: String,
     val variant: DropChatChoiceVariant = DropChatChoiceVariant.Generic
 ) {
+    var correctChoice: String = correctChoice
+        private set
+
     companion object {
         const val MAX_SONHOS_PER_PARTICIPANT = 1_000_000_000_000L
         const val MAX_WINNERS = 100
@@ -110,17 +113,19 @@ class DropChatChoice(
 
                 this@DropChatChoice.participantChoices[context.user] = choice
 
-                updateMessageJob?.cancel()
-                updateMessageJob = scope.launch {
-                    delay(5.seconds)
+                if (!variant.hideVoteCountWhileRunning) {
+                    updateMessageJob?.cancel()
+                    updateMessageJob = scope.launch {
+                        delay(5.seconds)
 
-                    originalDropMessage
-                        ?.editMessage(
-                            MessageEdit {
-                                createDropMessage()
-                            }
-                        )
-                        ?.await()
+                        originalDropMessage
+                            ?.editMessage(
+                                MessageEdit {
+                                    createDropMessage()
+                                }
+                            )
+                            ?.await()
+                    }
                 }
 
                 if (this@DropChatChoice.maxParticipants != null && this@DropChatChoice.participantChoices.size == this@DropChatChoice.maxParticipants) {
@@ -242,8 +247,13 @@ class DropChatChoice(
         actionRow(
             choiceButtons.map { (choice, button) ->
                 val count = participantChoices.values.count { it == choice }
+                val hideCount = variant.hideVoteCountWhileRunning && !this@DropChatChoice.finished
+                val label = if (hideCount)
+                    choice
+                else
+                    i18nContext.get(I18nKeysData.Commands.Command.Drop.Choice.Participate(choice, count))
                 var updatedButton = button
-                    .withLabel(i18nContext.get(I18nKeysData.Commands.Command.Drop.Choice.Participate(choice, count)))
+                    .withLabel(label)
                     .withDisabled(this@DropChatChoice.finished)
                 val emoji = variant.getChoiceEmoji(choice)
                 if (emoji != null)
@@ -266,6 +276,8 @@ class DropChatChoice(
                 createDropMessage()
             }
         )?.await()
+
+        this.correctChoice = variant.resolveCorrectChoice(this.correctChoice, participantChoices, loritta.random)
 
         val correctChoiceParticipants = participantChoices
             .filter { it.value == correctChoice }

@@ -138,6 +138,10 @@ class DropCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
         subcommand(I18N_PREFIX.Jankenpon.Label, I18N_PREFIX.Jankenpon.Description, UUID.fromString("c5e3a9f6-0b74-4d13-bf8c-4f9a2e7d5c30")) {
             executor = StartDropJankenponExecutor(loritta)
         }
+
+        subcommand(I18N_PREFIX.MostVotes.Label, I18N_PREFIX.MostVotes.Description, UUID.fromString("d6f4ba07-1c85-4e24-a09d-5fab3e8e6d41")) {
+            executor = StartDropMostVotesExecutor(loritta)
+        }
     }
 
     class StartDropChatExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
@@ -1508,6 +1512,287 @@ class DropCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             return mapOf(
                 options.sonhos to sonhos,
                 options.creatorChoice to creatorChoice,
+                options.channel to channel,
+                options.duration to duration
+            )
+        }
+    }
+
+    class StartDropMostVotesExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        class Options : ApplicationCommandOptions() {
+            val sonhos = string("sonhos", I18N_PREFIX.MostVotes.Options.Sonhos.Text)
+            val channel = channel("channel", I18N_PREFIX.MostVotes.Options.Channel.Text)
+            val duration = string("duration", I18N_PREFIX.MostVotes.Options.Duration.Text)
+            val choices = string("choices", I18N_PREFIX.MostVotes.Options.Choices.Text)
+            val drops = optionalLong("drops", I18N_PREFIX.MostVotes.Options.Drops.Text)
+            val maxParticipants = optionalLong("max_participants", I18N_PREFIX.MostVotes.Options.MaxParticipants.Text)
+            val lorittaAdmin = optionalBoolean("loritta_admin", I18N_PREFIX.MostVotes.Options.LorittaAdmin.Text)
+        }
+
+        override val options = Options()
+
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            val chargeCreatorSonhos = checkChargeCreatorSonhos(context, args[options.lorittaAdmin] ?: false) ?: return
+
+            val selfUserProfile = context.lorittaUser.profile
+
+            val channel = args[options.channel]
+            val sonhosInput = args[options.sonhos]
+            val lorittaAsMember = context.guild.selfMember
+            val drops = args[options.drops]?.toInt() ?: 1
+
+            val sonhos = validateSonhos(
+                context,
+                NumberUtils.convertShortenedNumberOrUserSonhosSpecificToLong(
+                    sonhosInput,
+                    selfUserProfile.money
+                ),
+                DropChatChoice.MAX_SONHOS_PER_PARTICIPANT
+            ) ?: return
+
+            val duration = TimeUtils.convertToMillisDurationRelative(args[options.duration])
+
+            if (duration > Duration.ofMinutes(5)) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.DropTooLong),
+                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error
+                    )
+                }
+                return
+            }
+
+            if (Duration.ofSeconds(1) > duration) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.Chat.DropTooShort),
+                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error
+                    )
+                }
+                return
+            }
+
+            val choicesInput = args[options.choices]
+            val parsedChoices = choicesInput.split(",").map { it.trim() }.filter { it.isNotEmpty() }
+
+            if (parsedChoices.size !in DropChatChoice.MIN_CHOICES..DropChatChoice.MAX_CHOICES) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.Choice.InvalidChoicesCount(DropChatChoice.MIN_CHOICES, DropChatChoice.MAX_CHOICES)),
+                        Constants.ERROR
+                    )
+                }
+                return
+            }
+
+            if (parsedChoices.size != parsedChoices.distinct().size) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.Choice.DuplicateChoices),
+                        Constants.ERROR
+                    )
+                }
+                return
+            }
+
+            val participants = args[options.maxParticipants]?.toInt()
+
+            if (channel !is GuildMessageChannel) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.ChannelIsNotMessageChannel(channel.asMention)),
+                        Constants.ERROR
+                    )
+                }
+                return
+            }
+
+            if (!channel.canTalk()) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.LorittaCantSpeakOnChannel(channel.asMention)),
+                        Constants.ERROR
+                    )
+                }
+                return
+            }
+
+            if (!channel.canTalk(context.member)) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.UserCantSpeakOnChannel(channel.asMention)),
+                        Constants.ERROR
+                    )
+                }
+                return
+            }
+
+            if (!lorittaAsMember.hasPermission(channel, Permission.MESSAGE_EMBED_LINKS)) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.LorittaDoesNotHavePermissionToSendEmbeds(channel.asMention)),
+                        Constants.ERROR
+                    )
+                }
+                return
+            }
+
+            if (!lorittaAsMember.hasPermission(channel, Permission.MESSAGE_HISTORY)) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.LorittaDoesNotHavePermissionToViewChannelHistory(channel.asMention)),
+                        Constants.ERROR
+                    )
+                }
+                return
+            }
+
+            if (participants != null && participants !in 1..100_000) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.Chat.InvalidParticipantsCount(1, 100_000)),
+                        Constants.ERROR
+                    )
+                }
+                return
+            }
+
+            if (drops !in 1..5) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.InvalidMultiDropCount(1, 5)),
+                        Constants.ERROR
+                    )
+                }
+                return
+            }
+
+            val worstCaseWinners = minOf(participants ?: DropChatChoice.MAX_WINNERS, DropChatChoice.MAX_WINNERS)
+            if (chargeCreatorSonhos && (worstCaseWinners * sonhos * drops) > selfUserProfile.money) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(SonhosUtils.insufficientSonhos(selfUserProfile.money, worstCaseWinners.toLong() * sonhos)),
+                        Constants.ERROR
+                    )
+                }
+                return
+            }
+
+            when (val result = SonhosPayExecutor.checkIfAccountIsOldEnoughToSendSonhos(context.user)) {
+                SonhosPayExecutor.Companion.OtherAccountOldEnoughResult.Success -> {}
+                is SonhosPayExecutor.Companion.OtherAccountOldEnoughResult.NotOldEnough -> {
+                    context.reply(true) {
+                        styled(
+                            context.i18nContext.get(
+                                I18N_PREFIX.SelfAccountIsTooNewToCreateADrop(
+                                    TimeFormat.DATE_TIME_LONG.format(result.allowedAfterTimestamp.toJavaInstant()),
+                                    TimeFormat.RELATIVE.format(result.allowedAfterTimestamp.toJavaInstant())
+                                )
+                            ),
+                            Constants.ERROR
+                        )
+                    }
+                    return
+                }
+            }
+
+            when (SonhosPayExecutor.checkIfAccountGotDailyAtLeastOnce(loritta, context.member)) {
+                SonhosPayExecutor.Companion.AccountGotDailyAtLeastOnceResult.Success -> {}
+                SonhosPayExecutor.Companion.AccountGotDailyAtLeastOnceResult.HaventGotDailyOnce -> {
+                    context.reply(true) {
+                        styled(
+                            context.i18nContext.get(
+                                SonhosCommand.PAY_I18N_PREFIX.SelfAccountNeedsToGetDaily(loritta.commandMentions.daily)
+                            ),
+                            net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob
+                        )
+                    }
+                    return
+                }
+            }
+
+            if (VacationModeUtils.checkIfWeAreOnVacation(context, true))
+                return
+
+            context.deferChannelMessage(true)
+
+            val dropMessages = mutableListOf<Message>()
+            repeat(drops) {
+                val drop = DropChatChoice(
+                    loritta,
+                    context.guild,
+                    context.user,
+                    channel,
+                    sonhos,
+                    participants,
+                    duration,
+                    context.i18nContext,
+                    chargeCreatorSonhos,
+                    parsedChoices,
+                    parsedChoices.first(),
+                    DropChatChoiceVariant.MostVotes
+                )
+
+                val message = channel.sendMessage(
+                    MessageCreate {
+                        with(drop) {
+                            createDropMessage()
+                        }
+                    }
+                ).await()
+
+                drop.originalDropMessage = message
+                drop.startDropAutoFinishTask()
+
+                dropMessages.add(message)
+            }
+
+            if (dropMessages.size == 1) {
+                val message = dropMessages[0]
+
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.Chat.DropCreated(message.jumpUrl)),
+                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHappyJumping
+                    )
+                }
+            } else {
+                context.reply(true) {
+                    for ((index, message) in dropMessages.withIndex()) {
+                        styled(
+                            context.i18nContext.get(I18N_PREFIX.Chat.DropCreatedCount(index + 1, message.jumpUrl)),
+                            net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHappyJumping
+                        )
+                    }
+                }
+            }
+        }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?>? {
+            // drop maisvotada <sonhos> <choices> <#channel> <duration>
+            val sonhos = args.getOrNull(0)
+            val choicesInput = args.getOrNull(1)
+            val channelId = args.getOrNull(2)?.removePrefix("<#")?.removeSuffix(">")?.toLongOrNull()
+            val duration = args.drop(3).joinToString(" ")
+
+            if (sonhos == null || choicesInput == null || channelId == null || duration.isBlank()) {
+                context.explain()
+                return null
+            }
+
+            val channel = context.guild.getGuildMessageChannelById(channelId)
+
+            if (channel == null) {
+                context.explain()
+                return null
+            }
+
+            return mapOf(
+                options.sonhos to sonhos,
+                options.choices to choicesInput,
                 options.channel to channel,
                 options.duration to duration
             )
