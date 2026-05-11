@@ -23,6 +23,7 @@ object DropChatChoices : LongIdTable() {
     enum class DropChatChoiceVariantType {
         GENERIC,
         EVEN_ODD,
-        JANKENPON
+        JANKENPON,
+        MOST_VOTES
     }
 }
