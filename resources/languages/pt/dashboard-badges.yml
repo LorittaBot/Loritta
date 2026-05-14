@@ -1,7 +1,7 @@
 website:
   dashboard:
     badges:
-      title: "Emblemas"
-      owned: "Você possui este emblema!"
-      locked: "Você ainda não conquistou este emblema."
-      guildBadgeBadge: "Emblema de Servidor"
+      title: "Insígnias"
+      owned: "Você possui esta insígnia!"
+      locked: "Você ainda não conquistou esta insígnia."
+      guildBadgeBadge: "Insígnia de Servidor"
