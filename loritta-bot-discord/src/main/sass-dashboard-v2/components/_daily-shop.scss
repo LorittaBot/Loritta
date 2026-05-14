@@ -68,6 +68,15 @@
             box-shadow: var(--shadow-elevation-2);
         }
 
+        &.locked {
+            filter: grayscale(1);
+            opacity: 0.55;
+
+            &:hover {
+                opacity: 0.85;
+            }
+        }
+
         &.rarity-common {
             background: linear-gradient(135deg, #e7e7e7, #939393);
         }

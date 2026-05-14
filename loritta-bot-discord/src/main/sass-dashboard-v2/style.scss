@@ -749,6 +749,7 @@ section#right-sidebar {
         padding-bottom: 1em;
         // Allow it to shrink (required for overflow on child components to work)
         min-width: 0;
+        min-height: 100vh;
 
         @media (max-width: 500px) {
             padding-left: 1em;
