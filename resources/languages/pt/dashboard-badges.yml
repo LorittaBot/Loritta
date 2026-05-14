@@ -2,7 +2,6 @@ website:
   dashboard:
     badges:
       title: "Emblemas"
-      description: "Veja todos os emblemas que você possui e os que ainda pode conquistar!"
       owned: "Você possui este emblema!"
       locked: "Você ainda não conquistou este emblema."
       guildBadgeBadge: "Emblema de Servidor"

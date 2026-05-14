@@ -90,11 +90,6 @@ class BadgesUserDashboardRoute(website: LorittaDashboardWebServer) : RequiresUse
                         id = "bundles-content"
 
                         div(classes = "bought-shop-items-list") {
-                            div {
-                                style = "margin-bottom: 1em;"
-                                text(i18nContext.get(DashboardI18nKeysData.Badges.Description))
-                            }
-
                             div(classes = "loritta-items-wrapper") {
                                 for (guildBadge in guildBadges) {
                                     renderBadgeTile(
