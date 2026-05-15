@@ -329,6 +329,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         register(AchievementsCommand(loritta))
         register(MarriageCommand(loritta))
         register(ProfileViewUserCommand(loritta))
+        register(BomDiaECiaCommand(loritta))
 
         // ===[ ECONOMY ]===
         register(DailyCommand(loritta))

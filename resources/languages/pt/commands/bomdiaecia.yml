@@ -1,0 +1,30 @@
+label: "bomdiaecia"
+description: "Comandos relacionados com o Bom Dia & Cia"
+
+status:
+  label: "status"
+  description: "Veja quantas vezes você ganhou ao tentar ligar para o Bom Dia & Cia!"
+  youWins: "Você já venceu {wins} vezes ligando para o Bom Dia & Cia."
+  userWins: "{userMention} venceu {wins} vezes o Bom Dia & Cia"
+
+  options:
+    user:
+      text: "O usuário que você deseja ver as informações"
+
+top:
+  label: "top"
+  description: "Veja os usuários que venceram mais partidas do Bom Dia & Cia"
+  globalRanking: "Ranking Global"
+  wonMatches: "Venceu {count} vezes o Bom Dia & Cia"
+
+  options:
+    page:
+      text: "A página do ranking que você deseja ver"
+
+toplocal:
+  label: "toplocal"
+  description: "Veja os usuários que venceram mais partidas do Bom Dia & Cia no servidor atual"
+
+  options:
+    page:
+      text: "A página do ranking que você deseja ver"
