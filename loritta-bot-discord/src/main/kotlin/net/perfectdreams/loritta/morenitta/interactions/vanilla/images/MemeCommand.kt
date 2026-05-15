@@ -108,6 +108,10 @@ class MemeCommand(val client: GabrielaImageServerClient) : SlashCommandDeclarati
         subcommand(I18nKeysData.Commands.Command.Discordping.Label, I18nKeysData.Commands.Command.Discordping.Description, UUID.fromString("7d6d58da-da63-4850-94b4-f28359ba7471")) {
             alternativeLegacyAbsoluteCommandPaths.apply {
                 add("discordping")
+                add("mentions")
+                add("discordia")
+                add("discórdia")
+                add("discord")
             }
 
             executor = NichijouYuukoPaperExecutor(client)
