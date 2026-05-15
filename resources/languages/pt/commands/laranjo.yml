@@ -1,0 +1,6 @@
+label: "laranjo"
+description: "Crie um meme do Laranjo!"
+
+options:
+  text:
+    text: "O que o Laranjo está dizendo"

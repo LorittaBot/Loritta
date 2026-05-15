@@ -103,6 +103,14 @@ class MemeCommand2 : SlashCommandDeclarationWrapper {
 
             executor = LavaReverseExecutor()
         }
+
+        subcommand(I18nKeysData.Commands.Command.Laranjo.Label, I18nKeysData.Commands.Command.Laranjo.Description, UUID.fromString("82cbf701-a89e-4b6c-a186-6194e961c06d")) {
+            alternativeLegacyAbsoluteCommandPaths.apply {
+                add("laranjo")
+            }
+
+            executor = LaranjoExecutor()
+        }
     }
 
     class DiePlagueExecutor : UnleashedLocalSingleImageCommandBase(
@@ -343,6 +351,45 @@ class MemeCommand2 : SlashCommandDeclarationWrapper {
                 options.imageReference to ImageReferenceOrAttachment(args.getOrNull(0), context.getImage(0)),
                 options.text to text
             )
+        }
+    }
+
+    class LaranjoExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        class Options : ApplicationCommandOptions() {
+            val text = string("text", I18nKeysData.Commands.Command.Laranjo.Options.Text.Text)
+        }
+
+        override val options = Options()
+
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            context.deferChannelMessage(false)
+
+            val text = args[options.text]
+            val template = (context.loritta.assets.loadImage("laranjo.png", loadFromCache = false) as JVMImage).handle as BufferedImage
+
+            val graphics = template.createGraphics().apply { enableFontAntiAliasing() }
+            graphics.color = Color.BLACK
+            graphics.font = Font.createFont(Font.TRUETYPE_FONT, File(LorittaBot.ASSETS, "mavenpro-bold.ttf")).deriveFont(24F)
+
+            ImageUtils.drawTextWrapSpaces(context.loritta, text, 2, 40, 334, 9999, graphics.fontMetrics, graphics)
+
+            val result = template.toByteArray(ImageFormatType.PNG)
+            context.reply(false) {
+                files += AttachedFile.fromData(result, "laranjo.png")
+            }
+        }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?>? {
+            val text = args.joinToString(" ")
+            if (text.isBlank()) {
+                context.explain()
+                return null
+            }
+
+            return mapOf(options.text to text)
         }
     }
 }

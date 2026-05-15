@@ -66,7 +66,6 @@ class CommandManager(val loritta: LorittaBot) {
 		// =======[ IMAGENS ]======
 		// commandMap.add(GetOverHereCommand(loritta))
 		// commandMap.add(ManiaTitleCardCommand(loritta))
-		commandMap.add(LaranjoCommand(loritta))
 		commandMap.add(TriggeredCommand(loritta))
 		commandMap.add(GumballCommand(loritta))
 		commandMap.add(ContentAwareScaleCommand(loritta))
