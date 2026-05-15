@@ -3,7 +3,7 @@ label: "convite"
 info:
   label: "info"
   description: "Mostra informações sobre um convite do servidor"
-  doesntExists: "Infelizmente não consegui encontrar nenhum convite parecido com `{inviteArgument}`"
+  doesntExists: "Desculpe, mas parece que `{inviteArgument}` não é um convite válido!"
   serverMembers: "Membros"
   onlineMembersPresence: "Online: {onlineMembers}"
   offlineMembersPresence: "Offline: {offlineMembers}"
