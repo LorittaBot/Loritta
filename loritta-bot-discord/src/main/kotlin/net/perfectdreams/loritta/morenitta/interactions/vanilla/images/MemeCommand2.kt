@@ -30,6 +30,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionR
 import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.base.UnleashedLocalSingleImageCommandBase
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.base.UnleashedLocalSingleImageGifCommandBase
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.base.UnleashedSingleImageOptions
 import net.perfectdreams.loritta.morenitta.utils.ImageUtils
 import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
 import net.perfectdreams.loritta.morenitta.utils.SeamCarver
@@ -183,6 +184,24 @@ class MemeCommand2 : SlashCommandDeclarationWrapper {
             }
 
             executor = FirstWordsExecutor()
+        }
+
+        subcommand(I18nKeysData.Commands.Command.Riplife.Label, I18nKeysData.Commands.Command.Riplife.Description, UUID.fromString("1bad9b07-b481-4d28-9fdb-16712de39a80")) {
+            alternativeLegacyAbsoluteCommandPaths.apply {
+                add("riplife")
+                add("ripvida")
+            }
+
+            executor = RipLifeExecutor()
+        }
+
+        subcommand(I18nKeysData.Commands.Command.Perfect.Label, I18nKeysData.Commands.Command.Perfect.Description, UUID.fromString("3dd0b19b-7703-4f09-8d65-abfac518809c")) {
+            alternativeLegacyAbsoluteCommandPaths.apply {
+                add("perfect")
+                add("perfeito")
+            }
+
+            executor = PerfectExecutor()
         }
     }
 
@@ -690,6 +709,70 @@ class MemeCommand2 : SlashCommandDeclarationWrapper {
                 return null
             }
             return mapOf(options.text to text)
+        }
+    }
+
+    class RipLifeExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        override val options = UnleashedSingleImageOptions()
+
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            context.deferChannelMessage(false)
+
+            val imageUrl = args[options.imageReference].get(context)
+            val contextImage = LorittaUtils.downloadImage(context.loritta, imageUrl) ?: context.fail(false) {
+                styled(context.i18nContext.get(I18nKeysData.Commands.NoValidImageFound), Emotes.LoriSob)
+            }
+
+            val fileName = context.i18nContext.get(I18nKeysData.Commands.Command.Riplife.File)
+            val template = (context.loritta.assets.loadImage(fileName, loadFromCache = false) as JVMImage).handle as BufferedImage
+
+            val scaled = contextImage.getScaledInstance(133, 133, BufferedImage.SCALE_SMOOTH)
+            template.graphics.drawImage(scaled, 133, 0, null)
+
+            val result = template.toByteArray(ImageFormatType.PNG)
+            context.reply(false) {
+                files += AttachedFile.fromData(result, fileName)
+            }
+        }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?> {
+            return mapOf(
+                options.imageReference to ImageReferenceOrAttachment(args.getOrNull(0), context.getImage(0))
+            )
+        }
+    }
+
+    class PerfectExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        override val options = UnleashedSingleImageOptions()
+
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            context.deferChannelMessage(false)
+
+            val imageUrl = args[options.imageReference].get(context)
+            val contextImage = LorittaUtils.downloadImage(context.loritta, imageUrl) ?: context.fail(false) {
+                styled(context.i18nContext.get(I18nKeysData.Commands.NoValidImageFound), Emotes.LoriSob)
+            }
+
+            val template = (context.loritta.assets.loadImage("perfeito.png", loadFromCache = false) as JVMImage).handle as BufferedImage
+            val scaled = contextImage.getScaledInstance(231, 231, BufferedImage.SCALE_SMOOTH)
+            template.graphics.drawImage(scaled, 225, 85, null)
+
+            val result = template.toByteArray(ImageFormatType.PNG)
+            context.reply(false) {
+                files += AttachedFile.fromData(result, "perfeito.png")
+            }
+        }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?> {
+            return mapOf(
+                options.imageReference to ImageReferenceOrAttachment(args.getOrNull(0), context.getImage(0))
+            )
         }
     }
 }

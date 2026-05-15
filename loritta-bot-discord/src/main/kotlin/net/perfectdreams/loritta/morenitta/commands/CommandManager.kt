@@ -52,13 +52,11 @@ class CommandManager(val loritta: LorittaBot) {
 		// commandMap.add(InverterCommand(loritta))
 		// commandMap.add(SpinnerCommand(loritta))
 		commandMap.add(RazoesCommand(loritta))
-		commandMap.add(PerfeitoCommand(loritta))
 		// commandMap.add(TrumpCommand(loritta))
 		// commandMap.add(CepoCommand(loritta))
 		commandMap.add(DeusesCommand(loritta))
 		commandMap.add(GangueCommand(loritta))
 		commandMap.add(AmizadeCommand(loritta))
-		commandMap.add(RipVidaCommand(loritta))
 		commandMap.add(TwitchCommand(loritta))
 
 		// =======[ IMAGENS ]======
