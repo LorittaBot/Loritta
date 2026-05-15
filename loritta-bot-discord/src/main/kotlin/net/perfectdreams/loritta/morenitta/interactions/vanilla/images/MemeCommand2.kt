@@ -38,9 +38,9 @@ class MemeCommand2 : SlashCommandDeclarationWrapper {
     }
 
     class DiePlagueExecutor : UnleashedLocalSingleImageCommandBase(
-        "die_plague.png",
+        "morre_praga.png",
         { context, contextImage ->
-            val template = (context.loritta.assets.loadImage("die_plague.png", loadFromCache = false) as JVMImage).handle as BufferedImage
+            val template = (context.loritta.assets.loadImage("morre_praga.png", loadFromCache = false) as JVMImage).handle as BufferedImage
             val graphics = template.createGraphics()
             val scaled = contextImage.getScaledInstance(312, 312, BufferedImage.SCALE_SMOOTH)
 
