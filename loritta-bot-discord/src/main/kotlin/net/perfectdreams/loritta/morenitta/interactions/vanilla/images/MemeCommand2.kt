@@ -2,17 +2,30 @@ package net.perfectdreams.loritta.morenitta.interactions.vanilla.images
 
 import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.interactions.InteractionContextType
+import net.dv8tion.jda.api.utils.AttachedFile
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageFormatType
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByteArray
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.common.utils.extensions.enableFontAntiAliasing
 import net.perfectdreams.loritta.common.utils.image.JVMImage
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
+import net.perfectdreams.loritta.morenitta.interactions.commands.LegacyMessageCommandContext
+import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaLegacyMessageCommandExecutor
+import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaSlashCommandExecutor
+import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandDeclarationWrapper
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.ImageReferenceOrAttachment
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.base.UnleashedLocalSingleImageCommandBase
 import net.perfectdreams.loritta.morenitta.utils.ImageUtils
+import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
 import java.awt.Color
 import java.awt.Font
 import java.awt.Rectangle
@@ -71,6 +84,24 @@ class MemeCommand2 : SlashCommandDeclarationWrapper {
             }
 
             executor = OjjoExecutor()
+        }
+
+        subcommand(I18nKeysData.Commands.Command.Lava.Label, I18nKeysData.Commands.Command.Lava.Description, UUID.fromString("9e9de728-64b4-4ea5-8c9b-461a76213eaf")) {
+            alternativeLegacyAbsoluteCommandPaths.apply {
+                add("lava")
+            }
+
+            executor = LavaExecutor()
+        }
+
+        subcommand(I18nKeysData.Commands.Command.Lavareverse.Label, I18nKeysData.Commands.Command.Lavareverse.Description, UUID.fromString("edbe6d45-db98-430e-8a17-6c9f48f7f977")) {
+            alternativeLegacyAbsoluteCommandPaths.apply {
+                add("lavareverse")
+                add("lavareverso")
+                add("reverselava")
+            }
+
+            executor = LavaReverseExecutor()
         }
     }
 
@@ -169,4 +200,149 @@ class MemeCommand2 : SlashCommandDeclarationWrapper {
             baseImage.toByteArray(ImageFormatType.PNG)
         }
     )
+
+    class LavaExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        class Options : ApplicationCommandOptions() {
+            val text = string("text", I18nKeysData.Commands.Command.Lava.Options.Text.Text)
+            val imageReference = imageReferenceOrAttachment("image", TodoFixThisData)
+        }
+
+        override val options = Options()
+
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            context.deferChannelMessage(false)
+
+            val imageUrl = args[options.imageReference].get(context)
+            val text = args[options.text]
+            val contextImage = LorittaUtils.downloadImage(context.loritta, imageUrl) ?: context.fail(false) {
+                styled(context.i18nContext.get(I18nKeysData.Commands.NoValidImageFound), Emotes.LoriSob)
+            }
+
+            val template = (context.loritta.assets.loadImage("lava.png", loadFromCache = false) as JVMImage).handle as BufferedImage
+
+            val resized = contextImage.getScaledInstance(64, 64, BufferedImage.SCALE_SMOOTH)
+            val small = contextImage.getScaledInstance(32, 32, BufferedImage.SCALE_SMOOTH)
+            val templateGraphics = template.graphics
+            templateGraphics.drawImage(resized, 120, 0, null)
+            templateGraphics.drawImage(small, 487, 0, null)
+
+            val canvas = BufferedImage(700, 443, BufferedImage.TYPE_INT_ARGB)
+            val graphics = canvas.createGraphics().apply { enableFontAntiAliasing() }
+            graphics.color = Color.WHITE
+            graphics.fillRect(0, 0, 700, 443)
+            graphics.color = Color.BLACK
+            graphics.drawImage(template, 0, 100, null)
+
+            val font = Font.createFont(Font.TRUETYPE_FONT, File(LorittaBot.ASSETS, "mavenpro-bold.ttf")).deriveFont(24F)
+            graphics.font = font
+
+            val isPlural = text.split(" ").firstOrNull()?.endsWith("s", true) == true
+            val floor = context.i18nContext.get(
+                I18nKeysData.Commands.Command.Lava.Floor(
+                    kind = if (isPlural) "plural" else "singular",
+                    what = text
+                )
+            )
+            ImageUtils.drawCenteredString(graphics, floor, Rectangle(2, 2, 700, 100), font)
+
+            val result = canvas.toByteArray(ImageFormatType.PNG)
+            context.reply(false) {
+                files += AttachedFile.fromData(result, "lava.png")
+            }
+        }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?>? {
+            val text = args.drop(1).joinToString(" ")
+            if (text.isBlank()) {
+                context.explain()
+                return null
+            }
+
+            return mapOf(
+                options.imageReference to ImageReferenceOrAttachment(args.getOrNull(0), context.getImage(0)),
+                options.text to text
+            )
+        }
+    }
+
+    class LavaReverseExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        class Options : ApplicationCommandOptions() {
+            val text = string("text", I18nKeysData.Commands.Command.Lavareverse.Options.Text.Text)
+            val imageReference = imageReferenceOrAttachment("image", TodoFixThisData)
+        }
+
+        override val options = Options()
+
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            context.deferChannelMessage(false)
+
+            val imageUrl = args[options.imageReference].get(context)
+            val text = args[options.text]
+            val contextImage = LorittaUtils.downloadImage(context.loritta, imageUrl) ?: context.fail(false) {
+                styled(context.i18nContext.get(I18nKeysData.Commands.NoValidImageFound), Emotes.LoriSob)
+            }
+
+            val template = (context.loritta.assets.loadImage("lavareverso.png", loadFromCache = false) as JVMImage).handle as BufferedImage
+
+            // Resize first so the rotation doesn't look pixelated
+            val firstImage = contextImage.getScaledInstance(256, 256, BufferedImage.SCALE_SMOOTH)
+            // Expand the canvas so the rotation has room to breathe
+            val firstImageCanvas = BufferedImage(326, 326, BufferedImage.TYPE_INT_ARGB)
+            firstImageCanvas.graphics.drawImage(firstImage, 35, 35, null)
+
+            val transform = AffineTransform()
+            transform.rotate(0.436332, (firstImageCanvas.width / 2).toDouble(), (firstImageCanvas.height / 2).toDouble())
+            val op = AffineTransformOp(transform, AffineTransformOp.TYPE_BILINEAR)
+            val rotated = op.filter(firstImageCanvas, null)
+
+            val resized = rotated.getScaledInstance(196, 196, BufferedImage.SCALE_SMOOTH)
+            val small = contextImage.getScaledInstance(111, 111, BufferedImage.SCALE_SMOOTH)
+            val templateGraphics = template.graphics
+            templateGraphics.drawImage(resized, 100, 0, null)
+            templateGraphics.drawImage(small, 464, 175, null)
+
+            val canvas = BufferedImage(693, 766, BufferedImage.TYPE_INT_ARGB)
+            val graphics = canvas.createGraphics().apply { enableFontAntiAliasing() }
+            graphics.color = Color.WHITE
+            graphics.fillRect(0, 0, 693, 766)
+            graphics.color = Color.BLACK
+            graphics.drawImage(template, 0, 100, null)
+
+            val font = Font.createFont(Font.TRUETYPE_FONT, File(LorittaBot.ASSETS, "mavenpro-bold.ttf")).deriveFont(32F)
+            graphics.font = font
+
+            val isPlural = text.split(" ").firstOrNull()?.endsWith("s", true) == true
+            val floor = context.i18nContext.get(
+                I18nKeysData.Commands.Command.Lava.Floor(
+                    kind = if (isPlural) "plural" else "singular",
+                    what = text
+                )
+            )
+            ImageUtils.drawCenteredString(graphics, floor, Rectangle(2, 2, 693, 100), font)
+
+            val result = canvas.toByteArray(ImageFormatType.PNG)
+            context.reply(false) {
+                files += AttachedFile.fromData(result, "lavareverso.png")
+            }
+        }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?>? {
+            val text = args.drop(1).joinToString(" ")
+            if (text.isBlank()) {
+                context.explain()
+                return null
+            }
+
+            return mapOf(
+                options.imageReference to ImageReferenceOrAttachment(args.getOrNull(0), context.getImage(0)),
+                options.text to text
+            )
+        }
+    }
 }

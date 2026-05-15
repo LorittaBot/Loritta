@@ -141,14 +141,6 @@ class LegacyLorittaCommands(val m: LorittaWebsiteBackend) {
             m.images.commands.knuxThrow
         ),
         AdditionalCommandInfoConfig(
-            "LavaCommand",
-            m.images.commands.lava
-        ),
-        AdditionalCommandInfoConfig(
-            "LavaReversoCommand",
-            m.images.commands.lavaReverso
-        ),
-        AdditionalCommandInfoConfig(
             "LoriAtaCommand",
             m.images.commands.loriAta
         ),

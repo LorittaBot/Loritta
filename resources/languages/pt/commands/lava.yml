@@ -1,0 +1,8 @@
+label: "lava"
+description: "O chão é...? Decida o que você quiser!"
+
+options:
+  text:
+    text: "O que está no chão"
+
+floor: "O chão {kind, select, plural{são} other{é}} {what}"
