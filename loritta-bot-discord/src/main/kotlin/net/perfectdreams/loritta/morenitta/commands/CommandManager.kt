@@ -50,7 +50,6 @@ class CommandManager(val loritta: LorittaBot) {
 		commandMap.add(MagicBallCommand(loritta))
 		// commandMap.add(InverterCommand(loritta))
 		// commandMap.add(SpinnerCommand(loritta))
-		commandMap.add(RazoesCommand(loritta))
 		// commandMap.add(TrumpCommand(loritta))
 		// commandMap.add(CepoCommand(loritta))
 		commandMap.add(GangueCommand(loritta))

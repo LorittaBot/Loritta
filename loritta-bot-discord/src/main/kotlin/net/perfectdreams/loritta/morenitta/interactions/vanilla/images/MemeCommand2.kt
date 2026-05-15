@@ -42,9 +42,12 @@ import java.awt.Color
 import java.awt.Font
 import java.awt.GradientPaint
 import java.awt.Rectangle
+import java.awt.Toolkit
 import java.awt.geom.AffineTransform
 import java.awt.image.AffineTransformOp
 import java.awt.image.BufferedImage
+import java.awt.image.FilteredImageSource
+import java.awt.image.RGBImageFilter
 import java.io.File
 import java.util.*
 import javax.imageio.stream.FileImageOutputStream
@@ -230,6 +233,16 @@ class MemeCommand2 : SlashCommandDeclarationWrapper {
             }
 
             executor = FriendshipExecutor()
+        }
+
+        subcommand(I18nKeysData.Commands.Command.Reasons.Label, I18nKeysData.Commands.Command.Reasons.Description, UUID.fromString("4031d888-e607-41bf-b657-6e8d7e73d445")) {
+            alternativeLegacyAbsoluteCommandPaths.apply {
+                add("reasons")
+                add("razões")
+                add("razoes")
+            }
+
+            executor = ReasonsExecutor()
         }
     }
 
@@ -1048,6 +1061,109 @@ class MemeCommand2 : SlashCommandDeclarationWrapper {
                 options.oldFriend to oldFriend,
                 options.newFriend to newFriend
             )
+        }
+    }
+
+    class ReasonsExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        override val options = UnleashedSingleImageOptions()
+
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            context.deferChannelMessage(false)
+
+            val imageUrl = args[options.imageReference].get(context)
+            val contextImage = LorittaUtils.downloadImage(context.loritta, imageUrl) ?: context.fail(false) {
+                styled(context.i18nContext.get(I18nKeysData.Commands.NoValidImageFound), Emotes.LoriSob)
+            }
+
+            var template = (context.loritta.assets.loadImage("reasons.png", loadFromCache = false) as JVMImage).handle as BufferedImage
+            val image = BufferedImage(346, 600, BufferedImage.TYPE_INT_ARGB)
+
+            val graphics = image.graphics
+            val skewed = LorittaImage(contextImage)
+
+            skewed.resize(202, 202)
+
+            // Vamos baixar o avatar do usuário
+            val avatar = LorittaUtils.downloadImage(context.loritta, context.user.getEffectiveAvatarUrl(ImageFormat.PNG, 128)) ?: context.fail(false) {
+                styled(context.i18nContext.get(I18nKeysData.Commands.NoValidImageFound), Emotes.LoriSob)
+            }
+
+            // Agora nós iremos pegar a cor mais prevalente na imagem do avatar do usuário
+            val dominantImage = avatar.getScaledInstance(1, 1, BufferedImage.SCALE_AREA_AVERAGING).toBufferedImage()
+            val dominantColor = dominantImage.getRGB(0, 0)
+
+            val red = (dominantColor shr 16) and 0xFF
+            val green = (dominantColor shr 8) and 0xFF
+            val blue = dominantColor and 0xFF
+
+            // Aplicar nosso filtro
+            val colorFilter = MagentaDominantSwapFilter(red, green, blue)
+
+            val newTemplate = FilteredImageSource(template.source, colorFilter)
+            template = Toolkit.getDefaultToolkit().createImage(newTemplate).toBufferedImage()
+
+            skewed.width = 240 // Aumentar o tamanho da imagem para manipular ela
+            skewed.height = 240
+            // skew image
+            skewed.setCorners(
+                // keep the upper left corner as it is
+                0F, 0F, // UL
+
+                // push the upper right corner more to the bottom
+                202 - 40F, 40F, // UR
+
+                // push the lower right corner more to the left
+                236F, 210F, // LR
+
+                // push the lower left corner more to the right
+                95F, 215F // LL
+            )
+
+            graphics.drawImage(skewed.bufferedImage, 30, 370, null)
+
+            graphics.drawImage(template, 0, 0, null) // Desenhe o template por cima!
+
+            // Agora nós vamos colar o avatar em cima do template
+            // Vamos usar o javaxt porque é bem mais fácil
+            val rotatedAvatar = LorittaImage(avatar)
+            rotatedAvatar.resize(109, 109)
+            rotatedAvatar.rotate(5.0)
+            graphics.drawImage(rotatedAvatar.bufferedImage, 188, 4, null)
+
+            val result = image.toByteArray(ImageFormatType.PNG)
+            context.reply(false) {
+                files += AttachedFile.fromData(result, "reasons.png")
+            }
+        }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?> {
+            return mapOf(
+                options.imageReference to context.getImageReferenceOrAttachment(0)
+            )
+        }
+
+        private class MagentaDominantSwapFilter(
+            val newR: Int,
+            val newG: Int,
+            val newB: Int
+        ) : RGBImageFilter() {
+            init {
+                canFilterIndexColorModel = false
+            }
+
+            override fun filterRGB(x: Int, y: Int, rgb: Int): Int {
+                val red = (rgb shr 16) and 0xFF
+                val green = (rgb shr 8) and 0xFF
+                val blue = rgb and 0xFF
+
+                if (red == 255 && green == 0 && blue == 255) {
+                    return Color(newR, newB, newG).rgb
+                }
+                return rgb
+            }
         }
     }
 }
