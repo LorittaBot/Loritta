@@ -61,7 +61,6 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 			BomDiaECiaStatusCommand(loritta),
 			BomDiaECiaTopCommand(loritta),
 			BomDiaECiaTopLocalCommand(loritta),
-			RepTopCommand(loritta),
 //			XpNotificationsCommand(loritta),
 			RenameChannelCommand(loritta),
 			RenameEmojiCommand(loritta),

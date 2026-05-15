@@ -34,6 +34,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionR
 import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
 import net.perfectdreams.loritta.morenitta.utils.AccountUtils
 import net.perfectdreams.loritta.morenitta.utils.Constants
+import net.perfectdreams.loritta.morenitta.utils.RankPaginationUtils
 import net.perfectdreams.loritta.morenitta.utils.RankingGenerator
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.stripLinks
@@ -43,9 +44,11 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.reputations.R
 import net.perfectdreams.loritta.serializable.Reputation
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.count
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.selectAll
 import java.util.*
+import kotlin.math.ceil
 
 class RepCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     companion object {
@@ -94,6 +97,17 @@ class RepCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             }
 
             executor = RepListExecutor(loritta)
+        }
+
+        subcommand(I18N_PREFIX.Top.Label, I18N_PREFIX.Top.Description, UUID.fromString("3a2c0c6d-1f1f-4f1d-9b8e-2c8b1f5e7d4a")) {
+            this.alternativeLegacyAbsoluteCommandPaths.apply {
+                add("rep top")
+                add("reputation top")
+                add("reputacao top")
+                add("reputação top")
+            }
+
+            executor = RepTopExecutor(loritta)
         }
     }
 
@@ -517,6 +531,148 @@ class RepCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
             return mapOf(
                 options.user to userAndMember,
+                options.page to page
+            )
+        }
+    }
+
+    class RepTopExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        enum class TopOrder {
+            MOST_RECEIVED,
+            MOST_GIVEN
+        }
+
+        inner class Options : ApplicationCommandOptions() {
+            val type = string("type", I18N_PREFIX.Top.Options.Type.Text) {
+                choice(I18N_PREFIX.Top.MostReceived, TopOrder.MOST_RECEIVED.name)
+                choice(I18N_PREFIX.Top.MostGiven, TopOrder.MOST_GIVEN.name)
+            }
+
+            val page = optionalLong("page", I18N_PREFIX.Top.Options.Page.Text, RankingGenerator.VALID_RANKING_PAGES)
+        }
+
+        override val options = Options()
+
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            context.deferChannelMessage(false)
+
+            val type = TopOrder.valueOf(args[options.type])
+
+            val userPage = args[options.page] ?: 1L
+            val page = userPage - 1
+
+            val message = createRankMessage(context, type, page)
+
+            context.reply(false) {
+                message()
+            }
+        }
+
+        suspend fun createRankMessage(
+            context: UnleashedContext,
+            type: TopOrder,
+            page: Long
+        ): suspend InlineMessage<*>.() -> (Unit) = {
+            val receivedBy = Reputations.receivedById
+            val givenBy = Reputations.givenById
+            val receivedByCount = Reputations.receivedById.count()
+            val givenByCount = Reputations.givenById.count()
+
+            val (totalCount, userData) = loritta.newSuspendedTransaction {
+                if (type == TopOrder.MOST_GIVEN) {
+                    val total = Reputations.select(givenBy)
+                        .groupBy(givenBy)
+                        .count()
+
+                    val rows = Reputations.select(givenBy, givenByCount)
+                        .groupBy(givenBy)
+                        .orderBy(givenByCount, SortOrder.DESC)
+                        .limit(5)
+                        .offset(page * 5)
+                        .toList()
+
+                    Pair(total, rows)
+                } else {
+                    val total = Reputations.select(receivedBy)
+                        .groupBy(receivedBy)
+                        .count()
+
+                    val rows = Reputations.select(receivedBy, receivedByCount)
+                        .groupBy(receivedBy)
+                        .orderBy(receivedByCount, SortOrder.DESC)
+                        .limit(5)
+                        .offset(page * 5)
+                        .toList()
+
+                    Pair(total, rows)
+                }
+            }
+
+            val maxPage = ceil(totalCount / 5.0)
+
+            val rankingImage = RankingGenerator.generateRanking(
+                loritta,
+                page * 5,
+                context.i18nContext.get(I18N_PREFIX.Top.GlobalRanking),
+                null,
+                userData.map {
+                    if (type == TopOrder.MOST_RECEIVED) {
+                        RankingGenerator.UserRankInformation(
+                            it[receivedBy],
+                            context.i18nContext.get(I18N_PREFIX.Top.ReceivedReputations(it[receivedByCount]))
+                        )
+                    } else {
+                        RankingGenerator.UserRankInformation(
+                            it[givenBy],
+                            context.i18nContext.get(I18N_PREFIX.Top.GivenReputations(it[givenByCount]))
+                        )
+                    }
+                }
+            )
+
+            RankPaginationUtils.createRankMessage(
+                loritta,
+                context,
+                page,
+                maxPage.toInt(),
+                rankingImage
+            ) {
+                createRankMessage(context, type, it)
+            }.invoke(this)
+        }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?>? {
+            val typeName = args.getOrNull(0)
+
+            if (typeName == null) {
+                context.explain()
+                return null
+            }
+
+            val givenAliases = setOf("given", "dadas", "enviadas", "mais enviadas", "most_given")
+
+            val type = if (typeName.lowercase() in givenAliases)
+                TopOrder.MOST_GIVEN
+            else
+                TopOrder.MOST_RECEIVED
+
+            val page = args.getOrNull(1)?.toLongOrNull()
+
+            if (page != null && !RankingGenerator.isValidRankingPage(page)) {
+                context.reply(false) {
+                    styled(
+                        context.locale["commands.invalidRankingPage"],
+                        Constants.ERROR
+                    )
+                }
+                return null
+            }
+
+            return mapOf(
+                options.type to type.name,
                 options.page to page
             )
         }

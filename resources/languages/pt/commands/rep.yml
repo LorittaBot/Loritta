@@ -34,3 +34,18 @@ list:
   description: "Veja as suas reputações enviadas ou recebidas!"
   youHaveNoReps: "Você não tem nenhuma reputação..."
   userHasNoReps: "O usuário não tem reputações... Que tal dar uma reputação para ele?"
+
+top:
+  label: "top"
+  description: "Veja o ranking global de quem mais recebeu ou deu reputações"
+  globalRanking: "Ranking Global de Reputações"
+  mostReceived: "Mais Recebidas"
+  mostGiven: "Mais Enviadas"
+  receivedReputations: "{count, plural, one {# reputação recebida} other {# reputações recebidas}}"
+  givenReputations: "{count, plural, one {# reputação enviada} other {# reputações enviadas}}"
+
+  options:
+    type:
+      text: "O tipo de ranking que você deseja ver"
+    page:
+      text: "A página do ranking que você deseja ver"
