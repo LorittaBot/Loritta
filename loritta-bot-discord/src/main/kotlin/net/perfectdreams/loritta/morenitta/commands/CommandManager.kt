@@ -23,7 +23,6 @@ import net.perfectdreams.loritta.morenitta.commands.vanilla.`fun`.*
 import net.perfectdreams.loritta.morenitta.commands.vanilla.images.*
 import net.perfectdreams.loritta.morenitta.commands.vanilla.magic.*
 import net.perfectdreams.loritta.morenitta.commands.vanilla.misc.PatreonCommand
-import net.perfectdreams.loritta.morenitta.commands.vanilla.music.LyricsCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.social.*
 import net.perfectdreams.loritta.morenitta.commands.vanilla.undertale.UndertaleBattleCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.undertale.UndertaleBoxCommand
@@ -102,7 +101,6 @@ class CommandManager(val loritta: LorittaBot) {
 		commandMap.add(TempoCommand(loritta))
 //		commandMap.add(MorseCommand(loritta))
 		commandMap.add(EncodeCommand(loritta))
-		commandMap.add(LyricsCommand(loritta))
 
 		// =======[ DISCORD ]=======
 		// commandMap.add(ServerIconCommand(loritta))
