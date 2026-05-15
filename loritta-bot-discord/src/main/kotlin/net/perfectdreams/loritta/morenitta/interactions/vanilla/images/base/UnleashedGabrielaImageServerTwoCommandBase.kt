@@ -74,14 +74,8 @@ open class UnleashedGabrielaImageServerTwoCommandBase(
         }
 
         return mapOf(
-            options.imageReference1 to ImageReferenceOrAttachment(
-                data,
-                context.getImage(0)
-            ),
-            options.imageReference2 to ImageReferenceOrAttachment(
-                data2,
-                context.getImage(1)
-            )
+            options.imageReference1 to context.getImageReferenceOrAttachment(0),
+            options.imageReference2 to context.getImageReferenceOrAttachment(1)
         )
     }
 }

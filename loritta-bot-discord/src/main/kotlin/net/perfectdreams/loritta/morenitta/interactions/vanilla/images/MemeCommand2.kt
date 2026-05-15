@@ -25,7 +25,6 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaSlashCom
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
-import net.perfectdreams.loritta.morenitta.interactions.commands.options.ImageReferenceOrAttachment
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.base.UnleashedLocalSingleImageCommandBase
@@ -362,7 +361,7 @@ class MemeCommand2 : SlashCommandDeclarationWrapper {
             }
 
             return mapOf(
-                options.imageReference to ImageReferenceOrAttachment(args.getOrNull(0), context.getImage(0)),
+                options.imageReference to context.getImageReferenceOrAttachment(0),
                 options.text to text
             )
         }
@@ -440,7 +439,7 @@ class MemeCommand2 : SlashCommandDeclarationWrapper {
             }
 
             return mapOf(
-                options.imageReference to ImageReferenceOrAttachment(args.getOrNull(0), context.getImage(0)),
+                options.imageReference to context.getImageReferenceOrAttachment(0),
                 options.text to text
             )
         }
@@ -590,8 +589,8 @@ class MemeCommand2 : SlashCommandDeclarationWrapper {
             args: List<String>
         ): Map<OptionReference<*>, Any?> {
             return mapOf(
-                options.victim to ImageReferenceOrAttachment(args.getOrNull(0), context.getImage(0)),
-                options.attacker to ImageReferenceOrAttachment(args.getOrNull(1), context.getImage(1))
+                options.victim to context.getImageReferenceOrAttachment(0),
+                options.attacker to context.getImageReferenceOrAttachment(1)
             )
         }
     }
@@ -740,7 +739,7 @@ class MemeCommand2 : SlashCommandDeclarationWrapper {
             args: List<String>
         ): Map<OptionReference<*>, Any?> {
             return mapOf(
-                options.imageReference to ImageReferenceOrAttachment(args.getOrNull(0), context.getImage(0))
+                options.imageReference to context.getImageReferenceOrAttachment(0)
             )
         }
     }
@@ -771,7 +770,7 @@ class MemeCommand2 : SlashCommandDeclarationWrapper {
             args: List<String>
         ): Map<OptionReference<*>, Any?> {
             return mapOf(
-                options.imageReference to ImageReferenceOrAttachment(args.getOrNull(0), context.getImage(0))
+                options.imageReference to context.getImageReferenceOrAttachment(0)
             )
         }
     }

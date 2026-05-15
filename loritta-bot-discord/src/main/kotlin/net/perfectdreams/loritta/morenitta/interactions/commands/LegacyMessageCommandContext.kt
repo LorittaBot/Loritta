@@ -22,6 +22,7 @@ import net.perfectdreams.loritta.morenitta.interactions.InteractionMessage
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedHook
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedMentions
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.ImageReferenceOrAttachment
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.UserAndMember
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
 import net.perfectdreams.loritta.morenitta.utils.ImageFormat
@@ -231,6 +232,11 @@ class LegacyMessageCommandContext(
     }
 
     fun getImage(index: Int) = event.message.attachments.getOrNull(index)
+
+    /**
+     * Bundles the arg at [argIndex] and the message attachment at [attachmentIndex] into a single [ImageReferenceOrAttachment] for handing back from `convertToInteractionsArguments`.
+     */
+    fun getImageReferenceOrAttachment(argIndex: Int, attachmentIndex: Int = argIndex) = ImageReferenceOrAttachment(args.getOrNull(argIndex), getImage(attachmentIndex))
 
     /**
      * Gets a [User] reference from the argument at the specified [index]

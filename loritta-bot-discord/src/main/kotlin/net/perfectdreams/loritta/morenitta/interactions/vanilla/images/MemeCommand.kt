@@ -27,7 +27,6 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaSlashCom
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
-import net.perfectdreams.loritta.morenitta.interactions.commands.options.ImageReferenceOrAttachment
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.base.UnleashedGabrielaImageServerSingleCommandBase
@@ -680,10 +679,7 @@ class MemeCommand(val client: GabrielaImageServerClient) : SlashCommandDeclarati
             val line2 = input.getOrNull(1) ?: ""
 
             return mapOf(
-                options.imageReference to ImageReferenceOrAttachment(
-                    args.getOrNull(3),
-                    context.getImage(0)
-                ),
+                options.imageReference to context.getImageReferenceOrAttachment(3, 0),
                 options.line1 to line1,
                 options.line2 to line2
             )
@@ -742,10 +738,7 @@ class MemeCommand(val client: GabrielaImageServerClient) : SlashCommandDeclarati
             args: List<String>
         ): Map<OptionReference<*>, Any?> {
             return mapOf(
-                options.imageReference to ImageReferenceOrAttachment(
-                    args.getOrNull(0),
-                    context.getImage(0)
-                ),
+                options.imageReference to context.getImageReferenceOrAttachment(0),
                 options.squish to args.getOrNull(1),
                 options.speed to args.getOrNull(2)
             )

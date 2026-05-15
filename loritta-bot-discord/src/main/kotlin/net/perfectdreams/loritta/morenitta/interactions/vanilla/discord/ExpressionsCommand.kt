@@ -120,7 +120,6 @@ class ExpressionsCommand : SlashCommandDeclarationWrapper {
             args: List<String>
         ): Map<OptionReference<*>, Any?>? {
             val name = args.getOrNull(0)
-            val data = args.getOrNull(1)
             val tags = args.getOrNull(2)
 
             if (name == null) {
@@ -129,10 +128,7 @@ class ExpressionsCommand : SlashCommandDeclarationWrapper {
                 return mapOf(
                     options.stickerName to name,
                     options.stickerTags to tags,
-                    options.sticker to ImageReferenceOrAttachment(
-                        dataValue = data,
-                        attachment = context.event.message.attachments.firstOrNull()
-                    )
+                    options.sticker to context.getImageReferenceOrAttachment(1, 0)
                 )
             }
 
@@ -295,14 +291,9 @@ class ExpressionsCommand : SlashCommandDeclarationWrapper {
 
             if (emojis.isEmpty()) {
                 if (name != null) {
-                    val data = args.getOrNull(1)
-
                     return mapOf(
                         options.emojiName to name,
-                        options.emojiData to ImageReferenceOrAttachment(
-                            data,
-                            context.event.message.attachments.firstOrNull()
-                        )
+                        options.emojiData to context.getImageReferenceOrAttachment(1, 0)
                     )
                 } else {
                     context.explain()
