@@ -91,7 +91,6 @@ class CommandManager(val loritta: LorittaBot) {
 		commandMap.add(PatreonCommand(loritta))
 
 		// =======[ SOCIAL ]======
-		commandMap.add(BackgroundCommand(loritta))
 //		commandMap.add(AfkCommand(loritta))
 
 		// =======[ UTILS ]=======
