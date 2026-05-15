@@ -96,7 +96,6 @@ class CommandManager(val loritta: LorittaBot) {
 
 		// =======[ UTILS ]=======
 		commandMap.add(WikipediaCommand(loritta))
-		commandMap.add(ColorInfoCommand(loritta))
 		commandMap.add(TempoCommand(loritta))
 //		commandMap.add(MorseCommand(loritta))
 		commandMap.add(EncodeCommand(loritta))
