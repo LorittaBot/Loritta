@@ -8,6 +8,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageFormatType
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByteArray
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.utils.LorittaImage
 import net.perfectdreams.loritta.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.common.utils.extensions.enableFontAntiAliasing
 import net.perfectdreams.loritta.common.utils.image.JVMImage
@@ -31,6 +32,7 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.base.Unle
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.base.UnleashedLocalSingleImageGifCommandBase
 import net.perfectdreams.loritta.morenitta.utils.ImageUtils
 import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
+import net.perfectdreams.loritta.morenitta.utils.SeamCarver
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import java.awt.Color
 import java.awt.Font
@@ -152,6 +154,17 @@ class MemeCommand2 : SlashCommandDeclarationWrapper {
             }
 
             executor = SwingExecutor()
+        }
+
+        subcommand(I18nKeysData.Commands.Command.Contentawarescale.Label, I18nKeysData.Commands.Command.Contentawarescale.Description, UUID.fromString("8c220dc3-a28f-42bd-b8d0-76bdbeaec2d6")) {
+            alternativeLegacyAbsoluteCommandPaths.apply {
+                add("contentawarescale")
+                add("cas")
+                add("contentaware")
+                add("seamcarver")
+            }
+
+            executor = ContentAwareScaleExecutor()
         }
     }
 
@@ -545,4 +558,21 @@ class MemeCommand2 : SlashCommandDeclarationWrapper {
             )
         }
     }
+
+    class ContentAwareScaleExecutor : UnleashedLocalSingleImageCommandBase(
+        "content_aware_scale.png",
+        { _, contextImage ->
+            val loriImage = LorittaImage(contextImage)
+            loriImage.resize(256, 256, true)
+            var newImage = loriImage.bufferedImage
+
+            for (i in 0 until 256) {
+                if (32 > newImage.height || 32 > newImage.width) break
+                val direction = if (i % 2 == 0) SeamCarver.CarveDirection.HORIZONTAL else SeamCarver.CarveDirection.VERTICAL
+                newImage = SeamCarver.carveSeam(newImage, direction)
+            }
+
+            newImage.toByteArray(ImageFormatType.PNG)
+        }
+    )
 }

@@ -66,7 +66,6 @@ class CommandManager(val loritta: LorittaBot) {
 		// =======[ IMAGENS ]======
 		// commandMap.add(GetOverHereCommand(loritta))
 		// commandMap.add(ManiaTitleCardCommand(loritta))
-		commandMap.add(ContentAwareScaleCommand(loritta))
 		// commandMap.add(KnuxThrowCommand(loritta))
 		commandMap.add(TextCraftCommand(loritta))
 		// commandMap.add(DrawnMaskCommand(loritta))
