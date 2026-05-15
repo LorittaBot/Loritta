@@ -23,5 +23,6 @@ enum class SonhosPaymentReason {
     EMOJI_FIGHT,
     DISCORD_BOTS,
     CHARGEBACK,
-    BUNDLE_PURCHASE
+    BUNDLE_PURCHASE,
+    COLLECTION_REWARD
 }

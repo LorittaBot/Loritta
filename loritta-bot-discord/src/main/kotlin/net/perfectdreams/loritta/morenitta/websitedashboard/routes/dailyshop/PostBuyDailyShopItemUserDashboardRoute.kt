@@ -15,6 +15,7 @@ import net.perfectdreams.luna.toasts.EmbeddedToast
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebServer
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
+import net.perfectdreams.loritta.morenitta.profile.CollectionsManager
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.dailyShopItems
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresUserAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.blissCloseAllModals
@@ -89,6 +90,12 @@ class PostBuyDailyShopItemUserDashboardRoute(website: LorittaDashboardWebServer)
                     it[boughtAt] = System.currentTimeMillis()
                     it[BackgroundPayments.cost] = cost.toLong()
                 }
+
+                CollectionsManager.giveCollectionRewardsIfNewlyCompleted(
+                    website.loritta.pudding,
+                    profile,
+                    obtainedBackground = background[Backgrounds.id].value
+                )
 
                 // Cinnamon transaction system
                 SimpleSonhosTransactionsLogUtils.insert(
@@ -170,6 +177,12 @@ class PostBuyDailyShopItemUserDashboardRoute(website: LorittaDashboardWebServer)
                     it[boughtAt] = System.currentTimeMillis()
                     it[ProfileDesignsPayments.cost] = cost.toLong()
                 }
+
+                CollectionsManager.giveCollectionRewardsIfNewlyCompleted(
+                    website.loritta.pudding,
+                    profile,
+                    obtainedProfileDesign = background[ProfileDesigns.id].value
+                )
 
                 // Cinnamon transaction system
                 SimpleSonhosTransactionsLogUtils.insert(

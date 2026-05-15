@@ -336,6 +336,8 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
                             it[SimpleSonhosTransactionsLog.sonhos],
                         )
 
+                        is StoredFinishedCollectionTransaction -> createUsingReflection(FinishedCollectionSonhosTransaction::class, stored.collectionId)
+
                         is StoredLorittaItemShopBoughtBackgroundTransaction -> createUsingReflection(LorittaItemShopBoughtBackgroundTransaction::class, stored.internalBackgroundId)
 
                         is StoredLorittaItemShopBoughtProfileDesignTransaction -> createUsingReflection(LorittaItemShopBoughtProfileDesignTransaction::class, stored.internalProfileDesignId)

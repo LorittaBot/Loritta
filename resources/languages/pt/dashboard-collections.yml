@@ -1,0 +1,11 @@
+website:
+  dashboard:
+    collections:
+      title: "Coleções"
+      description:
+        - "Colete todos os itens de uma coleção para ganhar recompensas exclusivas, como sonhos e itens únicos!"
+      progress: "{owned}/{total} itens coletados"
+      completed: "Coleção completa!"
+      rewardsTitle: "Recompensas"
+      rewardSonhos: "{sonhos} sonhos"
+      empty: "Nenhuma coleção está disponível no momento."

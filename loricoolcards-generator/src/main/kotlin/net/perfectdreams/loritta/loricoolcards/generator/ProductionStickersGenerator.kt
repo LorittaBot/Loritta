@@ -23,6 +23,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsEvents
 import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsFinishedAlbumUsers
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentReason
+import net.perfectdreams.loritta.common.emojis.LorittaEmojis
 import net.perfectdreams.loritta.common.locale.LorittaLanguageManager
 import net.perfectdreams.loritta.common.loricoolcards.CardRarity
 import net.perfectdreams.loritta.common.utils.MediaTypeUtils
@@ -144,7 +145,16 @@ suspend fun generateCards(config: LoriCoolCardsGeneratorProductionStickersConfig
         StickerFanBadge(pudding),
         ReactionEventBadge.Halloween2024ReactionEventBadge(pudding),
         ReactionEventBadge.Halloween2024ReactionEventSuperBadge(pudding),
-        BratBadge(pudding),
+        CollectionBadge(
+            pudding,
+            UUID.fromString("3e95aa2d-b092-43dc-8aef-7d2112e13f28"),
+            ProfileDesignManager.I18N_BADGES_PREFIX.Brat.Title,
+            ProfileDesignManager.I18N_BADGES_PREFIX.Brat.Description,
+            "brat.png",
+            LorittaEmojis.Brat,
+            50,
+            "charliXcxBrat"
+        ),
         ReactionEventBadge.Christmas2024ReactionEventBadge(pudding),
         ReactionEventBadge.Christmas2024ReactionEventSuperBadge(pudding),
         ReactionEventBadge.Anniversary2025ReactionEventBadge(pudding),

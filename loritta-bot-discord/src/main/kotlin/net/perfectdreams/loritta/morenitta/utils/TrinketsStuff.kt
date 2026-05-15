@@ -166,7 +166,26 @@ object TrinketsStuff {
                 }
 
                 backgrounds()
+
+                // ===[ COLLECTIONS ]===
+                collections()
             }
+        }
+    }
+
+    private fun collections() {
+        createCollection("charliXcxBrat", true, LocalDate.of(2024, 9, 12), rewardSonhos = 0L) {
+            backgrounds(
+                "charliXcxBratLori",
+                "charliXcxBrat",
+                "charliXcxBratPantufa",
+                "charliXcxBratGabi",
+                "charliXcxBratPirralha",
+                "charliXcxBratRawr",
+                "charliXcxBratCoy",
+                "charliXcxBratOwo",
+                "charliXcxBratUwu"
+            )
         }
     }
 
@@ -1408,6 +1427,77 @@ object TrinketsStuff {
         }
 
         variantBuilder.invoke(VariantBuilder(id))
+    }
+
+    private fun createCollection(
+        id: String,
+        enabled: Boolean,
+        addedAt: LocalDate,
+        rewardSonhos: Long,
+        block: CollectionBuilder.() -> (Unit)
+    ) {
+        Collections.upsert(Collections.id) {
+            it[Collections.id] = id
+            it[Collections.enabled] = enabled
+            it[Collections.rewardSonhos] = rewardSonhos
+            it[Collections.addedAt] = addedAt.atStartOfDay().atOffset(ZoneOffset.UTC)
+        }
+
+        val builder = CollectionBuilder().apply(block)
+
+        // Delete-then-reinsert so editing the code list re-syncs on restart
+        CollectionItems.deleteWhere { CollectionItems.collection eq id }
+        for (background in builder.backgrounds) {
+            CollectionItems.insert {
+                it[CollectionItems.collection] = id
+                it[CollectionItems.background] = background
+            }
+        }
+        for (profileDesign in builder.profileDesigns) {
+            CollectionItems.insert {
+                it[CollectionItems.collection] = id
+                it[CollectionItems.profileDesign] = profileDesign
+            }
+        }
+
+        CollectionRewardBackgrounds.deleteWhere { CollectionRewardBackgrounds.collection eq id }
+        for (background in builder.rewardBackgrounds) {
+            CollectionRewardBackgrounds.insert {
+                it[CollectionRewardBackgrounds.collection] = id
+                it[CollectionRewardBackgrounds.background] = background
+            }
+        }
+
+        CollectionRewardProfileDesigns.deleteWhere { CollectionRewardProfileDesigns.collection eq id }
+        for (profileDesign in builder.rewardProfileDesigns) {
+            CollectionRewardProfileDesigns.insert {
+                it[CollectionRewardProfileDesigns.collection] = id
+                it[CollectionRewardProfileDesigns.profileDesign] = profileDesign
+            }
+        }
+    }
+
+    class CollectionBuilder {
+        val backgrounds = mutableListOf<String>()
+        val profileDesigns = mutableListOf<String>()
+        val rewardBackgrounds = mutableListOf<String>()
+        val rewardProfileDesigns = mutableListOf<String>()
+
+        fun backgrounds(vararg internalNames: String) {
+            backgrounds.addAll(internalNames)
+        }
+
+        fun profileDesigns(vararg internalNames: String) {
+            profileDesigns.addAll(internalNames)
+        }
+
+        fun rewardBackgrounds(vararg internalNames: String) {
+            rewardBackgrounds.addAll(internalNames)
+        }
+
+        fun rewardProfileDesigns(vararg internalNames: String) {
+            rewardProfileDesigns.addAll(internalNames)
+        }
     }
 
     class VariantBuilder(private val backgroundInternalName: String) {

@@ -168,5 +168,11 @@ enum class TransactionType(
         I18nKeysData.Commands.Command.Transactions.Types.VacationMode.Description,
         Emotes.BeachWithUmbrella.toLorittaEmojiReference(),
         true
+    ),
+    COLLECTION(
+        I18nKeysData.Commands.Command.Transactions.Types.Collections.Title,
+        I18nKeysData.Commands.Command.Transactions.Types.Collections.Description,
+        Emotes.Trophy.toLorittaEmojiReference(),
+        true
     )
 }

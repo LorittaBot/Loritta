@@ -48,6 +48,7 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.backgrounds.G
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.backgrounds.PostApplyBackgroundUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.backgrounds.PostUploadBackgroundUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.badges.BadgesUserDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.collections.CollectionsUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.badges.GetBadgeImageUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.badges.GetBadgeUserDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.badges.PostToggleBadgeVisibilityUserDashboardRoute
@@ -326,6 +327,9 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
         GetBadgeUserDashboardRoute(this),
         GetBadgeImageUserDashboardRoute(this),
         PostToggleBadgeVisibilityUserDashboardRoute(this),
+
+        // Collections
+        CollectionsUserDashboardRoute(this),
 
         // Reputations
         ReputationsUserDashboardRoute(this),

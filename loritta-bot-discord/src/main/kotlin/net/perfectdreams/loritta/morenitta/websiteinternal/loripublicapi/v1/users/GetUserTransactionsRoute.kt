@@ -357,6 +357,14 @@ class GetUserTransactionsRoute(m: LorittaBot) : LoriPublicAPIRoute(
                     transaction.receivedBy,
                     transaction.sonhos
                 )
+                is net.perfectdreams.loritta.serializable.FinishedCollectionSonhosTransaction -> FinishedCollectionSonhosTransaction(
+                    transaction.id,
+                    transaction.transactionType,
+                    transaction.timestamp,
+                    transaction.user,
+                    transaction.sonhos,
+                    transaction.collectionId
+                )
                 is net.perfectdreams.loritta.serializable.LorittaItemShopBoughtBackgroundTransaction -> LorittaItemShopBoughtBackgroundTransaction(
                     transaction.id,
                     transaction.transactionType,
@@ -926,6 +934,17 @@ class GetUserTransactionsRoute(m: LorittaBot) : LoriPublicAPIRoute(
         override val user: UserId,
         val sonhos: Long,
         val eventId: Long
+    ) : SonhosTransaction()
+
+    @Serializable
+    data class FinishedCollectionSonhosTransaction(
+        override val id: Long,
+        override val transactionType: TransactionType,
+        override val timestamp: kotlinx.datetime.Instant,
+        @Serializable(UserIdAsStringSerializer::class)
+        override val user: UserId,
+        val sonhos: Long,
+        val collectionId: String
     ) : SonhosTransaction()
 
     @Serializable

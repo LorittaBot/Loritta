@@ -65,6 +65,7 @@ fun FlowContent.userDashLeftSidebarEntries(
     aDashboardSidebarEntry(i18nContext, "/profiles", i18nContext.get(DashboardI18nKeysData.ProfileDesigns.Title), SVGIcons.IdentificationCard, selectedUserSection == UserDashboardSection.PROFILE_DESIGNS, false)
     aDashboardSidebarEntry(i18nContext, "/backgrounds", i18nContext.get(DashboardI18nKeysData.Backgrounds.Title), SVGIcons.Images, selectedUserSection == UserDashboardSection.PROFILE_BACKGROUND, false)
     aDashboardSidebarEntry(i18nContext, "/badges", i18nContext.get(DashboardI18nKeysData.Badges.Title), SVGIcons.Seal, selectedUserSection == UserDashboardSection.PROFILE_BADGES, true)
+    aDashboardSidebarEntry(i18nContext, "/collections", i18nContext.get(DashboardI18nKeysData.Collections.Title), SVGIcons.BoxStar, selectedUserSection == UserDashboardSection.COLLECTIONS, true)
     aDashboardSidebarEntry(i18nContext, "/profile-presets", i18nContext.get(DashboardI18nKeysData.ProfilePresets.Title), SVGIcons.BoxArrowUp, selectedUserSection == UserDashboardSection.PROFILE_PRESETS, false)
     aDashboardSidebarEntry(i18nContext, "/daily-shop", i18nContext.get(DashboardI18nKeysData.DailyShop.Title), SVGIcons.ShoppingBag, selectedUserSection == UserDashboardSection.TRINKETS_SHOP, false)
     sectionEntry(selected = false) {

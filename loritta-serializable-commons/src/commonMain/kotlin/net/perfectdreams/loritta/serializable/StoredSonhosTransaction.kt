@@ -157,6 +157,11 @@ data class StoredLorittaItemShopComissionBackgroundTransaction(
 ) : StoredSonhosTransaction()
 
 @Serializable
+data class StoredFinishedCollectionTransaction(
+    val collectionId: String
+) : StoredSonhosTransaction()
+
+@Serializable
 data object StoredBomDiaECiaCallCalledTransaction : StoredSonhosTransaction()
 
 @Serializable

@@ -32,7 +32,8 @@ class LoriToolsCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta
 				ChargebackRunExecutor,
 				EnableBoostExecutor,
 				DisableBoostExecutor,
-                CreateTrackedAddUrlDesignExecutor
+                CreateTrackedAddUrlDesignExecutor,
+                BackfillCollectionExecutor
 			)
 
 			allExecutors.forEach {

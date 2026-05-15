@@ -289,6 +289,16 @@ data class LoriCoolCardsPaymentSonhosTradeTransaction(
 ) : SonhosTransaction()
 
 @Serializable
+data class FinishedCollectionSonhosTransaction(
+    override val id: Long,
+    override val transactionType: TransactionType,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val sonhos: Long,
+    val collectionId: String
+) : SonhosTransaction()
+
+@Serializable
 data class LorittaItemShopBoughtProfileDesignTransaction(
     override val id: Long,
     override val transactionType: TransactionType,

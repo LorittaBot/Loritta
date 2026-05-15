@@ -309,6 +309,9 @@ class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandE
                         is LoriCoolCardsFinishedAlbumSonhosTransaction -> LoriCoolCardsFinishedAlbumSonhosTransactionTransformer
                         is LoriCoolCardsPaymentSonhosTradeTransaction -> LoriCoolCardsPaymentSonhosTradeTransactionTransformer
 
+                        // ===[ COLLECTIONS ]===
+                        is FinishedCollectionSonhosTransaction -> FinishedCollectionSonhosTransactionTransformer
+
                         // ===[ LORITTA ITEM SHOP ]===
                         is LorittaItemShopBoughtBackgroundTransaction -> LorittaItemShopBoughtBackgroundSonhosTransactionTransformer
                         is LorittaItemShopBoughtProfileDesignTransaction -> LorittaItemShopBoughtProfileDesignSonhosTransactionTransformer

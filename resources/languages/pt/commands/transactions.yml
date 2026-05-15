@@ -200,6 +200,10 @@ types:
     title: "Reputações"
     description: "Transações relacionadas as reputações da Loritta"
     reputationDeleted: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para remover uma reputação enviada"
+  collections:
+    title: "Coleções"
+    description: "Transações relacionadas as coleções da Loritta"
+    finishedCollection: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} por ter completado uma coleção da Loritta"
   vacationMode:
     title: "Modo Férias"
     description: "Transações relacionadas ao sistema de férias da Loritta"

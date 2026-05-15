@@ -48,7 +48,9 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.selectAll
 import java.awt.image.BufferedImage
 import java.io.File
+import net.perfectdreams.loritta.common.emojis.LorittaEmojis
 import java.util.EnumSet
+import java.util.UUID
 import javax.imageio.ImageIO
 import javax.imageio.stream.FileImageOutputStream
 
@@ -174,7 +176,18 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		registerBadge(StickerFanBadge(loritta.pudding))
 		registerBadge(ReactionEventBadge.Halloween2024ReactionEventBadge(loritta.pudding))
 		registerBadge(ReactionEventBadge.Halloween2024ReactionEventSuperBadge(loritta.pudding))
-		registerBadge(BratBadge(loritta.pudding))
+		registerBadge(
+			CollectionBadge(
+				loritta.pudding,
+				UUID.fromString("3e95aa2d-b092-43dc-8aef-7d2112e13f28"),
+				I18N_BADGES_PREFIX.Brat.Title,
+				I18N_BADGES_PREFIX.Brat.Description,
+				"brat.png",
+				LorittaEmojis.Brat,
+				50,
+				"charliXcxBrat"
+			)
+		)
 		registerBadge(ReactionEventBadge.Christmas2024ReactionEventBadge(loritta.pudding))
 		registerBadge(ReactionEventBadge.Christmas2024ReactionEventSuperBadge(loritta.pudding))
 		registerBadge(ReactionEventBadge.Anniversary2025ReactionEventBadge(loritta.pudding))

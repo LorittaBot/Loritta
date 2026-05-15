@@ -263,6 +263,15 @@ suspend fun main() {
                         stored.eventId
                     )
 
+                    is StoredFinishedCollectionTransaction -> FinishedCollectionSonhosTransaction(
+                        it[SimpleSonhosTransactionsLog.id].value,
+                        it[SimpleSonhosTransactionsLog.type],
+                        it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
+                        UserId(it[SimpleSonhosTransactionsLog.user].value),
+                        it[SimpleSonhosTransactionsLog.sonhos],
+                        stored.collectionId
+                    )
+
                     is StoredLoriCoolCardsPaymentSonhosTradeTransaction -> LoriCoolCardsPaymentSonhosTradeTransaction(
                         it[SimpleSonhosTransactionsLog.id].value,
                         it[SimpleSonhosTransactionsLog.type],
