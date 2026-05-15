@@ -54,7 +54,6 @@ class CommandManager(val loritta: LorittaBot) {
 		// commandMap.add(TrumpCommand(loritta))
 		// commandMap.add(CepoCommand(loritta))
 		commandMap.add(GangueCommand(loritta))
-		commandMap.add(AmizadeCommand(loritta))
 		commandMap.add(TwitchCommand(loritta))
 
 		// =======[ IMAGENS ]======

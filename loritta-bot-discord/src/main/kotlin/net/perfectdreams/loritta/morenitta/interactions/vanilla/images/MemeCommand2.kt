@@ -32,12 +32,15 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.base.Unle
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.base.UnleashedSingleImageOptions
 import net.perfectdreams.loritta.morenitta.utils.ImageUtils
 import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
+import net.perfectdreams.loritta.morenitta.utils.ImageFormat
 import net.perfectdreams.loritta.morenitta.utils.SeamCarver
 import net.perfectdreams.loritta.morenitta.utils.TretaNewsGenerator
+import net.perfectdreams.loritta.morenitta.utils.extensions.getEffectiveAvatarUrl
 import net.perfectdreams.loritta.morenitta.utils.toBufferedImage
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import java.awt.Color
 import java.awt.Font
+import java.awt.GradientPaint
 import java.awt.Rectangle
 import java.awt.geom.AffineTransform
 import java.awt.image.AffineTransformOp
@@ -218,6 +221,15 @@ class MemeCommand2 : SlashCommandDeclarationWrapper {
             }
 
             executor = GodsExecutor()
+        }
+
+        subcommand(I18nKeysData.Commands.Command.Friendship.Label, I18nKeysData.Commands.Command.Friendship.Description, UUID.fromString("a4c20758-0cce-40e1-ba29-1f94dc08160f")) {
+            alternativeLegacyAbsoluteCommandPaths.apply {
+                add("friendship")
+                add("amizade")
+            }
+
+            executor = FriendshipExecutor()
         }
     }
 
@@ -916,6 +928,126 @@ class MemeCommand2 : SlashCommandDeclarationWrapper {
                 return null
             }
             return mapOf(options.text to text)
+        }
+    }
+
+    class FriendshipExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        class Options : ApplicationCommandOptions() {
+            val oldFriend = user("oldfriend", I18nKeysData.Commands.Command.Friendship.Options.Oldfriend.Text)
+            val newFriend = user("newfriend", I18nKeysData.Commands.Command.Friendship.Options.Newfriend.Text)
+        }
+
+        override val options = Options()
+
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            context.deferChannelMessage(false)
+
+            val oldFriend = args[options.oldFriend].user
+            val newFriend = args[options.newFriend].user
+
+            val avatar = LorittaUtils.downloadImage(context.loritta, context.user.getEffectiveAvatarUrl(ImageFormat.PNG, 128)) ?: context.fail(false) {
+                styled(context.i18nContext.get(I18nKeysData.Commands.NoValidImageFound), Emotes.LoriSob)
+            }
+            val avatar2 = LorittaUtils.downloadImage(context.loritta, oldFriend.getEffectiveAvatarUrl(ImageFormat.PNG, 128)) ?: context.fail(false) {
+                styled(context.i18nContext.get(I18nKeysData.Commands.NoValidImageFound), Emotes.LoriSob)
+            }
+            val avatar3 = LorittaUtils.downloadImage(context.loritta, newFriend.getEffectiveAvatarUrl(ImageFormat.PNG, 128)) ?: context.fail(false) {
+                styled(context.i18nContext.get(I18nKeysData.Commands.NoValidImageFound), Emotes.LoriSob)
+            }
+
+            val template = (context.loritta.assets.loadImage("amizade.png", loadFromCache = false) as JVMImage).handle as BufferedImage
+
+            val graphics = template.createGraphics().apply { enableFontAntiAliasing() } // É necessário usar Graphics2D para usar gradients
+
+            // Colocar todos os avatares
+            graphics.drawImage(avatar.getScaledInstance(108, 108, BufferedImage.SCALE_SMOOTH), 55, 10, null)
+            graphics.drawImage(avatar3.getScaledInstance(110, 110, BufferedImage.SCALE_SMOOTH), 232, 54, null)
+            graphics.drawImage(avatar2.getScaledInstance(85, 134, BufferedImage.SCALE_SMOOTH), 0, 166, null)
+            graphics.drawImage(avatar2.getScaledInstance(111, 120, BufferedImage.SCALE_SMOOTH), 289, 180, null)
+
+            // E colocar o overlay da imagem
+            val overlay = (context.loritta.assets.loadImage("amizade_overlay.png", loadFromCache = false) as JVMImage).handle as BufferedImage
+            graphics.drawImage(overlay, 0, 0, null)
+
+            var font = graphics.font.deriveFont(21F)
+            graphics.font = font
+            var fontMetrics = graphics.getFontMetrics(font)
+
+            val friendshipEnded = context.i18nContext.get(
+                I18nKeysData.Commands.Command.Friendship.FriendWith(userName = oldFriend.name)
+            )
+            var gp = GradientPaint(
+                0.0f, 0.0f,
+                Color(202, 72, 15),
+                0.0f, fontMetrics.height.toFloat() + fontMetrics.height.toFloat(),
+                Color(66, 181, 33)
+            )
+            graphics.paint = gp
+
+            ImageUtils.drawCenteredStringOutlined(graphics, friendshipEnded, Rectangle(0, 10, 400, 30), font)
+            graphics.color = Color.RED
+
+            font = font.deriveFont(30F)
+            graphics.font = font
+
+            ImageUtils.drawCenteredStringOutlined(
+                graphics,
+                context.i18nContext.get(I18nKeysData.Commands.Command.Friendship.Ended),
+                Rectangle(0, 30, 400, 40),
+                font
+            )
+
+            font = font.deriveFont(24F)
+            graphics.font = font
+            fontMetrics = graphics.getFontMetrics(font)
+            gp = GradientPaint(
+                0.0f, 140f,
+                Color(206, 7, 129),
+                0.0f, 190f,
+                Color(103, 216, 11)
+            )
+            graphics.paint = gp
+            // graphics.fillRect(0, 0, 400, 300); // debugging
+            ImageUtils.drawCenteredStringOutlined(
+                graphics,
+                context.i18nContext.get(I18nKeysData.Commands.Command.Friendship.NowUser(userName = newFriend.name)),
+                Rectangle(0, 100, 400, 110),
+                font
+            )
+            ImageUtils.drawCenteredStringOutlined(
+                graphics,
+                context.i18nContext.get(I18nKeysData.Commands.Command.Friendship.IsMy),
+                Rectangle(0, 120, 400, 130),
+                font
+            )
+            graphics.color = Color.MAGENTA
+            ImageUtils.drawCenteredStringOutlined(
+                graphics,
+                context.i18nContext.get(I18nKeysData.Commands.Command.Friendship.BestFriend),
+                Rectangle(0, 140, 400, 150),
+                font
+            )
+
+            val result = template.toByteArray(ImageFormatType.PNG)
+            context.reply(false) {
+                files += AttachedFile.fromData(result, "rip_amizade.png")
+            }
+        }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?>? {
+            val oldFriend = context.getUserAndMember(0)
+            val newFriend = context.getUserAndMember(1)
+            if (oldFriend == null || newFriend == null) {
+                context.explain()
+                return null
+            }
+            return mapOf(
+                options.oldFriend to oldFriend,
+                options.newFriend to newFriend
+            )
         }
     }
 }

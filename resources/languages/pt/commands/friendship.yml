@@ -1,0 +1,14 @@
+label: "amizade"
+description: "Avise que acabou a sua amizade com alguém de uma maneira simples e fácil!"
+
+options:
+  oldfriend:
+    text: "Quem deixou de ser seu amigo"
+  newfriend:
+    text: "Seu novo melhor amigo"
+
+friendWith: "A amizade com {userName}"
+ended: "acabou"
+nowUser: "Agora {userName}"
+isMy: "é o(a) meu(minha)"
+bestFriend: "melhor amigo(a)"
