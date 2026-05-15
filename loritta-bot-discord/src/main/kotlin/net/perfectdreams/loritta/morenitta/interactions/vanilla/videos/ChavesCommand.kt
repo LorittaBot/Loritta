@@ -14,11 +14,15 @@ import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
+import net.perfectdreams.loritta.morenitta.interactions.commands.LegacyMessageCommandContext
+import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaLegacyMessageCommandExecutor
 import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaSlashCommandExecutor
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.morenitta.interactions.commands.addFileData
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.ImageReference
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
 import java.util.*
 
@@ -31,7 +35,7 @@ class ChavesCommand(val client: GabrielaImageServerClient) : SlashCommandDeclara
         this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
         this.interactionContexts = listOf(InteractionContextType.GUILD, InteractionContextType.BOT_DM, InteractionContextType.PRIVATE_CHANNEL)
 
-        // enableLegacyMessageSupport = true
+        enableLegacyMessageSupport = true
 
         subcommand(I18N_PREFIX.Cocielo.Label, I18N_PREFIX.Cocielo.Description, UUID.fromString("d7fb8862-3e58-4b61-acdf-18b7aef5d237")) {
             this.alternativeLegacyAbsoluteCommandPaths.apply {
@@ -52,7 +56,7 @@ class ChavesCommand(val client: GabrielaImageServerClient) : SlashCommandDeclara
         }
     }
 
-    class ChavesCocieloExecutor(val client: GabrielaImageServerClient) : LorittaSlashCommandExecutor() {
+    class ChavesCocieloExecutor(val client: GabrielaImageServerClient) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         inner class CommandOptions : ApplicationCommandOptions() {
             // The description is replaced with "User, URL or Emote" so we don't really care that we are using "TodoFixThisData" here
             val friend1Image = imageReference("friend1")
@@ -106,9 +110,28 @@ class ChavesCommand(val client: GabrielaImageServerClient) : SlashCommandDeclara
                 addFileData("cocielo_chaves.mp4", result)
             }
         }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?>? {
+            val slots = (0 until 5).map { i -> args.getOrNull(i) ?: context.getImage(i)?.url }
+            if (slots.any { it == null }) {
+                context.explain()
+                return null
+            }
+
+            return mapOf(
+                options.friend1Image to ImageReference(slots[0]!!),
+                options.friend2Image to ImageReference(slots[1]!!),
+                options.friend3Image to ImageReference(slots[2]!!),
+                options.friend4Image to ImageReference(slots[3]!!),
+                options.friend5Image to ImageReference(slots[4]!!)
+            )
+        }
     }
 
-    class ChavesOpeningExecutor(val client: GabrielaImageServerClient) : LorittaSlashCommandExecutor() {
+    class ChavesOpeningExecutor(val client: GabrielaImageServerClient) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         inner class CommandOptions : ApplicationCommandOptions() {
             // The description is replaced with "User, URL or Emote" so we don't really care that we are using "TodoFixThisData" here
             val chiquinhaImage = imageReference("chiquinha")
@@ -192,6 +215,35 @@ class ChavesCommand(val client: GabrielaImageServerClient) : SlashCommandDeclara
             context.reply(false) {
                 files += FileUpload.fromData(result.inputStream(), "chaves_opening.mp4")
             }
+        }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?>? {
+            val imageSlots = (0 until 8).map { i -> args.getOrNull(i) ?: context.getImage(i)?.url }
+            if (imageSlots.any { it == null }) {
+                context.explain()
+                return null
+            }
+
+            val showName = args.drop(8).joinToString(" ")
+            if (showName.isBlank()) {
+                context.explain()
+                return null
+            }
+
+            return mapOf(
+                options.chiquinhaImage to ImageReference(imageSlots[0]!!),
+                options.girafalesImage to ImageReference(imageSlots[1]!!),
+                options.bruxaImage to ImageReference(imageSlots[2]!!),
+                options.quicoImage to ImageReference(imageSlots[3]!!),
+                options.florindaImage to ImageReference(imageSlots[4]!!),
+                options.madrugaImage to ImageReference(imageSlots[5]!!),
+                options.barrigaImage to ImageReference(imageSlots[6]!!),
+                options.chavesImage to ImageReference(imageSlots[7]!!),
+                options.showName to showName
+            )
         }
     }
 }
