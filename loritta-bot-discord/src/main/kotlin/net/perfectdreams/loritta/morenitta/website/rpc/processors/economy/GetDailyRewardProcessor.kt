@@ -173,10 +173,10 @@ class GetDailyRewardProcessor(val m: LorittaWebsite) : LorittaRpcProcessor {
                                             return@newSuspendedTransaction
                                         }
 
-                                        val reveryGuildId = 1150841346991591515L
-                                        val hasJoinedReverySponsor = mutualGuilds.any { it.id == reveryGuildId }
-                                        if (hasJoinedReverySponsor && LocalDateTime.of(2026, 2, 21, 0, 0, 0) > now.toLocalDateTime()) {
-                                            bestServerInfo = mutualGuilds.first { it.id == reveryGuildId }
+                                        val duneGuildId = 1434897282343374918L
+                                        val hasJoinedDuneSponsor = mutualGuilds.any { it.id == duneGuildId }
+                                        if (hasJoinedDuneSponsor && LocalDateTime.of(2026, 6, 16, 0, 0, 0) > now.toLocalDateTime()) {
+                                            bestServerInfo = mutualGuilds.first { it.id == duneGuildId }
 
                                             multipliedBy = 2.5
                                             sponsoredBy = bestServerInfo
