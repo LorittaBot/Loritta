@@ -101,10 +101,6 @@ class LegacyLorittaCommands(val m: LorittaWebsiteBackend) {
             m.images.commands.drawnMaskPlaca
         ),
         AdditionalCommandInfoConfig(
-            "DeusCommand",
-            m.images.commands.deus
-        ),
-        AdditionalCommandInfoConfig(
             "DeusesCommand",
             m.images.commands.deuses
         ),
@@ -141,10 +137,6 @@ class LegacyLorittaCommands(val m: LorittaWebsiteBackend) {
             m.images.commands.inverter
         ),
         AdditionalCommandInfoConfig(
-            "JoojCommand",
-            m.images.commands.jooj
-        ),
-        AdditionalCommandInfoConfig(
             "KnuxThrowCommand",
             m.images.commands.knuxThrow
         ),
@@ -173,10 +165,6 @@ class LegacyLorittaCommands(val m: LorittaWebsiteBackend) {
             m.images.commands.passingPaper
         ),
         AdditionalCommandInfoConfig(
-            "PerdaoCommand",
-            m.images.commands.perdao
-        ),
-        AdditionalCommandInfoConfig(
             "PerfeitoCommand",
             m.images.commands.perfeito
         ),
@@ -191,10 +179,6 @@ class LegacyLorittaCommands(val m: LorittaWebsiteBackend) {
         AdditionalCommandInfoConfig(
             "PrimeirasPalavrasCommand",
             m.images.commands.primeirasPalavras
-        ),
-        AdditionalCommandInfoConfig(
-            "OjjoCommand",
-            m.images.commands.ojjo
         ),
         AdditionalCommandInfoConfig(
             "QuadroCommand",
