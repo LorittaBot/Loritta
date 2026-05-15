@@ -311,6 +311,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
 
         // ===[ IMAGES ]==
         register(MemeCommand(loritta.gabrielaImageServerClient))
+        register(MemeCommand2())
         register(BRMemesCommand(loritta.gabrielaImageServerClient))
 
         // ===[ VIDEOS ]===

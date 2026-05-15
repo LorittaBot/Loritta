@@ -89,10 +89,6 @@ class LegacyLorittaCommands(val m: LorittaWebsiteBackend) {
             m.images.commands.demon
         ),
         AdditionalCommandInfoConfig(
-            "DiscordiaCommand",
-            m.images.commands.discordia
-        ),
-        AdditionalCommandInfoConfig(
             "DrakeCommand",
             m.images.commands.drake
         ),
@@ -171,10 +167,6 @@ class LegacyLorittaCommands(val m: LorittaWebsiteBackend) {
         AdditionalCommandInfoConfig(
             "ManiaTitleCardCommand",
             m.images.commands.maniaTitleCard
-        ),
-        AdditionalCommandInfoConfig(
-            "MorrePragaCommand",
-            m.images.commands.morrePraga
         ),
         AdditionalCommandInfoConfig(
             "PassingPaperCommand",
