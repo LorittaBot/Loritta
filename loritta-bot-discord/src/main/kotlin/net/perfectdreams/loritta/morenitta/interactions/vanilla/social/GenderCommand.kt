@@ -1,5 +1,8 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.social
 
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.entities.emoji.Emoji
+import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.Emotes
@@ -26,6 +29,7 @@ class GenderCommand: SlashCommandDeclarationWrapper {
             category = CommandCategory.SOCIAL,
             uniqueId = UUID.fromString("ee0cdf11-6e19-4264-a4af-51413454c34e")
         ) {
+            enableLegacyMessageSupport = true
             executor = GenderExecutor()
         }
 
@@ -40,22 +44,49 @@ class GenderCommand: SlashCommandDeclarationWrapper {
 
         override val options: Options = Options()
 
-        override suspend fun execute(
-            context: UnleashedContext,
-            args: SlashCommandArguments
-        ) {
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             if (context is LegacyMessageCommandContext) {
-                context.reply(ephemeral = true, "This command can only be used as a slash command!")
+                fun createGenderButton(
+                    context: UnleashedContext,
+                    gender: Gender,
+                    label: StringI18nData,
+                    buttonEmoji: Emoji
+                ) = context.loritta.interactivityManager.buttonForUser(
+                    context.user,
+                    false,
+                    ButtonStyle.PRIMARY,
+                    context.i18nContext.get(label),
+                    {
+                        emoji = buttonEmoji
+                    }
+                ) {
+                    setGender(it, gender)
+
+                    it.reply(false) {
+                        styled(
+                            it.i18nContext.get(I18N_PREFIX.SuccessfullyChanged),
+                            Emotes.LORI_PAT
+                        )
+                    }
+                }
+
+                context.reply(false) {
+                    embed {
+                        title = context.i18nContext.get(I18N_PREFIX.WhatAreYou)
+                        description = context.i18nContext.get(I18N_PREFIX.WhyShouldYouSelect)
+                    }
+
+                    actionRow(
+                        createGenderButton(context, Gender.MALE, I18N_PREFIX.Male, Emoji.fromCustom("male", 384048518853296128L, false)),
+                        createGenderButton(context, Gender.FEMALE, I18N_PREFIX.Female, Emoji.fromCustom("female", 384048518337265665L, false)),
+                        createGenderButton(context, Gender.UNKNOWN, I18N_PREFIX.Unknown, Emoji.fromUnicode("❓"))
+                    )
+                }
                 return
             }
 
-            val userSettings = context.loritta.pudding.users.getOrCreateUserProfile(UserId(context.user.idLong))
-                .getProfileSettings()
-
             val gender = Gender.valueOf(args[options.gender].uppercase())
-
-            if (userSettings.gender != gender)
-                userSettings.setGender(gender)
+            setGender(context, gender)
 
             context.reply(ephemeral = true) {
                 styled(
@@ -65,19 +96,23 @@ class GenderCommand: SlashCommandDeclarationWrapper {
             }
         }
 
+        private suspend fun setGender(context: UnleashedContext, gender: Gender) {
+            val userSettings = context.loritta.pudding.users.getOrCreateUserProfile(UserId(context.user.idLong))
+                .getProfileSettings()
+
+            if (userSettings.gender != gender)
+                userSettings.setGender(gender)
+        }
+
         override suspend fun convertToInteractionsArguments(
             context: LegacyMessageCommandContext,
             args: List<String>
-        ): Map<OptionReference<*>, Any?>? {
-            context.reply(ephemeral = true, "This command can only be used as as slash command!")
-            val choice = args.singleOrNull() ?: GENDER_NOT_SPECIFIED
-            return mapOf(options.gender to choice)
+        ): Map<OptionReference<*>, Any?> {
+            return mapOf(options.gender to "dummy")
         }
     }
 
     private companion object {
         val I18N_PREFIX = I18nKeysData.Commands.Command.Gender
-
-        const val GENDER_NOT_SPECIFIED = "none"
     }
 }

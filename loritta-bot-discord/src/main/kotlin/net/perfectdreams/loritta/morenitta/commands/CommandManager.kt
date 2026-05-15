@@ -93,7 +93,6 @@ class CommandManager(val loritta: LorittaBot) {
 		// =======[ SOCIAL ]======
 		commandMap.add(BackgroundCommand(loritta))
 //		commandMap.add(AfkCommand(loritta))
-		commandMap.add(GenderCommand(loritta))
 
 		// =======[ UTILS ]=======
 		commandMap.add(WikipediaCommand(loritta))

@@ -5,5 +5,7 @@ female: "Feminino"
 male: "Masculino"
 unknown: "Não-binário"
 successfullyChanged: "Gênero alterado com sucesso!"
+whatAreYou: "Então... você é o que?"
+whyShouldYouSelect: "Estou curiosa... você é o que? Um homem ou uma mulher... ou talvez nenhum dos dois!\n\nEu quero saber para que eu possa melhorar as minhas respostas á você, como nos comandos de ações!"
 options:
   gender: "Escolha um gênero para que eu possa melhorar minhas respostas quando me referir a você"
