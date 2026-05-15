@@ -48,7 +48,6 @@ class CommandManager(val loritta: LorittaBot) {
 
 	init {
 		commandMap.add(MagicBallCommand(loritta))
-		commandMap.add(NyanCatCommand(loritta))
 		// commandMap.add(InverterCommand(loritta))
 		// commandMap.add(SpinnerCommand(loritta))
 		commandMap.add(RazoesCommand(loritta))

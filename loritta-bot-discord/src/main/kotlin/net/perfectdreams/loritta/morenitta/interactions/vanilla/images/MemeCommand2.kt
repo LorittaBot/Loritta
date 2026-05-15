@@ -34,6 +34,7 @@ import net.perfectdreams.loritta.morenitta.utils.ImageUtils
 import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
 import net.perfectdreams.loritta.morenitta.utils.SeamCarver
 import net.perfectdreams.loritta.morenitta.utils.TretaNewsGenerator
+import net.perfectdreams.loritta.morenitta.utils.toBufferedImage
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import java.awt.Color
 import java.awt.Font
@@ -201,6 +202,14 @@ class MemeCommand2 : SlashCommandDeclarationWrapper {
             }
 
             executor = PerfectExecutor()
+        }
+
+        subcommand(I18nKeysData.Commands.Command.Nyan.Label, I18nKeysData.Commands.Command.Nyan.Description, UUID.fromString("93dea525-1cd9-4eea-82d7-171b5f7aee37")) {
+            alternativeLegacyAbsoluteCommandPaths.apply {
+                add("nyan")
+            }
+
+            executor = NyanExecutor()
         }
     }
 
@@ -741,6 +750,89 @@ class MemeCommand2 : SlashCommandDeclarationWrapper {
             return mapOf(
                 options.imageReference to context.getImageReferenceOrAttachment(0)
             )
+        }
+    }
+
+    class NyanExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        class Options : ApplicationCommandOptions() {
+            val text = optionalString("text", I18nKeysData.Commands.Command.Nyan.Options.Text.Text)
+        }
+
+        override val options = Options()
+
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            context.deferChannelMessage(false)
+
+            val text = args[options.text]
+            val isDog = text != null && text.replace(Regex("(.)\\1+"), "$1").equals("dog", ignoreCase = true)
+            val times = if (text != null) text.count { it == (if (isDog) 'o' else 'a') } else 0
+
+            val prefix = if (isDog) "dog" else "cat"
+            val suffix = if (isDog) "" else "_v2"
+            val left = (context.loritta.assets.loadImage("${prefix}_left$suffix.png", loadFromCache = false) as JVMImage).handle as BufferedImage
+            val right = (context.loritta.assets.loadImage("${prefix}_right$suffix.png", loadFromCache = false) as JVMImage).handle as BufferedImage
+            val middle = (context.loritta.assets.loadImage("${prefix}_middle$suffix.png", loadFromCache = false) as JVMImage).handle as BufferedImage
+
+            val canvas = BufferedImage(
+                left.width + right.width + middle.width * times,
+                left.height,
+                BufferedImage.TYPE_INT_ARGB
+            )
+            val canvasGraphics = canvas.graphics
+
+            var x = 0
+            canvasGraphics.drawImage(left, x, 0, null)
+            x += left.width
+
+            // Usar a cor rosa-meio-roxo que o Nyan Cat tem
+            val dotColor = if (isDog) Color(243, 254, 255) else Color(255, 51, 153)
+            repeat(times) {
+                // Nós iremos "clonar" o nosso cat middle para colocar alguns pontinhos rosas aleatórios :)
+                val middleCopy = BufferedImage(middle.width, middle.height, BufferedImage.TYPE_INT_ARGB)
+                val mcGraphics = middleCopy.graphics
+                mcGraphics.drawImage(middle, 0, 0, null)
+                mcGraphics.color = dotColor
+
+                val randomDots = LorittaBot.RANDOM.nextInt(0, 6)
+                val invalidX = mutableListOf<Int>()
+                val invalidY = mutableListOf<Int>()
+                for (i in 0..randomDots) {
+                    val randomX = LorittaBot.RANDOM.nextInt(0, 2)
+                    val randomY = LorittaBot.RANDOM.nextInt(2, 16)
+                    if (randomX in invalidX || (randomX - 1) in invalidX || (randomX + 1) in invalidX) continue
+                    if (randomY in invalidY || (randomY - 1) in invalidY || (randomY + 1) in invalidY) continue
+                    // Sabia que width/height 0 = 1px? Agora você sabe!
+                    // Faça um retângulo 1x1 na nossa coordenada aleatória
+                    mcGraphics.drawRect(randomX, randomY, 0, 0)
+                    invalidX += randomX
+                    invalidY += randomY
+                }
+
+                // E depois desenhe nossa imagem modificada na imagem original
+                canvasGraphics.drawImage(middleCopy, x, 0, null)
+                x += middleCopy.width
+            }
+
+            canvasGraphics.drawImage(right, x, 0, null)
+
+            if (isDog) {
+                // Desenhar as orelhas do dog
+                val dogEars = (context.loritta.assets.loadImage("dog_ears.png", loadFromCache = false) as JVMImage).handle as BufferedImage
+                canvasGraphics.drawImage(dogEars, canvas.width - 21, 5, null)
+            }
+
+            val scaled = canvas.getScaledInstance(canvas.width * 4, canvas.height * 4, BufferedImage.SCALE_AREA_AVERAGING).toBufferedImage()
+            val result = scaled.toByteArray(ImageFormatType.PNG)
+            context.reply(false) {
+                files += AttachedFile.fromData(result, "nyan_cat.png")
+            }
+        }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?> {
+            return mapOf(options.text to args.singleOrNull())
         }
     }
 

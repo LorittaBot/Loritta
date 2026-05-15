@@ -1,1 +1,6 @@
+label: "nyan"
 description: "Nyan Cat, diretamente no seu servidor! E você pode pedir o tamanho do Nyan Cat igual quando você pede algum sanduíche no Subway!"
+
+options:
+  text:
+    text: "O tamanho do Nyan Cat (use \"caaaaat\" para um maior, ou \"dog\" para um cachorro)"
