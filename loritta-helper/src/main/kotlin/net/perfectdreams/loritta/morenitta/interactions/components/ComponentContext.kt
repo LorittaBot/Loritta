@@ -56,6 +56,9 @@ class ComponentContext(
             Component.Type.CONTAINER -> TODO()
             Component.Type.LABEL -> TODO()
             Component.Type.FILE_UPLOAD -> TODO()
+            Component.Type.RADIO_GROUP -> TODO()
+            Component.Type.CHECKBOX_GROUP -> TODO()
+            Component.Type.CHECKBOX -> TODO()
         }
     }
 
