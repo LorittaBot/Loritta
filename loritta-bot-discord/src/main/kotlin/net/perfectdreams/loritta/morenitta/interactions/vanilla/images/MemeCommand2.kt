@@ -211,6 +211,14 @@ class MemeCommand2 : SlashCommandDeclarationWrapper {
 
             executor = NyanExecutor()
         }
+
+        subcommand(I18nKeysData.Commands.Command.Gods.Label, I18nKeysData.Commands.Command.Gods.Description, UUID.fromString("44adebd1-e4e1-4c4f-8851-1fcff78dd97a")) {
+            alternativeLegacyAbsoluteCommandPaths.apply {
+                add("deuses")
+            }
+
+            executor = GodsExecutor()
+        }
     }
 
     class DiePlagueExecutor : UnleashedLocalSingleImageCommandBase(
@@ -864,6 +872,50 @@ class MemeCommand2 : SlashCommandDeclarationWrapper {
             return mapOf(
                 options.imageReference to context.getImageReferenceOrAttachment(0)
             )
+        }
+    }
+
+    class GodsExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        class Options : ApplicationCommandOptions() {
+            val text = string("text", I18nKeysData.Commands.Command.Gods.Options.Text.Text)
+        }
+
+        override val options = Options()
+
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            context.deferChannelMessage(false)
+
+            val text = args[options.text]
+            val template = (context.loritta.assets.loadImage("deuses.png", loadFromCache = false) as JVMImage).handle as BufferedImage
+
+            // Vamos criar o nosso tempalte
+            val image = BufferedImage(630, 830, BufferedImage.TYPE_INT_ARGB)
+            val graphics = image.createGraphics().apply { enableFontAntiAliasing() }
+            graphics.color = Color.WHITE
+            graphics.fillRect(0, 0, 630, 830)
+            graphics.color = Color.BLACK
+            graphics.drawImage(template, 0, 200, null)
+
+            val font = Font.createFont(Font.TRUETYPE_FONT, File(LorittaBot.ASSETS, "mavenpro-bold.ttf")).deriveFont(42F)
+            graphics.font = font
+            ImageUtils.drawTextWrapSpaces(context.loritta, text, 2, 40, 630, 9999, graphics.fontMetrics, graphics)
+
+            val result = image.toByteArray(ImageFormatType.PNG)
+            context.reply(false) {
+                files += AttachedFile.fromData(result, "deuses.png")
+            }
+        }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?>? {
+            val text = args.joinToString(" ")
+            if (text.isBlank()) {
+                context.explain()
+                return null
+            }
+            return mapOf(options.text to text)
         }
     }
 }

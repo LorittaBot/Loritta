@@ -1,0 +1,6 @@
+label: "deuses"
+description: "Caralho, olha os Deuses mano!"
+
+options:
+  text:
+    text: "O texto que ficará acima dos Deuses"
