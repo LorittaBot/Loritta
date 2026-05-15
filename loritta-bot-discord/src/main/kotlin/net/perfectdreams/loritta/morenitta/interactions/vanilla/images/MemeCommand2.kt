@@ -13,6 +13,10 @@ import net.perfectdreams.loritta.common.utils.extensions.enableFontAntiAliasing
 import net.perfectdreams.loritta.common.utils.image.JVMImage
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.gifs.DemonGIF
+import net.perfectdreams.loritta.morenitta.gifs.GifSequenceWriter
+import net.perfectdreams.loritta.morenitta.gifs.GumballGIF
+import net.perfectdreams.loritta.morenitta.gifs.SwingGIF
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.LegacyMessageCommandContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaLegacyMessageCommandExecutor
@@ -24,8 +28,10 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.ImageRe
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.base.UnleashedLocalSingleImageCommandBase
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.base.UnleashedLocalSingleImageGifCommandBase
 import net.perfectdreams.loritta.morenitta.utils.ImageUtils
 import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
+import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import java.awt.Color
 import java.awt.Font
 import java.awt.Rectangle
@@ -34,6 +40,7 @@ import java.awt.image.AffineTransformOp
 import java.awt.image.BufferedImage
 import java.io.File
 import java.util.*
+import javax.imageio.stream.FileImageOutputStream
 import kotlin.math.max
 
 class MemeCommand2 : SlashCommandDeclarationWrapper {
@@ -110,6 +117,41 @@ class MemeCommand2 : SlashCommandDeclarationWrapper {
             }
 
             executor = LaranjoExecutor()
+        }
+
+        subcommand(I18nKeysData.Commands.Command.Gumball.Label, I18nKeysData.Commands.Command.Gumball.Description, UUID.fromString("252207b0-e499-446a-ab07-732f72458fc1")) {
+            alternativeLegacyAbsoluteCommandPaths.apply {
+                add("gumball")
+            }
+
+            executor = GumballExecutor()
+        }
+
+        subcommand(I18nKeysData.Commands.Command.Demon.Label, I18nKeysData.Commands.Command.Demon.Description, UUID.fromString("26aea47b-b60a-4767-a4fa-fadb7f99c314")) {
+            alternativeLegacyAbsoluteCommandPaths.apply {
+                add("demon")
+                add("demonio")
+                add("demônio")
+                add("demónio")
+            }
+
+            executor = DemonExecutor()
+        }
+
+        subcommand(I18nKeysData.Commands.Command.Triggered.Label, I18nKeysData.Commands.Command.Triggered.Description, UUID.fromString("0b307460-56b2-4f36-87cc-92503c0b9dd8")) {
+            alternativeLegacyAbsoluteCommandPaths.apply {
+                add("triggered")
+            }
+
+            executor = TriggeredExecutor()
+        }
+
+        subcommand(I18nKeysData.Commands.Command.Swing.Label, I18nKeysData.Commands.Command.Swing.Description, UUID.fromString("ed5c99b8-cbac-4a83-b45e-94502bbd35d3")) {
+            alternativeLegacyAbsoluteCommandPaths.apply {
+                add("swing")
+            }
+
+            executor = SwingExecutor()
         }
     }
 
@@ -390,6 +432,117 @@ class MemeCommand2 : SlashCommandDeclarationWrapper {
             }
 
             return mapOf(options.text to text)
+        }
+    }
+
+    class GumballExecutor : UnleashedLocalSingleImageGifCommandBase(
+        "gumball.gif",
+        { context, contextImage ->
+            GumballGIF.getGIF(
+                contextImage,
+                context.i18nContext.get(I18nKeysData.Commands.Command.Gumball.Subtitle1),
+                context.i18nContext.get(I18nKeysData.Commands.Command.Gumball.Subtitle2)
+            )
+        }
+    )
+
+    class DemonExecutor : UnleashedLocalSingleImageGifCommandBase(
+        "demon.gif",
+        { context, contextImage ->
+            DemonGIF.getGIF(contextImage, context.config.localeId)
+        }
+    )
+
+    class TriggeredExecutor : UnleashedLocalSingleImageGifCommandBase(
+        "triggered.gif",
+        { _, contextImage ->
+            val triggeredLabel = readImage(File(LorittaBot.ASSETS, "triggered.png"))
+
+            val subtractW = contextImage.width / 16
+            val subtractH = contextImage.height / 16
+            val inputWidth = contextImage.width - subtractW
+            val inputHeight = contextImage.height - subtractH
+
+            val labelHeight = triggeredLabel.height * inputWidth / triggeredLabel.width
+            val scaledTriggeredLabel = triggeredLabel.getScaledInstance(inputWidth, labelHeight, BufferedImage.SCALE_SMOOTH)
+
+            val base = BufferedImage(inputWidth, inputHeight + scaledTriggeredLabel.getHeight(null), BufferedImage.TYPE_INT_ARGB)
+            val tint = BufferedImage(base.width, inputHeight, BufferedImage.TYPE_INT_ARGB)
+
+            val tintGraphics = tint.graphics
+            tintGraphics.color = Color(255, 0, 0, 60)
+            tintGraphics.fillRect(0, 0, tint.width, tint.height)
+
+            val outputFile = File(LorittaBot.TEMP + "triggered-" + System.currentTimeMillis() + ".gif")
+            val output = FileImageOutputStream(outputFile)
+            val writer = GifSequenceWriter(output, BufferedImage.TYPE_INT_ARGB, 4, true)
+
+            val graphics = base.graphics
+            for (i in 0..5) {
+                val offsetX = LorittaBot.RANDOM.nextInt(0, subtractW)
+                val offsetY = LorittaBot.RANDOM.nextInt(0, subtractH)
+
+                val subimage = contextImage.getSubimage(offsetX, offsetY, inputWidth, inputHeight)
+
+                graphics.drawImage(subimage, 0, 0, null)
+                graphics.drawImage(tint, 0, 0, null)
+                graphics.drawImage(scaledTriggeredLabel, 0, inputHeight, null)
+                writer.writeToSequence(base)
+            }
+
+            writer.close()
+            output.close()
+
+            outputFile
+        }
+    )
+
+    class SwingExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        class Options : ApplicationCommandOptions() {
+            val victim = imageReferenceOrAttachment("victim", I18nKeysData.Commands.Command.Swing.Options.Victim.Text)
+            val attacker = imageReferenceOrAttachment("attacker", I18nKeysData.Commands.Command.Swing.Options.Attacker.Text)
+        }
+
+        override val options = Options()
+
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            context.deferChannelMessage(false)
+
+            val victimUrl = args[options.victim].get(context)
+            val attackerOption = args[options.attacker]
+            // Attacker defaults to the user invoking the command if neither field was provided
+            val attackerUrl = if (attackerOption.attachment == null && attackerOption.dataValue == null)
+                context.user.effectiveAvatarUrl
+            else
+                attackerOption.get(context)
+
+            val victimImage = LorittaUtils.downloadImage(context.loritta, victimUrl) ?: context.fail(false) {
+                styled(context.i18nContext.get(I18nKeysData.Commands.NoValidImageFound), Emotes.LoriSob)
+            }
+            val attackerImage = LorittaUtils.downloadImage(context.loritta, attackerUrl) ?: context.fail(false) {
+                styled(context.i18nContext.get(I18nKeysData.Commands.NoValidImageFound), Emotes.LoriSob)
+            }
+
+            val gifFile = SwingGIF.getGIF(victimImage, attackerImage)
+            try {
+                context.loritta.gifsicle.optimizeGIF(gifFile)
+                val bytes = gifFile.readBytes()
+                context.reply(false) {
+                    files += AttachedFile.fromData(bytes, "swing.gif")
+                }
+            } finally {
+                gifFile.delete()
+            }
+        }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?> {
+            return mapOf(
+                options.victim to ImageReferenceOrAttachment(args.getOrNull(0), context.getImage(0)),
+                options.attacker to ImageReferenceOrAttachment(args.getOrNull(1), context.getImage(1))
+            )
         }
     }
 }

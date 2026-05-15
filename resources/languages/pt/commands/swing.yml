@@ -1,0 +1,8 @@
+label: "marreta"
+description: "Acerte alguém com uma marreta!\n\nAnimação original por CptNameless"
+
+options:
+  victim:
+    text: "Quem vai apanhar"
+  attacker:
+    text: "Quem vai bater (padrão: você)"

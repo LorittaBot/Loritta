@@ -4,7 +4,6 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.ImageUtils
 import net.perfectdreams.loritta.common.utils.LorittaImage
 import net.perfectdreams.loritta.morenitta.utils.enableFontAntiAliasing
-import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import java.awt.Color
 import java.awt.Font
@@ -14,7 +13,7 @@ import java.io.File
 import javax.imageio.stream.FileImageOutputStream
 
 object GumballGIF {
-	suspend fun getGIF(_toUse: BufferedImage, locale: BaseLocale): File {
+	suspend fun getGIF(_toUse: BufferedImage, subtitle1: String, subtitle2: String): File {
 		var toUse = BufferedImage(_toUse.width, _toUse.height, BufferedImage.TYPE_INT_ARGB)
 		toUse.graphics.drawImage(_toUse, 0, 0, null)
 		toUse.graphics.dispose()
@@ -73,7 +72,7 @@ object GumballGIF {
 				if (i in 0..27) {
 					ImageUtils.drawCenteredStringOutlined(
 							graphics,
-							locale["commands.command.gumballliftup.subtitle1"],
+							subtitle1,
 							subtitles,
 							font
 					)
@@ -81,7 +80,7 @@ object GumballGIF {
 				if (i in 28..45) {
 					ImageUtils.drawCenteredStringOutlined(
 							graphics,
-							locale["commands.command.gumballliftup.subtitle2"],
+							subtitle2,
 							subtitles,
 							font
 					)
