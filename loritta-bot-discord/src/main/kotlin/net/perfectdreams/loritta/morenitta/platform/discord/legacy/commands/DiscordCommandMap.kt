@@ -24,10 +24,6 @@ import net.perfectdreams.loritta.morenitta.commands.vanilla.images.AsciiCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.images.EmojiMashupCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.images.MorrePragaCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.magic.LoriToolsCommand
-import net.perfectdreams.loritta.morenitta.commands.vanilla.misc.DiscordBotListStatusCommand
-import net.perfectdreams.loritta.morenitta.commands.vanilla.misc.DiscordBotListTopCommand
-import net.perfectdreams.loritta.morenitta.commands.vanilla.misc.DiscordBotListTopLocalCommand
-import net.perfectdreams.loritta.morenitta.commands.vanilla.social.*
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
@@ -62,10 +58,6 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 			RenameEmojiCommand(loritta),
 
 			// ===[ MISC ]===
-//			DiscordBotListCommand(loritta),
-			DiscordBotListStatusCommand(loritta),
-			DiscordBotListTopCommand(loritta),
-			DiscordBotListTopLocalCommand(loritta),
 
 			// ===[ DISCORD ]===
 			// ChannelInfoCommand(loritta),

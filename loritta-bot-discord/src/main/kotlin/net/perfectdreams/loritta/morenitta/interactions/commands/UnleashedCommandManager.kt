@@ -52,7 +52,7 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`.*
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`.text.TextTransformCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.*
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.minecraft.declaration.MinecraftCommand
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.misc.DiscordBotListCommand
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.misc.VoteCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.misc.LanguageCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.*
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.reactionevents.EventCommand
@@ -355,7 +355,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
 
         // ===[ MISCELLANEOUS ]===
         register(LanguageCommand(loritta))
-        register(DiscordBotListCommand(loritta))
+        register(VoteCommand(loritta))
 
         // ===[ UTILS ]===
         register(AnagramCommand())

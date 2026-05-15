@@ -23,7 +23,6 @@ import net.perfectdreams.loritta.morenitta.commands.vanilla.`fun`.*
 import net.perfectdreams.loritta.morenitta.commands.vanilla.images.*
 import net.perfectdreams.loritta.morenitta.commands.vanilla.magic.*
 import net.perfectdreams.loritta.morenitta.commands.vanilla.misc.PatreonCommand
-import net.perfectdreams.loritta.morenitta.commands.vanilla.social.*
 import net.perfectdreams.loritta.morenitta.commands.vanilla.undertale.UndertaleBattleCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.undertale.UndertaleBoxCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.utils.*

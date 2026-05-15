@@ -1,3 +1,36 @@
+label: "votar"
+description: "Mostra informações sobre como me ajudar no Discord Bot List!"
+info:
+  label: "info"
+  description: "Mostra informações sobre como me ajudar no Discord Bot List!"
+  message: "Você quer me ajudar a crescer e ser um bot melhor? Então vote em mim no Discord Bot List! {dblLogo}\n\nCada voto ajuda a me divulgar para outras pessoas no Discord Bot List, e quanto mais pessoas me usam, mais popular eu ficarei!\n\nE é claro, se você votar você irá receber uma badge especial no `{serverPrefix}perfil`! Legal, né? Que tal você se juntar a todas as outras pessoas que votaram também e que me ajudaram a crescer? <:lori_blobnom:412582340272062464>\n\n{dblUrl}\n\nSua badge irá aparecer em no máximo até 60 segundos após votar! \U0001f609"
+status:
+  label: "status"
+  description: "Mostra quantas vezes você (ou outro usuário) já votou em mim no Discord Bot List"
+  options:
+    user:
+      text: "O usuário que você deseja ver os votos dele"
+  youVoted: "Você já votou em mim {votes, plural, one {# vez} other {# vezes}} no Discord Bot List!"
+  userVoted: "{userMention} já votou em mim {votes, plural, one {# vez} other {# vezes}} no Discord Bot List!"
+top:
+  label: "top"
+  description: "Mostra o ranking de pessoas que mais votaram em mim no Discord Bot List"
+  votes: "{votes, plural, one {# voto} other {# votos}}"
+  globalRanking: "Ranking Global"
+  global:
+    label: "global"
+    description: "Mostra o ranking global de pessoas que mais votaram em mim"
+    options:
+      page:
+        text: "A página do ranking que você deseja ver"
+  local:
+    label: "local"
+    description: "Mostra o ranking de pessoas neste servidor que mais votaram em mim"
+    options:
+      page:
+        text: "A página do ranking que você deseja ver"
+
+
 notification:
   topgg:
     title: "Vote na Loritta no top.gg!"
