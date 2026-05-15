@@ -175,6 +175,15 @@ class MemeCommand2 : SlashCommandDeclarationWrapper {
 
             executor = TretaNewsExecutor()
         }
+
+        subcommand(I18nKeysData.Commands.Command.Firstwords.Label, I18nKeysData.Commands.Command.Firstwords.Description, UUID.fromString("312c93b7-f5c3-45b1-a207-92dd58fc8042")) {
+            alternativeLegacyAbsoluteCommandPaths.apply {
+                add("firstwords")
+                add("primeiraspalavras")
+            }
+
+            executor = FirstWordsExecutor()
+        }
     }
 
     class DiePlagueExecutor : UnleashedLocalSingleImageCommandBase(
@@ -639,6 +648,48 @@ class MemeCommand2 : SlashCommandDeclarationWrapper {
                 options.user1 to user1,
                 options.user2 to user2
             )
+        }
+    }
+
+    class FirstWordsExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        class Options : ApplicationCommandOptions() {
+            val text = string("text", I18nKeysData.Commands.Command.Firstwords.Options.Text.Text)
+        }
+
+        override val options = Options()
+
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            context.deferChannelMessage(false)
+
+            val text = args[options.text]
+            val template = (context.loritta.assets.loadImage("tirinha_baby.png", loadFromCache = false) as JVMImage).handle as BufferedImage
+
+            val graphics = template.createGraphics().apply { enableFontAntiAliasing() }
+            graphics.color = Color(0, 0, 0, 255)
+            graphics.font = Font("Arial", Font.BOLD, 32)
+
+            val firstChar = text[0]
+            val babbling = "$firstChar... $firstChar..."
+
+            ImageUtils.drawTextWrap(context.loritta, babbling, 4, 5 + graphics.font.size, 236, 0, graphics.fontMetrics, graphics)
+            ImageUtils.drawTextWrapSpaces(context.loritta, text, 4, 277 + graphics.font.size, 342, 0, graphics.fontMetrics, graphics)
+
+            val result = template.toByteArray(ImageFormatType.PNG)
+            context.reply(false) {
+                files += AttachedFile.fromData(result, "tirinha_baby.png")
+            }
+        }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?>? {
+            val text = args.joinToString(" ")
+            if (text.isBlank()) {
+                context.explain()
+                return null
+            }
+            return mapOf(options.text to text)
         }
     }
 }

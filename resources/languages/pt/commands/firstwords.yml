@@ -1,0 +1,6 @@
+label: "primeiraspalavras"
+description: "Ai meu deus... as primeiras palavras do bebê!"
+
+options:
+  text:
+    text: "As primeiras palavras do bebê"
