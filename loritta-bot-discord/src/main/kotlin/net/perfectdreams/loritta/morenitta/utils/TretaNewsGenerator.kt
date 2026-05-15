@@ -420,7 +420,7 @@ object TretaNewsGenerator {
 				"https://yt3.ggpht.com/-bIkhJe7-vdk/AAAAAAAAAAI/AAAAAAAAAAA/m5AyW98M-CY/s176-c-k-no-mo-rj-c0xffffff/photo.jpg")
 	}
 
-	fun generate(loritta: LorittaBot, guild: Guild, usr1: User, usr2: User): GeneratedTretaNews {
+	fun generate(loritta: LorittaBot, guild: Guild?, usr1: User, usr2: User): GeneratedTretaNews {
 		val randomYt = ArrayList(TretaNewsGenerator.randomYt)
 
 		val str1 = usr1.name.stripCodeMarks()
@@ -428,9 +428,11 @@ object TretaNewsGenerator {
 		randomYt.add(str1)
 		randomYt.add(str2)
 
-		for (member in guild.members) {
-			if (member.onlineStatus != OnlineStatus.OFFLINE) {
-				randomYt.add(member.effectiveName)
+		if (guild != null) {
+			for (member in guild.members) {
+				if (member.onlineStatus != OnlineStatus.OFFLINE) {
+					randomYt.add(member.effectiveName)
+				}
 			}
 		}
 

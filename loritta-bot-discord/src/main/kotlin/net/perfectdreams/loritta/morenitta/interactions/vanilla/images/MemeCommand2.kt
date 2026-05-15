@@ -33,6 +33,7 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.base.Unle
 import net.perfectdreams.loritta.morenitta.utils.ImageUtils
 import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
 import net.perfectdreams.loritta.morenitta.utils.SeamCarver
+import net.perfectdreams.loritta.morenitta.utils.TretaNewsGenerator
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import java.awt.Color
 import java.awt.Font
@@ -165,6 +166,14 @@ class MemeCommand2 : SlashCommandDeclarationWrapper {
             }
 
             executor = ContentAwareScaleExecutor()
+        }
+
+        subcommand(I18nKeysData.Commands.Command.Tretanews.Label, I18nKeysData.Commands.Command.Tretanews.Description, UUID.fromString("7ab06852-8886-4b9c-95a4-1a4349e48c81")) {
+            alternativeLegacyAbsoluteCommandPaths.apply {
+                add("tretanews")
+            }
+
+            executor = TretaNewsExecutor()
         }
     }
 
@@ -575,4 +584,61 @@ class MemeCommand2 : SlashCommandDeclarationWrapper {
             newImage.toByteArray(ImageFormatType.PNG)
         }
     )
+
+    class TretaNewsExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        class Options : ApplicationCommandOptions() {
+            val user1 = user("user1", I18nKeysData.Commands.Command.Tretanews.Options.User1.Text)
+            val user2 = user("user2", I18nKeysData.Commands.Command.Tretanews.Options.User2.Text)
+        }
+
+        override val options = Options()
+
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            context.deferChannelMessage(false)
+
+            val user1 = args[options.user1].user
+            val user2 = args[options.user2].user
+
+            val base = TretaNewsGenerator.generate(context.loritta, context.guildOrNull, user1, user2)
+            val imageBytes = base.image.toByteArray(ImageFormatType.PNG)
+
+            context.reply(false) {
+                styled(
+                    context.i18nContext.get(I18nKeysData.Commands.Command.Tretanews.Intro),
+                    "<:fluffy:372454445721845761>"
+                )
+                styled("`${base.title}`")
+                styled(
+                    context.i18nContext.get(
+                        I18nKeysData.Commands.Command.Tretanews.Stats(
+                            views = base.views,
+                            viewsLabel = context.i18nContext.get(I18nKeysData.Commands.Command.Tretanews.Views),
+                            likes = base.likes,
+                            likesLabel = context.i18nContext.get(I18nKeysData.Commands.Command.Tretanews.Likes),
+                            dislikes = base.dislikes,
+                            dislikesLabel = context.i18nContext.get(I18nKeysData.Commands.Command.Tretanews.Dislikes),
+                        )
+                    ),
+                    "📈"
+                )
+                files += AttachedFile.fromData(imageBytes, "tretanews.png")
+            }
+        }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?>? {
+            val user1 = context.getUserAndMember(0)
+            val user2 = context.getUserAndMember(1)
+            if (user1 == null || user2 == null) {
+                context.explain()
+                return null
+            }
+            return mapOf(
+                options.user1 to user1,
+                options.user2 to user2
+            )
+        }
+    }
 }

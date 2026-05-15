@@ -1,0 +1,14 @@
+label: "tretanews"
+description: "VOOOOOOOCÊ ESTÁ ASSISTINDO TRETA NEWS ENTÃO VAMOS DIRETO PARA AS NOTÍCIAS"
+
+options:
+  user1:
+    text: "A primeira pessoa envolvida na treta"
+  user2:
+    text: "A segunda pessoa envolvida na treta"
+
+intro: "VOOOOOOCÊ ESTÁ ASSISTINDO TRETA NEWS E VAMOS DIRETO PARA AS NOTÍCIAAAAAAAAS!"
+stats: "📺 `{views}` **{viewsLabel}**, 😍 `{likes}` **{likesLabel}**, 😠 `{dislikes}` **{dislikesLabel}**"
+views: "Visualizações"
+likes: "Gostei"
+dislikes: "Não Gostei"
