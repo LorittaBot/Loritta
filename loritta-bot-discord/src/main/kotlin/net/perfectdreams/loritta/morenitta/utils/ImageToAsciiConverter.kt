@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.morenitta.commands.vanilla.images
+package net.perfectdreams.loritta.morenitta.utils
 
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import java.awt.Color

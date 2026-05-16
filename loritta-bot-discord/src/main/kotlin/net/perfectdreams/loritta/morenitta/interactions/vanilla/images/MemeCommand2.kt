@@ -31,6 +31,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.base.UnleashedLocalSingleImageCommandBase
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.base.UnleashedLocalSingleImageGifCommandBase
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.base.UnleashedSingleImageOptions
+import net.perfectdreams.loritta.morenitta.utils.ImageToAsciiConverter
 import net.perfectdreams.loritta.morenitta.utils.ImageUtils
 import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
 import net.perfectdreams.loritta.morenitta.utils.makeRoundedCorners
@@ -273,6 +274,18 @@ class MemeCommand2 : SlashCommandDeclarationWrapper {
             }
 
             executor = GangueExecutor()
+        }
+
+        subcommand(I18nKeysData.Commands.Command.Ascii.Label, I18nKeysData.Commands.Command.Ascii.Description, UUID.fromString("0920936d-c9cd-4cff-b82d-d404ccc40a20")) {
+            alternativeLegacyAbsoluteCommandPaths.apply {
+                add("ascii")
+                add("asciiart")
+                add("img2ascii")
+                add("img2asciiart")
+                add("image2ascii")
+            }
+
+            executor = AsciiExecutor()
         }
     }
 
@@ -1349,6 +1362,50 @@ class MemeCommand2 : SlashCommandDeclarationWrapper {
                 options.friend3 to context.getImageReferenceOrAttachment(2),
                 options.friend4 to context.getImageReferenceOrAttachment(3),
                 options.friend5 to context.getImageReferenceOrAttachment(4)
+            )
+        }
+    }
+
+    class AsciiExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        class Options : ApplicationCommandOptions() {
+            val imageReference = imageReferenceOrAttachment("image", TodoFixThisData)
+            val colorize = optionalBoolean("colorize", I18nKeysData.Commands.Command.Ascii.Options.Colorize.Text)
+            val dither = optionalBoolean("dither", I18nKeysData.Commands.Command.Ascii.Options.Dither.Text)
+        }
+
+        override val options = Options()
+
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            context.deferChannelMessage(false)
+
+            val imageUrl = args[options.imageReference].get(context)
+            val contextImage = LorittaUtils.downloadImage(context.loritta, imageUrl) ?: context.fail(false) {
+                styled(context.i18nContext.get(I18nKeysData.Commands.NoValidImageFound), Emotes.LoriSob)
+            }
+
+            val asciiOptions = buildList {
+                if (args[options.colorize] == true) add(ImageToAsciiConverter.AsciiOptions.COLORIZE)
+                if (args[options.dither] == true) add(ImageToAsciiConverter.AsciiOptions.DITHER)
+            }
+
+            val converter = ImageToAsciiConverter(context.loritta, *asciiOptions.toTypedArray())
+            val newImage = converter.imgToAsciiImg(contextImage)
+
+            val result = newImage.toByteArray(ImageFormatType.PNG)
+            context.reply(false) {
+                files += AttachedFile.fromData(result, "asciiart.png")
+            }
+        }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?> {
+            val flags = args.drop(1).map { it.lowercase() }
+            return mapOf(
+                options.imageReference to context.getImageReferenceOrAttachment(0),
+                options.colorize to ("colorize" in flags),
+                options.dither to ("dither" in flags)
             )
         }
     }
