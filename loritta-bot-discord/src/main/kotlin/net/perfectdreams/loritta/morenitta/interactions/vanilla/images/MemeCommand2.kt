@@ -33,8 +33,10 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.base.Unle
 import net.perfectdreams.loritta.morenitta.utils.ImageUtils
 import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
 import net.perfectdreams.loritta.morenitta.utils.ImageFormat
+import net.perfectdreams.loritta.morenitta.utils.EmojiMasher
 import net.perfectdreams.loritta.morenitta.utils.SeamCarver
 import net.perfectdreams.loritta.morenitta.utils.TretaNewsGenerator
+import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import net.perfectdreams.loritta.morenitta.utils.extensions.getEffectiveAvatarUrl
 import net.perfectdreams.loritta.morenitta.utils.toBufferedImage
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
@@ -243,6 +245,19 @@ class MemeCommand2 : SlashCommandDeclarationWrapper {
             }
 
             executor = ReasonsExecutor()
+        }
+
+        subcommand(I18nKeysData.Commands.Command.Emojimashup.Label, I18nKeysData.Commands.Command.Emojimashup.Description, UUID.fromString("5b3e6729-c492-4886-bc81-2c1eb4072265")) {
+            alternativeLegacyAbsoluteCommandPaths.apply {
+                add("emojimashup")
+                add("emojismashup")
+                add("mashupemoji")
+                add("mashupemojis")
+                add("misturaremojis")
+                add("misturaremoji")
+            }
+
+            executor = EmojiMashupExecutor()
         }
     }
 
@@ -1164,6 +1179,85 @@ class MemeCommand2 : SlashCommandDeclarationWrapper {
                 }
                 return rgb
             }
+        }
+    }
+
+    class EmojiMashupExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        class Options : ApplicationCommandOptions() {
+            val emoji1 = string("emoji1", I18nKeysData.Commands.Command.Emojimashup.Options.Emoji1.Text)
+            val emoji2 = string("emoji2", I18nKeysData.Commands.Command.Emojimashup.Options.Emoji2.Text)
+            val emoji3 = optionalString("emoji3", I18nKeysData.Commands.Command.Emojimashup.Options.Emoji3.Text)
+            val emoji4 = optionalString("emoji4", I18nKeysData.Commands.Command.Emojimashup.Options.Emoji4.Text)
+        }
+
+        override val options = Options()
+
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            context.deferChannelMessage(false)
+
+            val emojiMasher = EmojiMasher(File(context.loritta.config.loritta.folders.assets, "emoji_mashup"))
+
+            suspend fun resolve(arg: String): String? {
+                val unicode = try {
+                    LorittaUtils.toUnicode(arg.codePointAt(0)).substring(2)
+                } catch (e: Exception) {
+                    return null
+                }
+                return if (emojiMasher.isEmojiSupported(unicode)) unicode else null
+            }
+
+            suspend fun failInvalid(arg: String): Nothing = context.fail(false) {
+                if (arg.startsWith("<")) {
+                    styled(
+                        context.i18nContext.get(
+                            I18nKeysData.Commands.Command.Emojimashup.InvalidEmojiDiscord(emoji = arg.stripCodeMarks())
+                        ),
+                        Emotes.LoriSob
+                    )
+                } else {
+                    styled(
+                        context.i18nContext.get(
+                            I18nKeysData.Commands.Command.Emojimashup.InvalidEmoji(emoji = arg.stripCodeMarks())
+                        ),
+                        Emotes.LoriSob
+                    )
+                }
+            }
+
+            val emojiArg1 = args[options.emoji1]
+            val emojiArg2 = args[options.emoji2]
+            val emojiArg3 = args[options.emoji3]
+            val emojiArg4 = args[options.emoji4]
+
+            val emoji1Code = resolve(emojiArg1) ?: failInvalid(emojiArg1)
+            val emoji2Code = resolve(emojiArg2) ?: failInvalid(emojiArg2)
+            val emoji3Code = emojiArg3?.let { resolve(it) ?: failInvalid(it) }
+            val emoji4Code = emojiArg4?.let { resolve(it) ?: failInvalid(it) }
+
+            val image = emojiMasher.mashupEmojis(emoji1Code, emoji2Code, emoji3Code, emoji4Code)
+
+            val result = image.toByteArray(ImageFormatType.PNG)
+            context.reply(false) {
+                files += AttachedFile.fromData(result, "emoji_mashup.png")
+            }
+        }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?>? {
+            val emoji1 = args.getOrNull(0)
+            val emoji2 = args.getOrNull(1)
+            if (emoji1 == null || emoji2 == null) {
+                context.explain()
+                return null
+            }
+            return mapOf(
+                options.emoji1 to emoji1,
+                options.emoji2 to emoji2,
+                options.emoji3 to args.getOrNull(2),
+                options.emoji4 to args.getOrNull(3)
+            )
         }
     }
 }

@@ -21,7 +21,6 @@ import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.Renam
 import net.perfectdreams.loritta.morenitta.commands.vanilla.economy.*
 import net.perfectdreams.loritta.morenitta.commands.vanilla.`fun`.GiveawayCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.images.AsciiCommand
-import net.perfectdreams.loritta.morenitta.commands.vanilla.images.EmojiMashupCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.magic.LoriToolsCommand
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
@@ -100,7 +99,6 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 			AsciiCommand(loritta),
 			// AtendenteCommand(loritta),
 			// DrawnWordCommand(loritta),
-			EmojiMashupCommand(loritta)
 		)
 	}
 

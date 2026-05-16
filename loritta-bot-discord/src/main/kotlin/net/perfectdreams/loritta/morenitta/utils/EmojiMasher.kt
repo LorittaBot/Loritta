@@ -1,7 +1,6 @@
-package net.perfectdreams.loritta.morenitta.commands.vanilla.images
+package net.perfectdreams.loritta.morenitta.utils
 
 import com.github.salomonbrys.kotson.fromJson
-import net.perfectdreams.loritta.morenitta.utils.gson
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import java.awt.image.BufferedImage
 import java.io.File
