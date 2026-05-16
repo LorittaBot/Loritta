@@ -1,5 +1,12 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.images
 
+import com.github.salomonbrys.kotson.get
+import com.github.salomonbrys.kotson.string
+import com.google.gson.JsonParser
+import io.ktor.client.request.get
+import io.ktor.client.request.parameter
+import io.ktor.client.statement.bodyAsText
+import io.ktor.client.statement.readBytes
 import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.interactions.InteractionContextType
 import net.dv8tion.jda.api.utils.AttachedFile
@@ -55,8 +62,10 @@ import java.awt.image.FilteredImageSource
 import java.awt.image.RGBImageFilter
 import java.io.File
 import java.util.*
+import javax.imageio.ImageIO
 import javax.imageio.stream.FileImageOutputStream
 import kotlin.math.max
+import org.json.XML
 
 class MemeCommand2 : SlashCommandDeclarationWrapper {
     override fun command() = slashCommand(I18nKeysData.Commands.Command.Meme2.Label, I18nKeysData.Commands.Command.Meme2.Description, CommandCategory.IMAGES, UUID.fromString("e2a68cc3-de4e-4dc9-b3d4-46f7cfde1c20")) {
@@ -286,6 +295,14 @@ class MemeCommand2 : SlashCommandDeclarationWrapper {
             }
 
             executor = AsciiExecutor()
+        }
+
+        subcommand(I18nKeysData.Commands.Command.Textcraft.Label, I18nKeysData.Commands.Command.Textcraft.Description, UUID.fromString("9bf3a918-ce73-4c18-a61d-ae05ca949edd")) {
+            alternativeLegacyAbsoluteCommandPaths.apply {
+                add("textcraft")
+            }
+
+            executor = TextCraftExecutor()
         }
     }
 
@@ -1406,6 +1423,116 @@ class MemeCommand2 : SlashCommandDeclarationWrapper {
                 options.imageReference to context.getImageReferenceOrAttachment(0),
                 options.colorize to ("colorize" in flags),
                 options.dither to ("dither" in flags)
+            )
+        }
+    }
+
+    class TextCraftExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        companion object {
+            private const val DEFAULT_FONT_PRIMARY = "font1"
+            private const val DEFAULT_FONT_SECONDARY = "font6"
+
+            private val SUPPORTED_FONTS = (1..36).map { "font$it" }.toSet()
+        }
+
+        class Options : ApplicationCommandOptions() {
+            val text1 = string("text1", I18nKeysData.Commands.Command.Textcraft.Options.Text1.Text)
+            val text2 = optionalString("text2", I18nKeysData.Commands.Command.Textcraft.Options.Text2.Text)
+            val text3 = optionalString("text3", I18nKeysData.Commands.Command.Textcraft.Options.Text3.Text)
+            val font1 = optionalString("font1", I18nKeysData.Commands.Command.Textcraft.Options.Font1.Text)
+            val font2 = optionalString("font2", I18nKeysData.Commands.Command.Textcraft.Options.Font2.Text)
+            val font3 = optionalString("font3", I18nKeysData.Commands.Command.Textcraft.Options.Font3.Text)
+        }
+
+        override val options = Options()
+
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            context.deferChannelMessage(false)
+
+            val text1 = args[options.text1]
+            val text2 = args[options.text2].orEmpty()
+            val text3 = args[options.text3].orEmpty()
+            val fontStyle1 = args[options.font1]?.lowercase()?.takeIf { it in SUPPORTED_FONTS } ?: DEFAULT_FONT_PRIMARY
+            val fontStyle2 = args[options.font2]?.lowercase()?.takeIf { it in SUPPORTED_FONTS } ?: DEFAULT_FONT_SECONDARY
+            val fontStyle3 = args[options.font3]?.lowercase()?.takeIf { it in SUPPORTED_FONTS } ?: DEFAULT_FONT_SECONDARY
+
+            val xmlBody = context.loritta.http.get("https://textcraft.net/gentext3.php") {
+                parameter("text", text1)
+                parameter("text2", text2)
+                parameter("text3", text3)
+                parameter("font_style", fontStyle1)
+                parameter("font_size", "x")
+                parameter("font_colour", "0")
+                parameter("bgcolour", "#2C262E")
+                parameter("glow_halo", "0")
+                parameter("glossy", "0")
+                parameter("lighting", "0")
+                parameter("fit_lines", "0")
+                parameter("truecolour_images", "0")
+                parameter("non_trans", "false")
+                parameter("glitter_border", "true")
+                parameter("text_border", "1")
+                parameter("border_colour", "#2C262E")
+                parameter("anim_type", "none")
+                parameter("submit_type", "text")
+                parameter("perspective_effect", "1")
+                parameter("drop_shadow", "1")
+                parameter("savedb", "0")
+                parameter("multiline", "1")
+                parameter("font_style2", fontStyle2)
+                parameter("font_style3", fontStyle3)
+                parameter("font_size2", "t")
+                parameter("font_size3", "t")
+                parameter("font_colour2", "68")
+                parameter("font_colour3", "66")
+                parameter("text_border2", "1")
+                parameter("text_border3", "1")
+                parameter("border_colour2", "#211E4E")
+                parameter("border_colour3", "#EBD406")
+            }.bodyAsText()
+
+            val payload = JsonParser.parseString(XML.toJSONObject(xmlBody).toString())
+            val dataDir = payload["image"]["datadir"].string
+            val fullFilename = payload["image"]["fullfilename"].string
+
+            val imageBytes = context.loritta.http.get("https://static1.textcraft.net/$dataDir/$fullFilename").readBytes()
+            val image = ImageIO.read(imageBytes.inputStream())
+
+            val result = image.toByteArray(ImageFormatType.PNG)
+            context.reply(false) {
+                files += AttachedFile.fromData(result, "textcraft.png")
+            }
+        }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?>? {
+            if (args.isEmpty()) {
+                context.explain()
+                return null
+            }
+
+            // Legacy parser: split by " | ", then sniff each piece for a font name vs text
+            val pieces = args.joinToString(" ").split(" | ")
+            val texts = mutableListOf<String>()
+            val fonts = mutableListOf<String>()
+            for (piece in pieces) {
+                if (piece.lowercase() in SUPPORTED_FONTS) fonts += piece.lowercase() else texts += piece
+            }
+
+            val text1 = texts.getOrNull(0) ?: run {
+                context.explain()
+                return null
+            }
+
+            return mapOf(
+                options.text1 to text1,
+                options.text2 to texts.getOrNull(1),
+                options.text3 to texts.getOrNull(2),
+                options.font1 to fonts.getOrNull(0),
+                options.font2 to fonts.getOrNull(1),
+                options.font3 to fonts.getOrNull(2)
             )
         }
     }

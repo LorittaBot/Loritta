@@ -1,0 +1,16 @@
+label: "textcraft"
+description: "Crie um texto bonito e supimpa!"
+
+options:
+  text1:
+    text: "O texto principal"
+  text2:
+    text: "Texto secundário (opcional)"
+  text3:
+    text: "Texto terciário (opcional)"
+  font1:
+    text: "Fonte do texto principal (font1 a font36)"
+  font2:
+    text: "Fonte do texto secundário (font1 a font36)"
+  font3:
+    text: "Fonte do texto terciário (font1 a font36)"
