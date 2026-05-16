@@ -25,6 +25,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaSlashCom
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.ImageReferenceOrAttachment
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.base.UnleashedLocalSingleImageCommandBase
@@ -32,6 +33,7 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.base.Unle
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.base.UnleashedSingleImageOptions
 import net.perfectdreams.loritta.morenitta.utils.ImageUtils
 import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
+import net.perfectdreams.loritta.morenitta.utils.makeRoundedCorners
 import net.perfectdreams.loritta.morenitta.utils.ImageFormat
 import net.perfectdreams.loritta.morenitta.utils.EmojiMasher
 import net.perfectdreams.loritta.morenitta.utils.SeamCarver
@@ -258,6 +260,15 @@ class MemeCommand2 : SlashCommandDeclarationWrapper {
             }
 
             executor = EmojiMashupExecutor()
+        }
+
+        subcommand(I18nKeysData.Commands.Command.Gang.Label, I18nKeysData.Commands.Command.Gang.Description, UUID.fromString("b352a867-7e11-4d73-899f-435d260c0a0c")) {
+            alternativeLegacyAbsoluteCommandPaths.apply {
+                add("gang")
+                add("gangue")
+            }
+
+            executor = GangueExecutor()
         }
     }
 
@@ -1257,6 +1268,83 @@ class MemeCommand2 : SlashCommandDeclarationWrapper {
                 options.emoji2 to emoji2,
                 options.emoji3 to args.getOrNull(2),
                 options.emoji4 to args.getOrNull(3)
+            )
+        }
+    }
+
+    class GangueExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        class Options : ApplicationCommandOptions() {
+            val friend1 = imageReferenceOrAttachment("friend1", TodoFixThisData)
+            val friend2 = imageReferenceOrAttachment("friend2", TodoFixThisData)
+            val friend3 = imageReferenceOrAttachment("friend3", TodoFixThisData)
+            val friend4 = imageReferenceOrAttachment("friend4", TodoFixThisData)
+            val friend5 = imageReferenceOrAttachment("friend5", TodoFixThisData)
+        }
+
+        override val options = Options()
+
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            context.deferChannelMessage(false)
+
+            suspend fun download(reference: ImageReferenceOrAttachment): BufferedImage {
+                val url = reference.get(context)
+                return LorittaUtils.downloadImage(context.loritta, url) ?: context.fail(false) {
+                    styled(context.i18nContext.get(I18nKeysData.Commands.NoValidImageFound), Emotes.LoriSob)
+                }
+            }
+
+            val image1 = download(args[options.friend1])
+            val image2 = download(args[options.friend2])
+            val image3 = download(args[options.friend3])
+            val image4 = download(args[options.friend4])
+            val image5 = download(args[options.friend5])
+
+            val template = (context.loritta.assets.loadImage("cocielo/cocielo.png", loadFromCache = false) as JVMImage).handle as BufferedImage
+            val overlay = (context.loritta.assets.loadImage("cocielo/overlay.png", loadFromCache = false) as JVMImage).handle as BufferedImage
+
+            val scaled = image1.getScaledInstance(59, 59, BufferedImage.SCALE_SMOOTH)
+                .toBufferedImage()
+                .makeRoundedCorners(20)
+            val scaled2 = image2.getScaledInstance(47, 57, BufferedImage.SCALE_SMOOTH)
+                .toBufferedImage()
+                .makeRoundedCorners(20)
+            val scaled3 = image3.getScaledInstance(50, 50, BufferedImage.SCALE_SMOOTH)
+                .toBufferedImage()
+                .makeRoundedCorners(20)
+            val scaled4 = image4.getScaledInstance(53, 58, BufferedImage.SCALE_SMOOTH)
+                .toBufferedImage()
+                .makeRoundedCorners(20)
+            val scaled5 = image5.getScaledInstance(43, 43, BufferedImage.SCALE_SMOOTH)
+                .toBufferedImage()
+                .makeRoundedCorners(20)
+
+            // Porque nós precisamos rotacionar
+            val rotated = LorittaImage(scaled5)
+            rotated.rotate(335.0)
+
+            template.graphics.drawImage(scaled, 216, 80, null)
+            template.graphics.drawImage(scaled2, 142, 87, null)
+            template.graphics.drawImage(scaled3, 345, 80, null)
+            template.graphics.drawImage(scaled4, 28, 141, null)
+            template.graphics.drawImage(rotated.bufferedImage, 290, -5, null)
+            template.graphics.drawImage(overlay, 0, 0, null)
+
+            val result = template.toByteArray(ImageFormatType.PNG)
+            context.reply(false) {
+                files += AttachedFile.fromData(result, "gangue.png")
+            }
+        }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?> {
+            return mapOf(
+                options.friend1 to context.getImageReferenceOrAttachment(0),
+                options.friend2 to context.getImageReferenceOrAttachment(1),
+                options.friend3 to context.getImageReferenceOrAttachment(2),
+                options.friend4 to context.getImageReferenceOrAttachment(3),
+                options.friend5 to context.getImageReferenceOrAttachment(4)
             )
         }
     }

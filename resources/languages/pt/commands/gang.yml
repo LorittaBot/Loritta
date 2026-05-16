@@ -1,0 +1,14 @@
+label: "gangue"
+description: "\"Lá vem o Chaves, Chaves, Chaves. Se não tá atento a sua bombeta vai perder, héééé\". Faça uma edição com os seus amigos da quebrada! Vídeo original: https://youtu.be/ihGgl62B0Xo"
+
+options:
+  friend1:
+    text: "O primeiro amigo da quebrada"
+  friend2:
+    text: "O segundo amigo da quebrada"
+  friend3:
+    text: "O terceiro amigo da quebrada"
+  friend4:
+    text: "O quarto amigo da quebrada"
+  friend5:
+    text: "O quinto amigo da quebrada"
