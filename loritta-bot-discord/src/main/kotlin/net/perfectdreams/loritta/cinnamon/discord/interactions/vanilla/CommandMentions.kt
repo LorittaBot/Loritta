@@ -38,6 +38,9 @@ CommandMentions(private val registeredCommands: List<DiscordCommand>) {
     val raffleStatus = commandMention("rifa status")
     val raffleBuy = commandMention("rifa comprar")
 
+    val scratchCardBuy = commandMention("raspadinha comprar")
+    val scratchCardClaim = commandMention("raspadinha ganhar")
+
     val lotteryStatus = commandMention("loteria status")
     val lotteryBuy = commandMention("loteria comprar")
 
