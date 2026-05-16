@@ -91,38 +91,42 @@ class MemeCommand2 : SlashCommandDeclarationWrapper {
             executor = GodExecutor()
         }
 
-        subcommand(I18nKeysData.Commands.Command.Jooj.Label, I18nKeysData.Commands.Command.Jooj.Description, UUID.fromString("6d7c50e2-f901-422e-9f49-cc56bc4176b8")) {
-            alternativeLegacyAbsoluteCommandPaths.apply {
-                add("jooj")
+        subcommandGroup(I18nKeysData.Commands.Command.Mirror.Label, I18nKeysData.Commands.Command.Mirror.Description) {
+            subcommand(I18nKeysData.Commands.Command.Mirror.Jooj.Label, I18nKeysData.Commands.Command.Mirror.Jooj.Description, UUID.fromString("6d7c50e2-f901-422e-9f49-cc56bc4176b8")) {
+                alternativeLegacyAbsoluteCommandPaths.apply {
+                    add("jooj")
+                }
+
+                executor = JoojExecutor()
             }
 
-            executor = JoojExecutor()
+            subcommand(I18nKeysData.Commands.Command.Mirror.Ojjo.Label, I18nKeysData.Commands.Command.Mirror.Ojjo.Description, UUID.fromString("62d6f6a2-edbc-4098-a908-61dd4e186fe7")) {
+                alternativeLegacyAbsoluteCommandPaths.apply {
+                    add("ojjo")
+                }
+
+                executor = OjjoExecutor()
+            }
         }
 
-        subcommand(I18nKeysData.Commands.Command.Ojjo.Label, I18nKeysData.Commands.Command.Ojjo.Description, UUID.fromString("62d6f6a2-edbc-4098-a908-61dd4e186fe7")) {
-            alternativeLegacyAbsoluteCommandPaths.apply {
-                add("ojjo")
+        subcommandGroup(I18nKeysData.Commands.Command.Lava.Label, I18nKeysData.Commands.Command.Lava.Description) {
+            subcommand(I18nKeysData.Commands.Command.Lava.Normal.Label, I18nKeysData.Commands.Command.Lava.Normal.Description, UUID.fromString("9e9de728-64b4-4ea5-8c9b-461a76213eaf")) {
+                alternativeLegacyAbsoluteCommandPaths.apply {
+                    add("lava")
+                }
+
+                executor = LavaExecutor()
             }
 
-            executor = OjjoExecutor()
-        }
+            subcommand(I18nKeysData.Commands.Command.Lava.Reverso.Label, I18nKeysData.Commands.Command.Lava.Reverso.Description, UUID.fromString("edbe6d45-db98-430e-8a17-6c9f48f7f977")) {
+                alternativeLegacyAbsoluteCommandPaths.apply {
+                    add("lavareverse")
+                    add("lavareverso")
+                    add("reverselava")
+                }
 
-        subcommand(I18nKeysData.Commands.Command.Lava.Label, I18nKeysData.Commands.Command.Lava.Description, UUID.fromString("9e9de728-64b4-4ea5-8c9b-461a76213eaf")) {
-            alternativeLegacyAbsoluteCommandPaths.apply {
-                add("lava")
+                executor = LavaReverseExecutor()
             }
-
-            executor = LavaExecutor()
-        }
-
-        subcommand(I18nKeysData.Commands.Command.Lavareverse.Label, I18nKeysData.Commands.Command.Lavareverse.Description, UUID.fromString("edbe6d45-db98-430e-8a17-6c9f48f7f977")) {
-            alternativeLegacyAbsoluteCommandPaths.apply {
-                add("lavareverse")
-                add("lavareverso")
-                add("reverselava")
-            }
-
-            executor = LavaReverseExecutor()
         }
 
         subcommand(I18nKeysData.Commands.Command.Laranjo.Label, I18nKeysData.Commands.Command.Laranjo.Description, UUID.fromString("82cbf701-a89e-4b6c-a186-6194e961c06d")) {
@@ -370,7 +374,7 @@ class MemeCommand2 : SlashCommandDeclarationWrapper {
 
     class LavaExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         class Options : ApplicationCommandOptions() {
-            val text = string("text", I18nKeysData.Commands.Command.Lava.Options.Text.Text)
+            val text = string("text", I18nKeysData.Commands.Command.Lava.Normal.Options.Text.Text)
             val imageReference = imageReferenceOrAttachment("image", TodoFixThisData)
         }
 
@@ -437,7 +441,7 @@ class MemeCommand2 : SlashCommandDeclarationWrapper {
 
     class LavaReverseExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         class Options : ApplicationCommandOptions() {
-            val text = string("text", I18nKeysData.Commands.Command.Lavareverse.Options.Text.Text)
+            val text = string("text", I18nKeysData.Commands.Command.Lava.Reverso.Options.Text.Text)
             val imageReference = imageReferenceOrAttachment("image", TodoFixThisData)
         }
 

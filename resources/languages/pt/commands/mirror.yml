@@ -1,0 +1,10 @@
+label: "espelhar"
+description: "Espelha uma imagem horizontalmente"
+
+jooj:
+  label: "jooj"
+  description: "Inverte uma imagem horizontalmente, baseando no lado esquerdo da imagem!"
+
+ojjo:
+  label: "ojjo"
+  description: "Inverte uma imagem horizontalmente, baseando no lado direito da imagem!"
