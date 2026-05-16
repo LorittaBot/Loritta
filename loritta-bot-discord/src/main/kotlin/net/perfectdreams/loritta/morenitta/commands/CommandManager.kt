@@ -103,7 +103,6 @@ class CommandManager(val loritta: LorittaBot) {
 		commandMap.add(WarnListCommand(loritta))
 
 		// =======[ MAGIC ]========
-		commandMap.add(ReloadCommand(loritta))
 		commandMap.add(ServerInvitesCommand(loritta))
 		commandMap.add(LorittaBanCommand(loritta))
 		commandMap.add(LorittaUnbanCommand(loritta))
