@@ -72,7 +72,6 @@ class CommandManager(val loritta: LorittaBot) {
 		// =======[ UTILS ]=======
 		commandMap.add(TempoCommand(loritta))
 //		commandMap.add(MorseCommand(loritta))
-		commandMap.add(EncodeCommand(loritta))
 
 		// =======[ DISCORD ]=======
 		// commandMap.add(ServerIconCommand(loritta))
