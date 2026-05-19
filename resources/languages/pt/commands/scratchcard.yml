@@ -16,18 +16,27 @@ ganhar:
     id:
       text: "O número (ID) da raspadinha que você quer resgatar"
 
+top:
+  label: "top"
+  description: "Veja os usuários que ganharam mais sonhos na raspadinha"
+  options:
+    page:
+      text: "A página do ranking que você deseja ver"
+  globalRanking: "Ranking Global"
+  wonTickets: "{sonhos, plural, =0 {# sonhos} one {# sonho} other {# sonhos}} / {tickets, plural, =0 {# tickets} one {# ticket} other {# tickets}}"
+
 # Reusable strings
 title: "**Raspadinha da Loritta**"
 intro: "Ganhe prêmios comprando um ticket para raspar!"
 howToPlay: "Ao comprar, raspe clicando nos spoilers e veja os emojis que aparecem!"
 combos: "Se tiver alguma combinação na horizontal, vertical ou na diagional, você pode ganhar prêmios!"
-loritta: "**Combinação de <:loritta:664849802961485894>:** {sonhos} sonhos"
-pantufa: "**Combinação de <:pantufa:664849802793713686>:** {sonhos} sonhos"
-gabriela: "**Combinação de <:gabriela:664849802927800351>:** {sonhos} sonhos"
-dokyo: "**Combinação de <:dokyo:664849803397562369>:** {sonhos} sonhos"
-gessy: "**Combinação de <:gessy:664849803334909952>:** {sonhos} sonhos"
-tobias: "**Combinação de <:tobias_nosa:450476856303419432>:** {sonhos} sonhos"
-stats: "Você já comprou **{count} raspadinhas** e, com elas, você ganhou **{earnings} sonhos**"
+loritta: "**Combinação de <:loritta:664849802961485894>:** {sonhos, plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
+pantufa: "**Combinação de <:pantufa:664849802793713686>:** {sonhos, plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
+gabriela: "**Combinação de <:gabriela:664849802927800351>:** {sonhos, plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
+dokyo: "**Combinação de <:dokyo:664849803397562369>:** {sonhos, plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
+gessy: "**Combinação de <:gessy:664849803334909952>:** {sonhos, plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
+tobias: "**Combinação de <:tobias_nosa:450476856303419432>:** {sonhos, plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
+stats: "Você já comprou **{count, plural, =0 {# raspadinhas} one {# raspadinha} other {# raspadinhas}}** e, com elas, você ganhou **{earnings, plural, =0 {# sonhos} one {# sonho} other {# sonhos}}**"
 buyHint: "Compre uma raspadinha da Loritta por **150 sonhos** usando {commandMention}!"
 
 bought: "{userMention} aqui está a sua raspadinha com número {id}! Raspe clicando na parte cinza e, se o seu cartão for premiado com combinações de emojis na horizontal/vertical/diagonal, clique em \"Resgatar prêmio\" para receber a sua recompensa! Mas cuidado, não tente resgatar prêmios de uma raspadinha que não tem prêmios!! Se você quiser comprar um novo ticket pagando 150 sonhos, aperte em \"Comprar outra\"!!"
@@ -39,4 +48,4 @@ notFound: "Essa raspadinha não existe!"
 notYours: "Nossa, não sabia que você era assim... tentando roubar os prêmios de outras raspadinhas que não foi você que comprou..."
 alreadyClaimed: "Você já recebeu o prêmio desta raspadinha!"
 nothingWon: "Qual parte de *não resgate um prêmio se você não ganhou* você não entendeu? Só por fazer perder o meu tempo, você perdeu 1000 sonhos."
-youWon: "Parabéns, você ganhou **{prize} sonhos** na sua raspadinha!"
+youWon: "Parabéns, você ganhou **{prize, plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** na sua raspadinha!"

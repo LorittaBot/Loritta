@@ -30,12 +30,18 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.Applica
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
 import net.perfectdreams.loritta.morenitta.interactions.components.ComponentContext
+import net.perfectdreams.loritta.morenitta.utils.Constants
+import net.perfectdreams.loritta.morenitta.utils.RankPaginationUtils
+import net.perfectdreams.loritta.morenitta.utils.RankingGenerator
+import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.count
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.sum
 import org.jetbrains.exposed.sql.update
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.math.ceil
 
 class ScratchCardCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     companion object {
@@ -393,6 +399,18 @@ class ScratchCardCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
             }
             executor = ClaimExecutor()
         }
+
+        subcommand(
+            I18nKeysData.Commands.Command.Scratchcard.Top.Label,
+            I18nKeysData.Commands.Command.Scratchcard.Top.Description,
+            UUID.fromString("4f6b1c3a-6c8a-4f6d-9c0f-a2c1b3f7dd02")
+        ) {
+            alternativeLegacyAbsoluteCommandPaths.apply {
+                add("raspadinha top")
+                add("scratchcard top")
+            }
+            executor = ScratchCardTopExecutor()
+        }
     }
 
     class InfoExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
@@ -445,6 +463,108 @@ class ScratchCardCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                 return null
             }
             return mapOf(options.id to id)
+        }
+    }
+
+    class ScratchCardTopExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        class Options : ApplicationCommandOptions() {
+            val page = optionalLong(
+                "page",
+                I18nKeysData.Commands.Command.Scratchcard.Top.Options.Page.Text,
+                RankingGenerator.VALID_RANKING_PAGES
+            )
+        }
+
+        override val options = Options()
+
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            if (SonhosUtils.checkIfEconomyIsDisabled(context)) return
+            context.deferChannelMessage(false)
+
+            val userPage = args[options.page] ?: 1L
+            val page = userPage - 1
+
+            val message = createRankMessage(context, page)
+
+            context.reply(false) {
+                message()
+            }
+        }
+
+        suspend fun createRankMessage(
+            context: UnleashedContext,
+            page: Long
+        ): suspend InlineMessage<*>.() -> (Unit) = {
+            val loritta = context.loritta
+            val userId = Raspadinhas.receivedById
+            val ticketCount = Raspadinhas.receivedById.count()
+            val moneySum = Raspadinhas.value.sum()
+
+            val (totalCount, userData) = loritta.newSuspendedTransaction {
+                val total = Raspadinhas.select(userId)
+                    .groupBy(userId)
+                    .having { moneySum.isNotNull() }
+                    .count()
+
+                val rows = Raspadinhas.select(userId, ticketCount, moneySum)
+                    .groupBy(userId)
+                    .having { moneySum.isNotNull() }
+                    .orderBy(moneySum, SortOrder.DESC)
+                    .limit(5)
+                    .offset(page * 5)
+                    .toList()
+
+                Pair(total, rows)
+            }
+
+            val maxPage = ceil(totalCount / 5.0)
+
+            val rankingImage = RankingGenerator.generateRanking(
+                loritta,
+                page * 5,
+                context.i18nContext.get(I18nKeysData.Commands.Command.Scratchcard.Top.GlobalRanking),
+                null,
+                userData.map {
+                    RankingGenerator.UserRankInformation(
+                        it[userId],
+                        context.i18nContext.get(
+                            I18nKeysData.Commands.Command.Scratchcard.Top.WonTickets(
+                                sonhos = it[moneySum] ?: 0,
+                                tickets = it[ticketCount]
+                            )
+                        )
+                    )
+                }
+            )
+
+            RankPaginationUtils.createRankMessage(
+                loritta,
+                context,
+                page,
+                maxPage.toInt(),
+                rankingImage
+            ) {
+                createRankMessage(context, it)
+            }.invoke(this)
+        }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?>? {
+            val page = args.getOrNull(0)?.toLongOrNull()
+
+            if (page != null && !RankingGenerator.isValidRankingPage(page)) {
+                context.reply(false) {
+                    styled(
+                        context.locale["commands.invalidRankingPage"],
+                        Constants.ERROR
+                    )
+                }
+                return null
+            }
+
+            return mapOf(options.page to page)
         }
     }
 }
