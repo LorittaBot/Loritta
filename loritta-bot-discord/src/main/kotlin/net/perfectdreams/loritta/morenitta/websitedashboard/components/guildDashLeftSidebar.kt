@@ -91,6 +91,7 @@ fun FlowContent.guildDashLeftSidebarEntries(
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/honeypot", i18nContext.get(DashboardI18nKeysData.Honeypot.Title), SVGIcons.Fish, selectedGuildSection == GuildDashboardSection.HONEYPOT,  true)
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/punishment-log", i18nContext.get(DashboardI18nKeysData.PunishmentLog.Title), SVGIcons.Scroll, selectedGuildSection == GuildDashboardSection.PUNISHMENT_LOG,  false)
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/warn-actions", i18nContext.get(DashboardI18nKeysData.WarnActions.Title), SVGIcons.Gavel, selectedGuildSection == GuildDashboardSection.WARN_ACTIONS,  false)
+    aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/predefined-messages", i18nContext.get(DashboardI18nKeysData.PredefinedMessages.Title), SVGIcons.Barcode, selectedGuildSection == GuildDashboardSection.PREDEFINED_MESSAGES,  true)
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/event-log", i18nContext.get(DashboardI18nKeysData.EventLog.Title), SVGIcons.Eye, selectedGuildSection == GuildDashboardSection.EVENT_LOG,  false)
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/gamersafer-verify", i18nContext.get(DashboardI18nKeysData.GamerSafer.Title), SVGIcons.GamerSafer, selectedGuildSection == GuildDashboardSection.GAMERSAFER,  false)
 

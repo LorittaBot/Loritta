@@ -7,4 +7,6 @@ object ModerationPredefinedPunishmentMessages : LongIdTable() {
     val guild = reference("guild", ServerConfigs).index()
     val short = text("short").index()
     val message = text("message").index()
+    val duration = text("duration").nullable()
+    val deleteDays = integer("delete_days").nullable()
 }

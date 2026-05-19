@@ -1,0 +1,37 @@
+website:
+  dashboard:
+    predefinedMessages:
+      title: "Motivos Predefinidos"
+      description: "Configure motivos predefinidos para usar em comandos de moderação! Quando o motivo de uma punição começar com um código curto, ele será substituído pelo motivo da punição configurado. Assim você pode punir usuários do seu servidor rapidamente sem precisar ficar copiando e colando motivos bonitinhos."
+      messagesCount: "{count,plural, =0 {Nenhum motivo configurado} one {# motivo configurado} other {# motivos configurados}}"
+      createPageTitle: "Adicionar Motivo predefinido"
+      editPageTitle: "Editar Motivo predefinido"
+      goBackButton: "Voltar para a lista de motivos predefinidos"
+      fields:
+        short:
+          title: "Código curto"
+          description: "Ao escrever este texto no começo do motivo da punição, ele será alterado para o motivo da punição configurado abaixo."
+          placeholder: "divdm"
+        message:
+          title: "Motivo da Punição"
+          description: "Mensagem que substituirá o código curto ao ser usada em {banCommand}, {kickCommand}, {warnCommand} ou {muteCommand}. Ao punir um usuário, você pode incluir informações adicionais no motivo após o código curto."
+          placeholder: "Enviar convites de outros servidores via mensagem direta para usuários do servidor."
+        duration:
+          title: "Duração padrão (opcional)"
+          description: "Usado em {warnCommand} e {muteCommand} para definir a duração da punição. O tempo escolhido será substituido se o usuário alterar no comando de punição."
+          placeholder: "24 horas"
+        deleteDays:
+          title: "Dias de mensagens a serem apagadas"
+          description: "Usado em {banCommand} e {kickCommand} para apagar mensagens recentes do usuário punido. O tempo escolhido será substituido se o usuário alterar no comando de punição. De 0 a 7 dias. Se for 0, as mensagens não serão apagadas."
+      actions:
+        create: "Criar Predefinição"
+        edit: "Editar"
+        delete: "Excluir"
+      rowDeleteDaysSuffix: "{deleteDays,plural, =1 {Apaga # dia de mensagens} other {Apaga # dias de mensagens}}"
+      toasts:
+        duplicateShort: "Já existe um motivo predefinido com este código curto!"
+        limitReached: "Limite de motivos predefinidos atingido!"
+        invalidInput: "O código curto e a mensagem são obrigatórios!"
+        deletedSuccessfully: "Motivo predefinido removido!"
+        notFoundOnDelete: "Esse motivo predefinido não existe mais!"
+        notFoundOnEdit: "Esse motivo predefinido não existe mais!"

@@ -151,6 +151,12 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.twitch
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.twitch.PostTwitchChannelGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.twitch.PutTwitchChannelGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.twitch.TwitchGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.predefinedmessages.CreatePredefinedMessageGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.predefinedmessages.DeletePredefinedMessageGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.predefinedmessages.EditPredefinedMessageGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.predefinedmessages.PostPredefinedMessageGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.predefinedmessages.PredefinedMessagesGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.predefinedmessages.PutPredefinedMessageGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.warnactions.PostAddWarnActionGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.warnactions.PostRemoveWarnActionGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.warnactions.PutWarnActionsGuildDashboardRoute
@@ -493,6 +499,14 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
         PostAddWarnActionGuildDashboardRoute(this),
         PutWarnActionsGuildDashboardRoute(this),
         PostRemoveWarnActionGuildDashboardRoute(this),
+
+        // Moderation Predefined Messages
+        PredefinedMessagesGuildDashboardRoute(this),
+        CreatePredefinedMessageGuildDashboardRoute(this),
+        EditPredefinedMessageGuildDashboardRoute(this),
+        PostPredefinedMessageGuildDashboardRoute(this),
+        PutPredefinedMessageGuildDashboardRoute(this),
+        DeletePredefinedMessageGuildDashboardRoute(this),
 
         // Experience Rewards
         XPRewardsGuildDashboardRoute(this),

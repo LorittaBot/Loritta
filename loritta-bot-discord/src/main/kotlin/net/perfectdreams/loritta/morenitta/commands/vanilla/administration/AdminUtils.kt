@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.utils.FileUpload
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.ModerationPredefinedPunishmentMessages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.ModerationPunishmentMessagesConfig
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.WarnActions
 import net.perfectdreams.loritta.common.commands.ArgumentType
@@ -95,6 +96,72 @@ object AdminUtils {
 		}
 
 		return warnActions
+	}
+
+	data class ResolvedPredefinedPunishmentMessage(
+		val message: String,
+		val duration: String?,
+		val deleteDays: Int?
+	)
+
+	/**
+	 * Bundles the reason resolution processed [reason] with the [predefined] if any predefined reason was matched
+	 */
+	data class ReasonResolution(val reason: String, val predefined: ResolvedPredefinedPunishmentMessage?)
+
+	/**
+	 * Resolves [reasonArgument] into a predefined punishment if it has one. If the [reasonArgument] is null or blank, it will fallback to the reason not given message.
+	 */
+	suspend fun resolveReasonAndPredefined(
+		loritta: LorittaBot,
+		context: UnleashedContext,
+		reasonArgument: String?
+	): ReasonResolution {
+		// We already know that the reason is null or blank, so just fallback to the reason not given and bail
+		if (reasonArgument.isNullOrBlank())
+			return ReasonResolution(context.i18nContext.get(I18nKeysData.Commands.Category.Moderation.ReasonNotGiven), null)
+
+		val predefined = resolvePredefinedPunishmentMessage(loritta, context.guild.idLong, reasonArgument)
+		val reason = predefined?.message ?: reasonArgument
+		return ReasonResolution(reason, predefined)
+	}
+
+	/**
+	 * Looks up a predefined punishment message for [guildId] where the `short` code matches one of the predefined messages configured.
+	 *
+	 * If the [rawReason] contains text after the short code, it will be tacked on at the end of the replaced reason.
+	 *
+	 * @return the matched predefined message (with the trailing text appended), or null if the first token does not match a short code.
+	 */
+	suspend fun resolvePredefinedPunishmentMessage(
+		loritta: LorittaBot,
+		guildId: Long,
+		rawReason: String
+	): ResolvedPredefinedPunishmentMessage? {
+		val trimmed = rawReason.trimStart()
+		val firstToken = trimmed.substringBefore(" ")
+		val anythingElse = trimmed.substringAfter(" ")
+
+		if (firstToken.isBlank())
+			return null
+
+		return loritta.newSuspendedTransaction {
+			ModerationPredefinedPunishmentMessages
+				.selectAll()
+				.where {
+					(ModerationPredefinedPunishmentMessages.guild eq guildId) and (ModerationPredefinedPunishmentMessages.short eq firstToken)
+				}
+				.firstOrNull()
+				?.let {
+					val baseMessage = it[ModerationPredefinedPunishmentMessages.message]
+					val expandedMessage = if (anythingElse.isBlank()) baseMessage else "$baseMessage $anythingElse"
+					ResolvedPredefinedPunishmentMessage(
+						expandedMessage,
+						it[ModerationPredefinedPunishmentMessages.duration],
+						it[ModerationPredefinedPunishmentMessages.deleteDays]
+					)
+				}
+		}
 	}
 
 	suspend fun renderLinkedMessagesFromReasonAndSendToUser(

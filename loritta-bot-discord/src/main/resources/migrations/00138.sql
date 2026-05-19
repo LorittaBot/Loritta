@@ -1,0 +1,2 @@
+ALTER TABLE moderationpredefinedpunishmentmessages ADD COLUMN duration TEXT;
+ALTER TABLE moderationpredefinedpunishmentmessages ADD COLUMN delete_days INTEGER;

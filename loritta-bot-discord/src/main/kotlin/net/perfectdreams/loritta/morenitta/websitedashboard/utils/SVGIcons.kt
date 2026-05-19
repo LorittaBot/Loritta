@@ -16,6 +16,7 @@ object SVGIcons : SVGIconManager(SVGIcons::class) {
     val Seal = register("seal", "/svg_icons/phosphor/fill/seal.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
     val Eye = register("seal", "/svg_icons/phosphor/fill/eye.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
     val Gavel = register("seal", "/svg_icons/phosphor/fill/gavel.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
+    val Barcode = register("barcode", "/svg_icons/phosphor/bold/barcode.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
     val ArrowFatLinesUp = register("seal", "/svg_icons/phosphor/fill/arrow-fat-lines-up.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
     val BoxArrowUp = register("seal", "/svg_icons/phosphor/fill/box-arrow-up.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
     val BoxStar = register("box_star", "/svg_icons/custom/box-star.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)

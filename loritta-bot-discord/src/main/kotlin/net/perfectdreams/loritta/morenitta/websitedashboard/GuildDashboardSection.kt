@@ -16,6 +16,7 @@ enum class GuildDashboardSection {
     MEMBER_COUNTER,
     PUNISHMENT_LOG,
     WARN_ACTIONS,
+    PREDEFINED_MESSAGES,
     EVENT_LOG,
     GAMERSAFER,
     XP_REWARDS,

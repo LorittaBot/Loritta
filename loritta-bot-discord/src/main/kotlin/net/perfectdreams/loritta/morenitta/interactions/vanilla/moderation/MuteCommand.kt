@@ -80,7 +80,7 @@ class MuteCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             }
 
             // Technically, because the settings are already "pre-baked", we don't need to do stuff
-            val reason = (args[options.reason] ?: "").ifBlank { context.i18nContext.get(I18nKeysData.Commands.Category.Moderation.ReasonNotGiven) }
+            val (reason, predefined) = AdminUtils.resolveReasonAndPredefined(loritta, context, args[options.reason])
             // If not set, fallback to default
             val skipConfirmation = args[options.skipConfirmation] ?: context.config.getUserData(context.loritta, context.user.idLong).quickPunishment
             // The silent option is only useful when punishing users using the "skip confirmation" check
@@ -156,7 +156,8 @@ class MuteCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 return
             }
 
-            handlePreMute(args[options.time]?.let { TimeUtils.convertToMillisRelativeToNow(it) })
+            // User-provided "time" wins over the predefined message's "duration".
+            handlePreMute((args[options.time] ?: predefined?.duration)?.let { TimeUtils.convertToMillisRelativeToNow(it) })
         }
 
         override suspend fun convertToInteractionsArguments(
