@@ -86,7 +86,7 @@ CommandMentions(private val registeredCommands: List<DiscordCommand>) {
             1 -> {
                 val rootLabel = commandParts[0]
                 val registeredCommand = registeredCommands.firstOrNull { it.nameLocalizations[DiscordLocale.PORTUGUESE_BRAZILIAN] == rootLabel } ?: error("Couldn't find a command with label $rootLabel!")
-                return "</$rootLabel:${registeredCommand.id}>"
+                return "</${registeredCommand.name}:${registeredCommand.id}>"
             }
             2 -> {
                 val rootLabel = commandParts[0]
