@@ -220,7 +220,7 @@ class WarnListCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
             val page = args.getOrNull(1)?.toLongOrNull()
 
             return mapOf(
-                options.user to userAndMember.user,
+                options.user to userAndMember,
                 options.page to page
             )
         }
