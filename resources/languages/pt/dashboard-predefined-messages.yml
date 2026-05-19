@@ -1,20 +1,20 @@
 website:
   dashboard:
     predefinedMessages:
-      title: "Motivos Predefinidos"
-      description: "Configure motivos predefinidos para usar em comandos de moderação! Quando o motivo de uma punição começar com um código curto, ele será substituído pelo motivo da punição configurado. Assim você pode punir usuários do seu servidor rapidamente sem precisar ficar copiando e colando motivos bonitinhos."
+      title: "Motivos de Punição Predefinidos"
+      description: "Configure motivos de punição predefinidos para usar em comandos de moderação! Quando o motivo de uma punição começar com um dos códigos configurados, ele será substituído pelo motivo da punição. Assim você pode punir usuários do seu servidor rapidamente sem precisar ficar copiando e colando motivos bonitinhos."
       messagesCount: "{count,plural, =0 {Nenhum motivo configurado} one {# motivo configurado} other {# motivos configurados}}"
       createPageTitle: "Adicionar Motivo predefinido"
-      editPageTitle: "Editar Motivo predefinido"
-      goBackButton: "Voltar para a lista de motivos predefinidos"
+      editPageTitle: "Editar Motivo de Punição Predefinido"
+      goBackButton: "Voltar para a lista de motivos de punição predefinidos"
       fields:
         short:
-          title: "Código curto"
+          title: "Código"
           description: "Ao escrever este texto no começo do motivo da punição, ele será alterado para o motivo da punição configurado abaixo."
           placeholder: "divdm"
         message:
           title: "Motivo da Punição"
-          description: "Mensagem que substituirá o código curto ao ser usada em {banCommand}, {kickCommand}, {warnCommand} ou {muteCommand}. Ao punir um usuário, você pode incluir informações adicionais no motivo após o código curto."
+          description: "Mensagem que substituirá o código ao ser usada em {banCommand}, {kickCommand}, {warnCommand} ou {muteCommand}. Ao punir um usuário, você pode incluir informações adicionais no motivo após o código curto."
           placeholder: "Enviar convites de outros servidores via mensagem direta para usuários do servidor."
         duration:
           title: "Duração padrão (opcional)"
