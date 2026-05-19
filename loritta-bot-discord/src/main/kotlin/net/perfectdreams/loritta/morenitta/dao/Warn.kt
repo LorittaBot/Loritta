@@ -13,4 +13,5 @@ class Warn(id: EntityID<Long>) : LongEntity(id) {
 	var punishedById by Warns.punishedById
 	var content by Warns.content
 	var receivedAt by Warns.receivedAt
+	var expiresAt by Warns.expiresAt
 }

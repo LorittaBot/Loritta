@@ -14,8 +14,10 @@ import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.common.utils.PunishmentAction
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import org.jetbrains.exposed.sql.and
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import java.time.Instant
 
 class WarnListCommand(loritta: LorittaBot) : AbstractCommand(loritta, "punishmentlist", listOf("listadeavisos", "modlog", "modlogs", "infractions", "warnlist", "warns"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
 	companion object {
@@ -64,8 +66,9 @@ class WarnListCommand(loritta: LorittaBot) : AbstractCommand(loritta, "punishmen
 				setAuthor(user.name, null, user.effectiveAvatarUrl)
 				setTitle("\uD83D\uDE94 ${context.locale["$LOCALE_PREFIX.warnlist.title"]}")
 
-				val warn = warns.size
-				val nextPunishment = warnPunishments.firstOrNull { it.warnCount == warn + 1 }
+				val now = Instant.now()
+				val activeWarnCount = warns.count { it.expiresAt == null || it.expiresAt!!.isAfter(now) }
+				val nextPunishment = warnPunishments.firstOrNull { it.warnCount == activeWarnCount + 1 }
 
 				if (nextPunishment != null) {
 					val type = when (nextPunishment.punishmentAction) {
@@ -77,13 +80,20 @@ class WarnListCommand(loritta: LorittaBot) : AbstractCommand(loritta, "punishmen
 					setFooter(context.locale["$LOCALE_PREFIX.warnlist.nextPunishment", type], null)
 				}
 
-				warns.forEachIndexed({ idx, warn -> 
+				warns.forEachIndexed({ idx, warn ->
+					val warnExpiresAt = warn.expiresAt
+					val expirationLine = when {
+						warnExpiresAt == null -> ""
+						warnExpiresAt.isAfter(now) -> "\n**${context.i18nContext.get(I18nKeysData.Commands.Command.Warnlist.Expires)}:** <t:${warnExpiresAt.epochSecond}:R>"
+						else -> "\n**${context.i18nContext.get(I18nKeysData.Commands.Command.Warnlist.Expired)}:** <t:${warnExpiresAt.epochSecond}:R>"
+					}
+
 					addField(
 							context.locale["$LOCALE_PREFIX.warn.punishAction"],
 							"""**${context.locale["$LOCALE_PREFIX.warnlist.common"]} #${idx + 1}**
 								|**${context.locale["$LOCALE_PREFIX.ban.punishedBy"]}:** <@${warn.punishedById}>
 								|**${context.locale["$LOCALE_PREFIX.ban.punishmentReason"]}:** ${warn.content}
-								|**${context.locale["$LOCALE_PREFIX.warnlist.date"]}:** ${warn.receivedAt.humanize(locale)}
+								|**${context.locale["$LOCALE_PREFIX.warnlist.date"]}:** ${warn.receivedAt.humanize(locale)}${expirationLine}
 							""".trimMargin(),
 							false
 					)

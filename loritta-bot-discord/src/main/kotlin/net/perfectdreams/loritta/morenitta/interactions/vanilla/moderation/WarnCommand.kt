@@ -30,7 +30,9 @@ import net.perfectdreams.loritta.morenitta.utils.TimeUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNull
 import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.selectAll
+import java.time.Instant
 import java.util.*
 
 class WarnCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
@@ -62,6 +64,8 @@ class WarnCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 // TODO: Add this back
                 // allowedLength = 0..512
             }
+
+            val time = optionalString("time", I18N_PREFIX.Options.Time.Text)
 
             val skipConfirmation = optionalBoolean("skip_confirmation", CATEGORY_I18N_PREFIX.Options.SkipConfirmation.Text)
             val isSilent = optionalBoolean("is_silent", CATEGORY_I18N_PREFIX.Options.IsSilent.Text)
@@ -97,6 +101,10 @@ class WarnCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
             val settings = AdminUtils.retrieveModerationInfo(loritta, context.config)
             val punishmentActions = AdminUtils.retrieveWarnPunishmentActions(loritta, context.config)
+
+            val expiresAt = args[options.time]
+                ?.let { TimeUtils.convertToMillisRelativeToNow(it) }
+                ?.let { Instant.ofEpochMilli(it) }
 
             val warnCallback: (suspend (UnleashedContext, Boolean) -> Unit) = { context, isSilent ->
                 val punisher = context.member
@@ -144,7 +152,12 @@ class WarnCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
                     val warnCount = (
                             loritta.newSuspendedTransaction {
-                                Warns.selectAll().where { (Warns.guildId eq context.guild.idLong) and (Warns.userId eq user.idLong) }.count()
+                                val now = Instant.now()
+                                Warns.selectAll().where {
+                                    (Warns.guildId eq context.guild.idLong) and
+                                            (Warns.userId eq user.idLong) and
+                                            (Warns.expiresAt.isNull() or (Warns.expiresAt greater now))
+                                }.count()
                             } + 1
                             ).toInt()
 
@@ -170,6 +183,7 @@ class WarnCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                             this.receivedAt = System.currentTimeMillis()
                             this.punishedById = context.user.idLong
                             this.content = modifiedReason
+                            this.expiresAt = expiresAt
                         }
 
                         // Log the punishment to the moderation logs
@@ -179,7 +193,7 @@ class WarnCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                             context.user.idLong,
                             ModerationLogAction.WARN,
                             modifiedReason,
-                            null
+                            expiresAt
                         )
                     }
                 }
