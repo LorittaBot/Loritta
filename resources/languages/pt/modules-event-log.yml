@@ -13,7 +13,7 @@ modules:
     messageDeletedUploads: "**Arquivos anexados:**"
     bulkDeleted: "**Mensagens de texto deletadas**"
     messagesCleared:
-      - "**{executorMention} deletou {deletedCount,plural, =0 {# mensagens} one {# mensagem} other {# mensagem}} usando o comando {clearMention} no canal {channelMention}**"
+      - "**{executorMention} deletou {deletedCount,plural, =0 {# mensagens} one {# mensagem} other {# mensagens}} usando o comando {clearMention} no canal {channelMention}**"
       - ""
       - "**Link da mensagem mais antiga deletada** {firstMessageLink}"
       - "**Link da mensagem mais recente deletada** {lastMessageLink}"
