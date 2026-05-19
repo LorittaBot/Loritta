@@ -187,6 +187,7 @@ class AuditLogGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                                                                     TrackedChangeType.CHANGED_DROPS -> i18nContext.get(DashboardI18nKeysData.AuditLog.Types.ChangedDrops(userInfo?.name ?: "???"))
                                                                     TrackedChangeType.CHANGED_EVENT_LOG -> i18nContext.get(DashboardI18nKeysData.AuditLog.Types.ChangedEventLog(userInfo?.name ?: "???"))
                                                                     TrackedChangeType.CHANGED_INVITE_BLOCKER -> i18nContext.get(DashboardI18nKeysData.AuditLog.Types.ChangedInviteBlocker(userInfo?.name ?: "???"))
+                                                                    TrackedChangeType.CHANGED_HONEYPOT -> i18nContext.get(DashboardI18nKeysData.AuditLog.Types.ChangedHoneypot(userInfo?.name ?: "???"))
                                                                     TrackedChangeType.CHANGED_MEMBER_COUNTER -> i18nContext.get(DashboardI18nKeysData.AuditLog.Types.ChangedMemberCounter(userInfo?.name ?: "???"))
                                                                     TrackedChangeType.CHANGED_ROLE_PERMISSIONS -> i18nContext.get(DashboardI18nKeysData.AuditLog.Types.ChangedRolePermissions(userInfo?.name ?: "???"))
                                                                     TrackedChangeType.CHANGED_PREFIXED_COMMANDS -> i18nContext.get(DashboardI18nKeysData.AuditLog.Types.ChangedPrefixedCommands(userInfo?.name ?: "???"))

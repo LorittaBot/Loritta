@@ -109,6 +109,10 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.xprewa
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.xprewards.PutXPRewardsGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.gamersafer.GamerSaferGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.overview.OverviewConfigurationGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.honeypot.HoneypotGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.honeypot.PostAddChannelToListHoneypotGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.honeypot.PostRemoveChannelFromListHoneypotGuildDashboardRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.honeypot.PutHoneypotGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.inviteblocker.InviteBlockerGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.inviteblocker.PostAddChannelToListInviteBlockerGuildDashboardRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.guilds.inviteblocker.PostRemoveChannelFromListInviteBlockerGuildDashboardRoute
@@ -407,6 +411,10 @@ class LorittaDashboardWebServer(val loritta: LorittaBot) {
         PutInviteBlockerGuildDashboardRoute(this),
         PostAddChannelToListInviteBlockerGuildDashboardRoute(this),
         PostRemoveChannelFromListInviteBlockerGuildDashboardRoute(this),
+        HoneypotGuildDashboardRoute(this),
+        PutHoneypotGuildDashboardRoute(this),
+        PostAddChannelToListHoneypotGuildDashboardRoute(this),
+        PostRemoveChannelFromListHoneypotGuildDashboardRoute(this),
 
         // Punishment Log
         PunishmentLogGuildDashboardRoute(this),

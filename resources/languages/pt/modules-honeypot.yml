@@ -1,0 +1,3 @@
+modules:
+  honeypot:
+    defaultReason: "Mensagem enviada em um canal honeypot — provavelmente uma conta hackeada"

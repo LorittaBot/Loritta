@@ -76,6 +76,7 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 
 	private val inviteLinkModule = InviteLinkModule(loritta)
 	private val automodModule = AutomodModule(loritta)
+	private val honeypotModule = HoneypotModule(loritta)
 	private val experienceModule = ExperienceModule(loritta)
 	private val afkModule = AFKModule(loritta)
 	private val bomDiaECiaModule = BomDiaECiaModule(loritta)
@@ -88,6 +89,7 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
     private val crazyManagerModule = CrazyManagerModule(loritta)
 
 	private val messageReceivedModules = mutableListOf(
+		honeypotModule,
 		automodModule,
 		inviteLinkModule,
 		christmasStuffModule,

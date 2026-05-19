@@ -298,6 +298,7 @@ class Pudding(
             EventLogConfigs,
             ExperienceRoleRates,
             InviteBlockerConfigs,
+            HoneypotConfigs,
             LevelAnnouncementConfigs,
             LevelConfigs,
             MemberCounterChannelConfigs,

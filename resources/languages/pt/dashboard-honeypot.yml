@@ -1,0 +1,23 @@
+website:
+  dashboard:
+    honeypot:
+      title: "Canais de Armadilha"
+      description:
+        - "Você já percebeu que contas que foram hackeadas sempre enviam a mesma mensagem em todos os canais do seu servidor? Então o que irá acontecer se a gente criasse um canal de armadilha onde contas que enviam mensagens no canal são automaticamente punidas?"
+        - "Canais de Armadilha servem exatamente para isso, canais públicos onde qualquer pessoa que enviar uma mensagem nele será automaticamente punida do seu servidor. Útil para punir e deletar mensagens de contas hackeadas que estão fazendo spam em todos os canais ao mesmo tempo."
+      enable:
+        toggleTitle: "Ativar canais de armadilha"
+      action:
+        sectionTitle: "Ação"
+        sectionDescription: "O que acontecerá com o meliante que caiu na armadilha"
+        ban: "Banir"
+        kick: "Expulsar"
+        purgeKick: "Expulsão com Limpeza (banir e desbanir para deletar mensagens)"
+      deleteDays:
+        sectionTitle: "Dias de mensagens para deletar"
+        sectionDescription: "Quantos dias de mensagens do usuário serão removidos. Ignorado quando a ação é Expulsar."
+      reason:
+        sectionLabel: "Motivo da Punição"
+        placeholder: "Mensagem enviada em um canal de armadilha"
+      channels:
+        sectionTitle: "Canais de Armadilha"

@@ -35,6 +35,7 @@ website:
         changedDrops: "{user} alterou as configurações dos drops"
         changedEventLog: "{user} alterou as configurações do registro de eventos"
         changedInviteBlocker: "{user} alterou as configurações do bloqueador de convites"
+        changedHoneypot: "{user} alterou as configurações dos canais honeypot"
         changedMemberCounter: "{user} alterou as configurações do contador de membros"
         changedRolePermissions: "{user} alterou as permissões da Loritta de um cargo"
         changedPrefixedCommands: "{user} alterou as configurações dos comandos por prefixo"

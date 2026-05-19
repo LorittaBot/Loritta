@@ -88,6 +88,7 @@ fun FlowContent.guildDashLeftSidebarEntries(
     }
 
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/invite-blocker", i18nContext.get(DashboardI18nKeysData.InviteBlocker.Title), SVGIcons.Ban, selectedGuildSection == GuildDashboardSection.INVITE_BLOCKER,  false)
+    aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/honeypot", i18nContext.get(DashboardI18nKeysData.Honeypot.Title), SVGIcons.Fish, selectedGuildSection == GuildDashboardSection.HONEYPOT,  false)
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/punishment-log", i18nContext.get(DashboardI18nKeysData.PunishmentLog.Title), SVGIcons.Scroll, selectedGuildSection == GuildDashboardSection.PUNISHMENT_LOG,  false)
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/warn-actions", i18nContext.get(DashboardI18nKeysData.WarnActions.Title), SVGIcons.Gavel, selectedGuildSection == GuildDashboardSection.WARN_ACTIONS,  false)
     aDashboardSidebarEntry(i18nContext, "/guilds/${guild.idLong}/event-log", i18nContext.get(DashboardI18nKeysData.EventLog.Title), SVGIcons.Eye, selectedGuildSection == GuildDashboardSection.EVENT_LOG,  false)

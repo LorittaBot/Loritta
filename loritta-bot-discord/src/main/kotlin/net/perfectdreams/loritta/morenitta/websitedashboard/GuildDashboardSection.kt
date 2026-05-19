@@ -9,6 +9,7 @@ enum class GuildDashboardSection {
     COMMAND_CHANNELS,
     CUSTOM_COMMANDS,
     INVITE_BLOCKER,
+    HONEYPOT,
     WELCOMER,
     AUTOROLE,
     PERMISSIONS,
