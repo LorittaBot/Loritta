@@ -12,7 +12,7 @@ website:
         sectionDescription: "O que acontecerá com o meliante que caiu na armadilha"
         ban: "Banir"
         kick: "Expulsar"
-        purgeKick: "Expulsão com Limpeza (banir e desbanir para deletar mensagens)"
+        purgeKick: "Expulsar com Limpeza de Mensagens"
       deleteDays:
         sectionTitle: "Dias de mensagens para deletar"
         sectionDescription: "Quantos dias de mensagens do usuário serão removidos. Ignorado quando a ação é Expulsar."
