@@ -49,7 +49,7 @@ class MuteCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
         inner class Options : ApplicationCommandOptions() {
             // May be multiple in the same string
             val users = string("users", CATEGORY_I18N_PREFIX.Options.Users.Text)
-            val time = optionalString("time", I18N_PREFIX.Options.Time.Text)
+            val duration = optionalString("duration", I18N_PREFIX.Options.Duration.Text)
             val reason = optionalString("reason", CATEGORY_I18N_PREFIX.Options.Reason.Text) {
                 // TODO: Add this back
                 // allowedLength = 0..512
@@ -156,8 +156,8 @@ class MuteCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 return
             }
 
-            // User-provided "time" wins over the predefined message's "duration".
-            handlePreMute((args[options.time] ?: predefined?.duration)?.let { TimeUtils.convertToMillisRelativeToNow(it) })
+            // User-provided "duration" always wins!
+            handlePreMute((args[options.duration] ?: predefined?.duration)?.let { TimeUtils.convertToMillisRelativeToNow(it) })
         }
 
         override suspend fun convertToInteractionsArguments(

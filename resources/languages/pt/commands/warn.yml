@@ -2,5 +2,5 @@ label: "warn"
 description: "Avisa usuários do seu servidor"
 
 options:
-  time:
-    text: "A duração do aviso"
+  duration:
+    text: "O tempo que o aviso ficará ativo"

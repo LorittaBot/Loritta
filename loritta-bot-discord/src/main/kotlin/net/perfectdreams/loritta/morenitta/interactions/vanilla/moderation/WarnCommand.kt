@@ -65,7 +65,7 @@ class WarnCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 // allowedLength = 0..512
             }
 
-            val time = optionalString("time", I18N_PREFIX.Options.Time.Text)
+            val duration = optionalString("duration", I18N_PREFIX.Options.Duration.Text)
 
             val skipConfirmation = optionalBoolean("skip_confirmation", CATEGORY_I18N_PREFIX.Options.SkipConfirmation.Text)
             val isSilent = optionalBoolean("is_silent", CATEGORY_I18N_PREFIX.Options.IsSilent.Text)
@@ -103,7 +103,7 @@ class WarnCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             val punishmentActions = AdminUtils.retrieveWarnPunishmentActions(loritta, context.config)
 
             // User-provided "time" wins over the predefined message's "duration".
-            val expiresAt = (args[options.time] ?: predefined?.duration)
+            val expiresAt = (args[options.duration] ?: predefined?.duration)
                 ?.let { TimeUtils.convertToMillisRelativeToNow(it) }
                 ?.let { Instant.ofEpochMilli(it) }
 

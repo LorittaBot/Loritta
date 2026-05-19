@@ -3,5 +3,5 @@ description: "Silencia usuários do seu servidor"
 setPermanent: "Deixar Permanente"
 
 options:
-  time:
+  duration:
     text: "O tempo que a pessoa ficará silenciada"
