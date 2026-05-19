@@ -934,13 +934,16 @@ aside#that-wasnt-very-cash-money-of-you-fixed-sidebar-reserved-space {
 
 .icon-with-text {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 0.25em;
 
     .icon {
         display: flex;
+        flex-shrink: 0;
         width: 1em;
         height: 1em;
+        // Half of (line-height - icon-height) so the icon visually aligns with the first text line's center
+        margin-top: calc((1lh - 1em) / 2);
         color: var(--loritta-blue);
     }
 }
