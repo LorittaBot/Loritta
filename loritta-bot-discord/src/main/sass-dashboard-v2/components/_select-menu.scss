@@ -91,7 +91,7 @@
         // (with "mix-blend-mode", we need to use a pseudo element)
         // So... yeah :(
         box-shadow: var(--shadow-elevation-2);
-        z-index: 1;
+        z-index: 50;
         max-height: 400px;
         overflow: auto;
 
