@@ -68,6 +68,8 @@ CommandMentions(private val registeredCommands: List<DiscordCommand>) {
 
     val giveawayEdit = commandMention("giveaway editar")
 
+    val clear = commandMention("limpar")
+
     /**
      * Creates a command mention of [path]. If the command doesn't exist, an error will be thrown.
      */

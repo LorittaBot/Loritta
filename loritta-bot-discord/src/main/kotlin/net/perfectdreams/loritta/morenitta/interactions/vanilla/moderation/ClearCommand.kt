@@ -21,6 +21,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.Applica
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
+import net.perfectdreams.loritta.morenitta.utils.eventlog.EventLog
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -203,6 +204,17 @@ class ClearCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 .map { it.asDeferred() }.joinAll() // Purging the messages and awaiting
 
             this@ClearExecutor.unavailableGuilds.remove(context.guild.idLong)
+
+            // Discord drops custom audit log reasons silently for bulk deletes, so we log it ourselves in Loritta's Event Log
+            // THANKS DISCORD!!!
+            val serverConfig = loritta.getOrCreateServerConfig(context.guild.idLong)
+            EventLog.onMessagesCleared(
+                loritta,
+                serverConfig,
+                context.user,
+                context.channel as GuildMessageChannel,
+                messages.size
+            )
         }
 
         override suspend fun convertToInteractionsArguments(

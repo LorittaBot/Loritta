@@ -189,6 +189,16 @@ class EventLogGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
 
                                     fieldWrapper {
                                         eventLogTypeSection(
+                                            i18nContext.get(DashboardI18nKeysData.EventLog.Types.MessagesCleared.Title),
+                                            i18nContext.get(DashboardI18nKeysData.EventLog.Types.MessagesCleared.Description),
+                                            "messagesCleared",
+                                            eventLogConfig?.messagesCleared ?: false,
+                                            eventLogConfig?.messagesClearedLogChannelId
+                                        )
+                                    }
+
+                                    fieldWrapper {
+                                        eventLogTypeSection(
                                             i18nContext.get(DashboardI18nKeysData.EventLog.Types.NicknameChanges.Title),
                                             null,
                                             "nicknameChanges",

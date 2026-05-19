@@ -50,6 +50,9 @@ class PutEventLogGuildDashboardRoute(website: LorittaDashboardWebServer) : Requi
 
         val voiceChannelLeaves: Boolean,
         val voiceChannelLeavesLogChannelId: Long?,
+
+        val messagesCleared: Boolean,
+        val messagesClearedLogChannelId: Long?,
     )
 
     override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: LorittaUserSession, userPremiumPlan: UserPremiumPlan, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlan, member: Member) {
@@ -85,6 +88,8 @@ class PutEventLogGuildDashboardRoute(website: LorittaDashboardWebServer) : Requi
                 newConfig.voiceChannelJoinsLogChannelId = request.voiceChannelJoinsLogChannelId
                 newConfig.voiceChannelLeaves = request.voiceChannelLeaves
                 newConfig.voiceChannelLeavesLogChannelId = request.voiceChannelLeavesLogChannelId
+                newConfig.messagesCleared = request.messagesCleared
+                newConfig.messagesClearedLogChannelId = request.messagesClearedLogChannelId
                 newConfig.updatedAt = Instant.now()
 
                 serverConfig.eventLogConfig = newConfig

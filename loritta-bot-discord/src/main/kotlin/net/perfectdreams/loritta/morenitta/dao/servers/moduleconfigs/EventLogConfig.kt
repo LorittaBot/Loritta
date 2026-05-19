@@ -18,6 +18,7 @@ class EventLogConfig(id: EntityID<Long>) : Entity<Long>(id) {
 	var voiceChannelJoins by EventLogConfigs.voiceChannelJoins
 	var voiceChannelLeaves by EventLogConfigs.voiceChannelLeaves
 	var avatarChanges by EventLogConfigs.avatarChanges
+	var messagesCleared by EventLogConfigs.messagesCleared
 
 	var memberBannedLogChannelId by EventLogConfigs.memberBannedLogChannelId
 	var memberUnbannedLogChannelId by EventLogConfigs.memberUnbannedLogChannelId
@@ -27,6 +28,7 @@ class EventLogConfig(id: EntityID<Long>) : Entity<Long>(id) {
 	var voiceChannelJoinsLogChannelId by EventLogConfigs.voiceChannelJoinsLogChannelId
 	var voiceChannelLeavesLogChannelId by EventLogConfigs.voiceChannelLeavesLogChannelId
 	var avatarChangesLogChannelId by EventLogConfigs.avatarChangesLogChannelId
+	var messagesClearedLogChannelId by EventLogConfigs.messagesClearedLogChannelId
 
 	var updatedAt by EventLogConfigs.updatedAt
 }

@@ -12,6 +12,10 @@ modules:
       - "```{messageContent}```"
     messageDeletedUploads: "**Arquivos anexados:**"
     bulkDeleted: "**Mensagens de texto deletadas**"
+    messagesCleared:
+      - "**{executorMention} deletou {deletedCount} mensagens usando o comando {clearMention}**"
+      - ""
+      - "**Canal de texto:** {channelMention}"
     banned: "{username} foi banido!"
     unbanned: "{username} foi desbanido!"
     noNickname: "Nenhum apelido"

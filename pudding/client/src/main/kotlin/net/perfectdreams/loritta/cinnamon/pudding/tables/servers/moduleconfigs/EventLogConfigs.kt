@@ -14,6 +14,7 @@ object EventLogConfigs : LongIdTable() {
     val voiceChannelJoins = bool("voice_channel_joins").default(false)
     val voiceChannelLeaves = bool("voice_channel_leaves").default(false)
     val avatarChanges = bool("avatar_changes").default(false)
+    val messagesCleared = bool("messages_cleared").default(false)
 
     val memberBannedLogChannelId = long("member_banned_log_channel").nullable()
     val memberUnbannedLogChannelId = long("member_unbanned_log_channel").nullable()
@@ -23,6 +24,7 @@ object EventLogConfigs : LongIdTable() {
     val voiceChannelJoinsLogChannelId = long("voice_channel_joins_log_channel").nullable()
     val voiceChannelLeavesLogChannelId = long("voice_channel_leaves_log_channel").nullable()
     val avatarChangesLogChannelId = long("avatar_changes_log_channel").nullable()
+    val messagesClearedLogChannelId = long("messages_cleared_log_channel").nullable()
 
     val updatedAt = timestampWithTimeZone("updated_at").nullable()
 }

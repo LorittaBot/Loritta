@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion
 import net.dv8tion.jda.api.utils.FileUpload
 import net.perfectdreams.i18nhelper.core.I18nContext
@@ -184,6 +185,53 @@ object EventLog {
 			}
 		} catch (e: Exception) {
 			logger.error(e) { "Erro ao sair do canal de voz do event log" }
+		}
+	}
+
+	suspend fun onMessagesCleared(
+		loritta: LorittaBot,
+		serverConfig: ServerConfig,
+		executor: User,
+		channel: GuildMessageChannel,
+		deletedCount: Int
+	) {
+		try {
+			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(loritta, ServerConfig::eventLogConfig) ?: return
+
+			if (eventLogConfig.enabled && eventLogConfig.messagesCleared) {
+				val textChannel = channel.guild.getGuildMessageChannelById(eventLogConfig.messagesClearedLogChannelId ?: eventLogConfig.eventLogChannelId) ?: return
+				val i18nContext = loritta.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
+
+				if (!textChannel.canTalk())
+					return
+				if (!channel.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
+					return
+				if (!channel.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
+					return
+
+				val embed = EmbedBuilder()
+					.setColor(Color(221, 0, 0).rgb)
+					.setDescription(
+						"🗑️ ${
+							i18nContext.get(
+								I18nKeysData.Modules.EventLog.MessagesCleared(
+									executorMention = executor.asMention,
+									deletedCount = deletedCount,
+									clearMention = loritta.commandMentions.clear,
+									channelMention = channel.asMention
+								)
+							).joinToString("\n")
+						}"
+					)
+					.apply { setAuthorOnEmbed(this, executor) }
+					.setFooter(i18nContext.get(I18nKeysData.Modules.EventLog.UserId(userId = executor.id)), null)
+					.setTimestamp(Instant.now())
+					.build()
+
+				textChannel.sendMessageEmbeds(embed).await()
+			}
+		} catch (e: Exception) {
+			logger.error(e) { "Erro ao registrar deleção em massa do event log" }
 		}
 	}
 

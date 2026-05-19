@@ -19,6 +19,9 @@ website:
         messageDeleted:
           title: "Avisar quando uma mensagem for deletada"
           description: "Para a Loritta notificar quando uma mensagem for deletada, ela terá que salvar as mensagens enviadas no seu servidor"
+        messagesCleared:
+          title: "Avisar quando alguém usar o comando de limpar várias mensagens em massa"
+          description: "Avisa quando alguém usar o comando de limpar várias mensagens em massa (/limpar)"
         nicknameChanges:
           title: "Avisar quando alguém alterar o nickname"
         avatarChanges:
