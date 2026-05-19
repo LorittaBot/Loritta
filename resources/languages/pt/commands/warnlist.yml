@@ -1,2 +1,20 @@
-expires: "Expira"
-expired: "Expirado"
+label: "warnlist"
+description: "Veja a lista de avisos de um usuário do seu servidor"
+
+options:
+  user:
+    text: "O usuário que você deseja ver a lista de avisos"
+  page:
+    text: "A página que você deseja ver"
+
+title: "Lista de Avisos de {userMention}"
+userDoesntHaveWarns: "O usuário {userMention} não possui nenhum aviso!"
+nextPunishment: "O próximo aviso resultará em um(a) {punishmentType} para o usuário"
+warnEntry: "**Aviso #{warnNumber}**"
+punishedBy: "**Punido por:** {punisherMention}"
+reason: "**Motivo:** {reason}"
+date: "**Data:** {date}"
+expires: "**Expira:** {expiresAt}"
+expired: "**Expirou:** {expiredAt}"
+page: "Página {page}"
+footer: "Total de avisos: {totalWarns,number}"

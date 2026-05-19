@@ -288,6 +288,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         register(UnbanCommand(loritta))
         register(UnmuteCommand(loritta))
         register(UnwarnCommand(loritta))
+        register(WarnListCommand(loritta))
         register(LockCommand(loritta))
         register(UnlockCommand(loritta))
         register(SlowModeCommand(loritta))

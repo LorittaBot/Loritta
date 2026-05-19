@@ -98,7 +98,6 @@ class CommandManager(val loritta: LorittaBot) {
 
 		// =======[ ADMIN ]========
 		commandMap.add(RoleIdCommand(loritta))
-		commandMap.add(WarnListCommand(loritta))
 
 		// =======[ MAGIC ]========
 		commandMap.add(ServerInvitesCommand(loritta))
