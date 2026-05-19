@@ -25,6 +25,7 @@ website:
         unban: "Desbanimento"
         unmute: "Dessilenciamento"
         unwarn: "Desavisado"
+        purgeKick: "Expulsão com Mensagens Deletadas"
       placeholders:
         examplePunishmentReason: "You're gonna have a bad time"
         examplePunishmentType: "Banimento"

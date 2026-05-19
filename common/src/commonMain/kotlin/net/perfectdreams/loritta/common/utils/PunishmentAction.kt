@@ -7,5 +7,6 @@ enum class PunishmentAction {
     WARN,
     UNBAN,
     UNMUTE,
-    UNWARN
+    UNWARN,
+    PURGE_KICK
 }

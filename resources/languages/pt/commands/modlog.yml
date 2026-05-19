@@ -28,3 +28,4 @@ actions:
   unban: "Desbanimento"
   unmute: "Retirado o Silenciamento"
   unwarn: "Remoção de Aviso"
+  purgekick: "Expulsão com Mensagens Deletadas"

@@ -12,14 +12,39 @@ import net.perfectdreams.loritta.common.utils.PunishmentAction
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.MessageUtils
+import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNull
+import java.util.concurrent.TimeUnit
 
 class KickCommand {
 	companion object {
 		private val LOCALE_PREFIX = "commands.command"
 
-		fun kick(loritta: LorittaBot, guild: Guild, i18nContext: I18nContext, punisher: User, settings: AdminUtils.ModerationConfigSettings, locale: BaseLocale, user: User, reason: String, isSilent: Boolean) {
+		suspend fun kick(
+			loritta: LorittaBot,
+			guild: Guild,
+			i18nContext: I18nContext,
+			punisher: User,
+			settings: AdminUtils.ModerationConfigSettings,
+			locale: BaseLocale,
+			user: User,
+			reason: String,
+			isSilent: Boolean,
+			deleteDays: Long?
+		) {
+			val punishmentAction = if (deleteDays != null) {
+				PunishmentAction.PURGE_KICK
+			} else {
+				PunishmentAction.KICK
+			}
+
+			val moderationLogAction = if (deleteDays != null) {
+				ModerationLogAction.PURGE_KICK
+			} else {
+				ModerationLogAction.KICK
+			}
+
 			if (!isSilent) {
 				if (settings.sendPunishmentViaDm && guild.isMember(user)) {
 					try {
@@ -33,14 +58,12 @@ class KickCommand {
 					}
 				}
 
-				val punishLogMessage = runBlocking {
-					AdminUtils.getPunishmentForMessage(
-						loritta,
-						settings,
-						guild,
-						PunishmentAction.KICK
-					)
-				}
+				val punishLogMessage = AdminUtils.getPunishmentForMessage(
+					loritta,
+					settings,
+					guild,
+					punishmentAction
+				)
 
 				if (settings.sendPunishmentToPunishLog && settings.punishLogChannelId != null && punishLogMessage != null) {
 					val textChannel = guild.getGuildMessageChannelById(settings.punishLogChannelId)
@@ -53,7 +76,15 @@ class KickCommand {
 							guild,
 							mutableMapOf(
 								"duration" to locale["commands.command.mute.forever"]
-							) + AdminUtils.getStaffCustomTokens(punisher) + AdminUtils.getPunishmentCustomTokens(locale, reason, "${LOCALE_PREFIX}.kick"),
+							) + AdminUtils.getStaffCustomTokens(punisher) + AdminUtils.getPunishmentCustomTokens(
+								locale,
+								reason,
+								when (moderationLogAction) {
+									ModerationLogAction.KICK -> "${LOCALE_PREFIX}.kick"
+									ModerationLogAction.PURGE_KICK -> "${LOCALE_PREFIX}.purgekick"
+									else -> error("Unsupported moderation log action $moderationLogAction! This should NEVER happen!!")
+								}
+							),
 							generationErrorMessageI18nKey = I18nKeysData.InvalidMessages.MemberModerationKick
 						)
 
@@ -63,20 +94,27 @@ class KickCommand {
 			}
 
 			// Log the punishment to the database
-			runBlocking {
-				loritta.pudding.moderationLogs.logPunishment(
-					guild.idLong,
-					user.idLong,
-					punisher.idLong,
-					ModerationLogAction.KICK,
-					reason,
-					null
-				)
-			}
+			loritta.pudding.moderationLogs.logPunishment(
+				guild.idLong,
+				user.idLong,
+				punisher.idLong,
+				moderationLogAction,
+				reason,
+				null
+			)
 
-			guild.kick(user)
-				.reason(AdminUtils.generateAuditLogMessage(locale, punisher, reason))
-				.queue()
+			if (deleteDays != null) {
+				guild.ban(user, deleteDays.toInt(), TimeUnit.DAYS)
+					.reason(AdminUtils.generateAuditLogMessage(locale, punisher, reason))
+					.await()
+
+				// Wait for the ban and THEN unban them!
+				guild.unban(user).reason(AdminUtils.generateAuditLogMessage(locale, punisher, reason)).await()
+			} else {
+				guild.kick(user)
+					.reason(AdminUtils.generateAuditLogMessage(locale, punisher, reason))
+					.await()
+			}
 		}
 	}
 }

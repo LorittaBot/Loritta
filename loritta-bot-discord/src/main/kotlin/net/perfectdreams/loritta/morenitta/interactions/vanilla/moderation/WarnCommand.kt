@@ -153,7 +153,7 @@ class WarnCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     loop@ for (punishment in punishments) {
                         when {
                             punishment.punishmentAction == PunishmentAction.BAN -> BanCommand.ban(loritta, context.i18nContext, settings, context.guild, context.user, context.locale, user, modifiedReason, isSilent, 0)
-                            member != null && punishment.punishmentAction == PunishmentAction.KICK -> KickCommand.kick(loritta, context.guild, context.i18nContext, context.user, settings, context.locale, user, modifiedReason, isSilent)
+                            member != null && punishment.punishmentAction == PunishmentAction.KICK -> KickCommand.kick(loritta, context.guild, context.i18nContext, context.user, settings, context.locale, user, modifiedReason, isSilent, null)
                             member != null && punishment.punishmentAction == PunishmentAction.MUTE -> {
                                 val metadata = punishment.metadata ?: continue@loop
                                 val obj = JsonParser.parseString(metadata).obj

@@ -49,6 +49,7 @@ class KickCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 // allowedLength = 0..512
             }
 
+            val deleteDays = optionalLong("delete_days", CATEGORY_I18N_PREFIX.Options.DeleteDays.Text, 0L..7L)
             val skipConfirmation = optionalBoolean("skip_confirmation", CATEGORY_I18N_PREFIX.Options.SkipConfirmation.Text)
             val isSilent = optionalBoolean("is_silent", CATEGORY_I18N_PREFIX.Options.IsSilent.Text)
             val saveMessages = optionalString("save_messages", CATEGORY_I18N_PREFIX.Options.SaveMessages.Text) {
@@ -80,25 +81,30 @@ class KickCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             // The silent option is only useful when punishing users using the "skip confirmation" check
             // Because if not, Loritta will respect the user choice in the ban message
             val isSilent = args[options.isSilent]
+            var deleteDays = args[options.deleteDays]
+            if (deleteDays !in 1L..7L)
+                deleteDays = null
 
             val settings = AdminUtils.retrieveModerationInfo(loritta, context.config)
 
-            val kickCallback: suspend (UnleashedContext, Boolean) -> (Unit) = { context, isSilent ->
+            val kickCallback: suspend (UnleashedContext, Boolean, Long?) -> (Unit) = { context, isSilent, deleteDays ->
                 val punisher = context.member
                 val modifiedReason = AdminUtils.renderLinkedMessagesFromReasonAndSendToUser(loritta, context, saveMessageState, punisher, reason, users)
 
                 for (user in users)
-                    KickCommand.kick(loritta, context.guild, context.i18nContext, context.user, settings, context.locale, user, modifiedReason, isSilent)
+                    KickCommand.kick(loritta, context.guild, context.i18nContext, context.user, settings, context.locale, user, modifiedReason, isSilent, deleteDays)
 
                 AdminUtils.sendSuccessfullyPunishedMessage(context, modifiedReason)
             }
 
             if (skipConfirmation) {
-                kickCallback.invoke(context, isSilent ?: false)
+                kickCallback.invoke(context, isSilent ?: false, deleteDays)
                 return
             }
 
-            AdminUtils.sendConfirmationMessage(context, AdminUtils.ConfirmationMessagePunishmentAction.Kick, users, reason, kickCallback)
+            AdminUtils.sendConfirmationMessage(context, AdminUtils.ConfirmationMessagePunishmentAction.Kick, users, reason) { context, isSilent ->
+                kickCallback.invoke(context, isSilent, deleteDays)
+            }
         }
 
         override suspend fun convertToInteractionsArguments(

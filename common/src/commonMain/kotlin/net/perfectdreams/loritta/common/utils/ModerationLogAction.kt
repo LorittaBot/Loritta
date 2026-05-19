@@ -10,5 +10,6 @@ enum class ModerationLogAction {
     WARN,
     UNBAN,
     UNMUTE,
-    UNWARN
+    UNWARN,
+    PURGE_KICK,
 }

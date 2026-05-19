@@ -133,6 +133,7 @@ class ModLogCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                                         ModerationLogAction.UNBAN -> I18N_PREFIX.Actions.Unban
                                         ModerationLogAction.UNMUTE -> I18N_PREFIX.Actions.Unmute
                                         ModerationLogAction.UNWARN -> I18N_PREFIX.Actions.Unwarn
+                                        ModerationLogAction.PURGE_KICK -> I18N_PREFIX.Actions.Purgekick
                                     })
 
                                     appendLine(context.i18nContext.get(I18N_PREFIX.Type(actionName)))
