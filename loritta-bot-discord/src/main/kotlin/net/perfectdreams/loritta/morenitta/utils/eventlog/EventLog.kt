@@ -193,7 +193,7 @@ object EventLog {
 		serverConfig: ServerConfig,
 		executor: User,
 		channel: GuildMessageChannel,
-		deletedCount: Int
+		deletedMessages: List<Message>
 	) {
 		try {
 			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(loritta, ServerConfig::eventLogConfig) ?: return
@@ -216,9 +216,11 @@ object EventLog {
 							i18nContext.get(
 								I18nKeysData.Modules.EventLog.MessagesCleared(
 									executorMention = executor.asMention,
-									deletedCount = deletedCount,
+									deletedCount = deletedMessages.size,
 									clearMention = loritta.commandMentions.clear,
-									channelMention = channel.asMention
+									channelMention = channel.asMention,
+									deletedMessages.last().jumpUrl,
+									deletedMessages.first().jumpUrl
 								)
 							).joinToString("\n")
 						}"

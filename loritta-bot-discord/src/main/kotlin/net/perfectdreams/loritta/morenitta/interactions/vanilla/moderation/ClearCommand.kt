@@ -213,7 +213,7 @@ class ClearCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 serverConfig,
                 context.user,
                 context.channel as GuildMessageChannel,
-                messages.size
+                messages
             )
         }
 
