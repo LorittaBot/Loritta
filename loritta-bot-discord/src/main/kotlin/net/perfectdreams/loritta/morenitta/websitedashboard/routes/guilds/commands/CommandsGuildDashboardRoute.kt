@@ -14,6 +14,7 @@ import net.perfectdreams.loritta.i18n.I18nKeys
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.utils.GuildCommandConfigData
+import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
 import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls
 import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls.appendAsFormattedText
 import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls.handleI18nString
@@ -155,7 +156,7 @@ class CommandsGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                                     for ((category, commands) in groupedByCategories) {
                                         fieldWrapper {
                                             id = category.name
-                                            val color = getCategoryColor(category)
+                                            val color = LorittaUtils.getCategoryColor(category)
                                             style = "--loritta-blue: ${
                                                 String.format(
                                                     "#%02x%02x%02x",
@@ -317,34 +318,6 @@ class CommandsGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                 )
             }
         }
-    }
-
-    private fun getCategoryColor(category: CommandCategory) = when (category) {
-        // Photoshop Logo Color
-        CommandCategory.IMAGES -> Color(49, 197, 240)
-        CommandCategory.FUN -> Color(254, 120, 76)
-        CommandCategory.ECONOMY -> Color(47, 182, 92)
-        // Discord Blurple
-        CommandCategory.DISCORD -> Color(114, 137, 218)
-        // Discord "Ban User" background
-        CommandCategory.MODERATION -> Color(240, 71, 71)
-        // Roblox Logo Color
-        CommandCategory.ROBLOX -> Color(226, 35, 26)
-        CommandCategory.ROLEPLAY -> Color(243, 118, 166)
-        CommandCategory.UTILS -> Color(113, 147, 188)
-        // Grass Block
-        CommandCategory.MINECRAFT -> Color(124, 87, 58)
-        // Pokémon (Pikachu)
-        CommandCategory.POKEMON -> Color(244, 172, 0)
-        // Undertale
-        CommandCategory.UNDERTALE -> Color.BLACK
-        // Vídeos
-        CommandCategory.VIDEOS -> Color(163, 108, 253)
-        // Social
-        CommandCategory.SOCIAL -> Color(235, 0, 255)
-        CommandCategory.MISC -> Color(121, 63, 166)
-        CommandCategory.ANIME -> Color(132, 224, 212)
-        else -> Color(0, 193, 223)
     }
 
     data class GuildCommandConfigs(val entries: Map<UUID, GuildCommandConfigData>) {

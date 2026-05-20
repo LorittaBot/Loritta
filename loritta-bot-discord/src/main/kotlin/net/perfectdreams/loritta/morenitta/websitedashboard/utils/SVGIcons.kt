@@ -59,6 +59,9 @@ object SVGIcons : SVGIconManager(SVGIcons::class) {
     val X = register("x", "/svg_icons/phosphor/bold/x.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
     val CrownSimple = register("crown_simple", "/svg_icons/phosphor/fill/crown-simple.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
     val Fish = register("fish", "/svg_icons/phosphor/fill/fish.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
+    val ArrowSquareOut = register("arrow-square-out", "/svg_icons/phosphor/fill/arrow-square-out.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
+    val User = register("user", "/svg_icons/phosphor/fill/user.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
+    val ChatText = register("user", "/svg_icons/phosphor/fill/chat-text.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
 
     val SlashCommand = register("slash-command", "/svg_icons/discord/slash-command.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)
     val TextChannel = register("text-channel", "/svg_icons/discord/text-channel.svg", SVGOptions.SET_CURRENT_COLOR_FILL_ON_ROOT)

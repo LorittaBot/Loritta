@@ -32,6 +32,7 @@ $primary-color: #29a6fe;
 @import 'components/_support-invites-wrapper';
 @import 'components/_discord-invite-wrapper';
 @import 'components/discord-mention';
+@import 'components/commands-page';
 
 /* latin */
 @font-face {
@@ -64,6 +65,14 @@ $min-image-stacked-width: 800px;
   --fancy-details-details: #{darken(#fcfcfc, 3%)};
 
   --text: #404040;
+
+  // STOLEN FROM LORITTA'S DASHBOARD SCSS
+  // WE NEED TO REFACTOR THIS LATER TO ACTUALLY USE THE NEW SCSS INSTEAD OF JUST COPYING AND PASTING
+  --nice-border-radius: 7px;
+  --card-background-color: hsl(0, 100%, 100%);
+  --card-border-color: hsl(220, 30%, 87.5%);
+  --card-border-highlight-color: hsl(220, 30%, 91.5%);
+  --toggleable-section-background-color: hsl(220, 30%, 98%);
 }
 
 iframe {

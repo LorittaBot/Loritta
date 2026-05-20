@@ -93,7 +93,8 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
     var legacyCommandPathToDeclarations = mutableMapOf<String, CommandDeclarationPair>()
 
     fun register(declaration: SlashCommandDeclarationWrapper) {
-        val builtDeclaration = declaration.command().build()
+        // The base command dictates if legacy message support is enabled or not
+        val builtDeclaration = declaration.command().build(declaration.command().enableLegacyMessageSupport)
 
         if (builtDeclaration.enableLegacyMessageSupport) {
             // Validate if all executors inherit LorittaLegacyMessageCommandExecutor

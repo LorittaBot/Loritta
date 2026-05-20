@@ -63,7 +63,7 @@ class SlashCommandDeclarationBuilder(
         )
     }
 
-    fun build(): SlashCommandDeclaration {
+    fun build(enableLegacyMessageSupport: Boolean): SlashCommandDeclaration {
         return SlashCommandDeclaration(
             name,
             description,
@@ -79,8 +79,8 @@ class SlashCommandDeclarationBuilder(
             integrationTypes,
             interactionContexts,
             executor,
-            subcommands.map { it.build() },
-            subcommandGroups.map { it.build() }
+            subcommands.map { it.build(enableLegacyMessageSupport) },
+            subcommandGroups.map { it.build(enableLegacyMessageSupport) }
         )
     }
 }
@@ -109,13 +109,13 @@ class SlashCommandGroupDeclarationBuilder(
         }.apply(block)
     }
 
-    fun build(): SlashCommandGroupDeclaration {
+    fun build(enableLegacyMessageSupport: Boolean): SlashCommandGroupDeclaration {
         return SlashCommandGroupDeclaration(
             name,
             description,
             category,
             alternativeLegacyLabels,
-            subcommands.map { it.build() }
+            subcommands.map { it.build(enableLegacyMessageSupport) }
         )
     }
 }

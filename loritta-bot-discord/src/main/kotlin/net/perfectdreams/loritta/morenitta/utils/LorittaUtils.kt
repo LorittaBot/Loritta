@@ -13,11 +13,13 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.images.InterpolationType
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.getResizedInstance
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BlacklistedGuilds
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
 import org.jetbrains.exposed.sql.selectAll
+import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -292,5 +294,33 @@ object LorittaUtils {
 	 */
 	fun generateErrorId(loritta: LorittaBot): String {
 		return "cluster${loritta.lorittaCluster.id}_${UUID.randomUUID().toString().replace("-", "")}"
+	}
+
+	fun getCategoryColor(category: CommandCategory) = when (category) {
+		// Photoshop Logo Color
+		CommandCategory.IMAGES -> Color(49, 197, 240)
+		CommandCategory.FUN -> Color(254, 120, 76)
+		CommandCategory.ECONOMY -> Color(47, 182, 92)
+		// Discord Blurple
+		CommandCategory.DISCORD -> Color(114, 137, 218)
+		// Discord "Ban User" background
+		CommandCategory.MODERATION -> Color(240, 71, 71)
+		// Roblox Logo Color
+		CommandCategory.ROBLOX -> Color(226, 35, 26)
+		CommandCategory.ROLEPLAY -> Color(243, 118, 166)
+		CommandCategory.UTILS -> Color(113, 147, 188)
+		// Grass Block
+		CommandCategory.MINECRAFT -> Color(124, 87, 58)
+		// Pokémon (Pikachu)
+		CommandCategory.POKEMON -> Color(244, 172, 0)
+		// Undertale
+		CommandCategory.UNDERTALE -> Color.BLACK
+		// Vídeos
+		CommandCategory.VIDEOS -> Color(163, 108, 253)
+		// Social
+		CommandCategory.SOCIAL -> Color(235, 0, 255)
+		CommandCategory.MISC -> Color(121, 63, 166)
+		CommandCategory.ANIME -> Color(132, 224, 212)
+		else -> Color(0, 193, 223)
 	}
 }

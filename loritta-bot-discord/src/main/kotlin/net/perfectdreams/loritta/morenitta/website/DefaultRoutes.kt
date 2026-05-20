@@ -23,6 +23,7 @@ object DefaultRoutes {
 		TermsOfServiceRoute(loritta),
 		DailyRoute(loritta),
 		DonateRoute(loritta),
+		CommandsRoute(loritta),
 
 		// HTTP API Docs
 		LoriDevelopersDocsRoute(loritta),

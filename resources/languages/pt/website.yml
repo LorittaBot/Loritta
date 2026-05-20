@@ -7,6 +7,15 @@ website:
     viewLegacyCommands: "Ver a lista de comandos por mensagem (antigo)"
     welcomeToMyCommandListIntro:
       - "Boas-vindas a minha lista de comandos! Aqui você poderá ver as informações, explicações, exemplos e muito mais sobre todos os comandos que eu tenho."
+    title: "Comandos da Loritta"
+    description:
+      - "Aqui você poderá ver as informações, explicações, exemplos e muito mais sobre todos os comandos que eu tenho."
+      - "Para usar um comando, é só digitar / no chat do Discord e escolher o comando desejado (por exemplo: {slashExample}), ou usar o prefixo configurado pelo servidor (padrão: +) antes do nome do comando (por exemplo: {plusExample})!"
+      - "Se você quer saber qual prefixo um servidor usa, basta me mencionar {lorittaMention} no chat do servidor."
+    summaryTitle: "Sem tempo? Pule diretamente para uma categoria!"
+    synonyms: "Sinônimos:"
+    availableInPocketLoritta: "Disponível na Loritta de Bolso"
+
   blog:
     keepReading: "Continue lendo!"
     keepReadingFeature: "Continuar lendo sobre isto"

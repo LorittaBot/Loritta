@@ -1,0 +1,156 @@
+.commands-page-wrapper {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 2em 1em;
+    text-align: left;
+}
+
+.commands-hero-wrapper {
+    display: grid;
+    align-items: center;
+    grid-template-columns: 64fr 36fr;
+    gap: 1em;
+}
+
+.commands-hero-wrapper .commands-hero-text {
+    order: -1;
+}
+
+.commands-hero-image {
+    text-align: center;
+    max-height: 350px;
+    width: 100%;
+    object-fit: contain;
+    -webkit-mask-image: linear-gradient(to bottom, rgb(0, 0, 0) 50%, rgba(0, 0, 0, 0) 100%);
+    mask-image: linear-gradient(to bottom, rgb(0, 0, 0) 50%, rgba(0, 0, 0, 0) 100%);
+}
+
+@media (max-width: 900px) {
+    .commands-hero-wrapper {
+        grid-template-columns: 1fr;
+    }
+
+    .commands-hero-wrapper h1 {
+        text-align: center;
+    }
+
+    .commands-hero-wrapper .commands-hero-text {
+        order: 1;
+    }
+}
+
+.commands-categories {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+.commands-category-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+.commands-category-section h2 {
+    margin-top: 0;
+    color: var(--commands-category-color, #00c1df);
+}
+
+.commands-category-description {
+    margin: 0.3em 0 1em 0;
+    color: #555;
+}
+
+.commands-category-header {
+    display: grid;
+    grid-template-columns: 1fr 200px;
+    gap: 1.5em;
+    align-items: center;
+}
+
+.commands-category-header-image {
+    max-height: 200px;
+    width: 100%;
+    object-fit: contain;
+}
+
+.command-entry-label {
+    font-size: 1.25em;
+    font-weight: bold;
+}
+
+.command-entry-label-message {
+    display: flex;
+    gap: 4px;
+}
+
+.command-entry-label-user {
+    display: flex;
+    gap: 4px;
+}
+
+@media (max-width: 700px) {
+    .commands-category-header {
+        grid-template-columns: 1fr;
+    }
+
+    .commands-category-header-image {
+        display: none;
+    }
+}
+
+.commands-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+.commands-entry {
+    padding: 1em 20px;
+    background-color: var(--card-background-color);
+    border-radius: var(--nice-border-radius);
+    border: 1px solid var(--card-border-color);
+    border-top-color: var(--card-border-highlight-color);
+    border-left: 3px solid var(--commands-category-color, var(--card-border-color));
+}
+
+.commands-entry-description {
+    margin-top: 8px;
+}
+
+.commands-entry-meta {
+    margin-top: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.92em;
+    color: #555;
+}
+
+.commands-entry-meta:empty {
+    margin-top: 0px;
+}
+
+.pocket-loritta-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+    font-style: italic;
+}
+
+.pocket-loritta-link svg {
+    width: 0.9em;
+    height: 0.9em;
+    flex-shrink: 0;
+}
+
+.commands-summary {
+    column-count: 2;
+    column-gap: 2em;
+}
+
+@media (max-width: 600px) {
+    .commands-summary {
+        column-count: 1;
+    }
+}
