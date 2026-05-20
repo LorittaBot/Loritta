@@ -1,34 +1,9 @@
-.commands-hero-wrapper {
-    display: grid;
-    align-items: center;
-    grid-template-columns: 64fr 36fr;
-    gap: 1em;
-}
+.commands-summary {
+    column-count: 2;
+    column-gap: 2em;
 
-.commands-hero-wrapper .commands-hero-text {
-    order: -1;
-}
-
-.commands-hero-image {
-    text-align: center;
-    max-height: 350px;
-    width: 100%;
-    object-fit: contain;
-    -webkit-mask-image: linear-gradient(to bottom, rgb(0, 0, 0) 50%, rgba(0, 0, 0, 0) 100%);
-    mask-image: linear-gradient(to bottom, rgb(0, 0, 0) 50%, rgba(0, 0, 0, 0) 100%);
-}
-
-@media (max-width: 900px) {
-    .commands-hero-wrapper {
-        grid-template-columns: 1fr;
-    }
-
-    .commands-hero-wrapper h1 {
-        text-align: center;
-    }
-
-    .commands-hero-wrapper .commands-hero-text {
-        order: 1;
+    @media (max-width: 600px) {
+        column-count: 1;
     }
 }
 

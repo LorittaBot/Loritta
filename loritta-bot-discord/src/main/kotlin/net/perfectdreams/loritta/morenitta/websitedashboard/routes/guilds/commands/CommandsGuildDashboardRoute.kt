@@ -6,7 +6,6 @@ import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.interactions.IntegrationType
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlan
 import net.perfectdreams.loritta.common.utils.UserPremiumPlan
 import net.perfectdreams.loritta.shimeji.LorittaShimejiSettings
@@ -24,21 +23,19 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaDashboardWebS
 import net.perfectdreams.loritta.morenitta.websitedashboard.LorittaUserSession
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.SWAP_EVERYTHING_DASHBOARD
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.dashboardBase
-import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrapper
-import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrappers
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.genericSaveBar
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.guildDashLeftSidebarEntries
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.heroText
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.heroWrapper
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.rightSidebarContentAndSaveBarWrapper
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.simpleHeroImage
-import net.perfectdreams.loritta.morenitta.websitedashboard.components.toggleableSection
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.svgIcon
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
+import net.perfectdreams.loritta.morenitta.websitedashboard.utils.SVGIcons
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.configReset
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.respondHtml
 import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jetbrains.exposed.sql.selectAll
-import java.awt.Color
 import java.util.*
 
 class CommandsGuildDashboardRoute(website: LorittaDashboardWebServer) : RequiresGuildAuthDashboardLocalizedRoute(website, "/commands") {
@@ -142,22 +139,22 @@ class CommandsGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                                     text(i18nContext.get(I18nKeysData.Website.Dashboard.Commands.SummaryTitle))
                                 }
 
-                                ul {
+                                ul(classes = "commands-summary") {
                                     for ((category, _) in groupedByCategories) {
                                         li {
-                                            a(href = "#${category.name}") {
+                                            a(href = "#${category.name.lowercase()}") {
                                                 text(i18nContext.get(category.localizedName))
                                             }
                                         }
                                     }
                                 }
 
-                                fieldWrappers {
+                                div(classes = "commands-categories") {
                                     for ((category, commands) in groupedByCategories) {
-                                        fieldWrapper {
-                                            id = category.name
+                                        div(classes = "commands-category-section") {
+                                            id = category.name.lowercase()
                                             val color = LorittaUtils.getCategoryColor(category)
-                                            style = "--loritta-blue: ${
+                                            style = "--commands-category-color: ${
                                                 String.format(
                                                     "#%02x%02x%02x",
                                                     color.red,
@@ -166,11 +163,32 @@ class CommandsGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                                                 )
                                             }"
 
-                                            h2 {
-                                                text(i18nContext.get(category.localizedName))
+                                            div(classes = "commands-category-header") {
+                                                div {
+                                                    h2 {
+                                                        text(i18nContext.get(category.localizedName))
+                                                    }
+
+                                                    for (str in i18nContext.get(category.localizedDescription)) {
+                                                        p(classes = "commands-category-description") {
+                                                            text(str)
+                                                        }
+                                                    }
+                                                }
+
+                                                val imageBase = LorittaUtils.getCategoryImage(category)
+                                                if (imageBase != null) {
+                                                    img(src = "https://assets.perfectdreams.media/loritta/$imageBase.png", classes = "commands-category-header-image") {
+                                                        attributes["srcset"] = listOf(160, 320, 640).joinToString(", ") {
+                                                            "https://assets.perfectdreams.media/loritta/$imageBase@${it}w.png ${it}w"
+                                                        }
+                                                        attributes["sizes"] = "(max-width: 900px) 100vw, 200px"
+                                                        attributes["loading"] = "lazy"
+                                                    }
+                                                }
                                             }
 
-                                            fieldWrappers {
+                                            div(classes = "commands-list") {
                                                 for (command in commands) {
                                                     generateCommand(i18nContext, config.commandPrefix, commandConfigs, command, listOf(command))
 
@@ -226,96 +244,143 @@ class CommandsGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
         }
 
         if (executor != null) {
-            fieldWrapper {
-                val config = guildCommandConfigs.getCommandConfig(targetCommand.uniqueId)
+            val config = guildCommandConfigs.getCommandConfig(targetCommand.uniqueId)
 
-                // println("UUID: ${targetCommand.uniqueId}; Enabled? ${config.enabled}")
+            val commandLabelText = buildString {
+                if (targetCommand is SlashCommandDeclaration)
+                    append("/")
 
-                toggleableSection(
-                    {
-                        if (targetCommand is SlashCommandDeclaration)
-                            text("/")
+                for ((index, parent) in labelDeclarations.withIndex()) {
+                    val isLast = labelDeclarations.size == index + 1
 
-                        for ((index, parent) in labelDeclarations.withIndex()) {
-                            val isLast = labelDeclarations.size == index + 1
+                    when (parent) {
+                        is ExecutableApplicationCommandDeclaration -> append(i18nContext.get(parent.name))
+                        is SlashCommandGroupDeclaration -> append(i18nContext.get(parent.name))
+                        else -> error("Unsupported parent type $parent")
+                    }
 
-                            when (parent) {
-                                is ExecutableApplicationCommandDeclaration -> text(i18nContext.get(parent.name))
-                                is SlashCommandGroupDeclaration -> text(i18nContext.get(parent.name))
-                                else -> error("Unsupported parent type $parent")
-                            }
+                    if (!isLast)
+                        append(" ")
+                }
+            }
 
-                            if (!isLast) {
-                                text(" ")
-                            }
-                        }
-                    },
-                    {
-                        if (targetCommand is SlashCommandDeclaration) {
-                            div {
-                                text(i18nContext.get(targetCommand.description))
-                            }
+            val toggleId = "toggle-${UUID.randomUUID()}"
 
-                            val otherAlternatives = mutableListOf(
-                                buildString {
-                                    this.append(commandPrefix)
-                                    labelDeclarations.forEach {
-                                        when (it) {
-                                            is SlashCommandDeclaration -> append(i18nContext.get(it.name))
-                                            is SlashCommandGroupDeclaration -> append(i18nContext.get(it.name))
-                                        }
-                                        this.append(" ")
+            div(classes = "command-entry") {
+                label(classes = "toggle-wrapper") {
+                    htmlFor = toggleId
+
+                    div(classes = "command-entry-content") {
+                        div(classes = "command-entry-label") {
+                            when (targetCommand) {
+                                is SlashCommandDeclaration -> {
+                                    span(classes = "discord-mention") {
+                                        style = "padding: 4px 8px 4px 8px;"
+                                        text(commandLabelText)
                                     }
-                                }.trim()
-                            )
+                                }
 
-                            for (alternativeLabel in targetCommand.alternativeLegacyLabels) {
-                                otherAlternatives.add(
-                                    buildString {
-                                        append(commandPrefix)
-                                        labelDeclarations.dropLast(1).forEach {
-                                            when (it) {
-                                                is SlashCommandDeclaration -> append(i18nContext.get(it.name))
-                                                is SlashCommandGroupDeclaration -> append(i18nContext.get(it.name))
-                                            }
-                                            this.append(" ")
-                                        }
-                                        append(alternativeLabel)
+                                is MessageCommandDeclaration -> {
+                                    svgIcon(SVGIcons.ChatText) {
+                                        attr("style", "width: 1.25em; opacity: 0.75;")
                                     }
-                                )
-                            }
-
-                            for (absolutePath in targetCommand.alternativeLegacyAbsoluteCommandPaths) {
-                                otherAlternatives.add("$commandPrefix$absolutePath")
-                            }
-
-                            if (otherAlternatives.isNotEmpty()) {
-                                div {
-                                    b {
-                                        text("Sinônimos: ")
+                                    svgIcon(SVGIcons.CaretRight) {
+                                        attr("style", "width: 1em; opacity: 0.75;")
                                     }
-                                    var isFirst = true
-                                    otherAlternatives.forEach {
-                                        if (!isFirst)
-                                            text(", ")
+                                    text(commandLabelText)
+                                }
 
-                                        text(it)
-                                        isFirst = false
+                                is UserCommandDeclaration -> {
+                                    svgIcon(SVGIcons.User) {
+                                        attr("style", "width: 1.25em; opacity: 0.75;")
                                     }
+                                    svgIcon(SVGIcons.CaretRight) {
+                                        attr("style", "width: 1em; opacity: 0.75;")
+                                    }
+                                    text(commandLabelText)
                                 }
                             }
                         }
 
-                        if (targetCommand.integrationTypes.contains(IntegrationType.USER_INSTALL)) {
-                            i {
-                                text("Disponível na Loritta de Bolso")
+                        if (targetCommand is SlashCommandDeclaration) {
+                            div(classes = "command-entry-description") {
+                                text(i18nContext.get(targetCommand.description))
                             }
                         }
-                    },
-                    config.enabled,
-                    "${targetCommand.uniqueId}",
-                    true
-                )
+
+                        div(classes = "command-entry-meta") {
+                            if (targetCommand is SlashCommandDeclaration) {
+                                val otherAlternatives = mutableListOf(
+                                    buildString {
+                                        append(commandPrefix)
+                                        labelDeclarations.forEach {
+                                            when (it) {
+                                                is SlashCommandDeclaration -> append(i18nContext.get(it.name))
+                                                is SlashCommandGroupDeclaration -> append(i18nContext.get(it.name))
+                                            }
+                                            append(" ")
+                                        }
+                                    }.trim()
+                                )
+
+                                for (alternativeLabel in targetCommand.alternativeLegacyLabels) {
+                                    otherAlternatives.add(
+                                        buildString {
+                                            append(commandPrefix)
+                                            labelDeclarations.dropLast(1).forEach {
+                                                when (it) {
+                                                    is SlashCommandDeclaration -> append(i18nContext.get(it.name))
+                                                    is SlashCommandGroupDeclaration -> append(i18nContext.get(it.name))
+                                                }
+                                                append(" ")
+                                            }
+                                            append(alternativeLabel)
+                                        }
+                                    )
+                                }
+
+                                for (absolutePath in targetCommand.alternativeLegacyAbsoluteCommandPaths) {
+                                    otherAlternatives.add("$commandPrefix$absolutePath")
+                                }
+
+                                if (otherAlternatives.isNotEmpty()) {
+                                    div {
+                                        b {
+                                            text(i18nContext.get(I18nKeysData.Website.Commands.Synonyms))
+                                            text(" ")
+                                        }
+                                        var isFirst = true
+                                        otherAlternatives.forEach {
+                                            if (!isFirst)
+                                                text(", ")
+                                            text(it)
+                                            isFirst = false
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (targetCommand.integrationTypes.contains(IntegrationType.USER_INSTALL)) {
+                                div {
+                                    i {
+                                        text(i18nContext.get(I18nKeysData.Website.Commands.AvailableInPocketLoritta))
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    div {
+                        checkBoxInput {
+                            attributes["loritta-config"] = "${targetCommand.uniqueId}"
+                            name = "${targetCommand.uniqueId}"
+                            if (config.enabled)
+                                checked = true
+                            id = toggleId
+                        }
+                        div(classes = "switch-slider round") {}
+                    }
+                }
             }
         }
     }

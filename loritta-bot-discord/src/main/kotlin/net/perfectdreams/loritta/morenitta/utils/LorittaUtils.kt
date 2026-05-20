@@ -3,11 +3,7 @@ package net.perfectdreams.loritta.morenitta.utils
 import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.User
-import net.dv8tion.jda.api.entities.channel.Channel
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
-import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordRegexes
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.InterpolationType
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.getResizedInstance
@@ -17,7 +13,6 @@ import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.dao.Profile
-import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
 import org.jetbrains.exposed.sql.selectAll
 import java.awt.Color
 import java.awt.image.BufferedImage
@@ -294,6 +289,26 @@ object LorittaUtils {
 	 */
 	fun generateErrorId(loritta: LorittaBot): String {
 		return "cluster${loritta.lorittaCluster.id}_${UUID.randomUUID().toString().replace("-", "")}"
+	}
+
+	fun getCategoryImage(category: CommandCategory): String? = when (category) {
+		CommandCategory.IMAGES -> "loritta-images"
+		CommandCategory.FUN -> "loritta-fun"
+		CommandCategory.MODERATION -> "loritta-moderation"
+		CommandCategory.SOCIAL -> "loritta-social"
+		CommandCategory.DISCORD -> "loritta-wumpus"
+		CommandCategory.UTILS -> "loritta-utilities"
+		CommandCategory.MISC -> "loritta-miscellaneous"
+		CommandCategory.ROLEPLAY -> "loritta-hug"
+		CommandCategory.UNDERTALE -> "loritta-sans"
+		CommandCategory.POKEMON -> "loritta-pikachu"
+		CommandCategory.ECONOMY -> "loritta-rich-heathecliff"
+		CommandCategory.VIDEOS -> "loritta-videos"
+		CommandCategory.MINECRAFT -> "loritta-minecraft"
+		CommandCategory.ROBLOX -> "roblox-logo"
+		CommandCategory.ANIME -> "loritta-anime"
+		CommandCategory.FORTNITE -> "loritta-fortnite"
+		else -> null
 	}
 
 	fun getCategoryColor(category: CommandCategory) = when (category) {
