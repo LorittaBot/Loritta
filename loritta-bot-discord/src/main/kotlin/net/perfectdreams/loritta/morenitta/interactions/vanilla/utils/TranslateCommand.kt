@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.utils
 
 import net.dv8tion.jda.api.interactions.AutoCompleteQuery
+import net.dv8tion.jda.api.interactions.IntegrationType
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
 import net.perfectdreams.loritta.cinnamon.discord.utils.google.GoogleTranslateLanguage
@@ -27,6 +28,7 @@ class TranslateCommand(private val loritta: LorittaBot) : SlashCommandDeclaratio
         category = CommandCategory.UTILS,
         uniqueId = UUID.fromString("24bb7b9b-096a-4814-ac86-be01c6082855")
     ) {
+        this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
         enableLegacyMessageSupport = true
 
         alternativeLegacyLabels.apply {
