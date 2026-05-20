@@ -86,7 +86,7 @@ abstract class NavbarView(
                         }
 
                         // Commands
-                        a(classes = "entry commands", href = "$base/commands/slash") {
+                        a(classes = "entry commands", href = "$base/commands") {
                             attributes["bliss-get"] = "[href]"
                             attributes["bliss-push-url"] = "[href]"
                             attributes["bliss-swaps"] = "body -> body"
