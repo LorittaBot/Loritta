@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.videos
 
+import net.dv8tion.jda.api.interactions.IntegrationType
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.gabrielaimageserver.data.FansExplainingRequest
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.gabrielaimageserver.handleExceptions
@@ -28,6 +29,7 @@ class FansExplainingCommand(
             category = CommandCategory.VIDEOS,
             uniqueId = UUID.fromString("9a6a80dd-d97a-4117-97e0-1bc93f2d5f74")
         ) {
+            this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
             enableLegacyMessageSupport = true
             alternativeLegacyAbsoluteCommandPaths.apply {
                 add("fasexplicando")

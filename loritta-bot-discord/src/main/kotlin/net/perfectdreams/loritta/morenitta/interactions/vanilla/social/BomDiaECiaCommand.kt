@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.morenitta.interactions.vanilla.social
 
 import dev.minn.jda.ktx.messages.InlineMessage
 import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.interactions.IntegrationType
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BomDiaECiaWinners
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
@@ -36,6 +37,7 @@ class BomDiaECiaCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
     }
 
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.SOCIAL, UUID.fromString("0b2dca4f-7b8e-4f7e-9bf6-6b9d0e0a4f01")) {
+        this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
         enableLegacyMessageSupport = true
 
         subcommand(I18N_PREFIX.Status.Label, I18N_PREFIX.Status.Description, UUID.fromString("3d5d4b54-9c78-4b1f-8db8-1ee2d6a7b4c1")) {

@@ -5,6 +5,7 @@ import dev.minn.jda.ktx.messages.InlineMessage
 import dev.minn.jda.ktx.messages.MessageEdit
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.utils.FileUpload
 import net.dv8tion.jda.api.utils.messages.MessageEditBuilder
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
@@ -362,6 +363,8 @@ class UndertaleCommand(val loritta: LorittaBot, val gabrielaImageServerClient: G
     }
 
     override fun command() = slashCommand(I18N_PREFIX.Label, TodoFixThisData, CommandCategory.UNDERTALE, UUID.fromString("78453b96-c6de-47ba-ac2f-07d1e3484d78")) {
+        this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
+        
         subcommandGroup(I18N_TEXTBOX_PREFIX.Label, I18N_TEXTBOX_PREFIX.Description) {
             subcommand(I18N_TEXTBOX_PREFIX.LabelGame, I18N_TEXTBOX_PREFIX.DescriptionGame, UUID.fromString("91d02e5b-1347-4ff5-b91f-fca73fd65f2a")) {
                 executor = TextBoxExecutor(loritta, gabrielaImageServerClient)

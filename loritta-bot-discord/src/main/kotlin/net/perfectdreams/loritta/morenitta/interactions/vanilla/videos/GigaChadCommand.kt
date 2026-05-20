@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.videos
 
+import net.dv8tion.jda.api.interactions.IntegrationType
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.gabrielaimageserver.data.GigaChadRequest
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.gabrielaimageserver.handleExceptions
@@ -29,6 +30,7 @@ class GigaChadCommand(
             category = CommandCategory.VIDEOS,
             uniqueId = UUID.fromString("52de196f-4330-40b0-94e4-4ce540f19d55")
         ) {
+            this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
             enableLegacyMessageSupport = true
             alternativeLegacyAbsoluteCommandPaths.add("chad")
 

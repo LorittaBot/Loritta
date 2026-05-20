@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy
 
+import net.dv8tion.jda.api.interactions.IntegrationType
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
@@ -23,6 +24,7 @@ class GuessNumberCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
     }
 
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.ECONOMY, UUID.fromString("d6e4c8f5-9b7a-4c3d-8e2f-1a5b6c7d8e9f")) {
+        this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
         enableLegacyMessageSupport = true
 
         alternativeLegacyLabels.apply {

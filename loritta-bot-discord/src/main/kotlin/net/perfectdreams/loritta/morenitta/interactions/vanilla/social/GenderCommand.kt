@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.morenitta.interactions.vanilla.social
 
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.entities.emoji.Emoji
+import net.dv8tion.jda.api.interactions.IntegrationType
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.common.commands.CommandCategory
@@ -29,6 +30,7 @@ class GenderCommand: SlashCommandDeclarationWrapper {
             category = CommandCategory.SOCIAL,
             uniqueId = UUID.fromString("ee0cdf11-6e19-4264-a4af-51413454c34e")
         ) {
+            this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
             enableLegacyMessageSupport = true
             executor = GenderExecutor()
         }

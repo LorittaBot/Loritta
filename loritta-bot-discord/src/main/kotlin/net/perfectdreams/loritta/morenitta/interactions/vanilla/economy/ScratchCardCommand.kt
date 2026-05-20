@@ -353,8 +353,7 @@ class ScratchCardCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
         UUID.fromString("9b7aaa91-59db-41f8-b4cf-bb3e44753c77")
     ) {
         enableLegacyMessageSupport = true
-        this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL)
-        this.interactionContexts = listOf(InteractionContextType.GUILD)
+        this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
 
         subcommand(
             I18nKeysData.Commands.Command.Scratchcard.Info.Label,

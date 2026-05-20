@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`.text
 
+import net.dv8tion.jda.api.interactions.IntegrationType
 import net.perfectdreams.loritta.cinnamon.discord.interactions.cleanUpForOutput
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.common.commands.CommandCategory
@@ -20,6 +21,7 @@ class TextTransformCommand: SlashCommandDeclarationWrapper {
             uniqueId = UUID.fromString("01bf4a78-1aaa-45c9-bf83-72f1742a3498")
         ) {
             enableLegacyMessageSupport = true
+            this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
 
             for (simpleSubcommand in simpleSubcommands) {
                 subcommand(simpleSubcommand.label, simpleSubcommand.description, simpleSubcommand.uniqueId) {
