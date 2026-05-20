@@ -27,7 +27,10 @@ import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrap
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.fieldWrappers
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.genericSaveBar
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.guildDashLeftSidebarEntries
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.heroText
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.heroWrapper
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.rightSidebarContentAndSaveBarWrapper
+import net.perfectdreams.loritta.morenitta.websitedashboard.components.simpleHeroImage
 import net.perfectdreams.loritta.morenitta.websitedashboard.components.toggleableSection
 import net.perfectdreams.loritta.morenitta.websitedashboard.routes.RequiresGuildAuthDashboardLocalizedRoute
 import net.perfectdreams.loritta.morenitta.websitedashboard.utils.configReset
@@ -75,8 +78,8 @@ class CommandsGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                                 configReset(i18nContext)
                             }
 
-                            div(classes = "hero-wrapper") {
-                                div(classes = "hero-text") {
+                            heroWrapper {
+                                heroText {
                                     h1 {
                                         text(i18nContext.get(I18nKeysData.Website.Dashboard.Commands.Title))
                                     }
@@ -119,6 +122,8 @@ class CommandsGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
                                         }
                                     }
                                 }
+
+                                simpleHeroImage("https://assets.perfectdreams.media/loritta/loritta-images.png")
                             }
 
                             hr {}
