@@ -45,7 +45,9 @@ class PutPunishmentLogGuildDashboardRoute(website: LorittaDashboardWebServer) : 
         val enableMessageOverrideUnmute: Boolean,
         val punishLogMessageUnmute: String,
         val enableMessageOverrideUnwarn: Boolean,
-        val punishLogMessageUnwarn: String
+        val punishLogMessageUnwarn: String,
+        val enableMessageOverridePurgekick: Boolean,
+        val punishLogMessagePurgekick: String
     )
 
     override suspend fun onAuthenticatedGuildRequest(call: ApplicationCall, i18nContext: I18nContext, session: LorittaUserSession, userPremiumPlan: UserPremiumPlan, theme: ColorTheme, shimejiSettings: LorittaShimejiSettings, guild: Guild, guildPremiumPlan: ServerPremiumPlan, member: Member) {
@@ -125,6 +127,14 @@ class PutPunishmentLogGuildDashboardRoute(website: LorittaDashboardWebServer) : 
                     it[ModerationPunishmentMessagesConfig.guild] = serverConfig.id
                     it[ModerationPunishmentMessagesConfig.punishmentAction] = PunishmentAction.UNWARN
                     it[ModerationPunishmentMessagesConfig.punishLogMessage] = request.punishLogMessageUnwarn
+                }
+            }
+
+            if (request.enableMessageOverridePurgekick) {
+                ModerationPunishmentMessagesConfig.insert {
+                    it[ModerationPunishmentMessagesConfig.guild] = serverConfig.id
+                    it[ModerationPunishmentMessagesConfig.punishmentAction] = PunishmentAction.PURGE_KICK
+                    it[ModerationPunishmentMessagesConfig.punishLogMessage] = request.punishLogMessagePurgekick
                 }
             }
 
