@@ -152,7 +152,7 @@ class HoneypotGuildDashboardRoute(website: LorittaDashboardWebServer) : Requires
 
                                             textInput {
                                                 value = reason
-                                                placeholder = i18nContext.get(DashboardI18nKeysData.Honeypot.Reason.Placeholder)
+                                                placeholder = i18nContext.get(I18nKeysData.Modules.Honeypot.DefaultReason)
 
                                                 attributes["save-bar-track"] = "true"
                                                 attributes["loritta-config"] = "reason"

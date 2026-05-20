@@ -18,6 +18,5 @@ website:
         sectionDescription: "Quantos dias de mensagens do usuário serão removidos."
       reason:
         sectionLabel: "Motivo da Punição"
-        placeholder: "Mensagem enviada em um canal de armadilha"
       channels:
         sectionTitle: "Canais de Armadilha"
