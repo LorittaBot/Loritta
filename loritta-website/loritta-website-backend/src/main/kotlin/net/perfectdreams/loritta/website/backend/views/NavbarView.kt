@@ -87,12 +87,6 @@ abstract class NavbarView(
 
                         // Commands
                         a(classes = "entry commands", href = "$base/commands") {
-                            attributes["bliss-get"] = "[href]"
-                            attributes["bliss-push-url"] = "[href]"
-                            attributes["bliss-swaps"] = "body -> body"
-                            attributes["bliss-after"] = "scroll:window:top"
-                            attributes["bliss-preload"] = "true"
-
                             iconManager.terminal.apply(this)
 
                             +" ${locale["modules.sectionNames.commands"]}"
