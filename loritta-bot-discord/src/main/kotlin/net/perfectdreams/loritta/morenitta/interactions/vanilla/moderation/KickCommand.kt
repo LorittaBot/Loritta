@@ -124,7 +124,8 @@ class KickCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 options.users to users.joinToString(" ") { it.asMention },
                 options.reason to reason,
                 options.skipConfirmation to skipConfirmation,
-                options.isSilent to silent
+                options.isSilent to silent,
+                options.deleteDays to delDays.toLong()
             )
         }
     }
